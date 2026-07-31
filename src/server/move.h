@@ -25,8 +25,12 @@
 
 #include "click.h"
 
+#include "cannon.h"
 #include "object.h"
 #include "player.h"
+#include "target.h"
+#include "treasure.h"
+#include "wormhole.h"
 
 /*
  * Wall collision detection and bouncing.
@@ -110,10 +114,9 @@ typedef struct
     clvec_t todo;
     clvec_t done;
     int dir;
-    int cannon;
-    int wormhole;
-    int target;
-    // int treasure;
+    cannon_t *cannon_ptr;
+    wormhole_t *wormhole_ptr;
+    target_t *target_ptr;
     treasure_t *treasure_ptr;
 } move_state_t;
 

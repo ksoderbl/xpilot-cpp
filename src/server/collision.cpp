@@ -1681,8 +1681,3 @@ static void MineCollision(void)
         }
     }
 }
-
-int wormXY(int x, int y)
-{
-    return World.itemID[x][y];
-}

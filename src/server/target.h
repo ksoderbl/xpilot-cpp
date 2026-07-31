@@ -37,3 +37,4 @@ void Target_set_hitmask(int group, target_t *targ);
 void Target_init(void);
 void World_restore_target(world_t *world, target_t *targ);
 void World_remove_target(world_t *world, target_t *targ);
+target_t *targetXY(int x, int y);

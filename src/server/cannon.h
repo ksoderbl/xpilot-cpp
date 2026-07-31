@@ -154,3 +154,5 @@ static inline cannon_t *Cannon_by_id(int id)
    ind = id - MIN_CANNON_ID;
    return Cannon_by_index(ind);
 }
+
+cannon_t *cannonXY(int x, int y);

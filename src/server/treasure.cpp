@@ -481,3 +481,17 @@ int Punish_team1(player_t *pl, treasure_t *td, clpos_t pos)
 
     return 1;
 }
+
+// Returns pointer to treasure at block with coordinates (x, y).
+// This assumes the map is block based.
+treasure_t *treasureXY(int x, int y)
+{
+    for (int i = 0; i < Num_treasures(); i++)
+    {
+        treasure_t *treasure = Treasure_by_index(i);
+        blkpos_t blk = Clpos_to_blkpos(treasure->pos);
+        if (blk.bx == x && blk.by == y)
+            return treasure;
+    }
+    return nullptr;
+}

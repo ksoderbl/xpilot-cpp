@@ -992,3 +992,17 @@ void Cannon_set_option(cannon_t *cannon, const char *name, const char *value)
 
     warn("This server doesn't support option %s for cannons.", origname);
 }
+
+// Returns pointer to cannon at block with coordinates (x, y).
+// This assumes the map is block based.
+cannon_t *cannonXY(int x, int y)
+{
+    for (int i = 0; i < Num_cannons(); i++)
+    {
+        cannon_t *cannon = Cannon_by_index(i);
+        blkpos_t blk = Clpos_to_blkpos(cannon->pos);
+        if (blk.bx == x && blk.by == y)
+            return cannon;
+    }
+    return nullptr;
+}

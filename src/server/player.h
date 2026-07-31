@@ -263,7 +263,9 @@ typedef struct
     double damaged;
     double stunned;
 
-    int wormDrawCount, wormHoleHit, wormHoleDest;
+    int wormDrawCount;
+    int wormHoleHit;
+    int wormHoleDest;
 
     int last_target_update;    /* index of last updated target */
     int last_cannon_update;    /* index of last updated cannon */

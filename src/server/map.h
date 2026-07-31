@@ -589,9 +589,16 @@ static transporter_t *Transporter_by_index(int i)
     return &World.transporters[i];
 }
 
-#define Wormhole_by_index(i) ((wormhole_t *)(&World.wormholes[i]))
+// #define Wormhole_by_index(i) ((wormhole_t *)(&World.wormholes[i]))
 
-static inline check_t *Check_by_index(int i)
+static wormhole_t *Wormhole_by_index(int i)
+{
+    if (i < 0 || i >= Num_wormholes())
+        return nullptr;
+    return ((wormhole_t *)(&World.wormholes[i]));
+}
+
+static check_t *Check_by_index(int i)
 {
     return &World.checks[i];
 }

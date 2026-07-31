@@ -522,3 +522,17 @@ void World_restore_target(world_t *world, target_t *targ)
 void World_remove_target(world_t *world, target_t *targ)
 {
 }
+
+// Returns pointer to target at block with coordinates (x, y).
+// This assumes the map is block based.
+target_t *targetXY(int x, int y)
+{
+    for (int i = 0; i < Num_targets(); i++)
+    {
+        target_t *target = Target_by_index(i);
+        blkpos_t blk = Clpos_to_blkpos(target->pos);
+        if (blk.bx == x && blk.by == y)
+            return target;
+    }
+    return nullptr;
+}

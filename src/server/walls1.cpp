@@ -201,7 +201,8 @@ static void Walldist_init(void)
     {
         for (y = 0; y < World.y; y++)
         {
-            if (BIT((1 << World.block[x][y]), WALLDIST_MASK) && (World.block[x][y] != WORMHOLE || World.wormholes[wormXY(x, y)].type != WORM_OUT))
+            if (BIT((1 << World.block[x][y]), WALLDIST_MASK) &&
+                (World.block[x][y] != WORMHOLE || wormholeXY(x, y)->type != WORM_OUT))
             {
                 walldist[x][y] = 0;
                 q[qback].x = x;
@@ -536,7 +537,7 @@ void Move_segment1(move_state_t *ms)
     clpos_t off2;                          /* last offset in block in clicks */
     clpos_t mid;                           /* the mean of (offset+off2)/2 */
     const move_info_t *const mi = ms->mip; /* alias */
-    int hole;                              /* which wormhole */
+    wormhole_t *wormhole;                  /* which wormhole */
     ballobject_t *ball;
 
     /*
@@ -633,9 +634,7 @@ void Move_segment1(move_state_t *ms)
         if (sign.x == -1 && (offset.cx = BLOCK_CLICKS, --block.x < 0))
         {
             if (mi->edge_wrap)
-            {
                 block.x += World.x;
-            }
             else
             {
                 Bounce_edge(ms, BounceHorLo);
@@ -654,9 +653,7 @@ void Move_segment1(move_state_t *ms)
         if (sign.y == -1 && (offset.cy = BLOCK_CLICKS, --block.y < 0))
         {
             if (mi->edge_wrap)
-            {
                 block.y += World.y;
-            }
             else
             {
                 Bounce_edge(ms, BounceVerLo);
@@ -679,9 +676,7 @@ void Move_segment1(move_state_t *ms)
             need_adjust = 1;
         }
         else
-        {
             leave.cx = enter.cx + ms->todo.cx;
-        }
     }
     else
     {
@@ -691,9 +686,8 @@ void Move_segment1(move_state_t *ms)
             need_adjust = 1;
         }
         else
-        {
             leave.cx = enter.cx + ms->todo.cx;
-        }
+
         if (leave.cx == mp.click_width && !mi->edge_wrap)
         {
             leave.cx--;
@@ -708,9 +702,7 @@ void Move_segment1(move_state_t *ms)
             need_adjust = 1;
         }
         else
-        {
             leave.cy = enter.cy + ms->todo.cy;
-        }
     }
     else
     {
@@ -720,9 +712,8 @@ void Move_segment1(move_state_t *ms)
             need_adjust = 1;
         }
         else
-        {
             leave.cy = enter.cy + ms->todo.cy;
-        }
+
         if (leave.cy == mp.click_height && !mi->edge_wrap)
         {
             leave.cy--;
@@ -769,14 +760,12 @@ void Move_segment1(move_state_t *ms)
 
         case WORMHOLE:
             if (!mi->wormhole_warps)
-            {
                 break;
-            }
-            hole = wormXY(block.x, block.y);
-            if (World.wormholes[hole].type == WORM_OUT)
-            {
+
+            wormhole = wormholeXY(block.x, block.y);
+            if (wormhole->type == WORM_OUT)
                 break;
-            }
+
             if (mi->pl)
             {
                 blk2.x = OBJ_X_IN_BLOCKS(mi->pl);
@@ -785,21 +774,21 @@ void Move_segment1(move_state_t *ms)
                 {
                     if (World.block[blk2.x][blk2.y] == WORMHOLE)
                     {
-                        int oldhole = wormXY(blk2.x, blk2.y);
-                        if (World.wormholes[oldhole].type == WORM_NORMAL && mi->pl->wormHoleDest == oldhole)
-                        {
+                        wormhole_t *oldWormhole = wormholeXY(blk2.x, blk2.y);
+                        int oldhole = Index_by_wormhole(world, oldWormhole);
+                        if (oldWormhole->type == WORM_NORMAL &&
+                            mi->pl->wormHoleDest == oldhole)
                             /*
                              * Don't warp again if we are still on the
                              * same wormhole we have just been warped to.
                              */
                             break;
-                        }
                     }
                     CLR_BIT(mi->pl->obj_status, WARPED);
                 }
                 if (blk2.x == block.x && blk2.y == block.y)
                 {
-                    ms->wormhole = hole;
+                    ms->wormhole_ptr = wormhole;
                     ms->crash = CrashWormHole;
                     return;
                 }
@@ -811,17 +800,16 @@ void Move_segment1(move_state_t *ms)
                  * Warp the object to the same destination as the
                  * player has been warped to.
                  */
-                int last = World.wormholes[hole].lastdest;
-                if (last >= 0 &&
-                    (World.wormholes[hole].countdown > 0 || !options.wormTime) &&
-                    last < World.NumWormholes && World.wormholes[last].type != WORM_IN &&
-                    last != hole &&
+                int last = wormhole->lastdest;
+                wormhole_t *lastWormhole = Wormhole_by_index(last);
+                if (lastWormhole != nullptr &&
+                    (wormhole->countdown > 0 || !options.wormTime) &&
+                    lastWormhole->type != WORM_IN &&
+                    lastWormhole != wormhole &&
                     (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
                 {
-                    // ms->done.cx += (World.wormholes[last].blk_pos.bx - World.wormholes[hole].blk_pos.bx) * BLOCK_CLICKS;
-                    // ms->done.cy += (World.wormholes[last].blk_pos.by - World.wormholes[hole].blk_pos.by) * BLOCK_CLICKS;
-                    ms->done.cx += (World.wormholes[last].pos.cx - World.wormholes[hole].pos.cx);
-                    ms->done.cy += (World.wormholes[last].pos.cy - World.wormholes[hole].pos.cy);
+                    ms->done.cx += (World.wormholes[last].pos.cx - wormhole->pos.cx);
+                    ms->done.cy += (World.wormholes[last].pos.cy - wormhole->pos.cy);
                     break;
                 }
             }
@@ -835,22 +823,23 @@ void Move_segment1(move_state_t *ms)
                 !Team_play(world))
                 break;
 
-            for (i = 0;; i++)
-            {
-                cannon_t *cannon = Cannon_by_index(i);
-                blkpos_t blkpos = Clpos_to_blkpos(cannon->pos);
-                if (blkpos.bx == block.x &&
-                    blkpos.by == block.y)
-                    break;
-            }
-            ms->cannon = i;
+            // for (i = 0;; i++)
+            // {
+            //     cannon_t *cannon = Cannon_by_index(i);
+            //     blkpos_t blkpos = Clpos_to_blkpos(cannon->pos);
+            //     if (blkpos.bx == block.x &&
+            //         blkpos.by == block.y)
+            //         break;
+            // }
+            // ms->cannon = i;
+            ms->cannon_ptr = cannonXY(block.x, block.y);
 
-            if (BIT(World.cannons[i].used, HAS_PHASING_DEVICE))
+            if (BIT(ms->cannon_ptr->used, HAS_PHASING_DEVICE))
                 break;
 
             if (Team_play(world) &&
                 (options.teamImmunity || BIT(mi->obj->obj_status, FROMCANNON)) &&
-                mi->obj->team == World.cannons[i].team)
+                mi->obj->team == ms->cannon_ptr->team)
                 break;
 
             {
@@ -870,7 +859,7 @@ void Move_segment1(move_state_t *ms)
                 mirx.cy = 0;
                 miry.cx = 0;
                 miry.cy = 0;
-                switch (World.cannons[i].dir)
+                switch (ms->cannon_ptr->dir)
                 {
                 case DIR_UP:
                     mx.x = 1;
@@ -1049,15 +1038,16 @@ void Move_segment1(move_state_t *ms)
                         sqr(offset.cx - r) + sqr(offset.cy - r) > sqr(r))
                         break;
 
-                    for (i = 0;; i++)
-                    {
-                        treasure_t *treasure = Treasure_by_index(i);
-                        blkpos_t blkpos = Clpos_to_blkpos(treasure->pos);
-                        if (blkpos.bx == block.x &&
-                            blkpos.by == block.y)
-                            break;
-                    }
-                    ms->treasure_ptr = Treasure_by_index(i);
+                    // for (i = 0;; i++)
+                    // {
+                    //     treasure_t *treasure = Treasure_by_index(i);
+                    //     blkpos_t blkpos = Clpos_to_blkpos(treasure->pos);
+                    //     if (blkpos.bx == block.x &&
+                    //         blkpos.by == block.y)
+                    //         break;
+                    // }
+                    // ms->treasure_ptr = Treasure_by_index(i);
+                    ms->treasure_ptr = treasureXY(block.x, block.y);
                     ms->crash = CrashTreasure;
 
                     /*
@@ -1075,7 +1065,7 @@ void Move_segment1(move_state_t *ms)
 
                     if (ms->treasure_ptr == ball->ball_treasure)
                     {
-                        player_t *pl = NULL;
+                        player_t *pl = nullptr;
                         // treasure_t *tt = &World.treasures[ms->treasure];
                         treasure_t *tt = ms->treasure_ptr;
 
@@ -1138,7 +1128,8 @@ void Move_segment1(move_state_t *ms)
                      *
                      * ms->target = i;
                      */
-                    ms->target = i = World.itemID[block.x][block.y];
+                    // ms->target = i = World.itemID[block.x][block.y];
+                    ms->target_ptr = targetXY(block.x, block.y);
 
                     if (!options.targetTeamCollision)
                     {
@@ -1156,7 +1147,7 @@ void Move_segment1(move_state_t *ms)
                         else
                             team = mi->obj->team;
 
-                        if (team == World.targets[i].team)
+                        if (team == ms->target_ptr->team)
                             break;
                     }
                     if (!mi->pl)
@@ -1179,50 +1170,38 @@ void Move_segment1(move_state_t *ms)
             if (offset.cx == 0)
             {
                 if (ms->vel.x > 0)
-                {
                     wall_bounce |= BounceHorLo;
-                }
             }
             else if (offset.cx == BLOCK_CLICKS)
             {
                 if (ms->vel.x < 0)
-                {
                     wall_bounce |= BounceHorHi;
-                }
             }
             if (offset.cy == 0)
             {
                 if (ms->vel.y > 0)
-                {
                     wall_bounce |= BounceVerLo;
-                }
             }
             else if (offset.cy == BLOCK_CLICKS)
             {
                 if (ms->vel.y < 0)
-                {
                     wall_bounce |= BounceVerHi;
-                }
             }
             if (wall_bounce)
-            {
                 break;
-            }
+
             if (!(ms->todo.cx | ms->todo.cy))
-            {
                 /* no bouncing possible and no movement.  OK. */
                 break;
-            }
+
             if (!ms->todo.cx && (offset.cx == 0 || offset.cx == BLOCK_CLICKS))
-            {
                 /* tricky */
                 break;
-            }
+
             if (!ms->todo.cy && (offset.cy == 0 || offset.cy == BLOCK_CLICKS))
-            {
                 /* tricky */
                 break;
-            }
+
             /* what happened? we should never reach this */
             ms->crash = CrashWall;
             return;
@@ -1232,39 +1211,31 @@ void Move_segment1(move_state_t *ms)
             if (offset.cx == 0)
             {
                 if (ms->vel.x > 0)
-                {
                     wall_bounce |= BounceHorLo;
-                }
+
                 if (offset.cy == BLOCK_CLICKS && ms->vel.x + ms->vel.y < 0)
-                {
                     wall_bounce |= BounceLeftDown;
-                }
             }
             if (offset.cy == 0)
             {
                 if (ms->vel.y > 0)
-                {
                     wall_bounce |= BounceVerLo;
-                }
+
                 if (offset.cx == BLOCK_CLICKS && ms->vel.x + ms->vel.y < 0)
-                {
                     wall_bounce |= BounceLeftDown;
-                }
             }
             if (wall_bounce)
-            {
                 break;
-            }
+
             if (offset.cx + offset.cy < BLOCK_CLICKS)
             {
                 ms->crash = CrashWall;
                 return;
             }
             if (offset.cx + delta.cx + offset.cy + delta.cy >= BLOCK_CLICKS)
-            {
                 /* movement is entirely within the space part of the block. */
                 break;
-            }
+
             /*
              * Find out where we bounce exactly
              * and how far we can move before bouncing.
@@ -1737,22 +1708,22 @@ void Move_segment1(move_state_t *ms)
     }
 }
 
-static void Cannon_dies(move_state_t *ms)
+static void Cannon_dies1(move_state_t *ms)
 {
     warn("walls: cannon dies!");
 
     world_t *world = &World;
-    cannon_t *cannon = &World.cannons[ms->cannon];
+    cannon_t *cannon = ms->cannon_ptr;
     int cx = cannon->pos.cx;
     int cy = cannon->pos.cy;
     int killer = -1;
-    player_t *pl = NULL;
-    player_t *kp = NULL;
+    player_t *pl = nullptr;
+    player_t *kp = nullptr;
     vector_t zero_vel = {0.0, 0.0};
 
     cannon->dead_ticks = options.cannonDeadTime;
     cannon->conn_mask = 0;
-    Cannon_dies(cannon, NULL);
+    Cannon_dies(cannon, nullptr);
 
     if (!ms->mip->pl)
     {
@@ -1801,7 +1772,7 @@ static void Object_crash1(move_state_t *ms)
 
     case CrashTarget:
         obj->obj_life = 0.0;
-        Object_hits_target1(ms->mip->obj, &World.targets[ms->target], -1.0);
+        Object_hits_target1(ms->mip->obj, ms->target_ptr, -1.0);
         break;
 
     case CrashWall:
@@ -1839,18 +1810,18 @@ static void Object_crash1(move_state_t *ms)
         {
             itemobject_t *item = ITEM_PTR(obj);
 
-            Cannon_add_item(Cannon_by_index(ms->cannon), item->item_type, item->item_count);
+            Cannon_add_item(ms->cannon_ptr, item->item_type, item->item_count);
         }
         else
         {
             warn("walls: CrashCannon line 2128!");
-            cannon_t *cannon = Cannon_by_index(ms->cannon);
+            cannon_t *cannon = ms->cannon_ptr;
             if (!BIT(cannon->used, USES_EMERGENCY_SHIELD))
             {
                 if (cannon->item[ITEM_ARMOR] > 0)
                     cannon->item[ITEM_ARMOR]--;
                 else
-                    Cannon_dies(ms);
+                    Cannon_dies1(ms);
             }
         }
         break;
@@ -1889,7 +1860,7 @@ void Move_object1(object_t *obj)
         }
     }
 
-    mi.pl = NULL;
+    mi.pl = nullptr;
     mi.obj = obj;
     mi.edge_wrap = BIT(World.rules->mode, WRAP_PLAY);
     mi.edge_bounce = options.edgeBounce;
@@ -1994,10 +1965,11 @@ void Move_object1(object_t *obj)
 
 static void Player_crash1(move_state_t *ms, int pt, bool turning)
 {
+    world_t *world = &World;
     player_t *pl = ms->mip->pl;
     int ind = GetInd(pl->id);
-    const char *howfmt = NULL;
-    const char *hudmsg = NULL;
+    const char *howfmt = nullptr;
+    const char *hudmsg = nullptr;
 
     msg[0] = '\0';
 
@@ -2011,7 +1983,7 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
 
     case CrashWormHole:
         SET_BIT(pl->obj_status, WARPING);
-        pl->wormHoleHit = ms->wormhole;
+        pl->wormHoleHit = Index_by_wormhole(world, ms->wormhole_ptr);
         break;
 
     case CrashWall:
@@ -2042,7 +2014,7 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
         howfmt = "%s smashed%s against a target";
         hudmsg = "[Target]";
         sound_play_sensors(pl->pos, PLAYER_HIT_WALL_SOUND);
-        Object_hits_target1(ms->mip->obj, &World.targets[ms->target], -1.0);
+        Object_hits_target1(ms->mip->obj, ms->target_ptr, -1.0);
         break;
 
     case CrashTreasure:
@@ -2059,8 +2031,8 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
             hudmsg = "[Cannon]";
             sound_play_sensors(pl->pos, PLAYER_HIT_CANNON_SOUND);
         }
-        if (!BIT(World.cannons[ms->cannon].used, USES_EMERGENCY_SHIELD))
-            Cannon_dies(ms);
+        if (!BIT(ms->cannon_ptr->used, USES_EMERGENCY_SHIELD))
+            Cannon_dies1(ms);
         break;
 
     case CrashUniverse:
@@ -2262,7 +2234,7 @@ void Move_player1(player_t *pl)
     mi.treasure_crashes = true;
     mi.target_crashes = true;
     mi.wormhole_warps = true;
-    mi.phased = BIT(pl->used, USES_PHASING_DEVICE);
+    mi.phased = Player_is_phasing(pl);
 
     vel = pl->vel;
     todo.cx = FLOAT_TO_CLICK(vel.x);
@@ -2281,7 +2253,7 @@ void Move_player1(player_t *pl)
         ms[i].todo = todo;
         ms[i].dir = pl->dir;
         ms[i].mip = &mi;
-        ms[i].target = -1;
+        ms[i].target_ptr = nullptr;
     }
 
     for (;; moves_made++)
@@ -2413,12 +2385,10 @@ void Move_player1(player_t *pl)
                                     ? mp.max_shielded_angle
                                     : mp.max_unshielded_angle;
 
-                if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+                if (Player_uses_emergency_shield(pl))
                 {
                     if (max_speed < 100)
-                    {
                         max_speed = 100;
-                    }
                     max_angle = ANGLE_RESOLUTION;
                 }
 
@@ -2438,7 +2408,7 @@ void Move_player1(player_t *pl)
                 if (speed > max_speed)
                 {
                     crash = worst;
-                    ms[worst].crash = (ms[worst].target >= 0 ? CrashTarget : CrashWallSpeed);
+                    ms[worst].crash = (ms[worst].target_ptr != nullptr ? CrashTarget : CrashWallSpeed);
                     break;
                 }
 
@@ -2484,7 +2454,10 @@ void Move_player1(player_t *pl)
                 }
                 abs_delta_dir = ABS(delta_dir);
                 /* only use armor if neccessary */
-                if (abs_delta_dir > max_angle && max_angle < mp.max_shielded_angle && !BIT(pl->used, HAS_SHIELD) && Player_has_armor(pl))
+                if (abs_delta_dir > max_angle &&
+                    max_angle < mp.max_shielded_angle &&
+                    !BIT(pl->used, HAS_SHIELD) &&
+                    Player_has_armor(pl))
                 {
                     max_speed = options.maxShieldedWallBounceSpeed;
                     max_angle = mp.max_shielded_angle;
@@ -2493,20 +2466,16 @@ void Move_player1(player_t *pl)
                 if (abs_delta_dir > max_angle)
                 {
                     crash = worst;
-                    ms[worst].crash = (ms[worst].target >= 0 ? CrashTarget : CrashWallAngle);
+                    ms[worst].crash = (ms[worst].target_ptr != nullptr ? CrashTarget : CrashWallAngle);
                     break;
                 }
                 if (abs_delta_dir <= ANGLE_RESOLUTION / 16)
                 {
                     pl->float_dir += (1.0f - options.playerWallBrakeFactor) * delta_dir;
                     if (pl->float_dir >= ANGLE_RESOLUTION)
-                    {
                         pl->float_dir -= ANGLE_RESOLUTION;
-                    }
                     else if (pl->float_dir < 0)
-                    {
                         pl->float_dir += ANGLE_RESOLUTION;
-                    }
                 }
 
                 /*
@@ -2524,7 +2493,7 @@ void Move_player1(player_t *pl)
                 if (!pl->fuel.sum && options.wallBounceFuelDrainMult != 0)
                 {
                     crash = worst;
-                    ms[worst].crash = (ms[worst].target >= 0 ? CrashTarget : CrashWallNoFuel);
+                    ms[worst].crash = (ms[worst].target_ptr != nullptr ? CrashTarget : CrashWallNoFuel);
                     break;
                 }
                 if (cost)
@@ -2548,10 +2517,10 @@ void Move_player1(player_t *pl)
                                 20.0, 20 + (intensity >> 2),
                                 10.0, 10 + (intensity >> 1));
                     sound_play_sensors(pl->pos, PLAYER_BOUNCED_SOUND);
-                    if (ms[worst].target >= 0)
+                    if (ms[worst].target_ptr != nullptr)
                     {
                         cost = cost * (options.wallBounceFuelDrainMult / 4.0);
-                        Object_hits_target1(ms[worst].mip->obj, &World.targets[ms[worst].target], cost);
+                        Object_hits_target1(ms[worst].mip->obj, ms[worst].target_ptr, cost);
                     }
                 }
             }
@@ -2763,7 +2732,7 @@ void Turn_player1(player_t *pl)
             ms[i].todo.cy = pos.cy + p2.cy - ms[i].pos.cy;
             ms[i].vel.x = ms[i].todo.cx + salt.x;
             ms[i].vel.y = ms[i].todo.cy + salt.y;
-            ms[i].target = -1;
+            ms[i].target_ptr = nullptr;
 
             do
             {

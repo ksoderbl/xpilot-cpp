@@ -499,3 +499,29 @@ void remove_temp_wormhole(int ind)
     World.wormholes = (wormhole_t *)realloc(World.wormholes,
                                             World.NumWormholes * sizeof(wormhole_t));
 }
+
+// Returns pointer to wormhole at block with coordinates (x, y).
+// This assumes the map is block based.
+wormhole_t *wormholeXY(int x, int y)
+{
+    for (int i = 0; i < Num_wormholes(); i++)
+    {
+        wormhole_t *wormhole = Wormhole_by_index(i);
+        blkpos_t blk = Clpos_to_blkpos(wormhole->pos);
+        if (blk.bx == x && blk.by == y)
+            return wormhole;
+    }
+    return nullptr;
+}
+
+// Return index of wormhole in world's wormhole data structure.
+// This function should be eventually removed.
+int Index_by_wormhole(world_t *world, wormhole_t *wormhole)
+{
+    for (int i = 0; i < Num_wormholes(); i++)
+    {
+        if (Wormhole_by_index(i) == wormhole)
+            return i;
+    }
+    return NO_IND;
+}

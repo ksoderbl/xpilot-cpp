@@ -44,3 +44,5 @@ void Object_hits_wormhole2(object_t *obj, int ind);
 hitmask_t Wormhole_hitmask(wormhole_t *wormhole);
 bool Wormhole_hitfunc(group_t *groupptr, const move_t *move);
 bool Verify_wormhole_consistency(void);
+wormhole_t *wormholeXY(int x, int y);
+int Index_by_wormhole(world_t *world, wormhole_t *wormhole);
