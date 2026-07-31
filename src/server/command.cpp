@@ -6,6 +6,12 @@
  *      Bert Gijsbers
  *      Dick Balaska
  *
+ * Copyright (C) 2000-2004 by
+ *
+ *      Uoti Urpala
+ *      Erik Andersson
+ *      Kristian Söderblom
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -139,23 +145,23 @@ match_several:
     return nullptr;
 }
 
-// TODO
 void Send_info_about_player(player_t *pl)
 {
     int i;
 
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl_i = Player_by_index(i);
+        player_t *pl_i;
 
+        pl_i = Player_by_index(i);
         if (pl_i->conn != nullptr)
         {
-            // Send_team(pl_i->conn, pl->id, pl->team);
+            Send_team(pl_i->conn, pl->id, pl->team);
             /*if we do either, we do both... but is either necessary?*/
             updateScores = true;
-            // pl->update_score = true;
-            // if (pl->home_base != nullptr)
-            //     Send_base(pl_i->conn, pl->id, pl->home_base->ind);
+            pl->update_score = true;
+            if (pl->home_base != nullptr)
+                Send_base(pl_i->conn, pl->id, pl->home_base->ind);
         }
     }
 }
@@ -269,6 +275,24 @@ static Command_info commands[] = {
      "(operator)",
      false, /* checked in the function */
      Cmd_lock},
+    {"maxturnsps",
+     "maxturns",
+     "/maxturnsps <number> set max amount of turns per second.  "
+     "(EXPERIMENTAL FEATURE)",
+     false,
+     Cmd_maxturnsps},
+    {"mute",
+     "m",
+     "Just /mute 1 mutes, /mute 0 unmutes paused players WITHOUT BASE /mute <name> toggles muting of player.  "
+     "(operator)",
+     false, /* checked in the function */
+     Cmd_mute},
+    {"op",
+     "o",
+     "/op <command> [player name or ID number]. Operator commands.  "
+     "(operator)",
+     true,
+     Cmd_op},
     {"password",
      "pas",
      "/password <string>.  If string matches -password option "
@@ -293,7 +317,7 @@ static Command_info commands[] = {
     {"reset",
      "r",
      "Just /reset re-starts the round. "
-     "/reset.  Resets all scores to 0.  (operator)",
+     "'/reset all' also resets all scores to 0.  (operator)",
      true,
      Cmd_reset},
     {"set",
@@ -315,7 +339,8 @@ static Command_info commands[] = {
      Cmd_stats},
     {"team",
      "t",
-     "/team <team number> swaps you to given team.",
+     "/team <team number> [name] swaps you to given team. "
+     "Can be used with full teams too.",
      false,
      Cmd_team},
     {"version",
@@ -331,8 +356,7 @@ static Command_info commands[] = {
 void Handle_player_command(player_t *pl, char *cmd)
 {
     int i, result;
-    char *args;
-    char msg[MSG_LEN];
+    char *args, msg[MSG_LEN];
 
     if (!cmd || !*cmd)
     {
@@ -363,6 +387,7 @@ void Handle_player_command(player_t *pl, char *cmd)
         if (!strncasecmp(cmd, commands[i].name, MAX(len1, len2)))
             break;
     }
+
     if (i == NELEM(commands))
     {
         snprintf(msg, sizeof(msg),
@@ -370,6 +395,13 @@ void Handle_player_command(player_t *pl, char *cmd)
         Set_player_message(pl, msg);
         return;
     }
+#if 0 /* kps - recording related stuff too obscure */
+    else if (!pl->isoperator && (commands[i].operOnly || rplayback && !playback && commands[i].number != PASSWORD_CMD))
+    {
+        i = NO_CMD;
+        sprintf(msg, "You need operator status to use this command.");
+    }
+#endif
 
     msg[0] = '\0';
     result = (*commands[i].cmd)(args, pl, pl->isoperator, msg, sizeof(msg));
@@ -768,7 +800,6 @@ static int Cmd_maxturnsps(char *arg, player_t *pl, bool oper, char *msg, size_t 
     return CMD_RESULT_SUCCESS;
 }
 
-/*
 static int Cmd_mute(char *arg, player_t *pl, bool oper, char *msg, size_t size)
 {
     int new_mute;
@@ -777,8 +808,8 @@ static int Cmd_mute(char *arg, player_t *pl, bool oper, char *msg, size_t size)
 
     if (!arg || !*arg)
     {
-        snprintf(msg, size, "Baseless paused players are currently %s.",
-                 mute_baseless ? "muted" : "unmuted");
+        // snprintf(msg, size, "Baseless paused players are currently %s.",
+        //          mute_baseless ? "muted" : "unmuted");
         return CMD_RESULT_SUCCESS;
     }
 
@@ -802,21 +833,20 @@ static int Cmd_mute(char *arg, player_t *pl, bool oper, char *msg, size_t size)
         return CMD_RESULT_ERROR;
     }
 
-    if (new_mute == mute_baseless)
-        snprintf(msg, size, "Already %s.",
-                 mute_baseless ? "muted" : "unmuted");
-    else
-    {
-        mute_baseless = new_mute;
-        snprintf(msg, size, " < Baseless paused players have been %s by %s! >",
-                 mute_baseless ? "muted" : "unmuted", pl->name);
-        Set_message(msg);
-        strlcpy(msg, "", size);
-    }
+    // if (new_mute == mute_baseless)
+    //     snprintf(msg, size, "Already %s.",
+    //              mute_baseless ? "muted" : "unmuted");
+    // else
+    // {
+    //     mute_baseless = new_mute;
+    //     snprintf(msg, size, " < Baseless paused players have been %s by %s! >",
+    //              mute_baseless ? "muted" : "unmuted", pl->name);
+    //     Set_message(msg);
+    //     strlcpy(msg, "", size);
+    // }
 
     return CMD_RESULT_SUCCESS;
 }
-*/
 
 /* kps - this one is a bit obscure, maybe clean it up a bit ? */
 static int Cmd_op(char *arg, player_t *pl, bool oper, char *msg, size_t size)

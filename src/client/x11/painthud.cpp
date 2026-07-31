@@ -698,6 +698,15 @@ void Paint_HUD(void)
     // if (instruments.showHUDRadar)
     //     Paint_hudradar();
 
+    if (selfVisible && dirPtrColor)
+        Segment_add(dirPtrColor,
+                    (int)(ext_view_width / 2 +
+                          (100 - 15) * tcos(heading)),
+                    (int)(ext_view_height / 2 -
+                          (100 - 15) * tsin(heading)),
+                    (int)(ext_view_width / 2 + 100 * tcos(heading)),
+                    (int)(ext_view_height / 2 - 100 * tsin(heading)));
+
     /* from xpilot ng 4.7.1 */
     if (hudRadarEnemyColor || hudRadarOtherColor)
     {
@@ -892,6 +901,19 @@ void Paint_HUD(void)
 
     /* Update the lock display */
     Paint_lock(hud_pos_x, hud_pos_y);
+
+    /* kps tmp hack to draw "alert" messages */
+    if (have_hudmsg)
+    {
+        int len = strlen(hudmsg);
+        int width = XTextWidth(gameFont, hudmsg, len);
+
+        SET_FG(colors[WHITE].pixel);
+        rd.drawString(dpy, drawPixmap, gameGC,
+                      WINSCALE(hud_pos_x) - width / 2,
+                      WINSCALE(hud_pos_y - hudSize /*+ HUD_OFFSET*/ - BORDER) - gameFont->descent,
+                      hudmsg, len);
+    }
 
     /* Draw last score on hud if it is an message attached to it */
     for (i = 0, j = 0; i < MAX_SCORE_OBJECTS; i++)

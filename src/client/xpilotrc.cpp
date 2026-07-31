@@ -27,7 +27,9 @@
 
 #include "xpilotrc.h"
 
+#include <cctype>
 #include <cstring>
+#include <cstdio>
 
 #include "commonmacros.h"
 #include "commonproto.h"
