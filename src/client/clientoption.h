@@ -151,10 +151,6 @@ extern std::vector<xp_option> optionsVector;
 
 extern void Parse_options(int *argcp, char **argvp);
 
-extern void Xpilotrc_get_filename(char *path, size_t size);
-extern int Xpilotrc_read(const char *path);
-extern int Xpilotrc_write(const char *path);
-
 extern bool Set_option(const char *name, const char *value,
                        xp_option_origin_t origin);
 extern bool Set_noarg_option(xp_option_t *opt, bool value,

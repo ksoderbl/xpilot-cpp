@@ -41,6 +41,7 @@
 #include "client.h"
 #include "messages.h"
 #include "paint.h"
+#include "xpilotrc.h"
 
 #include "keydefs.h"
 

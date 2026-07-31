@@ -28,6 +28,7 @@
 
 #include "netclient.h"
 #include "paint.h"
+#include "xpilotrc.h"
 
 #include "sdlpaint.h"
 #include "images.h"
