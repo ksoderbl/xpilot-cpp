@@ -224,7 +224,7 @@ static void Handle_talk_key_repeat(void)
 
     if (talk_key_repeating)
     {
-        gettimeofday(&time_now, NULL);
+        gettimeofday(&time_now, nullptr);
         i = 1000000 * (time_now.tv_sec - talk_key_repeat_time.tv_sec) +
             time_now.tv_usec - talk_key_repeat_time.tv_usec;
         if ((talk_key_repeating > 1 && i > 50000) || i > 500000)

@@ -46,7 +46,7 @@ void Cursor_Add(ConsoleInformation *console, SDL_Event *event);
     sequences) the function returns the event for further processing. */
 SDL_Event *CON_Events(SDL_Event *event)
 {
-    if (Topmost == NULL)
+    if (Topmost == nullptr)
         return event;
     if (!CON_isVisible(Topmost))
         return event;
@@ -64,7 +64,7 @@ SDL_Event *CON_Events(SDL_Event *event)
             /* overwrite mode: delete char after the inserted one */
             Cursor_Del(Topmost);
         }
-        return NULL;
+        return nullptr;
     }
 
     if (event->type == SDL_KEYDOWN)
@@ -211,7 +211,7 @@ SDL_Event *CON_Events(SDL_Event *event)
                 /*was: CON_Hide(Topmost);*/
                 Talk_set_state(false);
 
-                return NULL;
+                return nullptr;
             default:
                 // if (Topmost->InsMode)
                 //     Cursor_Add(Topmost, event);
@@ -226,7 +226,7 @@ SDL_Event *CON_Events(SDL_Event *event)
                 break;
             }
         }
-        return NULL;
+        return nullptr;
     }
     return event;
 }
@@ -249,7 +249,7 @@ void CON_UpdateConsole(ConsoleInformation *console)
 
     Screenlines = console->ConsoleSurface->h / console->FontHeight;
 
-    SDL_FillRect(console->ConsoleSurface, NULL,
+    SDL_FillRect(console->ConsoleSurface, nullptr,
                  SDL_MapRGBA(console->ConsoleSurface->format, 0, 20, 0,
                              SDL_ALPHA_OPAQUE));
 
@@ -260,7 +260,7 @@ void CON_UpdateConsole(ConsoleInformation *console)
         DestRect.y = console->BackY;
         DestRect.w = console->BackgroundImage->w;
         DestRect.h = console->BackgroundImage->h;
-        SDL_BlitSurface(console->BackgroundImage, NULL,
+        SDL_BlitSurface(console->BackgroundImage, nullptr,
                         console->ConsoleSurface, &DestRect);
     }
 
@@ -367,10 +367,10 @@ ConsoleInformation *CON_Init(const char *FontName,
     /* Create a new console struct and init it. */
     if ((newinfo =
              (ConsoleInformation *)malloc(sizeof(ConsoleInformation))) ==
-        NULL)
+        nullptr)
     {
         PRINT_ERROR("Could not allocate the space for a new console info struct.\n");
-        return NULL;
+        return nullptr;
     }
     newinfo->Visible = CON_CLOSED;
 
@@ -378,12 +378,12 @@ ConsoleInformation *CON_Init(const char *FontName,
     newinfo->WasUnicode = 0;
 
     newinfo->RaiseOffset = 0;
-    newinfo->ConsoleLines = NULL;
-    newinfo->CommandLines = NULL;
+    newinfo->ConsoleLines = nullptr;
+    newinfo->CommandLines = nullptr;
     newinfo->TotalConsoleLines = 0;
     newinfo->ConsoleScrollBack = 0;
     newinfo->TotalCommands = 0;
-    newinfo->BackgroundImage = NULL;
+    newinfo->BackgroundImage = nullptr;
     newinfo->ConsoleAlpha = SDL_ALPHA_OPAQUE;
     newinfo->Offset = 0;
     newinfo->InsMode = 1;
@@ -401,7 +401,7 @@ ConsoleInformation *CON_Init(const char *FontName,
     {
         PRINT_ERROR("Could not load the font ");
         fprintf(stderr, "\"%s\" for the console!\n", FontName);
-        return NULL;
+        return nullptr;
     }
 
     newinfo->FontHeight = DT_FontHeight(newinfo->FontNumber);
@@ -428,14 +428,14 @@ ConsoleInformation *CON_Init(const char *FontName,
                                 newinfo->OutputScreen->format->Gmask,
                                 newinfo->OutputScreen->format->Bmask,
                                 newinfo->OutputScreen->format->Amask);
-    if (Temp == NULL)
+    if (Temp == nullptr)
     {
         PRINT_ERROR("Couldn't create the ConsoleSurface\n");
-        return NULL;
+        return nullptr;
     }
     newinfo->ConsoleSurface = Temp; /* SDL_DisplayFormat(Temp); */
     /* SDL_FreeSurface(Temp); */
-    SDL_FillRect(newinfo->ConsoleSurface, NULL,
+    SDL_FillRect(newinfo->ConsoleSurface, nullptr,
                  SDL_MapRGBA(newinfo->ConsoleSurface->format, 0, 20, 0,
                              newinfo->ConsoleAlpha));
 
@@ -446,14 +446,14 @@ ConsoleInformation *CON_Init(const char *FontName,
                                 newinfo->OutputScreen->format->Gmask,
                                 newinfo->OutputScreen->format->Bmask,
                                 newinfo->OutputScreen->format->Amask);
-    if (Temp == NULL)
+    if (Temp == nullptr)
     {
         PRINT_ERROR("Couldn't create the InputBackground\n");
-        return NULL;
+        return nullptr;
     }
     newinfo->InputBackground = Temp; /* SDL_DisplayFormat(Temp); */
     /* SDL_FreeSurface(Temp); */
-    SDL_FillRect(newinfo->InputBackground, NULL,
+    SDL_FillRect(newinfo->InputBackground, nullptr,
                  SDL_MapRGBA(newinfo->ConsoleSurface->format, 0, 20, 0,
                              SDL_ALPHA_OPAQUE));
 
@@ -554,8 +554,8 @@ void CON_Free(ConsoleInformation *console)
     free(console->ConsoleLines);
     free(console->CommandLines);
     free(console->Prompt);
-    console->ConsoleLines = NULL;
-    console->CommandLines = NULL;
+    console->ConsoleLines = nullptr;
+    console->CommandLines = nullptr;
     free(console);
 }
 
@@ -653,7 +653,7 @@ void DrawCommandLine()
     rect.y = Topmost->ConsoleSurface->h - Topmost->FontHeight;
     rect.w = Topmost->InputBackground->w;
     rect.h = Topmost->InputBackground->h;
-    SDL_BlitSurface(Topmost->InputBackground, NULL,
+    SDL_BlitSurface(Topmost->InputBackground, nullptr,
                     Topmost->ConsoleSurface, &rect);
 
     /* now add the text */
@@ -754,12 +754,12 @@ int CON_Background(ConsoleInformation *console, const char *image, int x,
         return 1;
 
     /* Free the background from the console */
-    if (image == NULL)
+    if (image == nullptr)
     {
-        if (console->BackgroundImage == NULL)
+        if (console->BackgroundImage == nullptr)
             SDL_FreeSurface(console->BackgroundImage);
-        console->BackgroundImage = NULL;
-        SDL_FillRect(console->InputBackground, NULL,
+        console->BackgroundImage = nullptr;
+        SDL_FillRect(console->InputBackground, nullptr,
                      SDL_MapRGBA(console->ConsoleSurface->format, 0, 0, 0,
                                  SDL_ALPHA_OPAQUE));
         return 0;
@@ -801,7 +801,7 @@ int CON_Background(ConsoleInformation *console, const char *image, int x,
     backgrounddest.w = console->BackgroundImage->w;
     backgrounddest.h = console->FontHeight;
 
-    SDL_FillRect(console->InputBackground, NULL,
+    SDL_FillRect(console->InputBackground, nullptr,
                  SDL_MapRGBA(console->ConsoleSurface->format, 0, 0, 0,
                              SDL_ALPHA_OPAQUE));
     SDL_BlitSurface(console->BackgroundImage, &backgroundsrc,
@@ -858,7 +858,7 @@ int CON_Resize(ConsoleInformation *console, SDL_Rect rect)
         SDL_CreateRGBSurface(SDL_SWSURFACE, rect.w, rect.h,
                              console->OutputScreen->format->BitsPerPixel,
                              0, 0, 0, 0);
-    if (Temp == NULL)
+    if (Temp == nullptr)
     {
         PRINT_ERROR("Couldn't create the console->ConsoleSurface\n");
         return 1;
@@ -880,7 +880,7 @@ int CON_Resize(ConsoleInformation *console, SDL_Rect rect)
         SDL_CreateRGBSurface(SDL_SWSURFACE, rect.w, console->FontHeight,
                              console->OutputScreen->format->BitsPerPixel,
                              0, 0, 0, 0);
-    if (Temp == NULL)
+    if (Temp == nullptr)
     {
         PRINT_ERROR("Couldn't create the input background\n");
         return 1;
@@ -914,7 +914,7 @@ int CON_Resize(ConsoleInformation *console, SDL_Rect rect)
         backgrounddest.w = console->BackgroundImage->w;
         backgrounddest.h = console->FontHeight;
 
-        SDL_FillRect(console->InputBackground, NULL,
+        SDL_FillRect(console->InputBackground, nullptr,
                      SDL_MapRGBA(console->ConsoleSurface->format, 0, 0, 0,
                                  SDL_ALPHA_OPAQUE));
         SDL_BlitSurface(console->BackgroundImage, &backgroundsrc,
@@ -960,7 +960,7 @@ void CON_Topmost(ConsoleInformation *console)
         rect.y = Topmost->ConsoleSurface->h - Topmost->FontHeight;
         rect.w = Topmost->InputBackground->w;
         rect.h = Topmost->InputBackground->h;
-        SDL_BlitSurface(Topmost->InputBackground, NULL,
+        SDL_BlitSurface(Topmost->InputBackground, nullptr,
                         Topmost->ConsoleSurface, &rect);
         DT_DrawText(Topmost->VCommand, Topmost->ConsoleSurface,
                     Topmost->FontNumber, CON_CHAR_BORDER,
@@ -1065,7 +1065,7 @@ char *Default_TabFunction(char *command)
     CON_Out(Topmost, "     No TabFunction registered");
     CON_Out(Topmost, "     use 'CON_SetTabCompletion' to register one");
     CON_Out(Topmost, " ");
-    return NULL;
+    return nullptr;
 }
 
 void Cursor_Left(ConsoleInformation *console)

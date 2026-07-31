@@ -309,7 +309,7 @@ static bool Process_commands(sockbuf_t *ibuf,
             ibuf->sock.fd = SOCK_FD_INVALID;
         }
 
-        privileged_cmd = (strchr("DKLMO", c) != NULL) ? true : false;
+        privileged_cmd = (strchr("DKLMO", c) != nullptr) ? true : false;
         if (privileged_cmd)
         {
             if (!has_credentials)
@@ -638,7 +638,7 @@ static bool Process_commands(sockbuf_t *ibuf,
                      * Acknowledge each 10 seconds that we are still
                      * interested to be on the waiting queue.
                      */
-                    if (qsent + 10 <= time(NULL))
+                    if (qsent + 10 <= time(nullptr))
                     {
                         Sockbuf_clear(ibuf);
                         Packet_printf(ibuf, "%u%s%hu",
@@ -767,7 +767,7 @@ int Connect_to_server(int auto_connect, int list_servers,
     sockbuf_t ibuf; /* info buffer */
     int result;
 
-    if (Sockbuf_init(&ibuf, NULL, CLIENT_RECV_SIZE,
+    if (Sockbuf_init(&ibuf, nullptr, CLIENT_RECV_SIZE,
                      SOCKBUF_READ | SOCKBUF_WRITE | SOCKBUF_DGRAM) == -1)
     {
         error("No memory for info buffer");

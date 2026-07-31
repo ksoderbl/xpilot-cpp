@@ -118,7 +118,7 @@ bool Wormhole_hitfunc(group_t *gp, const move_t *move)
     if (wormhole->type == WORM_OUT)
         return false;
 
-    if (obj == NULL)
+    if (obj == nullptr)
         return true;
 
     if (BIT(obj->obj_status, WARPED | WARPING))
@@ -150,7 +150,7 @@ static void Warp_balls(player_t *pl, clpos_t dest)
      * Don't connect to balls while warping.
      */
     if (Player_uses_connector(pl))
-        pl->ball = NULL;
+        pl->ball = nullptr;
 
     if (BIT(pl->have, HAS_BALL))
     {
@@ -361,7 +361,7 @@ void Do_warp(player_t *pl)
     //  * Don't connect to balls while warping.
     //  */
     // if (BIT(pl->used, USES_CONNECTOR))
-    //     pl->ball = NULL;
+    //     pl->ball = nullptr;
 
     // if (BIT(pl->have, HAS_BALL))
     // {
@@ -449,7 +449,7 @@ void add_temp_wormholes(int xin, int yin, int xout, int yout)
     wormhole_t inhole, outhole, *wwhtemp;
 
     if ((wwhtemp = (wormhole_t *)realloc(World.wormholes,
-                                         (World.NumWormholes + 2) * sizeof(wormhole_t))) == NULL)
+                                         (World.NumWormholes + 2) * sizeof(wormhole_t))) == nullptr)
     {
         error("No memory for temporary wormholes.");
         return;

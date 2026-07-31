@@ -67,7 +67,7 @@
  *        a reference count which will be either zero, one or two.
  * This structure is automatically deallocated when its reference count
  * drops to zero.
- * The option description pointer may be NULL for undefined options.
+ * The option description pointer may be nullptr for undefined options.
  * The string value pointer is usually dynamically allocated, but
  * in theory (not yet in practice) could also point to a static string
  * if this option refers to a valString with a static default value.
@@ -144,7 +144,7 @@ static void Option_free_value(hash_value *val)
         {
             if (!val->desc || val->value != val->desc->defaultValue)
                 free(val->value);
-            val->value = NULL;
+            val->value = nullptr;
         }
         free(val);
         hash_values_freed++;
@@ -168,13 +168,13 @@ static hash_value *Option_allocate_value(
     tmp->override = 0;
     tmp->origin = origin;
     tmp->refcount = 0;
-    if (value == NULL)
+    if (value == nullptr)
     {
-        if (desc != NULL && desc->defaultValue != NULL)
+        if (desc != nullptr && desc->defaultValue != nullptr)
             /* might also simply point to default value instead. */
             tmp->value = xp_safe_strdup(desc->defaultValue);
         else
-            tmp->value = NULL;
+            tmp->value = nullptr;
     }
     else
         tmp->value = xp_safe_strdup(value);
@@ -193,10 +193,10 @@ static void Option_free_node(hash_node *node)
     if (node->value)
     {
         Option_free_value(node->value);
-        node->value = NULL;
+        node->value = nullptr;
     }
     XFREE(node->name);
-    node->next = NULL;
+    node->next = nullptr;
     free(node);
     hash_nodes_freed++;
 }
@@ -208,7 +208,7 @@ static hash_node *Option_allocate_node(const char *name, hash_value *value)
 {
     hash_node *tmp = (hash_node *)xp_safe_malloc(sizeof(hash_node));
 
-    tmp->next = NULL;
+    tmp->next = nullptr;
     tmp->value = value;
     tmp->name = xp_safe_strdup(name);
     if (tmp->value)
@@ -241,7 +241,7 @@ static void Option_add_node(hash_node *node)
 
 /*
  * Return the hash table node of a named option,
- * or NULL if there is no node for that option name.
+ * or nullptr if there is no node for that option name.
  */
 static hash_node *Get_hash_node_by_name(const char *name)
 {
@@ -254,7 +254,7 @@ static hash_node *Get_hash_node_by_name(const char *name)
             return np;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 /*
@@ -262,7 +262,7 @@ static hash_node *Get_hash_node_by_name(const char *name)
  */
 bool Option_add_desc(option_desc *desc)
 {
-    hash_value *val = Option_allocate_value(NULL, desc, OPT_INIT);
+    hash_value *val = Option_allocate_value(nullptr, desc, OPT_INIT);
     hash_node *node1, *node2;
 
     if (!val)
@@ -275,7 +275,7 @@ bool Option_add_desc(option_desc *desc)
         return false;
     }
 
-    node2 = NULL;
+    node2 = nullptr;
     if (strcasecmp(desc->name, desc->commandLineOption))
     {
         node2 = Option_allocate_node(desc->commandLineOption, val);
@@ -287,7 +287,7 @@ bool Option_add_desc(option_desc *desc)
     }
 
     Option_add_node(node1);
-    if (node2 != NULL)
+    if (node2 != nullptr)
         Option_add_node(node2);
 
     return true;
@@ -334,7 +334,7 @@ static void Option_change_node(
 {
     bool set_ok = false;
 
-    if (node->value == NULL)
+    if (node->value == nullptr)
     {
         /* permit if option has no default value. */
         set_ok = true;
@@ -343,7 +343,7 @@ static void Option_change_node(
     {
 
         /* check option description permissions. */
-        if (node->value->desc != NULL)
+        if (node->value->desc != nullptr)
         {
             option_desc *desc = node->value->desc;
             if ((desc->flags & opt_origin) == 0)
@@ -464,24 +464,24 @@ static void Option_change_node(
 
     if (set_ok)
     {
-        if (node->value == NULL)
+        if (node->value == nullptr)
         {
-            node->value = Option_allocate_value(value, NULL, opt_origin);
-            if (node->value == NULL)
+            node->value = Option_allocate_value(value, nullptr, opt_origin);
+            if (node->value == nullptr)
                 fatal("Not enough memory.");
             else
                 node->value->refcount++;
         }
         else
         {
-            if (node->value->value != NULL)
+            if (node->value->value != nullptr)
             {
                 option_desc *desc = node->value->desc;
                 if (!desc || node->value->value != desc->defaultValue)
                     free(node->value->value);
             }
-            if (value == NULL)
-                node->value->value = NULL;
+            if (value == nullptr)
+                node->value->value = nullptr;
             else
                 node->value->value = xp_safe_strdup(value);
         }
@@ -544,7 +544,7 @@ void Option_set_value(
         }
     }
 
-    if (opt_origin == OPT_MAP && np == NULL)
+    if (opt_origin == OPT_MAP && np == nullptr)
     {
         warn("Server does not support option '%s'", name);
         return;
@@ -553,7 +553,7 @@ void Option_set_value(
     if (!value)
         return;
 
-    vp = Option_allocate_value(value, NULL, opt_origin);
+    vp = Option_allocate_value(value, nullptr, opt_origin);
     if (!vp)
         exit(1);
     vp->override = override;
@@ -568,20 +568,20 @@ void Option_set_value(
 
 /*
  * Return the value of the specified option,
- * or NULL if there is no value for that option.
+ * or nullptr if there is no value for that option.
  */
 char *Option_get_value(const char *name, optOrigin *origin_ptr)
 {
     hash_node *np = Get_hash_node_by_name(name);
 
-    if (np != NULL)
+    if (np != nullptr)
     {
-        if (origin_ptr != NULL)
+        if (origin_ptr != nullptr)
             *origin_ptr = np->value->origin;
         return np->value->value;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 /*
@@ -594,7 +594,7 @@ static void Options_hash_free(void)
 
     for (i = 0; i < HASH_SIZE; i++)
     {
-        while ((np = Option_hash_array[i]) != NULL)
+        while ((np = Option_hash_array[i]) != nullptr)
         {
             Option_hash_array[i] = np->next;
             Option_free_node(np);
@@ -624,7 +624,7 @@ static void Options_hash_performance(void)
     uint8_t histo[HASH_SIZE];
     char msg[MSG_LEN];
 
-    if (getenv("XPILOTSHASHPERF") == NULL)
+    if (getenv("XPILOTSHASHPERF") == nullptr)
         return;
 
     memset(histo, 0, sizeof(histo));
@@ -649,7 +649,7 @@ static void Options_hash_performance(void)
 
 bool Convert_string_to_int(const char *value_str, int *int_ptr)
 {
-    char *end_ptr = NULL;
+    char *end_ptr = nullptr;
     long value;
     bool result;
 
@@ -670,7 +670,7 @@ bool Convert_string_to_int(const char *value_str, int *int_ptr)
 
 bool Convert_string_to_float(const char *value_str, double *float_ptr)
 {
-    char *end_ptr = NULL;
+    char *end_ptr = nullptr;
     double value;
     bool result;
 
@@ -731,7 +731,7 @@ void Convert_string_to_list(const char *value, std::vector<std::string> *list_pt
     const char *start;
     const char *end;
 
-    if (list_ptr == NULL)
+    if (list_ptr == nullptr)
         return;
 
     /* make sure list is empty. */
@@ -764,16 +764,16 @@ static void Option_parse_node(hash_node *np)
     const char *value;
 
     /* Does it have a description?   If so, get a pointer to it */
-    if ((desc = np->value->desc) == NULL)
+    if ((desc = np->value->desc) == nullptr)
         return;
 
     /* get value from command line, defaults file or map file. */
     value = np->value->value;
-    if (value == NULL)
+    if (value == nullptr)
     {
         /* no value has been set, so get the option default value. */
         value = desc->defaultValue;
-        if (value == NULL)
+        if (value == nullptr)
         {
             /* no value at all.  (mapData or serverHost.) */
             assert(desc->type == valString);
@@ -904,7 +904,7 @@ static void Options_parse_expand(void)
     hash_node *np;
 
     np = Get_hash_node_by_name("expand");
-    if (np == NULL)
+    if (np == nullptr)
         dumpcore("Could not find option hash node for option '%s'.",
                  "expand");
     else
@@ -925,7 +925,7 @@ static void Options_parse_FPS(void)
     optOrigin value_origin;
 
     fpsstr = Option_get_value("framesPerSecond", &value_origin);
-    if (fpsstr != NULL)
+    if (fpsstr != nullptr)
     {
         int frames;
 
@@ -969,7 +969,7 @@ void Options_parse(void)
     for (i = 0; i < option_count; i++)
     {
         np = Get_hash_node_by_name(option_descs[i].name);
-        if (np == NULL)
+        if (np == nullptr)
             dumpcore("Could not find option hash node for option '%s'.",
                      option_descs[i].name);
         else

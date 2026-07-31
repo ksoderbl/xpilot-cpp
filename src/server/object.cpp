@@ -63,7 +63,7 @@ static void Object_decr_count(void)
 
 object_t *Object_allocate(void)
 {
-    object_t *obj = OBJ_PTR(NULL);
+    object_t *obj = OBJ_PTR(nullptr);
 
     if (ObjCount < MAX_TOTAL_SHOTS)
     {

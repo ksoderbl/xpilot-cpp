@@ -62,7 +62,7 @@ static bool setup_done = false;
 int Mapdata_setup(const char *urlstr)
 {
     URL url;
-    const char *name, *dir = NULL;
+    const char *name, *dir = nullptr;
     char path[1024], buf[1024], *ptr;
     int rv = false;
 
@@ -90,21 +90,21 @@ int Mapdata_setup(const char *urlstr)
         goto end;
     }
 
-    if (realTexturePath != NULL)
+    if (realTexturePath != nullptr)
     {
-        for (dir = strtok(realTexturePath, ":"); dir; dir = strtok(NULL, ":"))
+        for (dir = strtok(realTexturePath, ":"); dir; dir = strtok(nullptr, ":"))
             if (access(dir, R_OK | W_OK | X_OK) == 0)
                 break;
     }
 
-    if (dir == NULL)
+    if (dir == nullptr)
     {
 
         /* realTexturePath hasn't got a directory with proper access rights */
         /* so lets create one into users home dir */
 
         char *home = getenv("HOME");
-        if (home == NULL)
+        if (home == nullptr)
         {
             error("couldn't access any dir in %s and HOME is unset", path);
             goto end;
@@ -136,7 +136,7 @@ int Mapdata_setup(const char *urlstr)
     else
         sprintf(path, "%s%c%s", dir, PATHNAME_SEP, name);
 
-    if (strrchr(path, '.') == NULL)
+    if (strrchr(path, '.') == nullptr)
     {
         error("no extension in file name %s.", name);
         goto end;
@@ -147,14 +147,14 @@ int Mapdata_setup(const char *urlstr)
     *ptr = '\0';
 
     /* add this new texture directory to texturePath */
-    if (realTexturePath == NULL)
+    if (realTexturePath == nullptr)
     {
         realTexturePath = strdup(path);
     }
     else
     {
         char *temp = XMALLOC(char, strlen(realTexturePath) + strlen(path) + 2);
-        if (temp == NULL)
+        if (temp == nullptr)
         {
             error("not enough memory to new realTexturePath");
             goto end;
@@ -207,7 +207,7 @@ static int Mapdata_extract(const char *name)
 
     strlcpy(dir, name, sizeof dir);
     ptr = strrchr(dir, '.');
-    if (ptr == NULL)
+    if (ptr == nullptr)
     {
         error("file name has no extension %s", dir);
         return 0;
@@ -220,7 +220,7 @@ static int Mapdata_extract(const char *name)
         return 0;
     }
 
-    if ((in = gzopen(name, "rb")) == NULL)
+    if ((in = gzopen(name, "rb")) == nullptr)
     {
         error("failed to open %s for reading", name);
         return 0;
@@ -260,7 +260,7 @@ static int Mapdata_extract(const char *name)
         }
 
         /* security check */
-        if (strchr(fname + strlen(dir) + 1, PATHNAME_SEP) != NULL)
+        if (strchr(fname + strlen(dir) + 1, PATHNAME_SEP) != nullptr)
         {
             error("file name %s is illegal", fname);
             gzclose(in);
@@ -269,7 +269,7 @@ static int Mapdata_extract(const char *name)
 
         warn("Extracting %s (%ld)", fname, size);
 
-        if ((out = fopen(fname, "wb")) == NULL)
+        if ((out = fopen(fname, "wb")) == nullptr)
         {
             error("failed to open %s for writing", buf);
             gzclose(in);
@@ -319,7 +319,7 @@ static int Mapdata_download(const URL *url, const char *filePath)
     char buf[1024];
     int rv, header, c, len, i;
     sock_t s;
-    FILE *f = NULL;
+    FILE *f = nullptr;
     size_t n;
 
     if (strncmp("http", url->protocol, 4) != 0)
@@ -439,7 +439,7 @@ static int Mapdata_download(const URL *url, const char *filePath)
                 if (c == 4)
                 {
                     header = 0;
-                    if ((f = fopen(filePath, "wb")) == NULL)
+                    if ((f = fopen(filePath, "wb")) == nullptr)
                     {
                         error("failed to open %s", filePath);
                         rv = false;
@@ -490,7 +490,7 @@ static int Url_parse(const char *urlstr, URL *url)
 
     len = strlen(urlstr);
     buf = strdup(urlstr);
-    if (buf == NULL)
+    if (buf == nullptr)
     {
         error("no memory for URL");
         return false;

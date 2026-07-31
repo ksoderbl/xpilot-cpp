@@ -94,7 +94,7 @@ void Fire_general_laser(int id, int team, clpos_t pos, int dir,
     if (NumPulses >= MAX_TOTAL_PULSES)
         return;
     Pulses[NumPulses] = (pulse_t *)malloc(sizeof(pulse_t));
-    if (Pulses[NumPulses] == NULL)
+    if (Pulses[NumPulses] == nullptr)
         return;
 
     pulse = Pulses[NumPulses];
@@ -231,7 +231,7 @@ static void Laser_pulse_find_victims(
         {
             size_t victim_bufsize = NumPlayers * sizeof(victim_t);
             vicbuf->vic_ptr = (victim_t *)malloc(victim_bufsize);
-            if (vicbuf->vic_ptr == NULL)
+            if (vicbuf->vic_ptr == nullptr)
                 break;
 
             vicbuf->max_vic = NumPlayers;
@@ -268,7 +268,7 @@ static void Laser_pulse_hits_player(
     if (pulse->id != NO_ID)
         pl = Player_by_id(pulse->id);
     else
-        pl = NULL;
+        pl = nullptr;
 
     vicpl = PlayersArray[victim->ind];
     vicpl->forceVisible++;
@@ -412,7 +412,7 @@ static int Laser_pulse_check_player_hits(
         pl = PlayersArray[ind];
     } else {
         ind = -1;
-        pl = NULL;
+        pl = nullptr;
     }
     */
 
@@ -496,14 +496,14 @@ void Laser_pulse_collision(void)
     double midx, midy;
     player_t *pl;
     pulse_t *pulse;
-    object_t *obj = NULL, *ast = NULL;
+    object_t *obj = nullptr, *ast = nullptr;
     std::vector<object_t *> obj_list;
 
     /*
      * Allocate one object with which we will
      * do pulse wall bounce checking.
      */
-    if ((obj = Object_allocate()) == NULL)
+    if ((obj = Object_allocate()) == nullptr)
     {
         /* overload.  we can't do bounce checking. */
         Laser_pulse_destroy_all();
@@ -513,7 +513,7 @@ void Laser_pulse_collision(void)
     /* init vicbuf */
     vicbuf.num_vic = 0;
     vicbuf.max_vic = 0;
-    vicbuf.vic_ptr = NULL;
+    vicbuf.vic_ptr = nullptr;
 
     for (p = NumPulses - 1; p >= 0; --p)
     {
@@ -710,7 +710,7 @@ void Laser_pulse_collision(void)
         if (i < max && refl == false)
             pulse->len = (pulse->len * i) / max;
     }
-    if (vicbuf.max_vic > 0 && vicbuf.vic_ptr != NULL)
+    if (vicbuf.max_vic > 0 && vicbuf.vic_ptr != nullptr)
         free(vicbuf.vic_ptr);
 
     obj->type = OBJ_DEBRIS;

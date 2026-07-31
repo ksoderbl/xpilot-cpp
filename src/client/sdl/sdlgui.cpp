@@ -229,7 +229,7 @@ static int wrap(int *xp, int *yp)
 
 static void CALLBACK vertex_callback(ipos_t *p, irec_t *trec)
 {
-    if (trec != NULL)
+    if (trec != nullptr)
     {
         glTexCoord2f((p->x + trec->x) / (GLfloat)trec->w,
                      (p->y + trec->y) / (GLfloat)trec->h);
@@ -242,7 +242,7 @@ static void tessellate_polygon(GLUtriangulatorObj *tess, int ind)
     int i, x, y, minx, miny;
     xp_polygon_t polygon;
     polygon_style_t p_style;
-    image_t *texture = NULL;
+    image_t *texture = nullptr;
     irec_t trec;
     GLdouble v[3] = {0, 0, 0};
     ipos_t p[MAX_VERTICES];
@@ -254,7 +254,7 @@ static void tessellate_polygon(GLUtriangulatorObj *tess, int ind)
     if (BIT(p_style.flags, STYLE_TEXTURED))
     {
         texture = Image_get_texture(p_style.texture);
-        if (texture != NULL)
+        if (texture != nullptr)
         {
             x = y = minx = miny = 0;
             for (i = 1; i < polygon.num_points; i++)
@@ -273,7 +273,7 @@ static void tessellate_polygon(GLUtriangulatorObj *tess, int ind)
         }
     }
     glNewList(polyListBase + ind, GL_COMPILE);
-    gluTessBeginPolygon(tess, texture ? &trec : NULL);
+    gluTessBeginPolygon(tess, texture ? &trec : nullptr);
     gluTessVertex(tess, v, &p[0]);
     for (i = 1; i < polygon.num_points; i++)
     {
@@ -285,7 +285,7 @@ static void tessellate_polygon(GLUtriangulatorObj *tess, int ind)
     glEndList();
 
     glNewList(polyEdgeListBase + ind, GL_COMPILE);
-    if (polygon.edge_styles == NULL)
+    if (polygon.edge_styles == nullptr)
     { /* No special edges */
         glBegin(GL_LINE_LOOP);
         x = y = 0;
@@ -372,7 +372,7 @@ int Gui_init(void)
     }
 
     tess = gluNewTess();
-    if (tess == NULL)
+    if (tess == nullptr)
     {
         error("failed to create tessellation object");
         return -1;
@@ -440,7 +440,7 @@ void Gui_paint_fuel(int x, int y, double fuel)
     image_t *img;
 
     img = Image_get(IMG_FUEL);
-    if (img == NULL)
+    if (img == nullptr)
         return;
 
     /* x + x * y will give a pseudo random number,
@@ -472,7 +472,7 @@ void Gui_paint_fuel(int x, int y, double fuel)
 void Gui_paint_base(int x, int y, int id, int team, int type)
 {
     Uint32 color;
-    homebase_t *base = NULL;
+    homebase_t *base = nullptr;
     other_t *other;
     bool do_basewarning = false;
 
@@ -511,7 +511,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
     y = y + BLOCK_SZ / 2;
 
     base = Homebase_by_id(id);
-    if (base != NULL)
+    if (base != nullptr)
     {
         /*
          * Hacks to support Mara's base warning on new servers and
@@ -1077,7 +1077,7 @@ void Gui_paint_asteroids_begin(void)
     GLfloat ambient[] = {0.7F, 0.7F, 0.7F, 1.0F};
 
     img = Image_get(IMG_ASTEROID);
-    if (img != NULL)
+    if (img != nullptr)
     {
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, img->name);
@@ -1223,7 +1223,7 @@ void Gui_paint_appearing(int x, int y, int id, int count)
     if (version >= 0x4F12)
     {
         homebase_t *base = Homebase_by_id(id);
-        if (base != NULL)
+        if (base != nullptr)
             base->appeartime = (long)(loops + (count * clientFPS) / 120);
     }
 
@@ -1365,7 +1365,7 @@ static int Gui_is_my_tank(other_t *other)
 {
     char tank_name[MAX_NAME_LEN];
 
-    if (self == NULL || other == NULL || other->mychar != 'T' || (BIT(Setup->mode, TEAM_PLAY) && self->team != other->team))
+    if (self == nullptr || other == nullptr || other->mychar != 'T' || (BIT(Setup->mode, TEAM_PLAY) && self->team != other->team))
     {
         return 0;
     }
@@ -1384,7 +1384,7 @@ static int Gui_calculate_ship_color(int id, other_t *other)
     Uint32 ship_color = whiteRGBA;
 
 #ifndef NO_BLUE_TEAM
-    if (BIT(Setup->mode, TEAM_PLAY) && eyesId != id && other != NULL && eyeTeam == other->team)
+    if (BIT(Setup->mode, TEAM_PLAY) && eyesId != id && other != nullptr && eyeTeam == other->team)
     {
         /* Paint teammates and allies ships with last life in teamLWColorRGBA */
         if (BIT(Setup->mode, LIMITED_LIVES) && (other->life == 0))
@@ -1393,7 +1393,7 @@ static int Gui_calculate_ship_color(int id, other_t *other)
             ship_color = teamShipColorRGBA;
     }
 
-    if (eyes != NULL && eyesId != id && other != NULL && eyes->alliance != ' ' && eyes->alliance == other->alliance)
+    if (eyes != nullptr && eyesId != id && other != nullptr && eyes->alliance != ' ' && eyes->alliance == other->alliance)
     {
         /* Paint teammates and allies ships with last life in teamLWColorRGBA */
         if (BIT(Setup->mode, LIMITED_LIVES) && (other->life == 0))
@@ -1420,13 +1420,13 @@ static int Gui_calculate_ship_color(int id, other_t *other)
     if (BIT(Setup->mode, LIMITED_LIVES))
     {
         /* Paint your ship in selfLWColorRGBA when on last life */
-        if (eyes != NULL && eyes->id == id && eyes->life == 0)
+        if (eyes != nullptr && eyes->id == id && eyes->life == 0)
         {
             ship_color = selfLWColorRGBA;
         }
 
         /* Paint enemy ships with last life in enemyLWColorRGBA */
-        if (eyes != NULL && eyes->id != id && other != NULL && eyeTeam != other->team && other->life == 0)
+        if (eyes != nullptr && eyes->id != id && other != nullptr && eyeTeam != other->team && other->life == 0)
         {
             ship_color = enemyLWColorRGBA;
         }
@@ -1476,9 +1476,9 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
     if (!(color = Gui_calculate_ship_color(id, other)))
         return;
 
-    if ((!instruments.showShipShapes) && (self != NULL) && (self->id != id))
+    if ((!instruments.showShipShapes) && (self != nullptr) && (self->id != id))
         ship = Default_ship();
-    else if ((!instruments.showMyShipShape) && (self != NULL) && (self->id == id))
+    else if ((!instruments.showMyShipShape) && (self != nullptr) && (self->id == id))
         ship = Default_ship();
     else
         ship = Ship_by_id(id);
@@ -1489,11 +1489,11 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
     }
     if (texturedShips)
     {
-        if (BIT(Setup->mode, TEAM_PLAY) && other != NULL && self != NULL && self->team == other->team)
+        if (BIT(Setup->mode, TEAM_PLAY) && other != nullptr && self != nullptr && self->team == other->team)
         {
             img = IMG_SHIP_FRIEND;
         }
-        else if (self != NULL && self->id != id)
+        else if (self != nullptr && self->id != id)
         {
             img = IMG_SHIP_ENEMY;
         }
@@ -1535,7 +1535,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
     }
-    if (self != NULL && self->id != id && other != NULL)
+    if (self != nullptr && self->id != id && other != nullptr)
         Gui_paint_ship_name(x, y, other);
 }
 
@@ -1793,7 +1793,7 @@ static void Paint_lock(int hud_pos_x, int hud_pos_y)
     other_t *target;
     const int BORDER = 2;
 
-    if ((target = Other_by_id(lock_id)) == NULL)
+    if ((target = Other_by_id(lock_id)) == nullptr)
         return;
 
     if (hudColorRGBA)
@@ -2271,11 +2271,11 @@ struct alert_timeout_struct
     double timeout;
     alert_timeout *next;
 };
-static alert_timeout *alert_timeout_list = NULL;
+static alert_timeout *alert_timeout_list = nullptr;
 
 void Add_alert_message(const char *message, double timeout)
 {
-    GLWidget *tmp = NULL;
+    GLWidget *tmp = nullptr;
     alert_timeout *tol;
 
     tmp = Init_LabelWidget(message, &whiteRGBA, &nullRGBA, CENTER, CENTER);
@@ -2313,7 +2313,7 @@ void Clear_alert_messages(void)
     while (dummy)
     {
         tmp = ListWidget_GetItemByIndex(list, 0);
-        if (tmp == NULL)
+        if (tmp == nullptr)
             break;
         dummy = ListWidget_Remove(list, tmp);
     }
@@ -2323,13 +2323,13 @@ void Paint_messages(void)
 {
     static int old_maxMessages = 0;
     static message_t **msgs[2];
-    static GLWidget *msg_list[2] = {NULL, NULL};
+    static GLWidget *msg_list[2] = {nullptr, nullptr};
     static bool showMessages = true;
 
     int j, i = 0;
     Uint32 *msg_color;
     /*const int BORDER = 10;*/
-    GLWidget *tmp = NULL, *tmp2 = NULL;
+    GLWidget *tmp = nullptr, *tmp2 = nullptr;
     LabelWidget *wi;
     message_t *msg;
 
@@ -2355,7 +2355,7 @@ void Paint_messages(void)
     if (maxMessages < old_maxMessages)
     {
         for (i = 0; i < 2; ++i)
-            while ((tmp = ListWidget_GetItemByIndex(msg_list[i], maxMessages)) != NULL)
+            while ((tmp = ListWidget_GetItemByIndex(msg_list[i], maxMessages)) != nullptr)
             {
                 ListWidget_Remove(msg_list[i], tmp);
                 Close_Widget(&tmp);
@@ -2389,7 +2389,7 @@ void Paint_messages(void)
         for (j = 0; j <= maxMessages - 1; ++j)
         {
             msg = (msgs[i])[j];
-            tmp = tmp2 = NULL;
+            tmp = tmp2 = nullptr;
 
             if ((msg->lifeTime -= timePerFrame) <= 0.0)
             {
@@ -2398,7 +2398,7 @@ void Paint_messages(void)
                 msg->lifeTime = 0.0;
             }
 
-            if ((tmp = ListWidget_GetItemByIndex(msg_list[i], j)) != NULL)
+            if ((tmp = ListWidget_GetItemByIndex(msg_list[i], j)) != nullptr)
             {
                 if (!(wi = (LabelWidget *)tmp->wid_info))
                 {
@@ -2490,7 +2490,7 @@ static bool set_rgba_color_option(xp_option_t *opt, const char *val)
     assert(val);
     if (*val != '#')
         return false;
-    c = strtoul(val + 1, NULL, 16) & 0xffffffff;
+    c = strtoul(val + 1, nullptr, 16) & 0xffffffff;
     *((int *)Option_get_private_data(opt)) = c;
     return true;
 }
@@ -2505,7 +2505,7 @@ static const char *get_rgba_color_option(xp_option_t *opt)
 #define COLOR(variable, defval, description)   \
     XP_STRING_OPTION(#variable,                \
                      defval,                   \
-                     NULL,                     \
+                     nullptr,                  \
                      0,                        \
                      set_rgba_color_option,    \
                      &variable,                \
@@ -2584,7 +2584,7 @@ static xp_option_t sdlgui_options[] = {
         "meterWidth",
         60, 0, 600,
         &meterWidth,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Set the width of the meters.\n"),
 
@@ -2592,7 +2592,7 @@ static xp_option_t sdlgui_options[] = {
         "meterHeight",
         10, 0, 100,
         &meterHeight,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Set the height of a meter.\n"),
 
@@ -2600,7 +2600,7 @@ static xp_option_t sdlgui_options[] = {
         "shipLineWidth",
         1.0, 1.0, 10.0,
         &shipLineWidth,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Set the line width of ships.\n"),
 
@@ -2608,7 +2608,7 @@ static xp_option_t sdlgui_options[] = {
         "smoothLines",
         true,
         &smoothLines,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Use antialized smooth lines.\n"),
 
@@ -2616,7 +2616,7 @@ static xp_option_t sdlgui_options[] = {
         "texturedBalls",
         true,
         &texturedBalls,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Draw balls with textures.\n"),
 
@@ -2624,7 +2624,7 @@ static xp_option_t sdlgui_options[] = {
         "texturedShips",
         true,
         &texturedShips,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Draw ships with textures.\n"),
 
@@ -2632,7 +2632,7 @@ static xp_option_t sdlgui_options[] = {
         "hudRadarEnemyShape",
         2, 1, 7,
         &hudRadarEnemyShape,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The shape of enemy ships on hud radar.\n"),
 
@@ -2640,7 +2640,7 @@ static xp_option_t sdlgui_options[] = {
         "hudRadarOtherShape",
         2, 1, 7,
         &hudRadarOtherShape,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The shape of friendly ships on hud radar.\n"),
 
@@ -2648,7 +2648,7 @@ static xp_option_t sdlgui_options[] = {
         "hudRadarObjectShape",
         0, 0, 7,
         &hudRadarObjectShape,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The shape of small objects on hud radar.\n")};
 

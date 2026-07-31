@@ -400,7 +400,7 @@ void Tank_handle_detach(player_t *pl)
     Init_player(NumPlayers,
                 options.allowShipShapes
                     ? Parse_shape_str(options.tankShipShape)
-                    : NULL,
+                    : nullptr,
                 PL_TYPE_TANK);
 
     /* Released tanks don't have tanks... */
@@ -505,7 +505,7 @@ void Tank_handle_detach(player_t *pl)
     {
         player_t *pl_i = Player_by_index(i);
 
-        if (pl_i->conn != NULL)
+        if (pl_i->conn != nullptr)
         {
             Send_player(pl_i->conn, tank->id);
             Send_score(pl_i->conn, tank->id, tank->score,
@@ -582,7 +582,7 @@ void Make_debris(clpos_t pos,
         double speed, dx, dy, diroff;
         int dir, dirplus;
 
-        if ((debris = Object_allocate()) == NULL)
+        if ((debris = Object_allocate()) == nullptr)
             break;
 
         debris->color = color;
@@ -681,7 +681,7 @@ void Make_wreckage(clpos_t pos,
             break;
 
         /* Allocate object */
-        if ((wreckage = WIRE_PTR(Object_allocate())) == NULL)
+        if ((wreckage = WIRE_PTR(Object_allocate())) == nullptr)
             break;
 
         wreckage->color = WHITE;

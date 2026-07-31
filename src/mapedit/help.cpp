@@ -108,47 +108,47 @@ void BuildHelpForm(Window win, int helppage)
         T_FormButton(win, "help_zoom_in",
                      (int)(HELP_WIDTH * .65 - 10 - HELP_BTN_WIDTH),
                      (int)(100 + 3 * HELP_BTN_HEIGHT + .2 * HELP_WIDTH),
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Z", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Z", nullptr);
         T_FormButton(win, "help_zoom_out",
                      (int)(HELP_WIDTH * .65 + 10),
                      (int)(100 + 3 * HELP_BTN_HEIGHT + .2 * HELP_WIDTH),
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "z", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "z", nullptr);
         T_FormButton(win, "help_prefs",
                      10, (int)(120 + 3 * HELP_BTN_HEIGHT + .3 * HELP_WIDTH),
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Prefs", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Prefs", nullptr);
         T_FormButton(win, "help_help",
                      10, (int)(200 + 4 * HELP_BTN_HEIGHT + .3 * HELP_WIDTH),
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Help", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Help", nullptr);
         break;
 
     case 2:
         T_FormButton(win, "help_load", 10, 10,
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Load", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Load", nullptr);
         T_FormButton(win, "help_save", 10, 40 + HELP_BTN_HEIGHT,
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Save", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Save", nullptr);
         T_FormButton(win, "help_new", 10, 70 + 2 * HELP_BTN_HEIGHT,
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "New", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "New", nullptr);
         T_FormButton(win, "help_quit", 10, 100 + 3 * HELP_BTN_HEIGHT,
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Quit", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Quit", nullptr);
         T_FormButton(win, "help_cut", 10, 170 + 4 * HELP_BTN_HEIGHT,
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Cut", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Cut", nullptr);
         T_FormButton(win, "help_copy", 10, 200 + 5 * HELP_BTN_HEIGHT,
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Copy", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Copy", nullptr);
         T_FormButton(win, "help_paste", 10, 230 + 6 * HELP_BTN_HEIGHT,
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Paste", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Paste", nullptr);
         T_FormButton(win, "help_undo", 10, 260 + 7 * HELP_BTN_HEIGHT,
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Undo", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Undo", nullptr);
         break;
 
     case 3:
         T_FormButton(win, "help_round", 10, 10,
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Round", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Round", nullptr);
         T_FormButton(win, "help_fill", 10, 40 + HELP_BTN_HEIGHT,
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Fill", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Fill", nullptr);
         T_FormButton(win, "help_grow", 10, 70 + 2 * HELP_BTN_HEIGHT,
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Grow", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Grow", nullptr);
         T_FormButton(win, "help_neg", 10, 100 + 3 * HELP_BTN_HEIGHT,
-                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Neg.", NULL);
+                     HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Neg.", nullptr);
         break;
     }
 }

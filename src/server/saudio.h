@@ -39,7 +39,7 @@
 /*
  * Define like this to avoid having to put #ifdef SOUND all over the place.
  */
-#define sound_player_init(pl) ((pl)->audio = NULL)
+#define sound_player_init(pl) ((pl)->audio = nullptr)
 #define sound_player_on(pl, on)
 #define sound_play_player(pl, index)
 #define sound_play_all(index)

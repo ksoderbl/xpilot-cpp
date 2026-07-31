@@ -70,16 +70,16 @@
 /*
  * Functions and variables for recording
  */
-static char *record_filename = NULL;   /* Name of recordfile. */
-static FILE *recordFP = NULL;          /* File handle for writing
-                                        * recording frames to. */
-bool recording = false;                /* Are we recording or not. */
-static bool record_start = false;      /* Should we start recording
-                                        * at the next frame. */
-static int record_frame_count = 0;     /* How many recorded frames. */
-static const char *record_dashes;      /* Which dash list to use. */
-static int record_num_dashes;          /* How big is dashes list. */
-static bool record_dash_dirty = false; /* Has dashes list changed? */
+static char *record_filename = nullptr; /* Name of recordfile. */
+static FILE *recordFP = nullptr;        /* File handle for writing
+                                         * recording frames to. */
+bool recording = false;                 /* Are we recording or not. */
+static bool record_start = false;       /* Should we start recording
+                                         * at the next frame. */
+static int record_frame_count = 0;      /* How many recorded frames. */
+static const char *record_dashes;       /* Which dash list to use. */
+static int record_num_dashes;           /* How big is dashes list. */
+static bool record_dash_dirty = false;  /* Has dashes list changed? */
 
 /*
  * Dummy functions for "recordable drawing" interface, when not recording.
@@ -129,7 +129,7 @@ static void WriteHeader(void)
 
     time(&t);
     strlcpy(buf, ctime(&t), sizeof(buf));
-    if ((ptr = strchr(buf, '\n')) != NULL)
+    if ((ptr = strchr(buf, '\n')) != nullptr)
         *ptr = '\0';
 
     hdr.recorddate = std::string(buf);
@@ -183,7 +183,7 @@ static XImage *Image_from_pixmap(Pixmap pixmap)
                       &border_width, &depth))
     {
         error("Can't get pixmap geometry");
-        return NULL;
+        return nullptr;
     }
     img = XGetImage(dpy, pixmap,
                     0, 0,
@@ -192,7 +192,7 @@ static XImage *Image_from_pixmap(Pixmap pixmap)
     if (!img)
     {
         error("Can't get Image from Pixmap");
-        return NULL;
+        return nullptr;
     }
     return img;
 }
@@ -205,13 +205,13 @@ static void RWriteTile(Pixmap tile)
         Pixmap tile;
         uint8_t tile_id;
     } tile_list_t;
-    static tile_list_t *list = NULL;
+    static tile_list_t *list = nullptr;
     tile_list_t *lptr;
     static int next_tile_id = 1;
     int x, y, i;
     XImage *img;
 
-    for (lptr = list; lptr != NULL; lptr = lptr->next)
+    for (lptr = list; lptr != nullptr; lptr = lptr->next)
     {
         if (lptr->tile == tile)
         {
@@ -823,7 +823,7 @@ struct recordable_drawing rd = Xdrawing;
  */
 long Record_size(void)
 {
-    return (recordFP != NULL) ? ftell(recordFP) : 0L;
+    return (recordFP != nullptr) ? ftell(recordFP) : 0L;
 }
 
 /*
@@ -837,21 +837,21 @@ void Record_toggle(void)
 {
     warn("Record_toggle called!");
 
-    if (record_filename != NULL && strlen(record_filename) > 0)
+    if (record_filename != nullptr && strlen(record_filename) > 0)
     {
         if (!record_start)
         {
             record_start = true;
             if (!recordFP)
             {
-                if ((recordFP = fopen(record_filename, "w")) == NULL)
+                if ((recordFP = fopen(record_filename, "w")) == nullptr)
                 {
                     warn("%s: %s", record_filename, strerror(errno));
                     XFREE(record_filename);
                     record_start = false;
                 }
                 else
-                    setvbuf(recordFP, NULL, _IOFBF, (size_t)(8 * 1024));
+                    setvbuf(recordFP, nullptr, _IOFBF, (size_t)(8 * 1024));
             }
         }
         else
@@ -873,7 +873,7 @@ void Record_toggle(void)
  */
 void Record_cleanup(void)
 {
-    if (record_filename != NULL && record_frame_count > 0)
+    if (record_filename != nullptr && record_frame_count > 0)
     {
         long pos = ftell(recordFP);
 
@@ -893,7 +893,7 @@ void Record_cleanup(void)
 void Record_init(const char *filename)
 {
     rd = Xdrawing;
-    assert(filename != NULL);
+    assert(filename != nullptr);
     XFREE(record_filename);
     record_filename = xp_safe_strdup(filename);
 }
@@ -902,7 +902,7 @@ static bool setRecordFile(xp_option_t *opt, const char *value)
 {
     assert(value);
     /* Don't allow changing record file after file has been opened. */
-    if (recordFP != NULL)
+    if (recordFP != nullptr)
         return false;
     Record_init(value);
     return true;
@@ -918,8 +918,8 @@ xp_option_t record_options[] = {
     XP_STRING_OPTION(
         "recordFile",
         "",
-        NULL, 0,
-        setRecordFile, NULL, getRecordFile,
+        nullptr, 0,
+        setRecordFile, nullptr, getRecordFile,
         XP_OPTFLAG_DEFAULT,
         "An optional file where a recording of a game can be made.\n"
         "If this file is undefined then recording isn't possible.\n"),

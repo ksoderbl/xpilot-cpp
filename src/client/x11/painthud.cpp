@@ -324,7 +324,7 @@ static void Paint_lock(int hud_pos_x, int hud_pos_y)
     /*
      * Display direction arrow and miscellaneous target information.
      */
-    if ((target = Other_by_id(lock_id)) == NULL)
+    if ((target = Other_by_id(lock_id)) == nullptr)
         return;
     FIND_NAME_WIDTH(target);
     rd.drawString(dpy, drawPixmap, gameGC,
@@ -378,7 +378,7 @@ static void Paint_lock(int hud_pos_x, int hud_pos_y)
 
             if (size == 0)
                 size = 1;
-            if (self != NULL && ((self->team == target->team && BIT(Setup->mode, TEAM_PLAY)) || (self->alliance != ' ' && self->alliance == target->alliance)))
+            if (self != nullptr && ((self->team == target->team && BIT(Setup->mode, TEAM_PLAY)) || (self->alliance != ' ' && self->alliance == target->alliance)))
                 Arc_add(hudColor,
                         (int)(hud_pos_x + hudSize * 0.6 * tcos(lock_dir) - size * 0.5),
                         (int)(hud_pos_y - hudSize * 0.6 * tsin(lock_dir) - size * 0.5),
@@ -1088,11 +1088,11 @@ void Paint_messages(void)
              *   the middle of a line -> ptr2,ptr3 are needed to draw
              *   this line
              */
-            char *ptr = NULL;
+            char *ptr = nullptr;
             int xoff = 0, l = 0;
-            char *ptr2 = NULL;
+            char *ptr2 = nullptr;
             int xoff2 = 0, l2 = 0;
-            char *ptr3 = NULL;
+            char *ptr3 = nullptr;
             int xoff3 = 0, l3 = 0;
 
             if (i > selection.draw.y1 && i < selection.draw.y2)

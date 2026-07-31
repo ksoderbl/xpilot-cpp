@@ -105,7 +105,7 @@ static bool Set_userName(xp_option_t *opt, const char *value)
 
     /* hack - if nickname is not set, set nickname to username */
     if (strlen(connectParam.nick_name) == 0)
-        Set_nickName(NULL, connectParam.user_name);
+        Set_nickName(nullptr, connectParam.user_name);
 
     /*warn("User name set to \"%s\".\n", connectParam.user_name);*/
 
@@ -172,7 +172,7 @@ static bool Set_texturePath(xp_option_t *opt, const char *value)
 {
     XFREE(texturePath);
     texturePath = xp_safe_strdup(value);
-    if (realTexturePath == NULL)
+    if (realTexturePath == nullptr)
         realTexturePath = xp_safe_strdup(value);
     return true;
 }
@@ -185,8 +185,8 @@ static const char *Get_texturePath(xp_option_t *opt)
 /*
  * Ship shape option handling.
  */
-static char *shipShapeSetting = NULL;
-static char *shipShapeFile = NULL;
+static char *shipShapeSetting = nullptr;
+static char *shipShapeFile = nullptr;
 
 /*
  * This function trys to set the shipShape variable.
@@ -199,7 +199,7 @@ static void tryToSetShipShape(void)
 {
     bool is_shape = false, valid;
     FILE *fp;
-    char *ptr, *str, line[1024], *ss_candidate = NULL;
+    char *ptr, *str, line[1024], *ss_candidate = nullptr;
 
     /*
      * Let's allow overriding shipshape with another. E.g the first
@@ -208,7 +208,7 @@ static void tryToSetShipShape(void)
     XFREE(shipShape);
 
     /* If there is no shipShapeSetting, there is nothing we can do. */
-    if (shipShapeSetting == NULL || strlen(shipShapeSetting) == 0)
+    if (shipShapeSetting == nullptr || strlen(shipShapeSetting) == 0)
         return;
 
     /*
@@ -247,7 +247,7 @@ static void tryToSetShipShape(void)
 
     while (fgets(line, sizeof line, fp))
     {
-        if ((str = strstr(line, "(name:")) != NULL || (str = strstr(line, "(NM:")) != NULL)
+        if ((str = strstr(line, "(name:")) != nullptr || (str = strstr(line, "(NM:")) != nullptr)
         {
 
             str = strchr(str, ':');
@@ -255,12 +255,12 @@ static void tryToSetShipShape(void)
             while (*++str == ' ')
                 ;
 
-            if ((ptr = strchr(str, ')')) != NULL)
+            if ((ptr = strchr(str, ')')) != nullptr)
                 *ptr = '\0';
             if (!strcmp(str, shipShapeSetting))
             {
                 /* Gotcha */
-                if (ptr != NULL)
+                if (ptr != nullptr)
                     *ptr = ')';
                 ss_candidate = xp_safe_strdup(line);
                 break;
@@ -549,7 +549,7 @@ xp_option_t default_options[] = {
         "newbie",
         true,
         &newbie,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Enable newbie help.\n"),
 
@@ -589,7 +589,7 @@ xp_option_t default_options[] = {
         "",
         xpArgs.shutdown_reason,
         sizeof xpArgs.shutdown_reason,
-        NULL, NULL, NULL,
+        nullptr, nullptr, nullptr,
         XP_OPTFLAG_NEVER_SAVE,
         "Shutdown the server with a message.\n"
         "The message used is the first argument to this option.\n"),
@@ -597,24 +597,24 @@ xp_option_t default_options[] = {
     XP_STRING_OPTION(
         "name",
         "",
-        NULL, 0,
-        Set_nickName, NULL, Get_nickName,
+        nullptr, 0,
+        Set_nickName, nullptr, Get_nickName,
         XP_OPTFLAG_KEEP,
         "Set the nickname.\n"),
 
     XP_STRING_OPTION(
         "user",
         "",
-        NULL, 0,
-        Set_userName, NULL, Get_userName,
+        nullptr, 0,
+        Set_userName, nullptr, Get_userName,
         XP_OPTFLAG_KEEP,
         "Set the username.\n"),
 
     XP_STRING_OPTION(
         "host",
         "",
-        NULL, 0,
-        Set_hostName, NULL, Get_hostName,
+        nullptr, 0,
+        Set_hostName, nullptr, Get_hostName,
         XP_OPTFLAG_KEEP,
         "Set the hostname.\n"),
 
@@ -634,7 +634,7 @@ xp_option_t default_options[] = {
         0,
         65535,
         &connectParam.contact_port,
-        NULL,
+        nullptr,
         XP_OPTFLAG_KEEP,
         "Set the port number of the server.\n"
         "Almost all servers use the default port, which is the recommended\n"
@@ -647,7 +647,7 @@ xp_option_t default_options[] = {
         0,
         65535,
         &clientPortStart,
-        NULL,
+        nullptr,
         XP_OPTFLAG_KEEP,
         "Use UDP ports clientPortStart - clientPortEnd (for firewalls).\n"
         /* TODO: describe what value 0 means */),
@@ -658,7 +658,7 @@ xp_option_t default_options[] = {
         0,
         65535,
         &clientPortEnd,
-        NULL,
+        nullptr,
         XP_OPTFLAG_KEEP,
         "Use UDP ports clientPortStart - clientPortEnd (for firewalls).\n"),
 
@@ -746,7 +746,7 @@ xp_option_t default_options[] = {
         MIN_SPARK_SIZE,
         MAX_SPARK_SIZE,
         &sparkSize,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Size of sparks in pixels.\n"),
 
@@ -768,7 +768,7 @@ xp_option_t default_options[] = {
         1,
         SHIP_SZ,
         &hudRadarDotSize,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Which size to use for drawing the hudradar dots.\n"),
 
@@ -778,7 +778,7 @@ xp_option_t default_options[] = {
         0.5,
         4.0,
         &hudRadarScale,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The relative size of the hudradar.\n"),
 
@@ -788,7 +788,7 @@ xp_option_t default_options[] = {
         0.05,
         5.0,
         &hudRadarLimit,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Hudradar dots closer than this to your ship are not drawn.\n"
         "A value of 1.0 means that the dots are not drawn for ships in\n"
@@ -810,7 +810,7 @@ xp_option_t default_options[] = {
         0,
         3,
         &baseWarningType,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Which type of base warning you prefer.\n"
         "A value of 0 disables base warning.\n"
@@ -824,7 +824,7 @@ xp_option_t default_options[] = {
         0,
         MAX_NAME_LEN,
         &maxCharsInNames,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Maximum number of characters to paint in names on game area.\n"),
 
@@ -852,7 +852,7 @@ xp_option_t default_options[] = {
         "showShipShapes",
         true,
         &instruments.showShipShapes,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Should others' shipshapes be displayed or not.\n"),
 
@@ -860,7 +860,7 @@ xp_option_t default_options[] = {
         "showMyShipShape",
         true,
         &instruments.showMyShipShape,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Should your own shipshape be displayed or not.\n"),
 
@@ -868,7 +868,7 @@ xp_option_t default_options[] = {
         "showShipShapesHack",
         false,
         &instruments.showShipShapesHack,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Should the ship shapes hack be displayed or not.\n"),
 
@@ -876,7 +876,7 @@ xp_option_t default_options[] = {
         "showLivesByShip",
         false,
         &instruments.showLivesByShip,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Paint remaining lives next to ships.\n"),
 
@@ -884,7 +884,7 @@ xp_option_t default_options[] = {
         "showMessages",
         true,
         &instruments.showMessages,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Should game messages appear on screen.\n"),
 
@@ -892,7 +892,7 @@ xp_option_t default_options[] = {
         "showItems",
         true,
         &instruments.showItems,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Should owned items be displayed permanently on the HUD?\n"),
 
@@ -902,7 +902,7 @@ xp_option_t default_options[] = {
         MIN_SHOW_ITEMS_TIME,
         MAX_SHOW_ITEMS_TIME,
         &showItemsTime,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "If showItems is false, the time in seconds to display item\n"
         "information on the HUD when it has changed.\n"),
@@ -929,8 +929,8 @@ xp_option_t default_options[] = {
     XP_STRING_OPTION(
         "protocolVersion",
         "",
-        NULL, 0,
-        Set_protocolVersion, NULL, Get_protocolVersion,
+        nullptr, 0,
+        Set_protocolVersion, nullptr, Get_protocolVersion,
         XP_OPTFLAG_KEEP,
         "Which protocol version to prefer when joining servers.\n"),
 
@@ -955,7 +955,7 @@ xp_option_t default_options[] = {
         "outlineDecor",
         false,
         &instruments.outlineDecor,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Draws only the outline of the map decoration.\n"),
 
@@ -963,7 +963,7 @@ xp_option_t default_options[] = {
         "filledDecor",
         false,
         &instruments.filledDecor,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Draws filled decorations.\n"),
 
@@ -971,7 +971,7 @@ xp_option_t default_options[] = {
         "texturedDecor",
         false,
         &instruments.texturedDecor,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Draws the map decoration filled with a texture pattern.\n"),
 
@@ -979,7 +979,7 @@ xp_option_t default_options[] = {
         "clientRanker",
         false,
         &instruments.clientRanker,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Scan messages and make personal kill/death ranking.\n"),
 
@@ -987,7 +987,7 @@ xp_option_t default_options[] = {
         "clockAMPM",
         false,
         &instruments.clockAMPM,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Use AMPM format for clock display instead of 24 hour format.\n"),
 
@@ -997,7 +997,7 @@ xp_option_t default_options[] = {
         MIN_SHOT_SIZE,
         MAX_SHOT_SIZE,
         &shotSize,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The size of shots in pixels.\n"),
 
@@ -1007,7 +1007,7 @@ xp_option_t default_options[] = {
         MIN_TEAMSHOT_SIZE,
         MAX_TEAMSHOT_SIZE,
         &teamShotSize,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The size of team shots in pixels.\n"
         "Note that team shots are drawn in teamShotColor.\n"),
@@ -1040,7 +1040,7 @@ xp_option_t default_options[] = {
         0.0,
         10.0,
         &scoreObjectTime,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "How many seconds score objects remain visible on the map.\n"),
 
@@ -1050,7 +1050,7 @@ xp_option_t default_options[] = {
         10,
         255,
         &charsPerSecond,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Rate at which messages appear on screen in characters per second.\n"),
 
@@ -1060,7 +1060,7 @@ xp_option_t default_options[] = {
         1,
         MAX_MSGS,
         &maxMessages,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The maximum number of messages to display at the same time.\n"),
 
@@ -1070,7 +1070,7 @@ xp_option_t default_options[] = {
         0,
         2,
         &messagesToStdout,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Send messages to standard output.\n"
         "0: Don't.\n"
@@ -1083,7 +1083,7 @@ xp_option_t default_options[] = {
         1,
         MAX_HIST_MSGS,
         &maxLinesInHistory,
-        NULL,
+        nullptr,
         XP_OPTFLAG_DEFAULT,
         "Number of your messages saved in the 'history' of the talk window.\n"
         "'history' is accessible with 'keyTalkCursorUp/Down'.\n"),
@@ -1110,7 +1110,7 @@ xp_option_t default_options[] = {
         0.0,
         1000.0,
         &fuelNotify,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The limit when the HUD fuel bar will become visible.\n"),
 
@@ -1120,7 +1120,7 @@ xp_option_t default_options[] = {
         0.0,
         1000.0,
         &fuelWarning,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The limit when the HUD fuel bar will start flashing.\n"),
 
@@ -1130,7 +1130,7 @@ xp_option_t default_options[] = {
         0.0,
         1000.0,
         &fuelCritical,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The limit when the HUD fuel bar will flash faster.\n"),
 
@@ -1140,7 +1140,7 @@ xp_option_t default_options[] = {
         -10.0,
         +10.0,
         &hud_move_fact,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "How much to move HUD to indicate the current velocity.\n"),
 
@@ -1150,7 +1150,7 @@ xp_option_t default_options[] = {
         -10.0,
         +10.0,
         &ptr_move_fact,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Uses a red line to indicate the current velocity and direction.\n"),
 
@@ -1160,7 +1160,7 @@ xp_option_t default_options[] = {
         0,
         2,
         &showScoreDecimals,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The number of decimals to use when displaying scores.\n"),
 
@@ -1205,7 +1205,7 @@ xp_option_t default_options[] = {
     MIN_RECEIVE_WINDOW_SIZE,
     MAX_RECEIVE_WINDOW_SIZE,
     &receive_window_size,
-    NULL,
+    nullptr,
     XP_OPTFLAG_DEFAULT,
     "Too complicated.  Keep it on 3.\n"),
 #endif
@@ -1214,7 +1214,7 @@ xp_option_t default_options[] = {
         "markingLights",
         false,
         &markingLights,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Should the fighters have marking lights, just like airplanes?\n"),
 
@@ -1222,7 +1222,7 @@ xp_option_t default_options[] = {
         "modifierBank1",
         "",
         modBankStr[0], sizeof modBankStr[0],
-        NULL, NULL, NULL, /* kps - add set and get functions */
+        nullptr, nullptr, nullptr, /* kps - add set and get functions */
         XP_OPTFLAG_DEFAULT,
         "The default weapon modifier values for the first modifier bank.\n"),
 
@@ -1230,7 +1230,7 @@ xp_option_t default_options[] = {
         "modifierBank2",
         "",
         modBankStr[1], sizeof modBankStr[1],
-        NULL, NULL, NULL,
+        nullptr, nullptr, nullptr,
         XP_OPTFLAG_DEFAULT,
         "The default weapon modifier values for the second modifier bank.\n"),
 
@@ -1238,7 +1238,7 @@ xp_option_t default_options[] = {
         "modifierBank3",
         "",
         modBankStr[2], sizeof modBankStr[2],
-        NULL, NULL, NULL,
+        nullptr, nullptr, nullptr,
         XP_OPTFLAG_DEFAULT,
         "The default weapon modifier values for the third modifier bank.\n"),
 
@@ -1246,15 +1246,15 @@ xp_option_t default_options[] = {
         "modifierBank4",
         "",
         modBankStr[3], sizeof modBankStr[3],
-        NULL, NULL, NULL,
+        nullptr, nullptr, nullptr,
         XP_OPTFLAG_DEFAULT,
         "The default weapon modifier values for the fourth modifier bank.\n"),
 
     XP_STRING_OPTION(
         "shipShape",
         "",
-        NULL, 0,
-        Set_shipShape, NULL, Get_shipShape,
+        nullptr, 0,
+        Set_shipShape, nullptr, Get_shipShape,
         XP_OPTFLAG_DEFAULT,
         "Define the ship shape to use.  Because the argument to this option\n"
         "is rather large (up to 500 bytes) the recommended way to set\n"
@@ -1268,8 +1268,8 @@ xp_option_t default_options[] = {
     XP_STRING_OPTION(
         "shipShapeFile",
         CONF_SHIP_FILE,
-        NULL, 0,
-        Set_shipShapeFile, NULL, Get_shipShapeFile,
+        nullptr, 0,
+        Set_shipShapeFile, nullptr, Get_shipShapeFile,
         XP_OPTFLAG_DEFAULT,
         "An optional file where shipshapes can be stored.\n"
         "If this resource is defined and it refers to an existing file\n"
@@ -1287,8 +1287,8 @@ xp_option_t default_options[] = {
     XP_STRING_OPTION(
         "texturePath",
         CONF_TEXTUREDIR,
-        NULL, 0,
-        Set_texturePath, NULL, Get_texturePath,
+        nullptr, 0,
+        Set_texturePath, nullptr, Get_texturePath,
         XP_OPTFLAG_KEEP,
         "Search path for texture files.\n"
         "This is a list of one or more directories separated by colons.\n"),
@@ -1299,7 +1299,7 @@ xp_option_t default_options[] = {
     "threadedDraw",
     false,
     &ThreadedDraw,
-    NULL,
+    nullptr,
     XP_OPTFLAG_CONFIG_DEFAULT,
     "Tell Windows to do the heavy BitBlt in another thread\n"),
 
@@ -1309,7 +1309,7 @@ xp_option_t default_options[] = {
     1,
     100,
     &RadarDivisor,
-    NULL,
+    nullptr,
     XP_OPTFLAG_CONFIG_DEFAULT,
     "Specifies how many frames between radar window updates.\n"),
 #endif
@@ -1319,7 +1319,7 @@ xp_option_t default_options[] = {
 //     "",
 //     clientRankFile,
 //     sizeof clientRankFile,
-//     NULL, NULL, NULL,
+//     nullptr, nullptr, nullptr,
 //     XP_OPTFLAG_DEFAULT,
 //     "An optional file where clientside kill/death rank is stored.\n"),
 
@@ -1328,7 +1328,7 @@ xp_option_t default_options[] = {
 //     "",
 //     clientRankHTMLFile,
 //     sizeof clientRankHTMLFile,
-//     NULL, NULL, NULL,
+//     nullptr, nullptr, nullptr,
 //     XP_OPTFLAG_DEFAULT,
 //     "An optional file where clientside kill/death rank is\n"
 //     "published in HTML format.\n"),
@@ -1338,7 +1338,7 @@ xp_option_t default_options[] = {
 //     "",
 //     clientRankHTMLNOJSFile,
 //     sizeof clientRankHTMLNOJSFile,
-//     NULL, NULL, NULL,
+//     nullptr, nullptr, nullptr,
 //     XP_OPTFLAG_DEFAULT,
 //     "An optional file where clientside kill/death rank is\n"
 //     "published in HTML format, w/o JavaScript.\n"),
@@ -1348,7 +1348,7 @@ xp_option_t default_options[] = {
         "soundFile",
         CONF_SOUNDFILE,
         soundFile, sizeof soundFile,
-        NULL, NULL, NULL,
+        nullptr, nullptr, nullptr,
         XP_OPTFLAG_DEFAULT,
         "Specifies the sound file.\n"),
 
@@ -1358,7 +1358,7 @@ xp_option_t default_options[] = {
         0,
         100,
         &maxVolume,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Specifies the volume to play sounds with (0-100%%).\n"),
 
@@ -1366,7 +1366,7 @@ xp_option_t default_options[] = {
         "sound",
         true,
         &sound,
-        NULL,
+        nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Is sound enabled? (set to false to mute client).\n"),
 #endif

@@ -38,7 +38,7 @@ void command_handler(ConsoleInformation *, char *);
 
 static void Console_refresh(void)
 {
-    SDL_FillRect(console_window.surface, NULL, 0);
+    SDL_FillRect(console_window.surface, nullptr, 0);
     CON_UpdateConsole(console);
     CON_DrawConsole(console);
     sdl_window_refresh(&console_window);
@@ -63,7 +63,7 @@ int Console_init(void)
     }
 
     console = CON_Init(CONF_FONTDIR "ConsoleFont.bmp", console_window.surface, 100, cr);
-    if (console == NULL)
+    if (console == nullptr)
     {
         error("failed to init SDL_console");
         sdl_window_destroy(&console_window);
@@ -119,7 +119,7 @@ int Console_isVisible(void)
 
 int Console_process(SDL_Event *e)
 {
-    if (CON_Events(e) == NULL)
+    if (CON_Events(e) == nullptr)
     {
         Console_refresh();
         return 1;

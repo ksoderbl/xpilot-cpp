@@ -55,8 +55,8 @@ static unsigned long background = 0,
                      topshadow = 0,
                      bottomshadow = 0,
                      black = 0;
-static Button buttonhead = NULL, buttontail = NULL;
-static XFontStruct *buttonFont = NULL;
+static Button buttonhead = nullptr, buttontail = nullptr;
+static XFontStruct *buttonFont = nullptr;
 
 void SetGlobalButtonAttributes(unsigned long bg,
                                unsigned long ts,
@@ -68,7 +68,7 @@ void SetGlobalButtonAttributes(unsigned long bg,
 
     if (background != bg)
     {
-        for (b = buttonhead; b != NULL; b = b->next)
+        for (b = buttonhead; b != nullptr; b = b->next)
             XSetWindowBackground(b->display, b->window, bg);
         background = bg;
         flag = 1;
@@ -80,7 +80,7 @@ void SetGlobalButtonAttributes(unsigned long bg,
     bottomshadow = bs;
     black = bl;
     if (flag)
-        for (b = buttonhead; b != NULL; b = b->next)
+        for (b = buttonhead; b != nullptr; b = b->next)
             RedrawButton(b);
 }
 
@@ -88,7 +88,7 @@ static void SetButtonFont(Display *display)
 {
     if ((buttonFont =
              XLoadQueryFont(display,
-                            "-*-helvetica-bold-r-*--14-*-*-*-*-*-*-*")) == NULL)
+                            "-*-helvetica-bold-r-*--14-*-*-*-*-*-*-*")) == nullptr)
         buttonFont = XQueryFont(display, XGContextFromGC(DefaultGC(display,
                                                                    DefaultScreen(display))));
 }
@@ -109,7 +109,7 @@ Button CreateButton(Display *display, Window parent,
 
     if ((width == 0 || height == 0) && (flags & BUTTON_TEXT))
     {
-        if (buttonFont == NULL)
+        if (buttonFont == nullptr)
             SetButtonFont(display);
         if (width == 0)
             width = XTextWidth(buttonFont, image.string,
@@ -137,9 +137,9 @@ Button CreateButton(Display *display, Window parent,
     b->group = group;
     b->callback = callback;
     b->data = data;
-    b->next = NULL;
+    b->next = nullptr;
 
-    if (buttontail == NULL)
+    if (buttontail == nullptr)
         buttonhead = buttontail = b;
     else
     {
@@ -161,7 +161,7 @@ static void ReleaseButtons(Button b)
 
     if (b->group != 0)
     {
-        for (c = buttonhead; c != NULL; c = c->next)
+        for (c = buttonhead; c != nullptr; c = c->next)
             if (c->group == b->group && c != b && (c->flags & BUTTON_PRESSED))
             {
                 c->flags &= ~BUTTON_PRESSED;
@@ -184,7 +184,7 @@ static void PressButton(Button b)
 
     RedrawButton(b);
 
-    if (!(b->flags & BUTTON_RELEASE) && b->callback != NULL)
+    if (!(b->flags & BUTTON_RELEASE) && b->callback != nullptr)
         b->callback(b->data);
 }
 
@@ -199,7 +199,7 @@ static void ReleaseButton(Button b, Bool inwindow)
 
     RedrawButton(b);
 
-    if (inwindow && b->callback != NULL)
+    if (inwindow && b->callback != nullptr)
         b->callback(b->data);
 }
 
@@ -207,11 +207,11 @@ int CheckButtonEvent(XEvent *event)
 {
     Button b;
 
-    for (b = buttonhead; b != NULL; b = b->next)
+    for (b = buttonhead; b != nullptr; b = b->next)
         if (event->xany.window == b->window)
             break;
 
-    if (b == NULL)
+    if (b == nullptr)
         return (0);
 
     switch (event->type)
@@ -249,8 +249,8 @@ void RedrawButton(Button b)
 
     if (gc == 0)
     {
-        gc = XCreateGC(b->display, b->window, 0, NULL);
-        if (buttonFont == NULL)
+        gc = XCreateGC(b->display, b->window, 0, nullptr);
+        if (buttonFont == nullptr)
             SetButtonFont(b->display);
         XSetFont(b->display, gc, buttonFont->fid);
     }

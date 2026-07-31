@@ -176,14 +176,14 @@ static sdlkey_t sdlkeys[] = {
     /* SDL2 removed the old SDLK_WORLD_* key range; keep unmapped. */
     {"section", SDLK_UNKNOWN},
 
-    {NULL, SDLK_UNKNOWN},
+    {nullptr, SDLK_UNKNOWN},
 };
 
 SDL_Keycode Get_key_by_name(const char *name)
 {
     sdlkey_t *k;
 
-    for (k = &sdlkeys[0]; k->name != NULL; k++)
+    for (k = &sdlkeys[0]; k->name != nullptr; k++)
         if (!std::strcmp(name, k->name))
         {
             return k->key;
@@ -196,11 +196,11 @@ char *Get_name_by_key(SDL_Keycode key)
 {
     sdlkey_t *k;
 
-    for (k = &sdlkeys[0]; k->name != NULL; k++)
+    for (k = &sdlkeys[0]; k->name != nullptr; k++)
         if (key == k->key)
             return (char *)(k->name);
 
-    return NULL;
+    return nullptr;
 }
 
 xp_keysym_t String_to_xp_keysym(/*const*/ char *name)

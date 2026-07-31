@@ -52,13 +52,13 @@ message_t *TalkMsg_pending[MAX_MSGS], *GameMsg_pending[MAX_MSGS];
 char *HistoryMsg[MAX_HIST_MSGS];
 
 /* provide cut&paste and message history */
-static char *HistoryBlock = NULL;
+static char *HistoryBlock = nullptr;
 int maxLinesInHistory = 32;
 int maxMessages = 8;      /* Max. number of messages to display */
 int messagesToStdout = 0; /* Send messages to standard output */
 
-static message_t *MsgBlock = NULL;
-static message_t *MsgBlock_pending = NULL;
+static message_t *MsgBlock = nullptr;
+static message_t *MsgBlock_pending = nullptr;
 
 // TODO: move this to msg-parser.cpp
 /*
@@ -73,7 +73,7 @@ static bool Msg_is_from_our_team(const char *message, const char **msg2)
     size_t bufstrlen, len;
     int i;
 
-    if (self == NULL)
+    if (self == nullptr)
         return false;
 
     len = strlen(message);
@@ -112,18 +112,18 @@ static bool Msg_is_from_our_team(const char *message, const char **msg2)
 
 int Alloc_msgs(void)
 {
-    message_t *x, *x2 = NULL;
+    message_t *x, *x2 = nullptr;
     int i;
 
     x = XMALLOC(message_t, 2 * MAX_MSGS);
-    if (x == NULL)
+    if (x == nullptr)
     {
         error("No memory for messages");
         return -1;
     }
 
     x2 = XMALLOC(message_t, 2 * MAX_MSGS);
-    if (x2 == NULL)
+    if (x2 == nullptr)
     {
         error("No memory for history messages");
         free(x);
@@ -171,7 +171,7 @@ int Alloc_history(void)
 
     /* maxLinesInHistory is a runtime constant */
     hist_ptr = XMALLOC(char, (size_t)maxLinesInHistory *MAX_CHARS);
-    if (hist_ptr == NULL)
+    if (hist_ptr == nullptr)
     {
         error("No memory for history");
         return -1;

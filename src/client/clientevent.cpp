@@ -55,7 +55,7 @@ static uint8_t keyv_new[NUM_SERVER_KEYS];
 keys_t buttonDefs[MAX_POINTER_BUTTONS][MAX_BUTTON_DEFS + 1];
 
 char *pointerButtonBindings[MAX_POINTER_BUTTONS] =
-    {NULL, NULL, NULL, NULL, NULL};
+    {nullptr, nullptr, nullptr, nullptr, nullptr};
 
 static int Key_get_count(keys_t key);
 static bool Key_inc_count(keys_t key);
@@ -241,8 +241,8 @@ static bool Key_press_swap_scalefactor(void)
     // warn("Key_press_swap_scalefactor");
     double a = clData.altScaleFactor;
 
-    Set_altScaleFactor(NULL, clData.scaleFactor);
-    Set_scaleFactor(NULL, a);
+    Set_altScaleFactor(nullptr, clData.scaleFactor);
+    Set_scaleFactor(nullptr, a);
 
     return false;
 }
@@ -895,8 +895,8 @@ static bool setPointerButtonBinding(xp_option_t *opt, const char *value)
     valcpy = xp_safe_strdup(value);
 
     for (ptr = strtok(valcpy, " \t\r\n");
-         ptr != NULL;
-         ptr = strtok(NULL, " \t\r\n"))
+         ptr != nullptr;
+         ptr = strtok(nullptr, " \t\r\n"))
     {
         if (!strncasecmp(ptr, "key", 3))
             ptr += 3;
@@ -1569,40 +1569,40 @@ xp_option_t key_options[] = {
     XP_STRING_OPTION(
         "pointerButton1",
         "keyFireShot",
-        NULL, 0,
-        setPointerButtonBinding, NULL, getPointerButtonBinding,
+        nullptr, 0,
+        setPointerButtonBinding, nullptr, getPointerButtonBinding,
         XP_OPTFLAG_DEFAULT,
         "The keys to activate when pressing the first mouse button.\n"),
 
     XP_STRING_OPTION(
         "pointerButton2",
         "keyThrust",
-        NULL, 0,
-        setPointerButtonBinding, NULL, getPointerButtonBinding,
+        nullptr, 0,
+        setPointerButtonBinding, nullptr, getPointerButtonBinding,
         XP_OPTFLAG_DEFAULT,
         "The keys to activate when pressing the second mouse button.\n"),
 
     XP_STRING_OPTION(
         "pointerButton3",
         "keyThrust",
-        NULL, 0,
-        setPointerButtonBinding, NULL, getPointerButtonBinding,
+        nullptr, 0,
+        setPointerButtonBinding, nullptr, getPointerButtonBinding,
         XP_OPTFLAG_DEFAULT,
         "The keys to activate when pressing the third mouse button.\n"),
 
     XP_STRING_OPTION(
         "pointerButton4",
         "",
-        NULL, 0,
-        setPointerButtonBinding, NULL, getPointerButtonBinding,
+        nullptr, 0,
+        setPointerButtonBinding, nullptr, getPointerButtonBinding,
         XP_OPTFLAG_DEFAULT,
         "The keys to activate when pressing the fourth mouse button.\n"),
 
     XP_STRING_OPTION(
         "pointerButton5",
         "",
-        NULL, 0,
-        setPointerButtonBinding, NULL, getPointerButtonBinding,
+        nullptr, 0,
+        setPointerButtonBinding, nullptr, getPointerButtonBinding,
         XP_OPTFLAG_DEFAULT,
         "The keys to activate when pressing the fifth mouse button.\n"),
 };

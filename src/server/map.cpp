@@ -66,7 +66,7 @@ static void Find_base_order(void)
 
     if (!BIT(World.rules->mode, TIMING))
     {
-        World.baseorder = NULL;
+        World.baseorder = nullptr;
         return;
     }
     if ((n = Num_bases()) <= 0)
@@ -76,7 +76,7 @@ static void Find_base_order(void)
     }
 
     if ((World.baseorder = (baseorder_t *)
-             malloc(n * sizeof(baseorder_t))) == NULL)
+             malloc(n * sizeof(baseorder_t))) == nullptr)
     {
         error("Out of memory - baseorder");
         exit(-1);
@@ -345,7 +345,7 @@ int World_place_check(world_t *world, clpos_t pos, int ind)
 
     //     /*
     //      * kps hack - we can't use Check_by_index because it might return
-    //      * NULL since ind can here be >= World.NumChecks.
+    //      * nullptr since ind can here be >= World.NumChecks.
     //      */
     //     check = &World.checks[ind];
     //     if (World_contains_clpos(check->pos))
@@ -484,8 +484,8 @@ static bool World_alloc(void)
     vector_t *grav_line;
     vector_t **grav_pointer;
 
-    assert(World.block == NULL);
-    assert(World.gravity == NULL);
+    assert(World.block == nullptr);
+    assert(World.gravity == nullptr);
 
     World.block = (uint8_t **)
         malloc(sizeof(uint8_t *) * World.x + World.x * sizeof(uint8_t) * World.y);
@@ -494,7 +494,7 @@ static bool World_alloc(void)
     World.gravity = (vector_t **)
         malloc(sizeof(vector_t *) * World.x + World.x * sizeof(vector_t) * World.y);
 
-    if (World.block == NULL || World.itemID == NULL || World.gravity == NULL)
+    if (World.block == nullptr || World.itemID == nullptr || World.gravity == nullptr)
     {
         World_free();
         error("Couldn't allocate memory for map");
@@ -728,7 +728,7 @@ bool Grok_map(void)
             warn("mapWidth or mapHeight exceeds map size limit [1, %d]",
                  OLD_MAX_MAP_SIZE);
             free(options.mapData);
-            options.mapData = NULL;
+            options.mapData = nullptr;
         }
         else
         {

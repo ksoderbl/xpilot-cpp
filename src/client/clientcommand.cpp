@@ -105,7 +105,7 @@ static void print_help(const char *arg)
 
     /*Add_message(arg);*/
 
-    if (arg == NULL)
+    if (arg == nullptr)
     {
         for (i = 0; i < NELEM(c_commands); i += 2)
         {
@@ -176,7 +176,7 @@ static void ignorePlayer(const char *name, int level)
     other_t *other = Other_by_name(name, true);
     char buf[64 + MAX_NAME_LEN];
 
-    if (other != NULL)
+    if (other != nullptr)
     {
         if (level == 1)
         {
@@ -201,7 +201,7 @@ static void unignorePlayer(const char *name)
     other_t *other = Other_by_name(name, true);
     char buf[64 + MAX_NAME_LEN];
 
-    if (other != NULL)
+    if (other != nullptr)
     {
         snprintf(buf, sizeof(buf),
                  "Stopped ignoring %s. [*Client reply*]", other->nick_name);
@@ -214,7 +214,7 @@ void executeCommand(const char *talk_str)
 {
     int i, command_num;
     char str[MAX_CHARS];
-    char *command, *argument = NULL;
+    char *command, *argument = nullptr;
 
     assert(talk_str);
     if (strlen(talk_str) == 0)
@@ -240,7 +240,7 @@ void executeCommand(const char *talk_str)
     }
 
     /* argument can contains spaces, that's why we have "" and not " " */
-    argument = strtok(NULL, "");
+    argument = strtok(nullptr, "");
 
     command_num = i;
     switch (command_num)

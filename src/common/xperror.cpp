@@ -40,7 +40,7 @@ static const char *prog_basename(const char *prog)
 
     p = strrchr(prog, '/');
 
-    return (p != NULL) ? (p + 1) : prog;
+    return (p != nullptr) ? (p + 1) : prog;
 }
 
 /*

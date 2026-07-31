@@ -82,7 +82,7 @@ int DrawShadowText(Display *display, Window w, GC gc,
     int count = 1;
     XWindowAttributes wattr;
 
-    if (str == NULL || *str == '\0')
+    if (str == nullptr || *str == '\0')
         return 0;
 
     /* Get width of window */
@@ -134,7 +134,7 @@ int DrawShadowText(Display *display, Window w, GC gc,
 
     tmp = font->descent + 1;
 
-    XFreeFontInfo(NULL, font, count);
+    XFreeFontInfo(nullptr, font, count);
 
     return y + tmp;
 }
@@ -475,7 +475,7 @@ int Keys_callback(int widget_desc, void *data, const char **unused)
 
     for (i = 0; i < num_keydefs; i++)
     {
-        if ((str = XKeysymToString((KeySym)keydefs[i].keysym)) != NULL && (len = strlen(str)) > maxkeylen)
+        if ((str = XKeysymToString((KeySym)keydefs[i].keysym)) != nullptr && (len = strlen(str)) > maxkeylen)
         {
             maxkeylen = len;
         }
@@ -527,7 +527,7 @@ void Keys_destroy(void)
 
 #define MAX_MOTD_SIZE (30 * 1024)
 
-static char *motd_buf = NULL;
+static char *motd_buf = nullptr;
 static size_t motd_size;
 int motd_viewer = NO_WIDGET;
 static bool motd_auto_popup;

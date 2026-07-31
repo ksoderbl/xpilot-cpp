@@ -38,7 +38,7 @@ int grow_minx, grow_miny, grow_maxx, grow_maxy,
     grow_w, grow_h, grow_centerx, grow_centery,
     grow_filled = 0;
 double grow_xa = 1.0, grow_ya = 1.0;
-grow_t *grow = NULL;
+grow_t *grow = nullptr;
 
 int GrowMapArea(HandlerInfo_t info)
 {
@@ -54,13 +54,13 @@ int GrowMapArea(HandlerInfo_t info)
         DrawSelectArea();
         /* free grow structure */
         next = grow;
-        while (next != NULL)
+        while (next != nullptr)
         {
             delgrow = next->next;
             free(next);
             next = delgrow;
         }
-        grow = NULL;
+        grow = nullptr;
         return 0;
     }
 
@@ -128,13 +128,13 @@ int GrowMapArea(HandlerInfo_t info)
         }
 
         /* place a square in the center if there are none */
-        if (grow == NULL)
+        if (grow == nullptr)
         {
             ChangeMapData(grow_centerx, grow_centery, XPMAP_FILLED, 1);
             grow = (grow_t *)malloc(sizeof(grow_t));
             grow->x = grow_centerx;
             grow->y = grow_centery;
-            grow->next = NULL;
+            grow->next = nullptr;
             grow_filled = 1;
             if (grow_w > grow_h)
             {
@@ -154,7 +154,7 @@ int GrowMapArea(HandlerInfo_t info)
     {
         growat = rand() % (grow_filled - 1);
         next = grow;
-        while ((next != NULL) && (growat != 0))
+        while ((next != nullptr) && (growat != 0))
         {
             next = next->next;
             growat--;

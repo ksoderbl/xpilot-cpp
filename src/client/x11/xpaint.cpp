@@ -95,7 +95,7 @@ Window keys_close_b;  /* Help window's close button */
 Window talkWindow;
 bool gotFocus;
 
-keydefs_t *keyDefs = NULL;
+keydefs_t *keyDefs = nullptr;
 
 int spaceColor = BLACK;        /* Space (background) color index */
 static int clockColor;         /* Clock color index */
@@ -324,8 +324,8 @@ static void Paint_score_background(void)
     // warn("Paint_score_background: fullColor: %d", fullColor ? 1 : 0);
 
     if (fullColor &&
-        Bitmap_get(playersWindow, BM_SCORE_BG, 0) != NULL &&
-        Bitmap_get(playersWindow, BM_LOGO, 0) != NULL)
+        Bitmap_get(playersWindow, BM_SCORE_BG, 0) != nullptr &&
+        Bitmap_get(playersWindow, BM_LOGO, 0) != nullptr)
     {
         unsigned bgh, lh;
 

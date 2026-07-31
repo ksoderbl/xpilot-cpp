@@ -216,7 +216,7 @@ static void Robot_default_create(player_t *pl, char *str)
     my_data->robot_lock_id = 0;
     my_data->longterm_mode = 0;
 
-    if (str != NULL && *str != '\0' && sscanf(str, " %d %d", &my_data->attack, &my_data->defense) != 2)
+    if (str != nullptr && *str != '\0' && sscanf(str, " %d %d", &my_data->attack, &my_data->defense) != 2)
     {
         if (str && *str)
         {
@@ -1458,7 +1458,7 @@ static bool Ball_handler(player_t *pl)
     }
     if (BIT(pl->have, HAS_BALL) || pl->ball)
     {
-        ballobject_t *ball = NULL;
+        ballobject_t *ball = nullptr;
         blkpos_t bbpos;
         double dist_np = 1e19;
         int xdist, ydist, dx, dy;
@@ -1521,7 +1521,7 @@ static bool Ball_handler(player_t *pl)
         }
         if (tdir == bdir && dist_np > closest_tr_dist && clear_path && sqr(ball->vel.x) + sqr(ball->vel.y) > 60)
         {
-            Detach_ball(pl, NULL);
+            Detach_ball(pl, nullptr);
             CLR_BIT(pl->used, USES_CONNECTOR);
             my_data->last_thrown_ball = my_data->robot_count;
             CLR_BIT(my_data->longterm_mode, FETCH_TREASURE);
@@ -1959,7 +1959,7 @@ static void Robot_default_play(player_t *pl)
     int j, ship_i, item_imp, enemy_i, item_i, mine_i;
     bool harvest_checked, evade_checked, navigate_checked;
     robot_default_data_t *my_data = Robot_default_get_data(pl);
-    itemobject_t *item = NULL;
+    itemobject_t *item = nullptr;
 
     if (my_data->robot_count <= 0)
         my_data->robot_count = 1000 + (int)(rfrac() * 32);
@@ -2221,7 +2221,7 @@ static void Robot_default_play(player_t *pl)
     {
         int delta_dir;
 
-        if (item != NULL)
+        if (item != nullptr)
         {
             delta_dir = (int)(pl->dir - World_wrap_cfindDir(
                                             world,
@@ -2242,7 +2242,7 @@ static void Robot_default_play(player_t *pl)
                 return;
         }
     }
-    if (item != NULL && 3 * enemy_dist > 2 * item_dist && item_dist < 12 * BLOCK_SZ && !BIT(my_data->longterm_mode, FETCH_TREASURE) && (!BIT(my_data->longterm_mode, NEED_FUEL) || item->item_type == ITEM_FUEL || item->item_type == ITEM_TANK))
+    if (item != nullptr && 3 * enemy_dist > 2 * item_dist && item_dist < 12 * BLOCK_SZ && !BIT(my_data->longterm_mode, FETCH_TREASURE) && (!BIT(my_data->longterm_mode, NEED_FUEL) || item->item_type == ITEM_FUEL || item->item_type == ITEM_TANK))
     {
         if (item_imp != ROBOT_IGNORE_ITEM)
         {

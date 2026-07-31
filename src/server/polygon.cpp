@@ -77,7 +77,7 @@ static int Create_group(int type, int team, hitmask_t hitmask,
 
 void Groups_init(void)
 {
-    Create_group(FILLED, TEAM_NOT_SET, 0, NULL, NO_IND);
+    Create_group(FILLED, TEAM_NOT_SET, 0, nullptr, NO_IND);
     current_group = 0;
 }
 
@@ -274,7 +274,7 @@ int P_start_ballarea(void)
     return Create_group(TREASURE,
                         TEAM_NOT_SET,
                         BALL_BIT,
-                        NULL,
+                        nullptr,
                         NO_IND);
 }
 
@@ -304,7 +304,7 @@ int P_start_target(int target_ind)
     targ->group = Create_group(TARGET,
                                targ->team,
                                Target_hitmask(targ),
-                               NULL,
+                               nullptr,
                                target_ind);
     return targ->group;
 }

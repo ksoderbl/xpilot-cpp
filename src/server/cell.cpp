@@ -124,7 +124,7 @@ static void Init_cell_dist(void)
     cell_dist_size = cell_dist_width * cell_dist_height;
 
     cell_dist = XMALLOC(cell_dist_t, cell_dist_size);
-    if (cell_dist == NULL)
+    if (cell_dist == nullptr)
     {
         error("No cell dist mem");
         End_game();
@@ -314,8 +314,8 @@ void Cell_get_objects(clpos_t pos,
         }
     }
 
-    ObjectList[count] = NULL;
+    ObjectList[count] = nullptr;
     *obj_list = &ObjectList[0];
-    if (count_ptr != NULL)
+    if (count_ptr != nullptr)
         *count_ptr = count;
 }

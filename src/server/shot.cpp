@@ -236,7 +236,7 @@ void Place_general_mine(int id, int team, int status,
     {
         mineobject_t *mine;
 
-        if ((mine = MINE_PTR(Object_allocate())) == NULL)
+        if ((mine = MINE_PTR(Object_allocate())) == nullptr)
             break;
 
         mine->type = OBJ_MINE;
@@ -630,7 +630,7 @@ void Fire_general_shot(int id, int team, bool cannon,
 #ifndef HEAT_LOCK
             lock = NO_ID;
 #else  /* HEAT_LOCK */
-            if (pl == NULL)
+            if (pl == nullptr)
                 lock = target_id;
             else
             {
@@ -650,7 +650,7 @@ void Fire_general_shot(int id, int team, bool cannon,
             break;
 
         case OBJ_SMART_SHOT:
-            if (pl == NULL)
+            if (pl == nullptr)
                 lock = target_id;
             else
             {
@@ -923,7 +923,7 @@ void Fire_general_shot(int id, int team, bool cannon,
     {
         object_t *shot;
 
-        if ((shot = Object_allocate()) == NULL)
+        if ((shot = Object_allocate()) == nullptr)
             break;
 
         shot->obj_life = life / minis;
@@ -1177,7 +1177,7 @@ void Delete_shot(int ind)
                 player_t *pl_i = Player_by_index(i);
 
                 if (pl_i->ball == ball)
-                    pl_i->ball = NULL;
+                    pl_i->ball = nullptr;
             }
         }
         if (ball->ball_owner == NO_ID)
@@ -1678,7 +1678,7 @@ void Update_missile(missileobject_t *missile)
         /*NOTREACHED*/
         return;
 
-    /* kps - Player_by_id might return NULL. */
+    /* kps - Player_by_id might return nullptr. */
     if (!pl)
         return;
 

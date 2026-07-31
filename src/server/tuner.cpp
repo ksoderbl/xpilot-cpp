@@ -73,7 +73,7 @@ void tuner_maxrobots(void)
         options.minRobots = options.maxRobots;
 
     while (options.maxRobots < NumRobots)
-        Robot_delete(NULL, true);
+        Robot_delete(nullptr, true);
 }
 
 void tuner_minrobots(void)
@@ -295,11 +295,11 @@ void tuner_gameduration(void)
 {
     if (options.gameDuration <= 0.0)
     {
-        gameOverTime = time((time_t *)NULL);
+        gameOverTime = time((time_t *)nullptr);
     }
 
     else
-        gameOverTime = (time_t)(options.gameDuration * 60) + time((time_t *)NULL);
+        gameOverTime = (time_t)(options.gameDuration * 60) + time((time_t *)nullptr);
 }
 
 void tuner_racelaps(void)

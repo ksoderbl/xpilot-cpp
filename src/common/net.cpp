@@ -50,9 +50,9 @@ int last_packet_of_frame;
 
 int Sockbuf_init(sockbuf_t *sbuf, sock_t *sock, size_t size, int state)
 {
-    if ((sbuf->buf = sbuf->ptr = XMALLOC(char, size)) == NULL)
+    if ((sbuf->buf = sbuf->ptr = XMALLOC(char, size)) == nullptr)
         return -1;
-    if (sock != NULL)
+    if (sock != nullptr)
         sbuf->sock = *sock;
     else
         sock_init(&sbuf->sock);
@@ -67,7 +67,7 @@ int Sockbuf_init(sockbuf_t *sbuf, sock_t *sock, size_t size, int state)
 int Sockbuf_cleanup(sockbuf_t *sbuf)
 {
     XFREE(sbuf->buf);
-    sbuf->buf = sbuf->ptr = NULL;
+    sbuf->buf = sbuf->ptr = nullptr;
     sbuf->size = sbuf->len = 0;
     sbuf->state = 0;
     return 0;
@@ -414,7 +414,7 @@ int Packet_printf(sockbuf_t *sbuf, const char *fmt, ...)
 
     /* kps hack - let's not segfault if sbuf was not initialized yet. */
     assert(sbuf);
-    if (sbuf->buf == NULL)
+    if (sbuf->buf == nullptr)
         return -1;
     /* kps hack ends */
 

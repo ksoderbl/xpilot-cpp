@@ -73,7 +73,7 @@ char *Get_domain_from_hostname(char *host_name)
     static char last_domain[] = "\x7E\x7E";
     char *dom;
 
-    if ((dom = strrchr(host_name, '.')) != NULL)
+    if ((dom = strrchr(host_name, '.')) != nullptr)
     {
         if (dom[1] == '\0')
         {
@@ -215,7 +215,7 @@ char *my_strtok(char *buf, const char *sep)
 
     start = oldbuf;
     if (!start || !*start)
-        return NULL;
+        return nullptr;
 
     for (ptr = start; *ptr; ptr++)
     {
@@ -246,7 +246,7 @@ void Add_meta_line(char *meta_line)
         return;
 
     /* split line into fields. */
-    for (p = my_strtok(text.data(), ":"); p; p = my_strtok(NULL, ":"))
+    for (p = my_strtok(text.data(), ":"); p; p = my_strtok(nullptr, ":"))
     {
         if (num < NUM_META_DATA_FIELDS)
         {
@@ -408,7 +408,7 @@ void Ping_servers(void)
     sprintf(buf, "Pinging servers (%d seconds)...", (maxwait + 500) / 1000);
     // Welcome_create_label(1, buf);
 
-    if (sock_open_udp(&sock, NULL, 0) == -1)
+    if (sock_open_udp(&sock, nullptr, 0) == -1)
     {
         return;
     }
@@ -437,7 +437,7 @@ void Ping_servers(void)
     it = server_list.end();
     outstanding = 0;
     ms = 0;
-    gettimeofday(&start, NULL);
+    gettimeofday(&start, nullptr);
     do
     {
         while (outstanding < (ms / interval + 1) && !server_list.empty())
@@ -478,7 +478,7 @@ void Ping_servers(void)
             it_sip = *it;
             sock_send_dest(&sock, it_sip->ip_str.c_str(), it_sip->port,
                            sbuf.buf, sbuf.len);
-            gettimeofday(&it_sip->start, NULL);
+            gettimeofday(&it_sip->start, nullptr);
             /* if it has never been pinged (pung?) mark it now
              * as "not responding" instead of just blank.
              */
@@ -495,7 +495,7 @@ void Ping_servers(void)
         if (select(sock.fd + 1, &readmask, 0, 0, &timeout) == -1 && errno != EINTR)
             break;
 
-        gettimeofday(&end, NULL);
+        gettimeofday(&end, nullptr);
         ms = (end.tv_sec - start.tv_sec) * 1000 +
              (end.tv_usec - start.tv_usec) / 1000;
 
@@ -630,8 +630,8 @@ int Get_meta_data(void)
         metas[i].state = MetaConnecting;
         if (metas[i].sock.fd != SOCK_FD_INVALID)
             FD_SET(metas[i].sock.fd, &wset_in);
-        md[i].ptr = NULL;
-        md[i].end = NULL;
+        md[i].ptr = nullptr;
+        md[i].end = nullptr;
     }
     /*
      * First wait for the asynchronously connected sockets to become writable.
@@ -659,7 +659,7 @@ int Get_meta_data(void)
         rset_out = rset_in;
         wset_out = wset_in;
         descriptor_count =
-            select(max + 1, &rset_out, &wset_out, NULL, &tv);
+            select(max + 1, &rset_out, &wset_out, nullptr, &tv);
 
         D(printf("select = %d at %ld\n", descriptor_count, time(0)));
 
@@ -688,7 +688,7 @@ int Get_meta_data(void)
             }
             else if (FD_ISSET(metas[i].sock.fd, &rset_out))
             {
-                if (md[i].ptr == NULL && md[i].end == NULL)
+                if (md[i].ptr == nullptr && md[i].end == nullptr)
                 {
                     md[i].ptr = md[i].buf;
                     md[i].end = md[i].buf;
@@ -750,7 +750,7 @@ int Get_meta_data(void)
                     /* process data up to the last line ending in a '\n'.
                      */
                     while ((newline = (char *)memchr(md[i].ptr, '\n',
-                                                     md[i].end - md[i].ptr)) != NULL)
+                                                     md[i].end - md[i].ptr)) != nullptr)
                     {
 
                         *newline = '\0';
@@ -790,7 +790,7 @@ int Get_meta_data(void)
     {
         sprintf(buf, "Received information about %d Internet servers",
                 server_count);
-        server_list_creation_time = time(NULL);
+        server_list_creation_time = time(nullptr);
     }
     else
         sprintf(buf, "Could not contact any Internet Meta server");

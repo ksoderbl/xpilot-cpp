@@ -136,7 +136,7 @@ void Phasing(player_t *pl, bool on)
         CLR_BIT(pl->used, USES_REFUEL);
         CLR_BIT(pl->used, USES_REPAIR);
         if (BIT(pl->used, USES_CONNECTOR))
-            pl->ball = NULL;
+            pl->ball = nullptr;
         CLR_BIT(pl->used, USES_TRACTOR_BEAM);
         CLR_BIT(pl->obj_status, GRAVITY);
         sound_play_sensors(pl->pos, PHASING_ON_SOUND);
@@ -944,7 +944,7 @@ static void Update_players(void)
             // warn("Player %s self destruct count is %f", pl->name, pl->self_destruct_count);
             if (pl->self_destruct_count <= 0)
             {
-                Handle_Scoring(SCORE_SELF_DESTRUCT, pl, NULL, NULL, NULL);
+                Handle_Scoring(SCORE_SELF_DESTRUCT, pl, nullptr, nullptr, nullptr);
                 Player_set_state(pl, PL_STATE_KILLED);
                 Set_message_f("%s has committed suicide.", pl->name);
                 Throw_items(pl);
@@ -1110,7 +1110,7 @@ void Update_objects(void)
      */
     for (i = 0; i < NUM_ITEMS; i++)
         if (World.items[i].num < World.items[i].max && World.items[i].chance > 0 && (rfrac() * World.items[i].chance) < 1.0f)
-            Place_item(NULL, i);
+            Place_item(nullptr, i);
 
     Fuel_update();
     Misc_object_update();

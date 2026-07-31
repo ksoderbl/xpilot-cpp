@@ -165,7 +165,7 @@ void Meta_update(bool change)
     if (!options.reportToMetaServer)
         return;
 
-    currentTime = time(NULL);
+    currentTime = time(nullptr);
     if (!change)
     {
         if (currentTime - lastMetaSendTime < GIVE_META_SERVER_A_HINT)
@@ -252,7 +252,7 @@ void Meta_update(bool change)
             Num_bases(), FPS, options.contactPort,
             game_mode, World.NumTeamBases, freebases,
             BIT(World.rules->mode, TIMING) ? 1 : 0,
-            (long)(time(NULL) - serverStartTime),
+            (long)(time(nullptr) - serverStartTime),
             queue_length);
 
     /*

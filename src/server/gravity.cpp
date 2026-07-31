@@ -223,7 +223,7 @@ static void Compute_local_gravity(void)
      * We may want to free the World.gravity memory here
      * as it is not used anywhere else.
      * e.g.: free(World.gravity);
-     *       World.gravity = NULL;
+     *       World.gravity = nullptr;
      *       World.NumGravs = 0;
      * Some of the more modern maps have quite a few gravity symbols.
      */

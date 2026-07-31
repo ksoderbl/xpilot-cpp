@@ -50,7 +50,7 @@
 
 #define PRINT_ERROR(X) fprintf(stderr, "ERROR in %s:%s(): %s\n", __FILE__, __FUNCTION__, X)
 
-static BitFont *BitFonts = NULL; /* Linked list of fonts */
+static BitFont *BitFonts = nullptr; /* Linked list of fonts */
 
 /* Loads the font into a new struct
  * returns -1 as an error else it returns the number
@@ -76,7 +76,7 @@ int DT_LoadFont(const char *BitmapName, int flags)
     Temp = SDL_LoadBMP(BitmapName);
 #endif
 
-    if (Temp == NULL)
+    if (Temp == nullptr)
     {
         PRINT_ERROR("Cannot load file ");
         printf("%s: %s\n", BitmapName, SDL_GetError());
@@ -92,19 +92,19 @@ int DT_LoadFont(const char *BitmapName, int flags)
     (*CurrentFont)->FontSurface = SDL_ConvertSurfaceFormat(Temp, SDL_PIXELFORMAT_ARGB8888, 0);
     SDL_FreeSurface(Temp);
 
-    if ((*CurrentFont)->FontSurface == NULL)
+    if ((*CurrentFont)->FontSurface == nullptr)
     {
         PRINT_ERROR("Cannot convert font surface format");
         printf("%s: %s\n", BitmapName, SDL_GetError());
         free(*CurrentFont);
-        *CurrentFont = NULL;
+        *CurrentFont = nullptr;
         return -1;
     }
 
     (*CurrentFont)->CharWidth = (*CurrentFont)->FontSurface->w / 256;
     (*CurrentFont)->CharHeight = (*CurrentFont)->FontSurface->h;
     (*CurrentFont)->FontNumber = FontNumber;
-    (*CurrentFont)->NextFont = NULL;
+    (*CurrentFont)->NextFont = nullptr;
 
     /* Set font as transparent if the flag is set.  The assumption we'll go on
      * is that the first pixel of the font image will be the color we should treat
@@ -195,7 +195,7 @@ int DT_FontWidth(int FontNumber)
 }
 
 /* Returns a pointer to the font struct of the number
- * returns NULL if theres an error
+ * returns nullptr if theres an error
  */
 BitFont *DT_FontPointer(int FontNumber)
 {
@@ -211,7 +211,7 @@ BitFont *DT_FontPointer(int FontNumber)
             CurrentFont = CurrentFont->NextFont;
         }
 
-    return NULL;
+    return nullptr;
 }
 
 /* removes all the fonts currently loaded */
@@ -229,5 +229,5 @@ void DT_DestroyDrawText(void)
         free(temp);
     }
 
-    BitFonts = NULL;
+    BitFonts = nullptr;
 }

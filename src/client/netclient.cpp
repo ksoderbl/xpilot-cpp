@@ -81,7 +81,7 @@ typedef struct
  * Exported variables.
  */
 bool simulating = false;
-setup_t *Setup = NULL;
+setup_t *Setup = nullptr;
 display_t server_display;
 int receive_window_size = 3;
 long last_loops;
@@ -127,8 +127,8 @@ static void Receive_init(void)
 
     for (i = 0; i < 256; i++)
     {
-        receive_tbl[i] = NULL;
-        reliable_tbl[i] = NULL;
+        receive_tbl[i] = nullptr;
+        reliable_tbl[i] = nullptr;
     }
 
     receive_tbl[PKT_EYES] = Receive_eyes;
@@ -283,7 +283,7 @@ int Net_setup(void)
     long todo = sizeof(setup_t);
     char *ptr;
 
-    if ((Setup = (setup_t *)malloc(sizeof(setup_t))) == NULL)
+    if ((Setup = (setup_t *)malloc(sizeof(setup_t))) == nullptr)
     {
         error("No memory for setup data");
         return -1;
@@ -357,7 +357,7 @@ int Net_setup(void)
                 size = sizeof(setup_t) + Setup->map_data_len;
                 if (oldServer)
                     size = sizeof(setup_t) + Setup->x * Setup->y;
-                if ((Setup = (setup_t *)realloc(ptr, size)) == NULL)
+                if ((Setup = (setup_t *)realloc(ptr, size)) == nullptr)
                 {
                     error("No memory for setup and map");
                     return -1;
@@ -462,7 +462,7 @@ int Net_verify(char *user_name, char *nick_name, char *disp)
 
     for (retries = 0;;)
     {
-        if (retries == 0 || time(NULL) - last >= 3)
+        if (retries == 0 || time(nullptr) - last >= 3)
         {
             if (retries++ >= MAX_VERIFY_RETRIES)
             {
@@ -559,7 +559,7 @@ int Net_verify(char *user_name, char *nick_name, char *disp)
  * 3) cbuf is used to copy the reliable data stream
  *    into from the raw and unreliable rbuf packets.
  *
- * server == NULL sets up for internal simulation
+ * server == nullptr sets up for internal simulation
  */
 int Net_init(char *server, int port)
 {
@@ -567,7 +567,7 @@ int Net_init(char *server, int port)
     size_t size;
     sock_t sock;
 
-    // assert(server != NULL);
+    // assert(server != nullptr);
 
     signal(SIGPIPE, SIG_IGN);
 
@@ -580,7 +580,7 @@ int Net_init(char *server, int port)
     if (!clientPortStart || !clientPortEnd ||
         (clientPortStart > clientPortEnd))
     {
-        if (sock_open_udp(&sock, NULL, 0) == SOCK_IS_ERROR)
+        if (sock_open_udp(&sock, nullptr, 0) == SOCK_IS_ERROR)
         {
             error("Cannot create datagram socket (%d)", sock.error.error);
             return -1;
@@ -591,7 +591,7 @@ int Net_init(char *server, int port)
         int found_socket = 0;
         for (i = clientPortStart; i <= clientPortEnd; i++)
         {
-            if (sock_open_udp(&sock, NULL, i) != SOCK_IS_ERROR)
+            if (sock_open_udp(&sock, nullptr, i) != SOCK_IS_ERROR)
             {
                 found_socket = 1;
                 break;
@@ -623,7 +623,7 @@ int Net_init(char *server, int port)
         error("Can't set receive buffer size to %d", CLIENT_RECV_SIZE + 256);
 
     size = receive_window_size * sizeof(frame_buf_t);
-    if ((Frames = (frame_buf_t *)malloc(size)) == NULL)
+    if ((Frames = (frame_buf_t *)malloc(size)) == nullptr)
     {
         error("No memory (%u)", size);
         return -1;
@@ -640,7 +640,7 @@ int Net_init(char *server, int port)
     }
 
     /* reliable data buffer, not a valid socket filedescriptor needed */
-    if (Sockbuf_init(&cbuf, NULL, CLIENT_RECV_SIZE,
+    if (Sockbuf_init(&cbuf, nullptr, CLIENT_RECV_SIZE,
                      SOCKBUF_WRITE | SOCKBUF_READ | SOCKBUF_LOCK) == -1)
     {
         error("No memory for control buffer (%u)", CLIENT_RECV_SIZE);
@@ -690,11 +690,11 @@ void Net_cleanup(void)
         }
         usleep((unsigned)50 * 1000);
     }
-    if (Frames != NULL)
+    if (Frames != nullptr)
     {
         for (i = 0; i < receive_window_size; i++)
         {
-            if (Frames[i].sbuf.buf != NULL)
+            if (Frames[i].sbuf.buf != nullptr)
                 Sockbuf_cleanup(&Frames[i].sbuf);
             else
                 break;
@@ -787,7 +787,7 @@ int Net_start(void)
 
     for (retries = 0;;)
     {
-        if (retries == 0 || (time(NULL) - last) > 1)
+        if (retries == 0 || (time(nullptr) - last) > 1)
         {
             if (retries++ >= 10)
             {
@@ -901,7 +901,7 @@ int Net_start(void)
         }
         break;
     }
-    packet_measure = NULL;
+    packet_measure = nullptr;
     packetMeasurement = true;
     Net_init_measurement();
     Net_init_lag_measurement();
@@ -917,12 +917,12 @@ void Net_init_measurement(void)
     packet_loop = 0;
     if (packetMeasurement)
     {
-        if (packet_measure == NULL)
+        if (packet_measure == nullptr)
         {
             /*
              * Server FPS can change so we had better allocate enough.
              */
-            if ((packet_measure = XMALLOC(char, MAX_SUPPORTED_FPS)) == NULL)
+            if ((packet_measure = XMALLOC(char, MAX_SUPPORTED_FPS)) == nullptr)
             {
                 error("No memory for packet measurement");
                 packetMeasurement = false;
@@ -965,7 +965,7 @@ static int Net_packet(void)
     {
         type = (*rbuf.ptr & 0xFF);
 
-        if (receive_tbl[type] == NULL)
+        if (receive_tbl[type] == nullptr)
         {
             warn("Received unknown packet type (%d, %d), "
                  "dropping frame.",
@@ -1002,7 +1002,7 @@ static int Net_packet(void)
             /* should do something more appropriate than this with the reply */
             warn("Got reply packet (%d,%d)", replyto, status);
         }
-        else if (reliable_tbl[type] == NULL)
+        else if (reliable_tbl[type] == nullptr)
         {
             int i;
             warn("Received unknown reliable data packet type (%d,%d,%d)",
@@ -1090,7 +1090,7 @@ static void Net_measurement(long loop, int status)
     int i;
     long delta;
 
-    if (packet_measure == NULL)
+    if (packet_measure == nullptr)
         return;
     if ((delta = loop - packet_loop) < 0)
     {
@@ -2805,7 +2805,7 @@ int Send_pointer_move(int movement)
     static double oldt = 0;
     static int num = 1;
 
-    gettimeofday(&tv, NULL);
+    gettimeofday(&tv, nullptr);
 
     s = tv.tv_sec;
     u = tv.tv_usec;

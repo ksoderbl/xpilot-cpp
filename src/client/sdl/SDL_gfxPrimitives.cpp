@@ -3425,7 +3425,7 @@ int filledpieColor(SDL_Surface *dst, Sint16 x, Sint16 y, Sint16 rad, Sint16 star
 
     /* Allocate vertex array */
     vx = vy = (Sint16 *)malloc(2 * sizeof(Sint16) * numpoints);
-    if (vx == NULL)
+    if (vx == nullptr)
     {
         return (-1);
     }
@@ -3663,7 +3663,7 @@ int aapolygonRGBA(SDL_Surface *dst, Sint16 *vx, Sint16 *vy, int n, Uint8 r, Uint
 
 int gfxPrimitivesCompareInt(const void *a, const void *b);
 
-static int *gfxPrimitivesPolyInts = NULL;
+static int *gfxPrimitivesPolyInts = nullptr;
 static int gfxPrimitivesPolyAllocated = 0;
 
 int filledPolygonColor(SDL_Surface *dst, Sint16 *vx, Sint16 *vy, int n, int color)
@@ -3860,7 +3860,7 @@ int characterColor(SDL_Surface *dst, Sint16 x, Sint16 y, char c, Uint32 color)
     /*
      * Create new 8x8 bitmap surface if not already present
      */
-    if (gfxPrimitivesFont[(uint8_t)c] == NULL)
+    if (gfxPrimitivesFont[(uint8_t)c] == nullptr)
     {
         /* SDL2: create a 32-bit RGBA software surface.
            SDL_HWSURFACE/SDL_SRCALPHA flags are SDL1.2-era; don't use them. */
@@ -3870,7 +3870,7 @@ int characterColor(SDL_Surface *dst, Sint16 x, Sint16 y, char c, Uint32 color)
         /*
          * Check pointer
          */
-        if (gfxPrimitivesFont[(uint8_t)c] == NULL)
+        if (gfxPrimitivesFont[(uint8_t)c] == nullptr)
         {
             return (-1);
         }
@@ -4064,11 +4064,11 @@ int bezierColor(SDL_Surface *dst, Sint16 *vx, Sint16 *vy, int n, int s, Uint32 c
     stepsize = (double)1.0 / (double)s;
 
     /* Transfer vertices into float arrays */
-    if ((x = (double *)malloc(sizeof(double) * (n + 1))) == NULL)
+    if ((x = (double *)malloc(sizeof(double) * (n + 1))) == nullptr)
     {
         return (-1);
     }
-    if ((y = (double *)malloc(sizeof(double) * (n + 1))) == NULL)
+    if ((y = (double *)malloc(sizeof(double) * (n + 1))) == nullptr)
     {
         free(x);
         return (-1);

@@ -446,9 +446,9 @@ static xp_option_t sdlinit_options[] = {
     XP_STRING_OPTION(
         "geometry",
         "1280x1024",
-        NULL,
+        nullptr,
         0,
-        Set_geometry, NULL, Get_geometry,
+        Set_geometry, nullptr, Get_geometry,
         XP_OPTFLAG_DEFAULT,
         "Set the initial window geometry.\n"),
 
@@ -456,7 +456,7 @@ static xp_option_t sdlinit_options[] = {
         "gameFontSize",
         16, 12, 32,
         &gameFontSize,
-        NULL,
+        nullptr,
         XP_OPTFLAG_DEFAULT,
         "Height of font used for game strings.\n"),
 
@@ -464,15 +464,15 @@ static xp_option_t sdlinit_options[] = {
         "mapFontSize",
         16, 12, 64,
         &mapFontSize,
-        NULL,
+        nullptr,
         XP_OPTFLAG_DEFAULT,
         "Height of font used for strings painted on the map.\n"),
 
     XP_STRING_OPTION(
         "TTFont",
         CONF_FONTDIR "FreeSansBoldOblique.ttf",
-        NULL, 0,
-        Set_fontName, NULL, Get_fontName,
+        nullptr, 0,
+        Set_fontName, nullptr, Get_fontName,
         XP_OPTFLAG_DEFAULT,
         "Set the font to use.\n")};
 

@@ -118,7 +118,7 @@ static void Print_default_value(xp_option_t *opt)
     case xp_key_option:
         if (opt->key_defval && strlen(opt->key_defval) > 0)
             printf("        The default %s: %s.\n",
-                   (strchr(opt->key_defval, ' ') == NULL
+                   (strchr(opt->key_defval, ' ') == nullptr
                         ? "key is"
                         : "keys are"),
                    opt->key_defval);
@@ -316,7 +316,7 @@ bool Set_string_option(xp_option_t *opt, const char *value,
     assert(opt);
     assert(opt->type == xp_string_option);
     assert(opt->str_ptr || (opt->str_setfunc && opt->str_getfunc));
-    assert(value); /* allow NULL ? */
+    assert(value); /* allow nullptr ? */
 
     /*
      * The reason string options don't assume a static area is that that
@@ -333,7 +333,7 @@ bool Set_string_option(xp_option_t *opt, const char *value,
     return retval;
 }
 
-xp_keydefs_t *keydefs = NULL;
+xp_keydefs_t *keydefs = nullptr;
 int num_keydefs = 0;
 int max_keydefs = 0;
 
@@ -468,8 +468,8 @@ static bool Set_key_option(xp_option_t *opt, const char *value,
     opt->key_string = xp_safe_strdup(value);
     valcpy = xp_safe_strdup(value);
     for (str = strtok(valcpy, " \t\r\n");
-         str != NULL;
-         str = strtok(NULL, " \t\r\n"))
+         str != nullptr;
+         str = strtok(nullptr, " \t\r\n"))
     {
         xp_keysym_t ks;
 
@@ -585,7 +585,7 @@ void Set_command(const char *args)
     valcpy = xp_safe_strdup(args);
 
     name = strtok(valcpy, " \t\r\n");
-    value = strtok(NULL, "");
+    value = strtok(nullptr, "");
 
     opt = Find_option(name);
 
@@ -641,7 +641,7 @@ const char *Option_value_to_string(xp_option_t *opt)
         break;
     case xp_string_option:
         /*
-         * Assertion in Store_option guarantees one of these is not NULL.
+         * Assertion in Store_option guarantees one of these is not nullptr.
          */
         if (opt->str_getfunc)
             return opt->str_getfunc(opt);
@@ -714,7 +714,7 @@ void Store_option(xp_option_t *opt)
     /*
      * Let's not allow several options with the same name
      */
-    if (Find_option(opt->name) != NULL)
+    if (Find_option(opt->name) != nullptr)
     {
         warn("Trying to store duplicate option \"%s\"", opt->name);
         assert(0);
@@ -856,7 +856,7 @@ void Parse_options(int *argcp, char **argvp)
      * + 1 is for the program name.
      */
     for (i = num_servers + 1; i < *argcp; i++)
-        argvp[i] = NULL;
+        argvp[i] = nullptr;
     *argcp = num_servers + 1;
 
     if (xpArgs.help)
@@ -883,13 +883,13 @@ const char *Get_keyHelpString(keys_t key)
         if (opt->key == key)
         {
             strlcpy(buf, opt->help, sizeof buf);
-            if ((nl = strchr(buf, '\n')) != NULL)
+            if ((nl = strchr(buf, '\n')) != nullptr)
                 *nl = '\0';
             return buf;
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 const char *Get_keyResourceString(keys_t key)
@@ -904,5 +904,5 @@ const char *Get_keyResourceString(keys_t key)
             return opt->name;
     }
 
-    return NULL;
+    return nullptr;
 }

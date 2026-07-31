@@ -279,7 +279,7 @@ static char *Get_msg_from_history(int *pos, char *message, keys_t direction)
         direction != KEY_TALK_CURSOR_DOWN &&
         direction != KEY_DUMMY)
     {
-        return NULL;
+        return nullptr;
     }
 
     if (direction == KEY_DUMMY && (*pos < 0 || *pos > maxLinesInHistory - 1))
@@ -292,7 +292,7 @@ static char *Get_msg_from_history(int *pos, char *message, keys_t direction)
         if (strlen(message) > 0)
             Add_msg_to_history(message);
         save_talk_str = false;
-        return NULL;
+        return nullptr;
     }
 
     /* search for the next message, return it */
@@ -313,7 +313,7 @@ static char *Get_msg_from_history(int *pos, char *message, keys_t direction)
         if (strlen(msg_set[*pos]) > 0)
             return (msg_set[*pos]);
     }
-    return NULL; /* no history */
+    return nullptr; /* no history */
 }
 
 /*
@@ -394,7 +394,7 @@ int Talk_do_event(XEvent *event)
      * compose should be static:
      * the value of 'compose' has to be preserved across calls to
      * 'XLookupString' (the man page also mentioned that a portable program
-     * should pass NULL but i don't know if that's specific to dec-alpha ?).
+     * should pass nullptr but i don't know if that's specific to dec-alpha ?).
      * To fix this declare 'compose' static (can't hurt anyway).
      */
     static XComposeStatus compose;
@@ -1207,7 +1207,7 @@ void Talk_window_cut(XButtonEvent *xbutton)
         Clear_draw_selection();
         selection.txt_size = MAX_MSGS * MSG_LEN;
         selection.txt = XMALLOC(char, selection.txt_size);
-        if (selection.txt == NULL)
+        if (selection.txt == nullptr)
         {
             error("No memory for Selection");
             return;
@@ -1538,7 +1538,7 @@ void Talk_cut_from_messages(XButtonEvent *xbutton)
          */
         selection.txt_size = MAX_MSGS * MSG_LEN;
         selection.txt = XMALLOC(char, selection.txt_size);
-        if (selection.txt == NULL)
+        if (selection.txt == nullptr)
         {
             error("No memory for Selection");
             return;

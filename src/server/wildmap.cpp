@@ -122,7 +122,7 @@ static void Default_map(void)
 {
     map.width = 100;
     map.height = 100;
-    map.seed = (unsigned)Get_process_id() ^ (unsigned)time(NULL);
+    map.seed = (unsigned)Get_process_id() ^ (unsigned)time(nullptr);
     map.seed_ratio = 0.16;
     map.fill_ratio = 0.20;
     map.num_bases = 26;
@@ -160,14 +160,14 @@ static void Option_map(int argc, char **argv)
         j,
         intval;
     unsigned unsval;
-    char *opt = NULL,
-         *arg = NULL;
+    char *opt = nullptr,
+         *arg = nullptr;
     double dblval;
 
     for (i = 1; i < argc; i += 2)
     {
         opt = argv[i];
-        arg = NULL;
+        arg = nullptr;
         if (*opt != '-')
         {
             break;
@@ -314,11 +314,11 @@ static void Flood_map(int i)
         return;
     }
     map.data[i] = map.flood_marker;
-    putp->next = NULL;
+    putp->next = nullptr;
     putp->n = 1;
     putp->arr[0] = i;
 
-    for (getp = &intarr; getp != NULL; getp = tmpp)
+    for (getp = &intarr; getp != nullptr; getp = tmpp)
     {
 
         while (getp->n > 0)
@@ -327,13 +327,13 @@ static void Flood_map(int i)
             if (putp->n + 4 > INTARR_SIZE)
             {
                 if ((putp->next = (struct int_arr *)
-                         malloc(sizeof(struct int_arr))) == NULL)
+                         malloc(sizeof(struct int_arr))) == nullptr)
                 {
                     fprintf(stderr, "No mem\n");
                     exit(1);
                 }
                 putp = putp->next;
-                putp->next = NULL;
+                putp->next = nullptr;
                 putp->n = 0;
             }
             j = MAPOFFUP(k);
@@ -952,7 +952,7 @@ static void Decorate_map(void)
     unsigned size;
 
     size = map.num_bases * sizeof(struct xy);
-    if ((home = (struct xy *)malloc(size)) == NULL)
+    if ((home = (struct xy *)malloc(size)) == nullptr)
     {
         fprintf(stderr, "No mem\n");
         exit(1);
@@ -1511,7 +1511,7 @@ int Wildmap(
     {
         args[i] = arga[i];
     }
-    args[NUM_ARG] = NULL;
+    args[NUM_ARG] = nullptr;
 
     result = wildmain(NUM_ARG, args);
     Dump_map(name, author, data, width_ptr, height_ptr);

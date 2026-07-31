@@ -390,7 +390,7 @@ static int Team_heading(int entrynum, int teamnum,
     tmp.id = -1;
     tmp.team = teamnum;
     tmp.name_width = 0;
-    tmp.ship = NULL;
+    tmp.ship = nullptr;
     if (teamnum != TEAM_PAUSEHACK)
         sprintf(tmp.nick_name, "TEAM %d", tmp.team);
     else
@@ -465,7 +465,7 @@ void Paint_score_table(void)
         return;
     }
 
-    if ((order = (other_t **)malloc(num_others * sizeof(other_t *))) == NULL)
+    if ((order = (other_t **)malloc(num_others * sizeof(other_t *))) == nullptr)
     {
         error("No memory for score");
         return;

@@ -189,7 +189,7 @@ void Cannon_throw_items(cannon_t *c)
         {
             int amount = World.items[i].max_per_pack - (int)(rfrac() * (1 + World.items[i].max_per_pack - World.items[i].min_per_pack));
             LIMIT(amount, 0, c->item[i]);
-            if (rfrac() < (options.dropItemOnKillProb * CANNON_DROP_ITEM_PROB) && (item = ITEM_PTR(Object_allocate())) != NULL)
+            if (rfrac() < (options.dropItemOnKillProb * CANNON_DROP_ITEM_PROB) && (item = ITEM_PTR(Object_allocate())) != nullptr)
             {
                 item->type = OBJ_ITEM;
                 item->item_type = i;
@@ -250,7 +250,7 @@ void Cannon_check_defense(cannon_t *c)
 
 void Cannon_check_fire(cannon_t *c)
 {
-    player_t *pl = NULL;
+    player_t *pl = nullptr;
     int dir = 0,
         weapon = Cannon_select_weapon(c);
 
@@ -516,7 +516,7 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
     }
     if (!(found || ready))
     {
-        *pl_p = NULL;
+        *pl_p = nullptr;
         return;
     }
 
@@ -844,7 +844,7 @@ void Cannon_dies(cannon_t *c, player_t *pl)
 
     if (pl)
     {
-        Handle_Scoring(SCORE_CANNON_KILL, pl, NULL, c, NULL);
+        Handle_Scoring(SCORE_CANNON_KILL, pl, nullptr, c, nullptr);
     }
 }
 
@@ -935,7 +935,7 @@ bool Cannon_hitfunc(group_t *gp, const move_t *move)
     if (BIT(cannon->used, USES_PHASING_DEVICE))
         return false;
 
-    if (obj == NULL)
+    if (obj == nullptr)
         return true;
 
     // TODO

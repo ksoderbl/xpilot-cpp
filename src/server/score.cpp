@@ -50,7 +50,7 @@ void Score(player_t *pl, double points, clpos_t pos, const char *msg)
 
     // xpinfo("Player %s score changed by %f and is now %d", pl->name, points, pl->score);
 
-    if (pl->conn != NULL)
+    if (pl->conn != nullptr)
         Send_score_object(pl->conn, intPoints, pos, msg);
 
     updateScores = true;

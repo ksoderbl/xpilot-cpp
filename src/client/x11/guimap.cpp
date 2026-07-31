@@ -302,7 +302,7 @@ void Gui_paint_fuel(int x, int y, double fuel)
                      SCALEX(x), SCALEY(y + BLOCK_SZ), 0);
 
         bit = Bitmap_get(drawPixmap, BM_FUEL, image);
-        if (bit != NULL)
+        if (bit != nullptr)
         {
             box = &bit->bbox;
             area.x = 0;
@@ -326,7 +326,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
     other_t *other;
     char s[3];
     char info[6];
-    homebase_t *base = NULL;
+    homebase_t *base = nullptr;
     bool do_basewarning = false;
 
     other = Other_by_id(id);
@@ -340,7 +340,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
     else
         color = WHITE; // TODO
 
-    if (base != NULL)
+    if (base != nullptr)
     {
         /*
          * Hacks to support base warnings.
@@ -416,7 +416,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
         x = WINSCALE(X(x));
         y = WINSCALE(Y(y));
 
-        if ((other = Other_by_id(id)) != NULL)
+        if ((other = Other_by_id(id)) != nullptr)
         {
             if (other->name_width == 0)
             {
@@ -515,7 +515,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
         x = WINSCALE(X(x));
         y = WINSCALE(Y(y));
 
-        if ((other = Other_by_id(id)) != NULL)
+        if ((other = Other_by_id(id)) != nullptr)
         {
             if (other->name_width == 0)
             {
@@ -1321,7 +1321,7 @@ void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff)
         if (textured && BIT(style.flags, STYLE_TEXTURED))
         {
             xp_bitmap_t *bmp = Bitmap_get(drawPixmap, NUM_BITMAPS + style.texture, 0);
-            if (bmp == NULL)
+            if (bmp == nullptr)
                 goto notexture; /* Print an error here? */
             XSetTile(dpy, gameGC, bmp->bitmap);
             /*
@@ -1345,7 +1345,7 @@ void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff)
 
     sindex = style.def_edge_style;
 
-    if (polygon.edge_styles == NULL)
+    if (polygon.edge_styles == nullptr)
     { /* No special edges */
         width = edge_styles[sindex].width;
         if (width != -1 || !did_fill)

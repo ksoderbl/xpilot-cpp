@@ -161,7 +161,7 @@ int SaveOk(HandlerInfo_t info)
 /***************************************************************************/
 int SaveMap(const char *file)
 {
-    FILE *ofile = NULL;
+    FILE *ofile = nullptr;
     int n, i, j;
     char *tmpstr;
     time_t tim;
@@ -171,17 +171,17 @@ int SaveMap(const char *file)
         return 1;
     }
     ofile = fopen(file, "w");
-    if (ofile == NULL)
+    if (ofile == nullptr)
     {
         tmpstr = (char *)malloc(strlen(file) + 20);
         sprintf(tmpstr, "Error saving file: %s", file);
-        T_PopupAlert(1, tmpstr, "Ok", "Cancel", NULL, NULL);
+        T_PopupAlert(1, tmpstr, "Ok", "Cancel", nullptr, nullptr);
         free(tmpstr);
         return 1;
     }
     time(&tim);
     fprintf(ofile, "# Created by %s on %s\n", progname, ctime(&tim));
-    if (map.comments != NULL)
+    if (map.comments != nullptr)
     {
         fprintf(ofile, "%s\n", map.comments);
     }
@@ -254,7 +254,7 @@ int LoadPrompt(HandlerInfo_t info)
     if (T_IsPopupOpen(changedwin))
     {
         T_PopupClose(changedwin);
-        changedwin = (Window)NULL;
+        changedwin = (Window) nullptr;
     }
     if (T_IsPopupOpen(filepromptwin))
     {
@@ -297,7 +297,7 @@ int LoadOk(HandlerInfo_t info)
 /***************************************************************************/
 int LoadMap(const char *file)
 {
-    FILE *ifile = NULL;
+    FILE *ifile = nullptr;
     int ich;
     int corrupted = 0;
     char *filename, *tmpstr;
@@ -311,46 +311,46 @@ int LoadMap(const char *file)
     strcpy(filename, file);
     ifile = fopen(filename, "r"); /* "FILE" */
 
-    if (ifile == NULL)
+    if (ifile == nullptr)
     {
         free(filename);
         filename = (char *)malloc(strlen(file) + 4);
         sprintf(filename, "%s.xp", file);
         ifile = fopen(filename, "r"); /* "FILE.xp" */
 
-        if (ifile == NULL)
+        if (ifile == nullptr)
         {
             free(filename);
             filename = (char *)malloc(strlen(file) + 5);
             sprintf(filename, "%s.map", file);
             ifile = fopen(filename, "r"); /* "FILE.map" */
 
-            if (ifile == NULL)
+            if (ifile == nullptr)
             {
                 free(filename);
                 filename = (char *)malloc(strlen(file) + strlen(mapdir) + 2);
                 sprintf(filename, "%s/%s", mapdir, file);
                 ifile = fopen(filename, "r"); /* "MAPDIR/FILE" */
 
-                if (ifile == NULL)
+                if (ifile == nullptr)
                 {
                     free(filename);
                     filename = (char *)malloc(strlen(file) + strlen(mapdir) + 5);
                     sprintf(filename, "%s/%s.xp", mapdir, file);
                     ifile = fopen(filename, "r"); /* "MAPDIR/FILE.xp" */
 
-                    if (ifile == NULL)
+                    if (ifile == nullptr)
                     {
                         free(filename);
                         filename = (char *)malloc(strlen(file) + strlen(mapdir) + 6);
                         sprintf(filename, "%s/%s.map", mapdir, file);
                         ifile = fopen(filename, "r"); /* "MAPDIR/FILE.map" */
 
-                        if (ifile == NULL)
+                        if (ifile == nullptr)
                         {
                             tmpstr = (char *)malloc(strlen(file) + 21);
                             sprintf(tmpstr, "Couldn't find file: %s", file);
-                            T_PopupAlert(1, tmpstr, "Ok", "Cancel", NULL, NULL);
+                            T_PopupAlert(1, tmpstr, "Ok", "Cancel", nullptr, nullptr);
                             free(tmpstr);
                             return 1;
                         }
@@ -361,7 +361,7 @@ int LoadMap(const char *file)
     }
     if (map.comments)
         free(map.comments);
-    map.comments = (char *)NULL;
+    map.comments = (char *)nullptr;
     map.mapName[0] = map.mapAuthor[0] = map.gravity[0] = map.shipMass[0] = '\0';
     map.maxRobots[0] = map.worldLives[0] = '\0';
     map.view_zoom = DEFAULT_MAP_ZOOM;
@@ -374,7 +374,7 @@ int LoadMap(const char *file)
 
     strcpy(map.mapFileName, filename);
     tmpstr = strrchr(filename, (int)'.');
-    if (tmpstr != NULL)
+    if (tmpstr != nullptr)
     {
         if (strcmp(tmpstr, ".xbm") == 0)
         {
@@ -402,7 +402,7 @@ int LoadMap(const char *file)
         fclose(ifile);
     if (corrupted)
     {
-        T_PopupAlert(1, "Corrupted map file.", "Ok", "Cancel", NULL, NULL);
+        T_PopupAlert(1, "Corrupted map file.", "Ok", "Cancel", nullptr, nullptr);
     }
     return 0;
 }
@@ -420,17 +420,17 @@ int LoadXbmFile(const char *file)
     char *tmpstr, *tmp;
     int bits, x = 0, y = 0;
 
-    if ((fp = fopen(file, "r")) == NULL)
+    if ((fp = fopen(file, "r")) == nullptr)
     {
         tmpstr = (char *)malloc(strlen(file) + 21);
         sprintf(tmpstr, "Couldn't find file: %s", file);
-        T_PopupAlert(1, tmpstr, "Ok", "Cancel", NULL, NULL);
+        T_PopupAlert(1, tmpstr, "Ok", "Cancel", nullptr, nullptr);
         free(tmpstr);
         return 1;
     }
     fgets(line, sizeof(max_str_t), fp);
     tmp = strrchr(line, (int)' ');
-    if (tmp == NULL)
+    if (tmp == nullptr)
         return 1;
     tmp++;
     map.width = atoi(tmp);
@@ -438,7 +438,7 @@ int LoadXbmFile(const char *file)
 
     fgets(line, sizeof(max_str_t), fp);
     tmp = strrchr(line, (int)' ');
-    if (tmp == NULL)
+    if (tmp == nullptr)
         return 1;
     tmp++;
     map.height = atoi(tmp);
@@ -447,7 +447,7 @@ int LoadXbmFile(const char *file)
     while ((fgets(line, sizeof(max_str_t), fp)) != 0)
     {
         tmp = strstr(line, "0x");
-        while (tmp != NULL)
+        while (tmp != nullptr)
         {
             tmp += 2;
             if ((int)tmp[0] > 96)
@@ -510,11 +510,11 @@ int LoadOldMap(const char *file)
     char *tmpstr;
 
     strcpy(filenm, file);
-    if ((fp = fopen(filenm, "r")) == NULL)
+    if ((fp = fopen(filenm, "r")) == nullptr)
     {
         tmpstr = (char *)malloc(strlen(file) + 21);
         sprintf(tmpstr, "Couldn't find file: %s", file);
-        T_PopupAlert(1, tmpstr, "Ok", "Cancel", NULL, NULL);
+        T_PopupAlert(1, tmpstr, "Ok", "Cancel", nullptr, nullptr);
         free(tmpstr);
         return 1;
     }
@@ -569,7 +569,7 @@ int LoadOldMap(const char *file)
 
     if (corrupted == 1)
     {
-        T_PopupAlert(1, "Corrupted map file.", "Ok", "Cancel", NULL, NULL);
+        T_PopupAlert(1, "Corrupted map file.", "Ok", "Cancel", nullptr, nullptr);
     }
     fclose(fp);
     return 0;
@@ -726,9 +726,9 @@ int ParseLine(FILE *ifile)
         }
 
         /* only add comment lines not created by xmapedit */
-        if (strstr(commentline, "Created by") == NULL)
+        if (strstr(commentline, "Created by") == nullptr)
         {
-            if (map.comments == NULL)
+            if (map.comments == nullptr)
             {
                 map.comments = (char *)malloc(strlen(commentline) + 1);
                 map.comments = commentline;
@@ -843,7 +843,7 @@ int AddOption(const char *name, const char *value)
     int option, i;
     char *tmp;
 
-    if (name == NULL)
+    if (name == nullptr)
     {
         return 0;
     }
@@ -869,7 +869,7 @@ int AddOption(const char *name, const char *value)
     }
     if (option >= numprefs)
     {
-        if (map.comments == NULL)
+        if (map.comments == nullptr)
         {
             map.comments = (char *)malloc(strlen(nameCopy) + strlen(value) + 3);
             sprintf(map.comments, "%s:%s\n", nameCopy, value);

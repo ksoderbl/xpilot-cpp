@@ -291,14 +291,14 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
     ship->num_r_light = 0;
     ship->num_m_rack = 0;
 #ifdef _NAMEDSHIPS
-    ship->name = NULL;
-    ship->author = NULL;
+    ship->name = nullptr;
+    ship->author = nullptr;
 #endif
 
     if (debugShapeParsing)
         warn("parsing shape: %s", ship_shape_str);
 
-    for (str = ship_shape_str; (str = strchr(str, '(')) != NULL;)
+    for (str = ship_shape_str; (str = strchr(str, '(')) != nullptr;)
     {
 
         str++;
@@ -1277,7 +1277,7 @@ static shipshape_t *do_parse_shape(char *str)
 
 void Free_ship_shape(shipshape_t *ship)
 {
-    if (ship != NULL && ship != Default_ship())
+    if (ship != nullptr && ship != Default_ship())
     {
         if (ship->num_points > 0)
             XFREE(ship->pts[0]);

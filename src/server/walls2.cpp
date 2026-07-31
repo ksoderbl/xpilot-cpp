@@ -147,7 +147,7 @@ shape_t ball_wire;
 struct bline *linet;
 #define S_LINES 100 /* stupid hack */
 
-struct group *groups = NULL;
+struct group *groups = nullptr;
 int num_groups = 0, max_groups = 0;
 
 struct blockinfo *blockline;
@@ -161,7 +161,7 @@ static inline bool can_hit(group_t *gp, const move_t *move)
 {
     if (gp->hitmask & move->hitmask)
         return false;
-    if (gp->hitfunc == NULL)
+    if (gp->hitfunc == nullptr)
         return true;
     return gp->hitfunc(gp, move);
 }
@@ -214,8 +214,8 @@ void Object_crash2(object_t *obj, int crashtype, int mapobj_ind)
 
 void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt)
 {
-    const char *howfmt = NULL;
-    const char *hudmsg = NULL;
+    const char *howfmt = nullptr;
+    const char *hudmsg = nullptr;
 
     msg[0] = '\0';
 
@@ -284,7 +284,7 @@ void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt)
             if (Player_uses_emergency_shield(pl))
                 Cannon_dies(cannon, pl);
             else
-                Cannon_dies(cannon, NULL);
+                Cannon_dies(cannon, nullptr);
         }
     }
     break;
@@ -343,7 +343,7 @@ void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt)
         }
         if (num_pushers == 0)
         {
-            Handle_Scoring(SCORE_WALL_DEATH, NULL, pl, NULL, hudmsg);
+            Handle_Scoring(SCORE_WALL_DEATH, nullptr, pl, nullptr, hudmsg);
             strcat(msg, ".");
             Set_message(msg);
         }
@@ -392,7 +392,7 @@ void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt)
                 //     }
                 // }
 
-                Handle_Scoring(SCORE_SHOVE_KILL, pusher, pl, &mult, NULL);
+                Handle_Scoring(SCORE_SHOVE_KILL, pusher, pl, &mult, nullptr);
                 if (i >= num_pushers - 1)
                     Rank_add_shove_kill(pusher);
             }
@@ -405,7 +405,7 @@ void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt)
                     mult = options.tagItKillScoreMult;
             }
             dummy.score = average_pusher_score;
-            Handle_Scoring(SCORE_SHOVE_DEATH, &dummy, pl, &mult, NULL);
+            Handle_Scoring(SCORE_SHOVE_DEATH, &dummy, pl, &mult, nullptr);
 
             strcpy(msg_ptr, ".");
             Set_message(msg);
@@ -1634,7 +1634,7 @@ int Polys_to_client(uint8_t **start)
 #define STORE2(x) store_2byte(x, start, &offset, &size)
 #define STORE4(x) store_4byte(x, start, &offset, &size)
 
-    *start = (uint8_t *)ralloc(NULL, 100);
+    *start = (uint8_t *)ralloc(nullptr, 100);
     size = 100;
     offset = 0;
 
@@ -1771,7 +1771,7 @@ int is_inside(int cx, int cy, hitmask_t hitmask, const object_t *obj)
             continue;
         }
         inside = gblock->base_value;
-        if (gblock->lines == NULL)
+        if (gblock->lines == nullptr)
         {
             if (inside)
                 return gblock->group;
@@ -1862,7 +1862,7 @@ int shape_is_inside(int cx, int cy, hitmask_t hitmask, const object_t *obj,
      */
     zeroshape.num_points = s->num_points;
 
-    if (zeroshape.pts[0] == NULL)
+    if (zeroshape.pts[0] == nullptr)
     {
         for (i = 0; i < MAX_SHIP_PTS2; i++)
             zeroshape.pts[i] = &zeropos;
@@ -1905,7 +1905,7 @@ static void insert_y(int block, int y)
         free(ptr);
         return;
     }
-    *prev = (struct tempy *)ralloc(NULL, sizeof(struct tempy));
+    *prev = (struct tempy *)ralloc(nullptr, sizeof(struct tempy));
     (*prev)->y = y;
     (*prev)->next = ptr;
 }
@@ -1922,7 +1922,7 @@ static void store_inside_line(int bx, int by, int ox, int oy, int dx, int dy)
         insert_y(block, oy);
     if (oy + dy >= 0 && oy + dy < B_CLICKS && ox + dx >= B_CLICKS)
         insert_y(block, oy + dy);
-    s = (struct templine *)ralloc(NULL, sizeof(struct templine));
+    s = (struct templine *)ralloc(nullptr, sizeof(struct templine));
     s->x1 = ox;
     s->x2 = ox + dx;
     s->y1 = oy;
@@ -1946,11 +1946,11 @@ static void finish_inside(int block, int group)
     {
         while (gblock->next) /* Maintain group order*/
             gblock = gblock->next;
-        gblock->next = (struct inside_block *)ralloc(NULL, sizeof(struct inside_block));
+        gblock->next = (struct inside_block *)ralloc(nullptr, sizeof(struct inside_block));
         gblock = gblock->next;
     }
     gblock->group = group;
-    gblock->next = NULL;
+    gblock->next = nullptr;
     j = 0;
     yptr = temparray[block].y;
     while (yptr)
@@ -1960,7 +1960,7 @@ static void finish_inside(int block, int group)
     }
     if (j > 0)
     {
-        ptr = (short *)ralloc(NULL, (j + 1) * sizeof(short));
+        ptr = (short *)ralloc(nullptr, (j + 1) * sizeof(short));
         gblock->y = ptr;
         yptr = temparray[block].y;
         while (yptr)
@@ -1973,7 +1973,7 @@ static void finish_inside(int block, int group)
         *ptr = 32767;
     }
     else
-        gblock->y = NULL;
+        gblock->y = nullptr;
     j = 0;
     lptr = temparray[block].lines;
     while (lptr)
@@ -1983,7 +1983,7 @@ static void finish_inside(int block, int group)
     }
     if (j > 0)
     {
-        ptr = (short *)ralloc(NULL, (j * 4 + 1) * sizeof(short));
+        ptr = (short *)ralloc(nullptr, (j * 4 + 1) * sizeof(short));
         gblock->lines = ptr;
         lptr = temparray[block].lines;
         while (lptr)
@@ -1999,9 +1999,9 @@ static void finish_inside(int block, int group)
         *ptr = 32767;
     }
     else
-        gblock->lines = NULL;
+        gblock->lines = nullptr;
     inside = temparray[block].inside;
-    if ((ptr = gblock->lines) != NULL)
+    if ((ptr = gblock->lines) != nullptr)
     {
         while (*ptr != 32767)
         {
@@ -2031,8 +2031,8 @@ static void finish_inside(int block, int group)
         }
     }
     gblock->base_value = inside & 1;
-    temparray[block].y = NULL;
-    temparray[block].lines = NULL;
+    temparray[block].y = nullptr;
+    temparray[block].lines = nullptr;
     temparray[block].inside = 2;
     temparray[block].distance = 1e20;
 }
@@ -2042,20 +2042,20 @@ static void allocate_inside(void)
     int i;
 
     inside_table = (struct inside_block *)
-        ralloc(NULL, mapx * mapy * sizeof(struct inside_block));
+        ralloc(nullptr, mapx * mapy * sizeof(struct inside_block));
     temparray = (struct test *)
-        ralloc(NULL, mapx * mapy * sizeof(struct test));
+        ralloc(nullptr, mapx * mapy * sizeof(struct test));
     for (i = 0; i < mapx * mapy; i++)
     {
         temparray[i].distance = 1e20;
         temparray[i].inside = 2;
-        temparray[i].y = NULL;
-        temparray[i].lines = NULL;
-        inside_table[i].y = NULL;
-        inside_table[i].lines = NULL;
+        temparray[i].y = nullptr;
+        temparray[i].lines = nullptr;
+        inside_table[i].y = nullptr;
+        inside_table[i].lines = nullptr;
         inside_table[i].base_value = 0;
         inside_table[i].group = NO_GROUP;
-        inside_table[i].next = NULL;
+        inside_table[i].next = nullptr;
     }
 }
 
@@ -2242,9 +2242,9 @@ static void Distance_init(void)
     /* max line delta 30000 */
 
     blockline = (struct blockinfo *)
-        ralloc(NULL, mapx * mapy * sizeof(struct blockinfo));
-    lineno = (int *)ralloc(NULL, mapx * mapy * LINSIZE * sizeof(int));
-    dis = (int *)ralloc(NULL, mapx * mapy * LINSIZE * sizeof(int));
+        ralloc(nullptr, mapx * mapy * sizeof(struct blockinfo));
+    lineno = (int *)ralloc(nullptr, mapx * mapy * LINSIZE * sizeof(int));
+    dis = (int *)ralloc(nullptr, mapx * mapy * LINSIZE * sizeof(int));
     size = 1; /* start with end marker */
     for (bx = 0; bx < mapx; bx++)
         for (by = 0; by < mapy; by++)
@@ -2385,7 +2385,7 @@ static void Distance_init(void)
             stored:; /* semicolon for ansi compatibility */
             }
     }
-    llist = (uint16_t *)ralloc(NULL, size * sizeof(uint16_t));
+    llist = (uint16_t *)ralloc(nullptr, size * sizeof(uint16_t));
     lptr = llist;
     *lptr++ = 65535; /* All blocks with no lines stored point to this. */
     for (bx = 0; bx < mapx; bx++)
@@ -2463,7 +2463,7 @@ static void Corner_init(void)
 
 #define DISIZE 350
     temp = (uint16_t *)
-        ralloc(NULL, mapx * mapy * DISIZE * sizeof(uint16_t)); /* !@# */
+        ralloc(nullptr, mapx * mapy * DISIZE * sizeof(uint16_t)); /* !@# */
     for (i = 0; i < mapx * mapy; i++)
         temp[i * DISIZE] = 0;
     for (i = 0; i < num_lines; i++)
@@ -2500,7 +2500,7 @@ static void Corner_init(void)
                 size++;
             }
     }
-    plist = (uint16_t *)ralloc(NULL, size * sizeof(uint16_t));
+    plist = (uint16_t *)ralloc(nullptr, size * sizeof(uint16_t));
     ptr = plist;
     for (block = 0; block < mapx * mapy; block++)
     {

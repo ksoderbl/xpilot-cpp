@@ -78,10 +78,10 @@ void BuildMapwinForm(void)
                  ZoomOut);
 
     T_FormStringEntry(mapwin, "map_name", 5, TOOLSHEIGHT - TOOLSWIDTH - 90,
-                      TOOLSWIDTH - 10, 20, 0, -20, "Map Name:", map.mapName, sizeof(max_str_t) - 1, NULL);
+                      TOOLSWIDTH - 10, 20, 0, -20, "Map Name:", map.mapName, sizeof(max_str_t) - 1, nullptr);
     T_FormStringEntry(mapwin, "map_author", 5, TOOLSHEIGHT - TOOLSWIDTH - 50,
                       TOOLSWIDTH - 10, 20, 0, -20, "Map Author:", map.mapAuthor,
-                      sizeof(max_str_t) - 1, NULL);
+                      sizeof(max_str_t) - 1, nullptr);
     T_FormStringEntry(mapwin, "map_width", (int)(TOOLSWIDTH / 2 - 45),
                       TOOLSHEIGHT - TOOLSWIDTH - 25, 40, 20, -50, 0, "Width:", map.width_str,
                       3, ResizeWidth);
@@ -146,8 +146,8 @@ void BuildPrefsForm(void)
 void BuildPrefsSheet(int num)
 {
     int w, h, t, i;
-    char *tmpstr = NULL;
-    Window *temp = NULL;
+    char *tmpstr = nullptr;
+    Window *temp = nullptr;
 
     switch (num)
     {
@@ -209,7 +209,7 @@ void BuildPrefsSheet(int num)
                 T_FormStringEntry(*temp, prefs[i].name, 10 + w + prefs[i].column * (w * 2 + 20),
                                   10 + prefs[i].row * h + prefs[i].space + t, w, 20, -w, 0,
                                   prefs[i].label, prefs[i].charvar,
-                                  prefs[i].length, NULL);
+                                  prefs[i].length, nullptr);
                 break;
 
             case YESNO:
@@ -237,13 +237,13 @@ void BuildPrefsSheet(int num)
             case FLOAT:
                 T_FormStringEntry(*temp, prefs[i].name, 10 + w + prefs[i].column * (w * 2 + 20),
                                   10 + prefs[i].row * h + prefs[i].space + t, w, 20, -w, 0, prefs[i].label,
-                                  prefs[i].charvar, prefs[i].length, NULL);
+                                  prefs[i].charvar, prefs[i].length, nullptr);
                 break;
 
             case POSFLOAT:
                 T_FormStringEntry(*temp, prefs[i].name, 10 + w + prefs[i].column * (w * 2 + 20),
                                   10 + prefs[i].row * h + prefs[i].space + t, w, 20, -w, 0, prefs[i].label,
-                                  prefs[i].charvar, prefs[i].length, NULL);
+                                  prefs[i].charvar, prefs[i].length, nullptr);
                 break;
 
             case COORD:

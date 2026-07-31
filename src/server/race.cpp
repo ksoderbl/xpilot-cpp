@@ -70,7 +70,7 @@ void Race_compute_game_status(void)
      * fastest lap get points.
      */
 
-    player_t *alive = NULL, *pl;
+    player_t *alive = nullptr, *pl;
     int num_alive_players = 0, num_active_players = 0,
         num_finished_players = 0, num_race_over_players = 0,
         num_waiting_players = 0, pos = 1, total_pts, i;
@@ -309,7 +309,7 @@ void Race_game_over(void)
      * Reassign players's starting positions based upon
      * personal best lap times.
      */
-    if ((order = XMALLOC(int, NumPlayers)) != NULL)
+    if ((order = XMALLOC(int, NumPlayers)) != nullptr)
     {
         for (i = 0; i < NumPlayers; i++)
         {

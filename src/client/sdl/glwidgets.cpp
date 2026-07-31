@@ -44,32 +44,32 @@ static void confmenu_callback(void);
 static void hover_optionWidget(int over, Uint16 x, Uint16 y, void *data);
 static void clear_eventTarget(GLWidget *widget);
 
-static char *scrap = NULL;
-static GLWidget *scraptarget = NULL;
+static char *scrap = nullptr;
+static GLWidget *scraptarget = nullptr;
 
 GLWidget *Init_EmptyBaseGLWidget(void)
 {
     GLWidget *tmp = new GLWidget();
     if (!tmp)
-        return NULL;
+        return nullptr;
     tmp->WIDGET = -1;
     tmp->bounds.x = 0;
     tmp->bounds.y = 0;
     tmp->bounds.w = 0;
     tmp->bounds.h = 0;
-    tmp->wid_info = NULL;
-    tmp->Draw = NULL;
-    tmp->Close = NULL;
-    tmp->SetBounds = NULL;
-    tmp->button = NULL;
-    tmp->buttondata = NULL;
-    tmp->motion = NULL;
-    tmp->motiondata = NULL;
-    tmp->hover = NULL;
-    tmp->hoverdata = NULL;
-    tmp->list = NULL;
-    tmp->children = NULL;
-    tmp->next = NULL;
+    tmp->wid_info = nullptr;
+    tmp->Draw = nullptr;
+    tmp->Close = nullptr;
+    tmp->SetBounds = nullptr;
+    tmp->button = nullptr;
+    tmp->buttondata = nullptr;
+    tmp->motion = nullptr;
+    tmp->motiondata = nullptr;
+    tmp->hover = nullptr;
+    tmp->hoverdata = nullptr;
+    tmp->list = nullptr;
+    tmp->children = nullptr;
+    tmp->next = nullptr;
     return tmp;
 }
 
@@ -79,17 +79,17 @@ static void clear_eventTarget(GLWidget *widget)
 
     if (!widget)
     {
-        error("NULL passed to clear_eventTarget!");
+        error("nullptr passed to clear_eventTarget!");
         return;
     }
 
     for (i = 0; i < NUM_MOUSE_BUTTONS; ++i)
         if (widget == clicktarget[i])
-            clicktarget[i] = NULL;
+            clicktarget[i] = nullptr;
     if (widget == hovertarget)
-        hovertarget = NULL;
+        hovertarget = nullptr;
     if (widget == scraptarget)
-        scraptarget = NULL;
+        scraptarget = nullptr;
 }
 
 /* only supposed to take care of deletes done on behalf of the
@@ -111,7 +111,7 @@ static void Close_WidgetTree(GLWidget **widget)
     clear_eventTarget(*widget);
 
     delete *widget;
-    *widget = NULL;
+    *widget = nullptr;
 }
 
 void Close_Widget(GLWidget **widget)
@@ -120,12 +120,12 @@ void Close_Widget(GLWidget **widget)
 
     if (!widget)
     {
-        error("NULL passed to Close_Widget!");
+        error("nullptr passed to Close_Widget!");
         return;
     }
     if (!(*widget))
     {
-        error("pointer passed to Close_Widget points to NULL !");
+        error("pointer passed to Close_Widget points to nullptr !");
         return;
     }
 
@@ -146,12 +146,12 @@ void SetBounds_GLWidget(GLWidget *widget, SDL_Rect *b)
 {
     if (!widget)
     {
-        error("NULL widget passed to SetBounds_GLWidget!");
+        error("nullptr widget passed to SetBounds_GLWidget!");
         return;
     }
     if (!b)
     {
-        error("NULL bounds passed to SetBounds_GLWidget!");
+        error("nullptr bounds passed to SetBounds_GLWidget!");
         return;
     }
 
@@ -181,7 +181,7 @@ static void hover_optionWidget(int over, Uint16 x, Uint16 y, void *data)
     {
         if (!data)
         {
-            error("NULL option passed to hover_optionWidget\n");
+            error("nullptr option passed to hover_optionWidget\n");
             return;
         }
 
@@ -260,7 +260,7 @@ static void option_callback(void *tmp, const char *value)
 
     if (!(opt = (xp_option_t *)tmp))
     {
-        error("Faulty parameter to option_callback: opt is a NULL pointer!");
+        error("Faulty parameter to option_callback: opt is a nullptr pointer!");
         return;
     }
 
@@ -291,8 +291,8 @@ GLWidget *Init_OptionWidget(xp_option_t *opt, Uint32 *fgcolor, Uint32 *bgcolor)
 {
     if (!opt)
     {
-        error("Faulty parameter to Init_DoubleChooserWidget: opt is a NULL pointer!");
-        return NULL;
+        error("Faulty parameter to Init_DoubleChooserWidget: opt is a nullptr pointer!");
+        return nullptr;
     }
 
     switch (Option_get_type(opt))
@@ -316,7 +316,7 @@ GLWidget *Init_OptionWidget(xp_option_t *opt, Uint32 *fgcolor, Uint32 *bgcolor)
     default:
         break;
     }
-    return NULL;
+    return nullptr;
 }
 
 bool AppendGLWidgetList(GLWidget **list, GLWidget *item)
@@ -405,7 +405,7 @@ bool DelGLWidgetListItem(GLWidget **list, GLWidget *widget)
         if (*curr == widget)
         {
             *curr = (*curr)->next;
-            widget->next = NULL;
+            widget->next = nullptr;
             return true;
         }
         curr = &((*curr)->next);
@@ -474,7 +474,7 @@ GLWidget *FindGLWidgeti(GLWidget *widget, Uint16 x, Uint16 y)
     GLWidget *tmp;
 
     if (!widget)
-        return NULL;
+        return nullptr;
 
     if ((tmp = FindGLWidgeti(widget->next, x, y)))
     {
@@ -492,7 +492,7 @@ GLWidget *FindGLWidgeti(GLWidget *widget, Uint16 x, Uint16 y)
     }
     else
     {
-        return NULL;
+        return nullptr;
     }
 }
 GLWidget *FindGLWidget(GLWidget *list, Uint16 x, Uint16 y)
@@ -508,7 +508,7 @@ void load_textscrap(const std::string &text)
     if (text.empty())
         return;
 
-    scraptarget = NULL;
+    scraptarget = nullptr;
     scrap = (char *)realloc(scrap, text.size() + 1);
     if (!scrap)
     {
@@ -644,14 +644,14 @@ GLWidget *Init_ArrowWidget(ArrowWidget_dir_t direction, int width, int height,
     if (!tmp)
     {
         error("Failed to malloc in Init_ArrowWidget");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = new ArrowWidget();
     if (!(tmp->wid_info))
     {
         delete tmp;
         error("Failed to malloc in Init_ArrowWidget");
-        return NULL;
+        return nullptr;
     }
     wid_info = (ArrowWidget *)tmp->wid_info;
 
@@ -746,14 +746,14 @@ GLWidget *Init_ButtonWidget(Uint32 *normal_color, Uint32 *pressed_color, Uint8 d
     if (!tmp)
     {
         error("Failed to malloc in Init_ButtonWidget");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = new ButtonWidget();
     if (!(tmp->wid_info))
     {
         delete tmp;
         error("Failed to malloc in Init_ButtonWidget");
-        return NULL;
+        return nullptr;
     }
     wid_info = (ButtonWidget *)tmp->wid_info;
 
@@ -859,14 +859,14 @@ GLWidget *Init_SlideWidget(bool locked,
     if (!tmp)
     {
         error("Failed to malloc in Init_SlideWidget");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = new SlideWidget();
     if (!(tmp->wid_info))
     {
         delete tmp;
         error("Failed to malloc in Init_SlideWidget");
-        return NULL;
+        return nullptr;
     }
     wid_info = (SlideWidget *)tmp->wid_info;
 
@@ -911,7 +911,7 @@ static void Close_ScrollbarWidget(GLWidget *widget)
     }
 
     delete (ScrollbarWidget *)widget->wid_info;
-    widget->wid_info = NULL;
+    widget->wid_info = nullptr;
 }
 
 static void SetBounds_ScrollbarWidget(GLWidget *widget, SDL_Rect *b)
@@ -1078,14 +1078,14 @@ GLWidget *Init_ScrollbarWidget(bool locked, GLfloat pos, GLfloat size, ScrollWid
     if (!tmp)
     {
         error("Failed to malloc in Init_ScrollbarWidget");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = new ScrollbarWidget();
     if (!(tmp->wid_info))
     {
         delete tmp;
         error("Failed to malloc in Init_ScrollbarWidget");
-        return NULL;
+        return nullptr;
     }
     wid_info = (ScrollbarWidget *)tmp->wid_info;
 
@@ -1109,7 +1109,7 @@ GLWidget *Init_ScrollbarWidget(bool locked, GLfloat pos, GLfloat size, ScrollWid
         error("Failed to make a SlideWidget for Init_ScrollbarWidget");
         delete wid_info;
         delete tmp;
-        return NULL;
+        return nullptr;
     }
 
     AppendGLWidgetList(&(tmp->children), wid_info->slide);
@@ -1155,7 +1155,7 @@ static void Close_LabelWidget(GLWidget *widget)
         return;
     }
     delete (LabelWidget *)widget->wid_info;
-    widget->wid_info = NULL;
+    widget->wid_info = nullptr;
 }
 
 bool LabelWidget_SetColor(GLWidget *widget, Uint32 *fgcolor, Uint32 *bgcolor)
@@ -1245,20 +1245,20 @@ GLWidget *Init_LabelWidget(const char *text, Uint32 *fgcolor, Uint32 *bgcolor, i
     if (!text)
     {
         error("text missing for Init_LabelWidget.");
-        return NULL;
+        return nullptr;
     }
     tmp = Init_EmptyBaseGLWidget();
     if (!tmp)
     {
         error("Failed to malloc in Init_LabelWidget");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = new LabelWidget();
     if (!(tmp->wid_info))
     {
         delete tmp;
         error("Failed to malloc in Init_LabelWidget");
-        return NULL;
+        return nullptr;
     }
     wid_info = (LabelWidget *)tmp->wid_info;
 
@@ -1267,7 +1267,7 @@ GLWidget *Init_LabelWidget(const char *text, Uint32 *fgcolor, Uint32 *bgcolor, i
         delete wid_info;
         delete tmp;
         error("Failed to render text in Init_LabelWidget");
-        return NULL;
+        return nullptr;
     }
 
     tmp->WIDGET = LABELWIDGET;
@@ -1363,20 +1363,20 @@ GLWidget *Init_LabeledRadiobuttonWidget(string_tex_t *ontex, string_tex_t *offte
     if (!ontex || ontex->tex_list.empty() || !offtex || offtex->tex_list.empty())
     {
         error("texure(s) missing for Init_LabeledRadiobuttonWidget.");
-        return NULL;
+        return nullptr;
     }
     tmp = Init_EmptyBaseGLWidget();
     if (!tmp)
     {
         error("Failed to malloc in Init_LabeledRadiobuttonWidget");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = new LabeledRadiobuttonWidget();
     if (!(tmp->wid_info))
     {
         delete tmp;
         error("Failed to malloc in Init_LabeledRadiobuttonWidget");
-        return NULL;
+        return nullptr;
     }
     wid_info = (LabeledRadiobuttonWidget *)tmp->wid_info;
 
@@ -1407,8 +1407,8 @@ static void Close_BoolChooserWidget(GLWidget *widget);
 static void SetBounds_BoolChooserWidget(GLWidget *widget, SDL_Rect *b);
 
 static int num_BoolChooserWidget = 0;
-static string_tex_t *BoolChooserWidget_ontex = NULL;
-static string_tex_t *BoolChooserWidget_offtex = NULL;
+static string_tex_t *BoolChooserWidget_ontex = nullptr;
+static string_tex_t *BoolChooserWidget_offtex = nullptr;
 
 static void Close_BoolChooserWidget(GLWidget *widget)
 {
@@ -1424,13 +1424,13 @@ static void Close_BoolChooserWidget(GLWidget *widget)
     if (!num_BoolChooserWidget)
     {
         delete BoolChooserWidget_ontex;
-        BoolChooserWidget_ontex = NULL;
+        BoolChooserWidget_ontex = nullptr;
         delete BoolChooserWidget_offtex;
-        BoolChooserWidget_offtex = NULL;
+        BoolChooserWidget_offtex = nullptr;
     }
 
     delete (BoolChooserWidget *)widget->wid_info;
-    widget->wid_info = NULL;
+    widget->wid_info = nullptr;
 }
 
 static void SetBounds_BoolChooserWidget(GLWidget *widget, SDL_Rect *b)
@@ -1498,7 +1498,7 @@ static void BoolChooserWidget_SetValue(bool state, void *data)
     *(wi->value) = state;
 
     if (wi->callback)
-        wi->callback(wi->data, NULL);
+        wi->callback(wi->data, nullptr);
 }
 
 static void Paint_BoolChooserWidget(GLWidget *widget)
@@ -1544,13 +1544,13 @@ GLWidget *Init_BoolChooserWidget(const char *name, bool *value, Uint32 *fgcolor,
 
     if (!value)
     {
-        error("Faulty parameter to Init_BoolChooserWidget: value is a NULL pointer!");
-        return NULL;
+        error("Faulty parameter to Init_BoolChooserWidget: value is a nullptr pointer!");
+        return nullptr;
     }
     if (!name || !strlen(name))
     {
         error("name misssing for Init_BoolChooserWidget.");
-        return NULL;
+        return nullptr;
     }
 
     if (!BoolChooserWidget_ontex)
@@ -1559,16 +1559,16 @@ GLWidget *Init_BoolChooserWidget(const char *name, bool *value, Uint32 *fgcolor,
         if (!BoolChooserWidget_ontex)
         {
             error("Failed to malloc BoolChooserWidget_ontex in Init_BoolChooserWidget");
-            return NULL;
+            return nullptr;
         }
 
         BoolChooserWidget_offtex = new string_tex_t();
         if (!BoolChooserWidget_offtex)
         {
             delete BoolChooserWidget_ontex;
-            BoolChooserWidget_ontex = NULL;
+            BoolChooserWidget_ontex = nullptr;
             error("Failed to malloc BoolChooserWidget_offtex in Init_BoolChooserWidget");
-            return NULL;
+            return nullptr;
         }
 
         if (render_text(&gamefont, "True", BoolChooserWidget_ontex))
@@ -1577,20 +1577,20 @@ GLWidget *Init_BoolChooserWidget(const char *name, bool *value, Uint32 *fgcolor,
             {
                 error("Failed to render 'False' in Init_BoolChooserWidget");
                 delete BoolChooserWidget_ontex;
-                BoolChooserWidget_ontex = NULL;
+                BoolChooserWidget_ontex = nullptr;
                 delete BoolChooserWidget_offtex;
-                BoolChooserWidget_offtex = NULL;
-                return NULL;
+                BoolChooserWidget_offtex = nullptr;
+                return nullptr;
             }
         }
         else
         {
             error("Failed to render 'True' in Init_BoolChooserWidget");
             delete BoolChooserWidget_ontex;
-            BoolChooserWidget_ontex = NULL;
+            BoolChooserWidget_ontex = nullptr;
             delete BoolChooserWidget_offtex;
-            BoolChooserWidget_offtex = NULL;
-            return NULL;
+            BoolChooserWidget_offtex = nullptr;
+            return nullptr;
         }
     }
 
@@ -1598,14 +1598,14 @@ GLWidget *Init_BoolChooserWidget(const char *name, bool *value, Uint32 *fgcolor,
     if (!tmp)
     {
         error("Failed to malloc tmp in Init_BoolChooserWidget");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = new BoolChooserWidget();
     if (!(tmp->wid_info))
     {
         delete tmp;
         error("Failed to malloc tmp->wid_info in Init_BoolChooserWidget");
-        return NULL;
+        return nullptr;
     }
 
     wid_info = (BoolChooserWidget *)tmp->wid_info;
@@ -1615,7 +1615,7 @@ GLWidget *Init_BoolChooserWidget(const char *name, bool *value, Uint32 *fgcolor,
         error("Failed to make a LabelWidget for Init_BoolChooserWidget");
         delete wid_info;
         delete tmp;
-        return NULL;
+        return nullptr;
     }
     AppendGLWidgetList(&(tmp->children), wid_info->name);
 
@@ -1628,7 +1628,7 @@ GLWidget *Init_BoolChooserWidget(const char *name, bool *value, Uint32 *fgcolor,
     {
         error("Failed to make a LabeledRadiobuttonWidget for Init_BoolChooserWidget");
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
     AppendGLWidgetList(&(tmp->children), wid_info->buttonwidget);
 
@@ -1673,7 +1673,7 @@ static void Close_IntChooserWidget(GLWidget *widget)
     }
 
     delete (IntChooserWidget *)widget->wid_info;
-    widget->wid_info = NULL;
+    widget->wid_info = nullptr;
 }
 
 static void SetBounds_IntChooserWidget(GLWidget *widget, SDL_Rect *b)
@@ -1747,7 +1747,7 @@ static void IntChooserWidget_Add(void *data)
         *(tmp->value) = MIN(*(tmp->value) + step, tmp->maxval);
 
         if (tmp->callback)
-            tmp->callback(tmp->data, NULL);
+            tmp->callback(tmp->data, nullptr);
 
         if ((*(tmp->value)) > tmp->minval)
             ((ArrowWidget *)tmp->leftarrow->wid_info)->locked = false;
@@ -1795,7 +1795,7 @@ static void IntChooserWidget_Subtract(void *data)
         *(tmp->value) = MAX((*(tmp->value)) - step, tmp->minval);
 
         if (tmp->callback)
-            tmp->callback(tmp->data, NULL);
+            tmp->callback(tmp->data, nullptr);
 
         if ((*(tmp->value)) < tmp->maxval)
             ((ArrowWidget *)tmp->rightarrow->wid_info)->locked = false;
@@ -1820,7 +1820,7 @@ static void Paint_IntChooserWidget(GLWidget *widget)
 
     if (!widget)
     {
-        error("Paint_IntChooserWidget: argument is NULL!");
+        error("Paint_IntChooserWidget: argument is nullptr!");
         return;
     }
 
@@ -1865,27 +1865,27 @@ GLWidget *Init_IntChooserWidget(const char *name, int *value, int minval, int ma
 
     if (!value)
     {
-        error("Faulty parameter to Init_IntChooserWidget: value is a NULL pointer!");
-        return NULL;
+        error("Faulty parameter to Init_IntChooserWidget: value is a nullptr pointer!");
+        return nullptr;
     }
     if (!(name) || !strlen(name))
     {
         error("name misssing for Init_IntChooserWidget.");
-        return NULL;
+        return nullptr;
     }
 
     tmp = Init_EmptyBaseGLWidget();
     if (!tmp)
     {
         error("Failed to malloc in Init_IntChooserWidget");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = new IntChooserWidget();
     if (!(tmp->wid_info))
     {
         delete tmp;
         error("Failed to malloc in Init_IntChooserWidget");
-        return NULL;
+        return nullptr;
     }
 
     /* hehe ugly hack to guess max size of value strings
@@ -1908,7 +1908,7 @@ GLWidget *Init_IntChooserWidget(const char *name, int *value, int minval, int ma
     {
         Close_Widget(&tmp);
         error("Init_IntChooserWidget: Failed to render value string");
-        return NULL;
+        return nullptr;
     }
     buttonsize = wid_info->valuetex.height - 4;
 
@@ -1930,7 +1930,7 @@ GLWidget *Init_IntChooserWidget(const char *name, int *value, int minval, int ma
     {
         Close_Widget(&tmp);
         error("Init_IntChooserWidget: Failed to initialize label [%s]", name);
-        return NULL;
+        return nullptr;
     }
 
     wid_info->name->hover = hover_optionWidget;
@@ -1940,7 +1940,7 @@ GLWidget *Init_IntChooserWidget(const char *name, int *value, int minval, int ma
     {
         Close_Widget(&tmp);
         error("Init_IntChooserWidget couldn't init leftarrow!");
-        return NULL;
+        return nullptr;
     }
 
     if (*(wid_info->value) <= wid_info->minval)
@@ -1950,7 +1950,7 @@ GLWidget *Init_IntChooserWidget(const char *name, int *value, int minval, int ma
     {
         Close_Widget(&tmp);
         error("Init_IntChooserWidget couldn't init rightarrow!");
-        return NULL;
+        return nullptr;
     }
 
     if (*(wid_info->value) >= wid_info->maxval)
@@ -1986,7 +1986,7 @@ static void Close_DoubleChooserWidget(GLWidget *widget)
     }
 
     delete (DoubleChooserWidget *)widget->wid_info;
-    widget->wid_info = NULL;
+    widget->wid_info = nullptr;
 }
 
 static void SetBounds_DoubleChooserWidget(GLWidget *widget, SDL_Rect *b)
@@ -2051,7 +2051,7 @@ static void DoubleChooserWidget_Add(void *data)
         *(tmp->value) = MIN((*(tmp->value)) + step, tmp->maxval);
 
         if (tmp->callback)
-            tmp->callback(tmp->data, NULL);
+            tmp->callback(tmp->data, nullptr);
 
         if ((*(tmp->value)) > tmp->minval)
             ((ArrowWidget *)tmp->leftarrow->wid_info)->locked = false;
@@ -2090,7 +2090,7 @@ static void DoubleChooserWidget_Subtract(void *data)
         *(tmp->value) = MAX((*(tmp->value)) - step, tmp->minval);
 
         if (tmp->callback)
-            tmp->callback(tmp->data, NULL);
+            tmp->callback(tmp->data, nullptr);
 
         if ((*(tmp->value)) < tmp->maxval)
             ((ArrowWidget *)tmp->rightarrow->wid_info)->locked = false;
@@ -2115,7 +2115,7 @@ static void Paint_DoubleChooserWidget(GLWidget *widget)
 
     if (!widget)
     {
-        error("Paint_DoubleChooserWidget: argument is NULL!");
+        error("Paint_DoubleChooserWidget: argument is nullptr!");
         return;
     }
 
@@ -2162,27 +2162,27 @@ GLWidget *Init_DoubleChooserWidget(const char *name, double *value, double minva
 
     if (!value)
     {
-        error("Faulty parameter to Init_DoubleChooserWidget: value is a NULL pointer!");
-        return NULL;
+        error("Faulty parameter to Init_DoubleChooserWidget: value is a nullptr pointer!");
+        return nullptr;
     }
     if (!(name) || !strlen(name))
     {
         error("name misssing for Init_DoubleChooserWidget.");
-        return NULL;
+        return nullptr;
     }
 
     tmp = Init_EmptyBaseGLWidget();
     if (!tmp)
     {
         error("Failed to malloc in Init_DoubleChooserWidget");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = new DoubleChooserWidget();
     if (!(tmp->wid_info))
     {
         delete tmp;
         error("Failed to malloc in Init_DoubleChooserWidget");
-        return NULL;
+        return nullptr;
     }
 
     /* hehe ugly hack to guess max size of value strings
@@ -2205,7 +2205,7 @@ GLWidget *Init_DoubleChooserWidget(const char *name, double *value, double minva
     {
         Close_Widget(&tmp);
         error("Init_DoubleChooserWidget: Failed to render value string");
-        return NULL;
+        return nullptr;
     }
     buttonsize = wid_info->valuetex.height - 4;
 
@@ -2227,7 +2227,7 @@ GLWidget *Init_DoubleChooserWidget(const char *name, double *value, double minva
     {
         Close_Widget(&tmp);
         error("Init_DoubleChooserWidget: Failed to initialize label [%s]", name);
-        return NULL;
+        return nullptr;
     }
 
     wid_info->name->hover = hover_optionWidget;
@@ -2237,7 +2237,7 @@ GLWidget *Init_DoubleChooserWidget(const char *name, double *value, double minva
     {
         Close_Widget(&tmp);
         error("Init_DoubleChooserWidget: couldn't init leftarrow!");
-        return NULL;
+        return nullptr;
     }
 
     if (*(wid_info->value) <= wid_info->minval)
@@ -2247,7 +2247,7 @@ GLWidget *Init_DoubleChooserWidget(const char *name, double *value, double minva
     {
         Close_Widget(&tmp);
         error("Init_DoubleChooserWidget: couldn't init rightarrow!");
-        return NULL;
+        return nullptr;
     }
 
     if (*(wid_info->value) >= wid_info->maxval)
@@ -2332,7 +2332,7 @@ static void Paint_ColorChooserWidget(GLWidget *widget)
 
     if (!widget)
     {
-        error("Paint_ColorChooserWidget: argument is NULL!");
+        error("Paint_ColorChooserWidget: argument is nullptr!");
         return;
     }
 
@@ -2369,7 +2369,7 @@ static void action_ColorChooserWidget(void *data)
 
     if (!(widget = (GLWidget *)data))
     {
-        error("action_ColorChooserWidget: argument is NULL!");
+        error("action_ColorChooserWidget: argument is nullptr!");
         return;
     }
 
@@ -2427,27 +2427,27 @@ GLWidget *Init_ColorChooserWidget(const char *name, Uint32 *value, Uint32 *fgcol
 
     if (!value)
     {
-        error("Faulty parameter to Init_ColorChooserWidget: value is a NULL pointer!");
-        return NULL;
+        error("Faulty parameter to Init_ColorChooserWidget: value is a nullptr pointer!");
+        return nullptr;
     }
     if (!(name) || !strlen(name))
     {
         error("name misssing for Init_ColorChooserWidget.");
-        return NULL;
+        return nullptr;
     }
 
     tmp = Init_EmptyBaseGLWidget();
     if (!tmp)
     {
         error("Failed to malloc in Init_ColorChooserWidget.");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = XMALLOC(ColorChooserWidget, 1);
     if (!(tmp->wid_info))
     {
         free(tmp);
         error("Failed to malloc in Init_ColorChooserWidget.");
-        return NULL;
+        return nullptr;
     }
 
     wid_info = (ColorChooserWidget *)tmp->wid_info;
@@ -2461,13 +2461,13 @@ GLWidget *Init_ColorChooserWidget(const char *name, Uint32 *value, Uint32 *fgcol
     wid_info->callback = callback;
     wid_info->data = data;
     wid_info->expanded = false;
-    wid_info->mod = NULL;
+    wid_info->mod = nullptr;
 
     if (!AppendGLWidgetList(&(tmp->children), (wid_info->name = Init_LabelWidget(name, fgcolor, &nullRGBA, LEFT, CENTER))))
     {
         Close_Widget(&tmp);
         error("Init_ColorChooserWidget: Failed to initialize label [%s]", name);
-        return NULL;
+        return nullptr;
     }
 
     wid_info->name->hover = hover_optionWidget;
@@ -2477,7 +2477,7 @@ GLWidget *Init_ColorChooserWidget(const char *name, Uint32 *value, Uint32 *fgcol
     {
         Close_Widget(&tmp);
         error("Init_ColorChooserWidget: Failed to initialize button");
-        return NULL;
+        return nullptr;
     }
 
     tmp->bounds.w = 2 + wid_info->name->bounds.w + 5 + wid_info->button->bounds.w + 2;
@@ -2567,7 +2567,7 @@ static void Paint_ColorModWidget(GLWidget *widget)
 
     if (!widget)
     {
-        error("Paint_ColorModWidget: argument is NULL!");
+        error("Paint_ColorModWidget: argument is nullptr!");
         return;
     }
 
@@ -2645,7 +2645,7 @@ static void Callback_ColorModWidget(void *tmp, const char *value)
 
     if (!(widget = (GLWidget *)tmp))
     {
-        error("Callback_ColorModWidget: argument is NULL!");
+        error("Callback_ColorModWidget: argument is nullptr!");
         return;
     }
 
@@ -2681,21 +2681,21 @@ GLWidget *Init_ColorModWidget(Uint32 *value, Uint32 *fgcolor, Uint32 *bgcolor,
 
     if (!value)
     {
-        error("Faulty parameter to Init_ColorModWidget: value is a NULL pointer!");
-        return NULL;
+        error("Faulty parameter to Init_ColorModWidget: value is a nullptr pointer!");
+        return nullptr;
     }
     tmp = Init_EmptyBaseGLWidget();
     if (!tmp)
     {
         error("Failed to malloc in Init_ColorModWidget.");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = XMALLOC(ColorModWidget, 1);
     if (!(tmp->wid_info))
     {
         free(tmp);
         error("Failed to malloc in Init_ColorModWidget.");
-        return NULL;
+        return nullptr;
     }
 
     wid_info = (ColorModWidget *)tmp->wid_info;
@@ -2717,25 +2717,25 @@ GLWidget *Init_ColorModWidget(Uint32 *value, Uint32 *fgcolor, Uint32 *bgcolor,
     {
         Close_Widget(&tmp);
         error("Init_ColorModWidget: Failed to initialize label [%s]", "Red");
-        return NULL;
+        return nullptr;
     }
     if (!AppendGLWidgetList(&(tmp->children), (wid_info->greenpick = Init_IntChooserWidget("Green", &(wid_info->green), 0, 255, fgcolor, &nullRGBA, Callback_ColorModWidget, tmp))))
     {
         Close_Widget(&tmp);
         error("Init_ColorModWidget: Failed to initialize label [%s]", "Green");
-        return NULL;
+        return nullptr;
     }
     if (!AppendGLWidgetList(&(tmp->children), (wid_info->bluepick = Init_IntChooserWidget("Blue", &(wid_info->blue), 0, 255, fgcolor, &nullRGBA, Callback_ColorModWidget, tmp))))
     {
         Close_Widget(&tmp);
         error("Init_ColorModWidget: Failed to initialize label [%s]", "Blue");
-        return NULL;
+        return nullptr;
     }
     if (!AppendGLWidgetList(&(tmp->children), (wid_info->alphapick = Init_IntChooserWidget("Alpha", &(wid_info->alpha), 0, 255, fgcolor, &nullRGBA, Callback_ColorModWidget, tmp))))
     {
         Close_Widget(&tmp);
         error("Init_ColorModWidget: Failed to initialize label [%s]", "Alpha");
-        return NULL;
+        return nullptr;
     }
 
     maxwidth = MAX(maxwidth, wid_info->redpick->bounds.w);
@@ -2770,7 +2770,7 @@ bool ListWidget_Append(GLWidget *list, GLWidget *item)
 
     if (!list)
     {
-        error("ListWidget_Append: *list is NULL!");
+        error("ListWidget_Append: *list is nullptr!");
         return false;
     }
     if (list->WIDGET != LISTWIDGET)
@@ -2785,7 +2785,7 @@ bool ListWidget_Append(GLWidget *list, GLWidget *item)
     }
     if (!item)
     {
-        error("ListWidget_Append: *item is NULL");
+        error("ListWidget_Append: *item is nullptr");
         return false;
     }
 
@@ -2809,7 +2809,7 @@ bool ListWidget_Append(GLWidget *list, GLWidget *item)
         *curr2 = curr1;
         curr1 = curr1->next;
         /* disengage added item from the item list t be added */
-        (*curr2)->next = NULL;
+        (*curr2)->next = nullptr;
 
         ++wid_info->num_elements;
     }
@@ -2830,7 +2830,7 @@ bool ListWidget_Prepend(GLWidget *list, GLWidget *item)
 
     if (!list)
     {
-        error("ListWidget_Prepend: *list is NULL!");
+        error("ListWidget_Prepend: *list is nullptr!");
         return false;
     }
     if (list->WIDGET != LISTWIDGET)
@@ -2845,7 +2845,7 @@ bool ListWidget_Prepend(GLWidget *list, GLWidget *item)
     }
     if (!item)
     {
-        error("ListWidget_Prepend: *item is NULL");
+        error("ListWidget_Prepend: *item is nullptr");
         return false;
     }
 
@@ -2892,7 +2892,7 @@ bool ListWidget_Insert(GLWidget *list, GLWidget *target, GLWidget *item)
 
     if (!list)
     {
-        error("ListWidget_Insert: *list is NULL!");
+        error("ListWidget_Insert: *list is nullptr!");
         return false;
     }
     if (list->WIDGET != LISTWIDGET)
@@ -2907,7 +2907,7 @@ bool ListWidget_Insert(GLWidget *list, GLWidget *target, GLWidget *item)
     }
     if (!item)
     {
-        error("ListWidget_Insert: *item is NULL");
+        error("ListWidget_Insert: *item is nullptr");
         return false;
     }
 
@@ -2965,7 +2965,7 @@ bool ListWidget_Remove(GLWidget *list, GLWidget *item)
 
     if (!list)
     {
-        error("ListWidget_Remove: *list is NULL!");
+        error("ListWidget_Remove: *list is nullptr!");
         return false;
     }
     if (list->WIDGET != LISTWIDGET)
@@ -2980,7 +2980,7 @@ bool ListWidget_Remove(GLWidget *list, GLWidget *item)
     }
     if (!item)
     {
-        error("ListWidget_Remove: *item is NULL");
+        error("ListWidget_Remove: *item is nullptr");
         return false;
     }
 
@@ -3001,7 +3001,7 @@ bool ListWidget_Remove(GLWidget *list, GLWidget *item)
     }
 
     *curr = (*curr)->next;
-    item->next = NULL;
+    item->next = nullptr;
 
     --wid_info->num_elements;
 
@@ -3020,7 +3020,7 @@ bool ListWidget_SetScrollorder(GLWidget *list, bool order)
 
     if (!list)
     {
-        error("ListWidget_SetScrollorder: *list is NULL!");
+        error("ListWidget_SetScrollorder: *list is nullptr!");
         return false;
     }
     if (list->WIDGET != LISTWIDGET)
@@ -3050,7 +3050,7 @@ int ListWidget_NELEM(GLWidget *list)
 
     if (!list)
     {
-        error("ListWidget_NELEM: *list is NULL!");
+        error("ListWidget_NELEM: *list is nullptr!");
         return -1;
     }
     if (list->WIDGET != LISTWIDGET)
@@ -3075,22 +3075,22 @@ GLWidget *ListWidget_GetItemByIndex(GLWidget *list, int i)
 
     if (!list)
     {
-        error("ListWidget_NELEM: *list is NULL!");
-        return NULL;
+        error("ListWidget_NELEM: *list is nullptr!");
+        return nullptr;
     }
     if (list->WIDGET != LISTWIDGET)
     {
         error("ListWidget_NELEM: list is not a LISTWIDGET! [%i]", list->WIDGET);
-        return NULL;
+        return nullptr;
     }
     if (!(wid_info = (ListWidget *)list->wid_info))
     {
         error("ListWidget_Remove: list->wid_info missing!");
-        return NULL;
+        return nullptr;
     }
 
     if (i > (wid_info->num_elements - 1))
-        return NULL;
+        return nullptr;
 
     curr = list->children;
     j = 0;
@@ -3101,7 +3101,7 @@ GLWidget *ListWidget_GetItemByIndex(GLWidget *list, int i)
     }
 
     if (j != i)
-        return NULL;
+        return nullptr;
 
     return curr;
 }
@@ -3283,14 +3283,14 @@ GLWidget *Init_ListWidget(Uint16 x, Uint16 y, Uint32 *bg1, Uint32 *bg2, Uint32 *
     if (!tmp)
     {
         error("Failed to malloc GLWidget in Init_ListWidget");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = malloc(sizeof(ListWidget));
     if (!(tmp->wid_info))
     {
         free(tmp);
         error("Failed to malloc MainWidget in Init_ListWidget");
-        return NULL;
+        return nullptr;
     }
     wid_info = ((ListWidget *)tmp->wid_info);
     wid_info->num_elements = 0;
@@ -3335,7 +3335,7 @@ static void ScrollPaneWidget_poschange(GLfloat pos, void *data)
 
     if (!data)
     {
-        error("NULL data to ScrollPaneWidget_poschange!");
+        error("nullptr data to ScrollPaneWidget_poschange!");
         return;
     }
     widget = (GLWidget *)data;
@@ -3564,19 +3564,19 @@ GLWidget *Init_ScrollPaneWidget(GLWidget *content)
     if (!tmp)
     {
         error("Failed to malloc GLWidget in Init_ScrollPaneWidget");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = malloc(sizeof(ScrollPaneWidget));
     if (!(tmp->wid_info))
     {
         free(tmp);
         error("Failed to malloc MainWidget in Init_ScrollPaneWidget");
-        return NULL;
+        return nullptr;
     }
     wid_info = ((ScrollPaneWidget *)tmp->wid_info);
     wid_info->content = content;
-    wid_info->hori_scroller = NULL;
-    wid_info->vert_scroller = NULL;
+    wid_info->hori_scroller = nullptr;
+    wid_info->vert_scroller = nullptr;
 
     tmp->WIDGET = SCROLLPANEWIDGET;
     tmp->bounds.x = 0;
@@ -3589,7 +3589,7 @@ GLWidget *Init_ScrollPaneWidget(GLWidget *content)
     {
         error("Init_ScrollPaneWidget: Failed to init masque!");
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     if (wid_info->content)
@@ -3599,7 +3599,7 @@ GLWidget *Init_ScrollPaneWidget(GLWidget *content)
             error("Init_ScrollPaneWidget: Failed to adopt the content to the masque!");
             /*Close_Widget(&(wid_info->scroller));*/
             Close_Widget(&tmp);
-            return NULL;
+            return nullptr;
         }
 
         tmp->bounds.w = wid_info->content->bounds.w;
@@ -3654,7 +3654,7 @@ void MainWidget_ShowMenu(GLWidget *widget, bool show)
     {
         DelGLWidgetListItem(&(widget->children), wid_info->confmenu);
         if (hovertarget)
-            hover_optionWidget(0, 0, 0, NULL);
+            hover_optionWidget(0, 0, 0, nullptr);
     }
 }
 
@@ -3750,7 +3750,7 @@ static void button_MainWidget(Uint8 button, Uint8 state, Uint16 x, Uint16 y, voi
             {
                 char *clipboardText;
 
-                scraptarget = NULL;
+                scraptarget = nullptr;
 
                 if (!SDL_HasClipboardText())
                     return;
@@ -3792,14 +3792,14 @@ GLWidget *Init_MainWidget(font_data *font)
     if (!tmp)
     {
         error("Failed to malloc GLWidget in Init_MainWidget");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = malloc(sizeof(WrapperWidget));
     if (!(tmp->wid_info))
     {
         free(tmp);
         error("Failed to malloc MainWidget in Init_MainWidget");
-        return NULL;
+        return nullptr;
     }
     wid_info = ((WrapperWidget *)tmp->wid_info);
     wid_info->font = font;
@@ -3820,7 +3820,7 @@ GLWidget *Init_MainWidget(font_data *font)
     {
         error("Failed to initialize game msg list");
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     if (!AppendGLWidgetList(&(tmp->children),
@@ -3829,28 +3829,28 @@ GLWidget *Init_MainWidget(font_data *font)
     {
         error("Failed to initialize alert msg list");
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     if (!AppendGLWidgetList(&(tmp->children), (wid_info->radar = Init_RadarWidget())))
     {
         error("radar initialization failed");
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     if (!AppendGLWidgetList(&(tmp->children), (wid_info->scorelist = Init_ScorelistWidget())))
     {
         error("scorelist initialization failed");
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     if (!AppendGLWidgetList(&(tmp->children), (wid_info->confmenu = Init_ConfMenuWidget(0, 0))))
     {
         error("confmenu initialization failed");
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     if (!AppendGLWidgetList(&(tmp->children),
@@ -3859,7 +3859,7 @@ GLWidget *Init_MainWidget(font_data *font)
     {
         error("Failed to initialize chat msg list");
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     b.w = wid_info->confmenu->bounds.w;
@@ -4205,7 +4205,7 @@ static void SetBounds_ConfMenuWidget(GLWidget *widget, SDL_Rect *b)
 
     if (!widget)
     {
-        error("SetBounds_ConfMenuWidget: tried to change bounds on NULL ConfMenuWidget!");
+        error("SetBounds_ConfMenuWidget: tried to change bounds on nullptr ConfMenuWidget!");
         return;
     }
     if (widget->WIDGET != CONFMENUWIDGET)
@@ -4220,7 +4220,7 @@ static void SetBounds_ConfMenuWidget(GLWidget *widget, SDL_Rect *b)
     }
     if (!b)
     {
-        error("SetBounds_ConfMenuWidget: tried to set NULL bounds on ConfMenuWidget!");
+        error("SetBounds_ConfMenuWidget: tried to set nullptr bounds on ConfMenuWidget!");
         return;
     }
 
@@ -4251,7 +4251,7 @@ static void Paint_ConfMenuWidget(GLWidget *widget)
 
     if (!widget)
     {
-        error("Paint_ConfMenuWidget: tried to paint NULL ConfMenuWidget!");
+        error("Paint_ConfMenuWidget: tried to paint nullptr ConfMenuWidget!");
         return;
     }
 
@@ -4327,14 +4327,14 @@ GLWidget *Init_ConfMenuWidget(Uint16 x, Uint16 y)
     if (!tmp)
     {
         error("Failed to malloc in Init_ConfMenu");
-        return NULL;
+        return nullptr;
     }
     tmp->wid_info = malloc(sizeof(ConfMenuWidget));
     if (!(tmp->wid_info))
     {
         free(tmp);
         error("Failed to malloc in Init_ConfMenu");
-        return NULL;
+        return nullptr;
     }
     wid_info = ((ConfMenuWidget *)(tmp->wid_info));
 
@@ -4342,13 +4342,13 @@ GLWidget *Init_ConfMenuWidget(Uint16 x, Uint16 y)
     tmp->Draw = Paint_ConfMenuWidget;
     tmp->SetBounds = SetBounds_ConfMenuWidget;
     wid_info->showconf = false;
-    wid_info->join_list = NULL;
+    wid_info->join_list = nullptr;
 
     dummy = Init_EmptyBaseGLWidget();
     if (!dummy)
     {
         error("Failed to malloc in Init_ConfMenu");
-        return NULL;
+        return nullptr;
     }
 
     for (i = 0; i < optionsVector.size(); ++i)
@@ -4366,7 +4366,7 @@ GLWidget *Init_ConfMenuWidget(Uint16 x, Uint16 y)
         error("Init_ConfMenuWidget: Couldn't make the list widget!");
         Close_WidgetTree(&dummy);
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     ListWidget_Append(list, dummy->next);
@@ -4377,7 +4377,7 @@ GLWidget *Init_ConfMenuWidget(Uint16 x, Uint16 y)
         error("Init_ConfMenuWidget: Couldn't make the scrollpane!");
         Close_Widget(&list);
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     wid_info->scrollpane->bounds.h = 512;
@@ -4386,7 +4386,7 @@ GLWidget *Init_ConfMenuWidget(Uint16 x, Uint16 y)
     {
         error("Init_ConfMenuWidget: Couldn't make the save labelButton!");
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     if (self && strchr("P", self->mychar))
@@ -4400,7 +4400,7 @@ GLWidget *Init_ConfMenuWidget(Uint16 x, Uint16 y)
         {
             error("Init_ConfMenuWidget: Couldn't make the join labelButton!");
             Close_Widget(&tmp);
-            return NULL;
+            return nullptr;
         }
     }
     else
@@ -4409,7 +4409,7 @@ GLWidget *Init_ConfMenuWidget(Uint16 x, Uint16 y)
         {
             error("Init_ConfMenuWidget: Couldn't make the Pause labelButton!");
             Close_Widget(&tmp);
-            return NULL;
+            return nullptr;
         }
     }
 
@@ -4417,21 +4417,21 @@ GLWidget *Init_ConfMenuWidget(Uint16 x, Uint16 y)
     {
         error("Init_ConfMenuWidget: Couldn't make the config labelButton!");
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     if (!(wid_info->qlb = Init_LabelButtonWidget("Quit", &redRGBA, &nullRGBA, &cm_but1_color, 1, ConfMenuWidget_Quit, tmp)))
     {
         error("Init_ConfMenuWidget: Couldn't make the quit label!");
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     if (!(wid_info->button_list = Init_ListWidget(0, 0, &nullRGBA, &nullRGBA, &nullRGBA, LW_DOWN, LW_RIGHT, HORISONTAL, true)))
     {
         error("Init_ConfMenuWidget: Couldn't make the button_list widget!");
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     wid_info->clb->bounds.w = (wid_info->scrollpane->bounds.w + 10) / 3 + 1;
@@ -4448,7 +4448,7 @@ GLWidget *Init_ConfMenuWidget(Uint16 x, Uint16 y)
     {
         error("Init_ConfMenuWidget: Couldn't make the main_list widget!");
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     ListWidget_Append(wid_info->main_list, wid_info->button_list);
@@ -4457,7 +4457,7 @@ GLWidget *Init_ConfMenuWidget(Uint16 x, Uint16 y)
     {
         error("Init_ConfMenuWidget: failed to append main_list to children");
         Close_Widget(&tmp);
-        return NULL;
+        return nullptr;
     }
 
     tmp->bounds.x = x;
@@ -4518,7 +4518,7 @@ static void Close_ImageButtonWidget(GLWidget *widget)
     if (info->imageDown)
         glDeleteTextures(1, &(info->imageDown));
     delete info;
-    widget->wid_info = NULL;
+    widget->wid_info = nullptr;
 }
 
 static void Paint_ImageButtonWidget(GLWidget *widget)
@@ -4602,20 +4602,20 @@ GLWidget *Init_ImageButtonWidget(const char *text,
     if (!text)
     {
         error("text missing for Init_ImageButtonWidget.");
-        return NULL;
+        return nullptr;
     }
     tmp = Init_EmptyBaseGLWidget();
     if (!tmp)
     {
         error("Failed to malloc in Init_ImageButtonWidget");
-        return NULL;
+        return nullptr;
     }
     info = new ImageButtonWidget();
     if (!info)
     {
         delete tmp;
         error("Failed to malloc in Init_ImageButtonWidget");
-        return NULL;
+        return nullptr;
     }
 
     info->onClick = onClick;
@@ -4630,7 +4630,7 @@ GLWidget *Init_ImageButtonWidget(const char *text,
         delete info;
         delete tmp;
         error("Failed to render text in Init_ImageButtonWidget");
-        return NULL;
+        return nullptr;
     }
     width = info->tex.width + 1;
     height = info->tex.height + 1;
@@ -4693,7 +4693,7 @@ static void SetBounds_LabelButtonWidget(GLWidget *widget, SDL_Rect *b)
 
     if (!widget)
     {
-        error("SetBounds_LabelButtonWidget: tried to change bounds on NULL ImageButtonWidget!");
+        error("SetBounds_LabelButtonWidget: tried to change bounds on nullptr ImageButtonWidget!");
         return;
     }
     if (widget->WIDGET != LABELBUTTONWIDGET)
@@ -4708,7 +4708,7 @@ static void SetBounds_LabelButtonWidget(GLWidget *widget, SDL_Rect *b)
     }
     if (!b)
     {
-        error("SetBounds_LabelButtonWidget: tried to set NULL bounds on LabelButtonWidget!");
+        error("SetBounds_LabelButtonWidget: tried to set nullptr bounds on LabelButtonWidget!");
         return;
     }
 
@@ -4736,14 +4736,14 @@ GLWidget *Init_LabelButtonWidget(const char *text,
     if (!widget)
     {
         error("Failed to malloc in Init_LabelButtonWidget");
-        return NULL;
+        return nullptr;
     }
     widget->wid_info = malloc(sizeof(LabelButtonWidget));
     if (!(widget->wid_info))
     {
         free(widget);
         error("Failed to malloc in Init_LabelButtonWidget");
-        return NULL;
+        return nullptr;
     }
     wid_info = ((LabelButtonWidget *)(widget->wid_info));
 
@@ -4756,7 +4756,7 @@ GLWidget *Init_LabelButtonWidget(const char *text,
     {
         error("Init_LabelButtonWidget: Could not initialize label widget!");
         Close_Widget(&widget);
-        return NULL;
+        return nullptr;
     }
 
     wid_info->button = Init_ButtonWidget(bg_color, active_color, depress_time, action, actiondata);
@@ -4765,7 +4765,7 @@ GLWidget *Init_LabelButtonWidget(const char *text,
     {
         error("Init_LabelButtonWidget: Could not initialize button widget!");
         Close_Widget(&widget);
-        return NULL;
+        return nullptr;
     }
 
     SetBounds_GLWidget(widget, &(wid_info->label->bounds));

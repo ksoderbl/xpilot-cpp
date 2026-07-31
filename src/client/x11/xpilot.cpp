@@ -72,7 +72,7 @@ static void printfile(const char *filename)
     FILE *fp;
     int c;
 
-    if ((fp = fopen(filename, "r")) == NULL)
+    if ((fp = fopen(filename, "r")) == nullptr)
         return;
 
     while ((c = fgetc(fp)) != EOF)
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 
     warn("main => calling seed MT");
 
-    seedMT((unsigned)time(NULL) ^ Get_process_id());
+    seedMT((unsigned)time(nullptr) ^ Get_process_id());
 
     memset(conpar, 0, sizeof(Connect_param_t));
 
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
         result = Contact_servers(argc - 1, &argv[1],
                                  xpArgs.auto_connect, xpArgs.list_servers,
                                  auto_shutdown, xpArgs.shutdown_reason,
-                                 0, NULL, NULL, NULL, NULL,
+                                 0, nullptr, nullptr, nullptr, nullptr,
                                  conpar);
     }
     else

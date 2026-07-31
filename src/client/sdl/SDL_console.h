@@ -176,7 +176,7 @@ extern "C"
         char* my_tabcompletion(char* command)</b><br><br>
         The commandline on the left side of the cursor gets passed over to your function. You will then have to make your
         own tab-complete and return the completed string as return value. If you have nothing to complete you can return
-        NULL or the string you got. ***Will change in the next major release to char* mytabfunction(ConsoleInformation* console, char* command) *** */
+        nullptr or the string you got. ***Will change in the next major release to char* mytabfunction(ConsoleInformation* console, char* command) *** */
     extern DECLSPEC void SDLCALL CON_SetTabCompletion(ConsoleInformation *console, char *(*TabFunction)(char *command));
     /*! Internal: Gets called when TAB was pressed and executes the function you have earlier registered with CON_SetTabCompletion() */
     extern DECLSPEC void SDLCALL CON_TabCompletion(ConsoleInformation *console);

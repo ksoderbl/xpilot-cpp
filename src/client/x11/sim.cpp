@@ -146,7 +146,7 @@ static void Fake_setup(void)
 {
     const int x = 100, y = 100;
 
-    if ((Setup = (setup_t *)malloc(sizeof(setup_t) + x * y)) == NULL)
+    if ((Setup = (setup_t *)malloc(sizeof(setup_t) + x * y)) == nullptr)
     {
         error("No memory for setup data");
         return;
@@ -208,7 +208,7 @@ static int Simulate_init(void)
 {
     simulating = true;
     Client_init((char *)"simulator", MY_VERSION);
-    Net_init(NULL, 0);
+    Net_init(nullptr, 0);
     Fake_setup();
     Fake_others();
     Client_setup();

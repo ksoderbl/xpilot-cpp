@@ -136,7 +136,7 @@ static int Kick_robot_players(int team)
         {
             /* kick robot with lowest score from any team but robot team */
             double low_score = FLT_MAX;
-            player_t *low_pl = NULL;
+            player_t *low_pl = nullptr;
 
             for (i = 0; i < NumPlayers; i++)
             {
@@ -159,7 +159,7 @@ static int Kick_robot_players(int team)
         else
         {
             /* kick random robot */
-            Robot_delete(NULL, true);
+            Robot_delete(nullptr, true);
             return 1;
         }
     }
@@ -169,7 +169,7 @@ static int Kick_robot_players(int team)
         {
             /* kick robot with lowest score from this team */
             double low_score = FLT_MAX;
-            player_t *low_pl = NULL;
+            player_t *low_pl = nullptr;
 
             for (i = 0; i < NumPlayers; i++)
             {
@@ -206,8 +206,8 @@ static int do_kick(int team, int nonlast)
     {
         player_t *pl_i = Player_by_index(i);
 
-        // if (pl_i->conn != NULL && Player_is_paused(pl_i) && (team == TEAM_NOT_SET || (pl_i->team == team && pl_i->home_base != NULL)) && !(pl_i->privs & PRIV_NOAUTOKICK) && (!nonlast || !(pl_i->privs & PRIV_AUTOKICKLAST)))
-        if (pl_i->conn != NULL && Player_is_paused(pl_i) && (team == TEAM_NOT_SET || (pl_i->team == team)))
+        // if (pl_i->conn != nullptr && Player_is_paused(pl_i) && (team == TEAM_NOT_SET || (pl_i->team == team && pl_i->home_base != nullptr)) && !(pl_i->privs & PRIV_NOAUTOKICK) && (!nonlast || !(pl_i->privs & PRIV_AUTOKICKLAST)))
+        if (pl_i->conn != nullptr && Player_is_paused(pl_i) && (team == TEAM_NOT_SET || (pl_i->team == team)))
         {
 
             if (team == TEAM_NOT_SET)
@@ -392,7 +392,7 @@ void Contact(int fd, void *arg)
 
         if (!credentials)
         {
-            credentials = (time(NULL) * (time_t)Get_process_id());
+            credentials = (time(nullptr) * (time_t)Get_process_id());
             credentials ^= (long)Contact;
             credentials += (long)key + (long)&key;
             credentials ^= (long)randomMT() << 1;
@@ -538,7 +538,7 @@ void Contact(int fd, void *arg)
             status = E_INVAL;
         else
         {
-            player_t *pl_found = Get_player_by_name(str, NULL, NULL);
+            player_t *pl_found = Get_player_by_name(str, nullptr, nullptr);
 
             if (!pl_found)
                 status = E_NOT_FOUND;
@@ -547,7 +547,7 @@ void Contact(int fd, void *arg)
                 Set_message_f("\"%s\" upset the gods and was kicked out "
                               "of the game.",
                               pl_found->name);
-                if (pl_found->conn == NULL)
+                if (pl_found->conn == nullptr)
                     Delete_player(pl_found);
                 else
                     Destroy_connection(pl_found->conn, "kicked out");
@@ -572,7 +572,7 @@ void Contact(int fd, void *arg)
 
         char *opt, *val;
 
-        if (Packet_scanf(&ibuf, "%S", str) <= 0 || (opt = strtok(str, ":")) == NULL || (val = strtok(NULL, "")) == NULL)
+        if (Packet_scanf(&ibuf, "%S", str) <= 0 || (opt = strtok(str, ":")) == nullptr || (val = strtok(nullptr, "")) == nullptr)
             status = E_INVAL;
         else
         {
@@ -697,7 +697,7 @@ static void Queue_remove(struct queued_player *qp, struct queued_player *prev)
 void Queue_kick(const char *nick)
 {
     unsigned int magic;
-    struct queued_player *qp = qp_list, *prev = NULL;
+    struct queued_player *qp = qp_list, *prev = nullptr;
 
     while (qp)
     {
@@ -954,7 +954,7 @@ static int Queue_player(char *user, char *nick, char *disp, int team,
  */
 int Queue_advance_player(char *name, char *qmsg, size_t size)
 {
-    struct queued_player *qp, *prev, *first = NULL;
+    struct queued_player *qp, *prev, *first = nullptr;
 
     if (strlen(name) >= MAX_NAME_LEN)
     {
@@ -962,7 +962,7 @@ int Queue_advance_player(char *name, char *qmsg, size_t size)
         return -1;
     }
 
-    for (prev = NULL, qp = qp_list; qp != NULL; prev = qp, qp = qp->next)
+    for (prev = nullptr, qp = qp_list; qp != nullptr; prev = qp, qp = qp->next)
     {
 
         if (!strcasecmp(qp->nick_name, name))
@@ -1022,7 +1022,7 @@ int Queue_show_list(char *qmsg, size_t size)
         snprintf(qmsg + len, size - len, "%d. %s  ", count++, qp->nick_name);
         len = strlen(qmsg);
         qp = qp->next;
-    } while (qp != NULL && len + 32 < size);
+    } while (qp != nullptr && len + 32 < size);
 
     /* strip last 2 spaces. */
     qmsg[len - 2] = '\0';
@@ -1087,13 +1087,13 @@ void Set_deny_hosts(void)
     if (!(list = xp_strdup(options.denyHosts)))
         return;
 
-    for (tok = strtok(list, list_sep); tok; tok = strtok(NULL, list_sep))
+    for (tok = strtok(list, list_sep); tok; tok = strtok(nullptr, list_sep))
         n++;
     addr_mask_list = (struct addr_plus_mask *)
         malloc(n * sizeof(*addr_mask_list));
     num_addr_mask = n;
     strcpy(list, options.denyHosts);
-    for (tok = strtok(list, list_sep); tok; tok = strtok(NULL, list_sep))
+    for (tok = strtok(list, list_sep); tok; tok = strtok(nullptr, list_sep))
     {
         slash = strchr(tok, '/');
         if (slash)

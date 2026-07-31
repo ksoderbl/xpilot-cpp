@@ -78,7 +78,7 @@ static bool scoreListMoving;
 
 int paintSetupMode;
 
-GLWidget *MainWidget = NULL;
+GLWidget *MainWidget = nullptr;
 
 /* SDL2: need the active GL window for SDL_GL_SwapWindow */
 extern SDL_Window *gWindow;
@@ -177,7 +177,7 @@ GLWidget *Init_ScorelistWidget(void)
     if (!tmp)
     {
         error("Failed to malloc in Init_ScorelistWidget");
-        return NULL;
+        return nullptr;
     }
 
     tmp->WIDGET = SCORELISTWIDGET;
@@ -187,17 +187,17 @@ GLWidget *Init_ScorelistWidget(void)
     tmp->bounds.h = 100;
 
     scoreListFont = TTF_OpenFont(scoreListFontName, 11);
-    if (scoreListFont == NULL)
+    if (scoreListFont == nullptr)
     {
         error("opening font %s failed", scoreListFontName);
         free(tmp);
-        return NULL;
+        return nullptr;
     }
     if (sdl_window_init(&scoreListWin, tmp->bounds.x, tmp->bounds.y, tmp->bounds.w, tmp->bounds.h))
     {
         error("failed to init scorelist window");
         free(tmp);
-        return NULL;
+        return nullptr;
     }
     tmp->Draw = Scorelist_paint;
     tmp->Close = Scorelist_cleanup;
@@ -302,7 +302,7 @@ void Paint_frame(void)
 {
     struct timeval tv1, tv2;
 
-    gettimeofday(&tv1, NULL);
+    gettimeofday(&tv1, nullptr);
 
     Paint_frame_start();
 
@@ -375,7 +375,7 @@ void Paint_frame(void)
 
     if (newSecond)
     {
-        gettimeofday(&tv2, NULL);
+        gettimeofday(&tv2, nullptr);
         clData.clientLag = 1e-3 * timeval_sub(&tv2, &tv1);
     }
 }
@@ -407,9 +407,9 @@ void Paint_score_start(void)
     fg.b = (scoreColorRGBA >> 8) & 255;
     fg.a = scoreColorRGBA & 255;
 
-    SDL_FillRect(scoreListWin.surface, NULL, 0);
+    SDL_FillRect(scoreListWin.surface, nullptr, 0);
     header = TTF_RenderText_Blended(scoreListFont, headingStr, fg);
-    if (header == NULL)
+    if (header == nullptr)
     {
         error("scorelist header rendering failed: %s", SDL_GetError());
         return;
@@ -420,7 +420,7 @@ void Paint_score_start(void)
     /* SDL2: SDL_SetAlpha() is gone; control blending via blend mode */
     SDL_SetSurfaceBlendMode(header, SDL_BLENDMODE_NONE);
 
-    SDL_BlitSurface(header, NULL, scoreListWin.surface, &scoreEntryRect);
+    SDL_BlitSurface(header, nullptr, scoreListWin.surface, &scoreEntryRect);
     lineRGBA(scoreListWin.surface, SCORE_BORDER,
              scoreEntryRect.y + header->h + 2,
              scoreListWin.w - SCORE_BORDER,
@@ -561,7 +561,7 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
     fg.a = color & 255;
 
     line = TTF_RenderText_Blended(scoreListFont, label, fg);
-    if (line == NULL)
+    if (line == nullptr)
     {
         error("scorelist rendering failed: %s", SDL_GetError());
         return;
@@ -570,7 +570,7 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
     /* SDL2: SDL_SetAlpha() is gone; control blending via blend mode */
     SDL_SetSurfaceBlendMode(line, SDL_BLENDMODE_NONE);
 
-    SDL_BlitSurface(line, NULL, scoreListWin.surface, &scoreEntryRect);
+    SDL_BlitSurface(line, nullptr, scoreListWin.surface, &scoreEntryRect);
     scoreEntryRect.h = line->h;
 
     /*

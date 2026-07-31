@@ -140,7 +140,7 @@ static int Query_fudged(sock_t *sock, int port, char *msg, size_t msglen)
     char host_name[64];
 
     gethostname(host_name, sizeof(host_name));
-    if ((h = gethostbyname(host_name)) == NULL)
+    if ((h = gethostbyname(host_name)) == nullptr)
     {
         error("gethostbyname");
         return -1;

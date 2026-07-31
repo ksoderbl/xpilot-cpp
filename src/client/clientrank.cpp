@@ -185,7 +185,7 @@ static void Rank_score(void)
     {
         FILE *const file = fopen(clientRankHTMLFile, "w");
 
-        if (file != NULL && fseek(file, 2000, SEEK_SET) == 0)
+        if (file != nullptr && fseek(file, 2000, SEEK_SET) == 0)
         {
             fprintf(file, "%s", header);
             for (i = 0; i < MAX_SCORES; i++)
@@ -209,7 +209,7 @@ static void Rank_score(void)
     {
         FILE *const file = fopen(clientRankHTMLNOJSFile, "w");
 
-        if (file != NULL && fseek(file, 2000, SEEK_SET) == 0)
+        if (file != nullptr && fseek(file, 2000, SEEK_SET) == 0)
         {
             fprintf(file, "%s", headernojs);
             for (i = 0; i < MAX_SCORES; i++)
@@ -259,7 +259,7 @@ void Init_saved_scores(void)
     {
         FILE *file = fopen(clientRankFile, "r");
 
-        if (file != NULL)
+        if (file != nullptr)
         {
             const int actual = fread(scores, sizeof(ScoreNode),
                                      MAX_SCORES, file);
@@ -351,11 +351,11 @@ int Get_deaths(char *nick)
 /* Save the scores to disk (not the webpage). */
 void Print_saved_scores(void)
 {
-    FILE *file = NULL;
+    FILE *file = nullptr;
 
     Rank_score();
     if (strlen(clientRankFile) > 0 &&
-        (file = fopen(clientRankFile, "w")) != NULL)
+        (file = fopen(clientRankFile, "w")) != nullptr)
     {
         const int actual = fwrite(scores, sizeof(ScoreNode),
                                   MAX_SCORES, file);

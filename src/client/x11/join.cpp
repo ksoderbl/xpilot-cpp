@@ -105,7 +105,7 @@ static void Input_loop(void)
             tv.tv_usec = t % 1000000;
         }
 
-        if ((n = select(max + 1, &rfds, NULL, NULL, &tv)) == -1)
+        if ((n = select(max + 1, &rfds, nullptr, nullptr, &tv)) == -1)
         {
             if (errno == EINTR)
                 continue;
@@ -143,7 +143,7 @@ static void Input_loop(void)
         {
             struct timeval tv1, tv2;
 
-            gettimeofday(&tv1, NULL);
+            gettimeofday(&tv1, nullptr);
             if ((result = Net_input()) == -1)
             {
                 warn("Bad net input.  Have a nice day!");
@@ -184,7 +184,7 @@ static void Input_loop(void)
                 int s, us;
                 static time_t olds = 0;
 
-                gettimeofday(&tv2, NULL);
+                gettimeofday(&tv2, nullptr);
 
                 s = tv2.tv_sec - tv1.tv_sec;
                 us = tv2.tv_usec - tv1.tv_usec;

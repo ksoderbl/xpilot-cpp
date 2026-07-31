@@ -137,7 +137,7 @@ void Game_loop(void)
             tv_local.tv_usec = t % 1000000;
         }
 
-        if ((n = select(max + 1, &rfds, NULL, NULL, &tv_local)) == -1)
+        if ((n = select(max + 1, &rfds, nullptr, nullptr, &tv_local)) == -1)
         {
             if (errno == EINTR)
                 continue;

@@ -150,9 +150,9 @@
 #define MAX_MOTD_SIZE (30 * 1024)
 #define MAX_MOTD_LOOPS (10 * FPS)
 
-static connection_t *Conn = NULL;
-static setup_t *Setup = NULL;
-static setup_t *Oldsetup = NULL;
+static connection_t *Conn = nullptr;
+static setup_t *Setup = nullptr;
+static setup_t *Oldsetup = nullptr;
 static int max_connections = 0;
 static int (*playing_receive[256])(connection_t *connp),
     (*login_receive[256])(connection_t *connp),
@@ -268,7 +268,7 @@ static int Init_setup(void)
     printf("%s Server->client polygon map transfer size is %d bytes.\n",
            showtime(), size);
 
-    if ((Setup = (setup_t *)malloc(sizeof(setup_t) + size)) == NULL)
+    if ((Setup = (setup_t *)malloc(sizeof(setup_t) + size)) == nullptr)
     {
         error("No memory to hold setup");
         free(mapdata);
@@ -372,7 +372,7 @@ int Setup_net_server(void)
      */
     max_connections = MIN(MAX_SELECT_FD - 5, Num_bases());
     size = max_connections * sizeof(*Conn);
-    if ((Conn = (connection_t *)malloc(size)) == NULL)
+    if ((Conn = (connection_t *)malloc(size)) == nullptr)
     {
         error("Cannot allocate memory for connections");
         return -1;
@@ -468,7 +468,7 @@ void Destroy_connection(connection_t *connp, const char *reason)
         id = connp->id;
         connp->id = NO_ID;
         pl = Player_by_id(id);
-        pl->conn = NULL;
+        pl->conn = nullptr;
         Delete_player(pl);
     }
 
@@ -527,10 +527,10 @@ static void dcase(char *str)
     }
 
 
-char *banned_users[] = { "<", ">", "\"", "'", NULL };
-char *banned_nicks[] = { "<", ">", "\"", "'", NULL };
-char *banned_addrs[] = { NULL };
-char *banned_hosts[] = { "<", ">", "\"", "'", NULL };
+char *banned_users[] = { "<", ">", "\"", "'", nullptr };
+char *banned_nicks[] = { "<", ">", "\"", "'", nullptr };
+char *banned_addrs[] = { nullptr };
+char *banned_hosts[] = { "<", ">", "\"", "'", nullptr };
 
 int CheckBanned(char *user, char *nick, char *addr, char *host)
 {
@@ -545,26 +545,26 @@ int CheckBanned(char *user, char *nick, char *addr, char *host)
     dcase(addr);
     dcase(host);
 
-    for (i = 0; banned_users[i] != NULL; i++) {
-    if (strstr(user, banned_users[i]) != NULL) {
+    for (i = 0; banned_users[i] != nullptr; i++) {
+    if (strstr(user, banned_users[i]) != nullptr) {
         ret = 1;
         goto out;
     }
     }
-    for (i = 0; banned_nicks[i] != NULL; i++) {
-    if (strstr(nick, banned_nicks[i]) != NULL) {
+    for (i = 0; banned_nicks[i] != nullptr; i++) {
+    if (strstr(nick, banned_nicks[i]) != nullptr) {
         ret = 1;
         goto out;
     }
     }
-    for (i = 0; banned_addrs[i] != NULL; i++) {
-    if (strstr(addr, banned_addrs[i]) != NULL) {
+    for (i = 0; banned_addrs[i] != nullptr; i++) {
+    if (strstr(addr, banned_addrs[i]) != nullptr) {
         ret = 1;
         goto out;
     }
     }
-    for (i = 0; banned_hosts[i] != NULL; i++) {
-    if (strstr(host, banned_hosts[i]) != NULL) {
+    for (i = 0; banned_hosts[i] != nullptr; i++) {
+    if (strstr(host, banned_hosts[i]) != nullptr) {
         ret = 1;
         goto out;
     }
@@ -585,22 +585,22 @@ struct restrict {
 };
 
 struct restrict restricted[] = {
-    { NULL, NULL, NULL }
+    { nullptr, nullptr, nullptr }
 };
 
 int CheckAllowed(char *user, char *nick, char *addr, char *host)
 {
     int i, allowed = 1;
     /*char *realnick = nick;*/
-   char *mail = NULL;
+   char *mail = nullptr;
 
     nick = strdup(nick);
     addr = strdup(addr);
     dcase(nick);
     dcase(addr);
 
-    for (i = 0; restricted[i].nick != NULL; i++) {
-    if (strstr(nick, restricted[i].nick) != NULL) {
+    for (i = 0; restricted[i].nick != nullptr; i++) {
+    if (strstr(nick, restricted[i].nick) != nullptr) {
         if (strncmp(addr, restricted[i].addr, strlen(restricted[i].addr))
         == 0) {
         allowed = 1;
@@ -724,7 +724,7 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
     Sockbuf_init(&connp->r, &sock, SERVER_RECV_SIZE,
                  SOCKBUF_READ | SOCKBUF_DGRAM);
 
-    Sockbuf_init(&connp->c, (sock_t *)NULL, MAX_SOCKBUF_SIZE,
+    Sockbuf_init(&connp->c, (sock_t *)nullptr, MAX_SOCKBUF_SIZE,
                  SOCKBUF_WRITE | SOCKBUF_READ | SOCKBUF_LOCK);
 
     connp->my_port = my_port;
@@ -733,7 +733,7 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
     connp->dpy = xp_strdup(dpy);
     connp->addr = xp_strdup(addr);
     connp->host = xp_strdup(host);
-    connp->ship = NULL;
+    connp->ship = nullptr;
     connp->team = team;
     connp->version = version;
 
@@ -787,7 +787,7 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
     connp->debris_colors = 0;
     connp->spark_rand = DEF_SPARK_RAND;
     Conn_set_state(connp, CONN_LISTENING, CONN_FREE);
-    if (connp->w.buf == NULL || connp->r.buf == NULL || connp->c.buf == NULL || connp->user == NULL || connp->nick == NULL || connp->dpy == NULL || connp->addr == NULL || connp->host == NULL)
+    if (connp->w.buf == nullptr || connp->r.buf == nullptr || connp->c.buf == nullptr || connp->user == nullptr || connp->nick == nullptr || connp->dpy == nullptr || connp->addr == nullptr || connp->host == nullptr)
     {
         error("Not enough memory for connection");
         /* socket is not yet connected, but it doesn't matter much. */
@@ -1015,10 +1015,10 @@ static void UglyHack(char *string)
         char *s;
 
         /* not really needed, but here for safety */
-        if (substr == NULL)
+        if (substr == nullptr)
             break;
 
-        while ((s = strstr(string, substr)) != NULL)
+        while ((s = strstr(string, substr)) != nullptr)
             *s = 'X';
     }
 }
@@ -1184,7 +1184,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
     {
         player_t *pl_i;
         pl_i = Player_by_index(i);
-        if (pl_i->conn != NULL)
+        if (pl_i->conn != nullptr)
         {
             Send_player(pl_i->conn, pl->id);
             Send_score(pl_i->conn, pl->id, Get_Score(pl),
@@ -2676,7 +2676,7 @@ static void Handle_talk(connection_t *connp, char *str)
 
     pl->flooding += FPS / 3;
 
-    if ((cp = strchr(str, ':')) == NULL || cp == str || strchr("-_~)(/\\}{[]", cp[1]) /* smileys are smileys */
+    if ((cp = strchr(str, ':')) == nullptr || cp == str || strchr("-_~)(/\\}{[]", cp[1]) /* smileys are smileys */
     )
     {
         sprintf(msg, "%s [%s]", str, pl->name);
@@ -2845,16 +2845,16 @@ int Get_player_id(connection_t *connp)
 
 const char *Player_get_addr(player_t *pl)
 {
-    if (pl->conn != NULL)
+    if (pl->conn != nullptr)
         return pl->conn->addr;
-    return NULL;
+    return nullptr;
 }
 
 const char *Player_get_dpy(player_t *pl)
 {
-    if (pl->conn != NULL)
+    if (pl->conn != nullptr)
         return pl->conn->dpy;
-    return NULL;
+    return nullptr;
 }
 
 static int Receive_shape(connection_t *connp)
@@ -2874,7 +2874,7 @@ static int Receive_shape(connection_t *connp)
             Destroy_connection(connp, "read shape ext");
         return n;
     }
-    if (connp->state == CONN_LOGIN && connp->ship == NULL)
+    if (connp->state == CONN_LOGIN && connp->ship == nullptr)
         connp->ship = Parse_shape_str(str);
     return 1;
 }
@@ -2956,7 +2956,7 @@ static int Get_motd(char *buf, int offset, int maxlen, int *size_ptr)
                 return 0;
             }
             XFREE(motd_buf);
-            if ((motd_buf = XMALLOC(char, size)) == NULL)
+            if ((motd_buf = XMALLOC(char, size)) == nullptr)
             {
                 close(fd);
                 return -1;

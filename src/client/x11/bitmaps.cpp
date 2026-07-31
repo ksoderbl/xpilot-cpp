@@ -44,9 +44,9 @@
 #include "xinit.h"
 
 /* this gets rid of missing initializer warnings */
-#define XP_PIXMAP_INITIALIZER(f, c)                         \
-    {                                                       \
-        f, c, 0, 0, 0, false, NULL, { 0, 0, 0, NULL, NULL } \
+#define XP_PIXMAP_INITIALIZER(f, c)                                  \
+    {                                                                \
+        f, c, 0, 0, 0, false, nullptr, { 0, 0, 0, nullptr, nullptr } \
     }
 
 xp_pixmap_t object_pixmaps[] = {
@@ -216,18 +216,18 @@ void Bitmap_update_scale(void)
 /**
  * Gets a pointer to the bitmap specified with img and bmp.
  * Ensures that the bitmap returned has been initialized and created
- * properly. Returns NULL if the specified bitmap is not in appropriate
+ * properly. Returns nullptr if the specified bitmap is not in appropriate
  * state.
  */
 xp_bitmap_t *Bitmap_get(Drawable d, int img, int bmp)
 {
     if (!fullColor || img < 0 || img >= num_pixmaps)
-        return NULL;
+        return nullptr;
 
     if (pixmaps[img].state != BMS_READY)
     {
         if (Bitmap_create(d, img) == -1)
-            return NULL;
+            return nullptr;
     }
 
     return &pixmaps[img].bitmaps[bmp];
@@ -281,7 +281,7 @@ static void Bitmap_blend_with_color(int img, int bmp, int rgb)
 /**
  * Gets a pointer to the bitmap of img blended with color rgb.
  * Ensures that the bitmap returned has been initialized and created
- * properly. Returns NULL if the specified bitmap is not in appropriate
+ * properly. Returns nullptr if the specified bitmap is not in appropriate
  * state or cannot be created.
  */
 xp_bitmap_t *Bitmap_get_blended(Drawable d, int img, int rgb)
@@ -289,12 +289,12 @@ xp_bitmap_t *Bitmap_get_blended(Drawable d, int img, int rgb)
     int i;
 
     if (!fullColor || img < 0 || img >= num_pixmaps)
-        return NULL;
+        return nullptr;
 
     if (pixmaps[img].state != BMS_READY)
     {
         if (Bitmap_create(d, img) == -1)
-            return NULL;
+            return nullptr;
     }
 
     for (i = 0; i < ABS(pixmaps[img].count); i++)
@@ -440,7 +440,7 @@ void Bitmap_paint(Drawable d, int img, int x, int y, int bmp)
     bbox_t *box;
     irec_t area;
 
-    if ((bit = Bitmap_get(d, img, bmp)) == NULL)
+    if ((bit = Bitmap_get(d, img, bmp)) == nullptr)
         return;
     box = &bit->bbox;
 
@@ -462,7 +462,7 @@ void Bitmap_paint_blended(Drawable d, int img, int x, int y, int rgb)
     bbox_t *box;
     irec_t area;
 
-    if ((bit = Bitmap_get_blended(d, img, rgb)) == NULL)
+    if ((bit = Bitmap_get_blended(d, img, rgb)) == nullptr)
         return;
     box = &bit->bbox;
 

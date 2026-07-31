@@ -220,7 +220,7 @@ static XFontStruct *Set_font(Display *display, GC gc,
 {
     XFontStruct *font;
 
-    if ((font = XLoadQueryFont(display, fontName)) == NULL)
+    if ((font = XLoadQueryFont(display, fontName)) == nullptr)
     {
         error("Couldn't find font '%s' for %s, using default font",
               fontName, resName);
@@ -267,13 +267,13 @@ static void Init_disp_prop(Display *d, Window win,
     xsh.x = x;
     xsh.y = y;
 
-    xclh.res_name = NULL;     /* NULL: Automatically uses Argv[0], */
+    xclh.res_name = nullptr;  /* nullptr: Automatically uses Argv[0], */
     xclh.res_class = myClass; /* stripped of directory prefixes. */
 
     /*
      * Set the above properties.
      */
-    XSetWMProperties(d, win, NULL, NULL, Argv, Argc,
+    XSetWMProperties(d, win, nullptr, nullptr, Argv, Argc,
                      &xsh, &xwmh, &xclh);
 
     /*
@@ -322,7 +322,7 @@ int Init_top(void)
      * Get toplevel geometry.
      */
     top_flags = 0;
-    if (geometry != NULL && geometry[0] != '\0')
+    if (geometry != nullptr && geometry[0] != '\0')
         mask = XParseGeometry(geometry, &x, &y, &w, &h);
     else
         mask = 0;
@@ -375,10 +375,10 @@ int Init_top(void)
         top_y = (DisplayHeight(dpy, DefaultScreen(dpy)) - top_height) / 2;
         top_flags |= PPosition;
     }
-    if (geometry != NULL)
+    if (geometry != nullptr)
     {
         free(geometry);
-        geometry = NULL;
+        geometry = nullptr;
     }
 
     /*
@@ -528,28 +528,28 @@ int Init_playing_windows(void)
                            0 + 0 * BUTTON_WIDTH, 0,
                            BUTTON_WIDTH, ButtonHeight,
                            1, "QUIT",
-                           Quit_callback, NULL);
+                           Quit_callback, nullptr);
     Widget_create_activate(button_form,
                            1 + 1 * BUTTON_WIDTH, 0,
                            BUTTON_WIDTH, ButtonHeight,
                            1, "ABOUT",
-                           About_callback, NULL);
+                           About_callback, nullptr);
     menu_button = Widget_create_menu(button_form,
                                      2 + 2 * BUTTON_WIDTH, 0,
                                      BUTTON_WIDTH, ButtonHeight,
                                      1, "MENU");
     Widget_add_pulldown_entry(menu_button,
-                              "KEYS", Keys_callback, NULL);
+                              "KEYS", Keys_callback, nullptr);
     Widget_add_pulldown_entry(menu_button,
-                              "CONFIG", Config_callback, NULL);
+                              "CONFIG", Config_callback, nullptr);
     Widget_add_pulldown_entry(menu_button,
-                              "COLORS", Colors_callback, NULL);
+                              "COLORS", Colors_callback, nullptr);
     Widget_add_pulldown_entry(menu_button,
-                              "SCORE", Score_callback, NULL);
+                              "SCORE", Score_callback, nullptr);
     Widget_add_pulldown_entry(menu_button,
-                              "PLAYER", Player_callback, NULL);
+                              "PLAYER", Player_callback, nullptr);
     Widget_add_pulldown_entry(menu_button,
-                              "MOTD", Motd_callback, NULL);
+                              "MOTD", Motd_callback, nullptr);
     Widget_map_sub(button_form);
 
     /* Create score list window */
@@ -596,7 +596,7 @@ int Init_playing_windows(void)
      */
     XQueryBestCursor(dpy, drawWindow, 1, 1, &w, &h);
     pix = XCreatePixmap(dpy, drawWindow, w, h, 1);
-    cursorGC = XCreateGC(dpy, pix, 0, NULL);
+    cursorGC = XCreateGC(dpy, pix, 0, nullptr);
     XSetForeground(dpy, cursorGC, 0);
     XFillRectangle(dpy, pix, cursorGC, 0, 0, w, h);
     XFreeGC(dpy, cursorGC);
@@ -724,17 +724,17 @@ void Platform_specific_cleanup(void)
     /* the option may have been toggled in game to  */
     /* off so we cant trust that                    */
 
-    if (dpy != NULL)
+    if (dpy != nullptr)
     {
         XAutoRepeatOn(dpy);
         Colors_cleanup();
         XCloseDisplay(dpy);
-        dpy = NULL;
+        dpy = nullptr;
         if (kdpy)
         {
             XAutoRepeatOn(kdpy);
             XCloseDisplay(kdpy);
-            kdpy = NULL;
+            kdpy = nullptr;
         }
     }
     Widget_cleanup();
@@ -749,7 +749,7 @@ int FatalError(Display *display)
 
 void Scale_dashes(void)
 {
-    if (dpy == NULL)
+    if (dpy == nullptr)
         return;
 
     dashes[0] = WINSCALE(8);

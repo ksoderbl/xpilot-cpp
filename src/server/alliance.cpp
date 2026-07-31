@@ -269,7 +269,7 @@ static alliance_t *Find_alliance(int id)
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 /*
@@ -279,7 +279,7 @@ int Get_alliance_member_count(int id)
 {
     alliance_t *alliance = Find_alliance(id);
 
-    if (alliance != NULL)
+    if (alliance != nullptr)
         return alliance->NumMembers;
 
     return 0;
@@ -329,7 +329,7 @@ static int Create_alliance(player_t *pl1, player_t *pl2)
     alliance_t *alliance = (alliance_t *)malloc(sizeof(alliance_t));
     char msg[MSG_LEN];
 
-    if (alliance == NULL)
+    if (alliance == nullptr)
     {
         error("Not enough memory for new alliance.\n");
         return 0;

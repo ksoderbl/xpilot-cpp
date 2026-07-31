@@ -31,7 +31,7 @@
 #include "images.h"
 #include "sdlpaint.h"
 
-static image_t *images = NULL;
+static image_t *images = nullptr;
 static int num_images = 0, max_images = 0;
 static int first_texture = 0;
 
@@ -71,7 +71,7 @@ static int Image_init(image_t *img)
          img->data_width, img->data_height);
 
     img->data = XCALLOC(unsigned int, img->data_width * img->data_height);
-    if (img->data == NULL)
+    if (img->data == nullptr)
     {
         error("Failed to allocate memory for: %s size %dx%d",
               img->filename, img->data_width, img->data_height);
@@ -127,14 +127,14 @@ image_t *Image_get(int ind)
     image_t *img;
 
     if (ind >= num_images)
-        return NULL;
+        return nullptr;
     img = &images[ind];
-    if (img == NULL)
-        return NULL;
+    if (img == nullptr)
+        return nullptr;
     if (img->state == IMG_STATE_UNINITIALIZED)
         Image_init(img);
     if (img->state != IMG_STATE_READY)
-        return NULL;
+        return nullptr;
     return img;
 }
 
@@ -150,7 +150,7 @@ void Image_use_texture(int ind)
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
 
-    if (img == NULL)
+    if (img == nullptr)
     {
         warn("Texture %d is undefined.\n", ind);
         return;
@@ -169,7 +169,7 @@ void Image_no_texture(void)
 
 void Image_paint(int ind, int x, int y, int frame, int c)
 {
-    Image_paint_area(ind, x, y, frame, NULL, c);
+    Image_paint_area(ind, x, y, frame, nullptr, c);
 }
 
 void Image_paint_area(int ind, int x, int y, int frame, irec_t *r, int c)
@@ -179,10 +179,10 @@ void Image_paint_area(int ind, int x, int y, int frame, irec_t *r, int c)
     float tx1, ty1, tx2, ty2;
 
     img = Image_get(ind);
-    if (img == NULL)
+    if (img == nullptr)
         return;
 
-    if (r == NULL)
+    if (r == nullptr)
     {
         whole.x = 0;
         whole.y = 0;
@@ -224,7 +224,7 @@ void Image_paint_rotated(int ind, int x, int y, int dir, int color)
     float tx1, ty1, tx2, ty2;
 
     img = Image_get(ind);
-    if (img == NULL)
+    if (img == nullptr)
         return;
 
     whole.x = 0;
@@ -320,7 +320,7 @@ void Images_cleanup(void)
 {
     int i;
 
-    if (images == NULL)
+    if (images == nullptr)
         return;
 
     for (i = 0; i < num_images; i++)

@@ -36,13 +36,13 @@ END_MESSAGE_MAP()
 CXPreplayDoc::CXPreplayDoc()
 {
 	docOpened = 0;
-	rc.nickname = NULL;
-	rc.realname = NULL;
-	rc.hostname = NULL;
-	rc.servername = NULL;
-	rc.recorddate = NULL;
-	rc.gameFont = NULL;
-	rc.msgFont = NULL;
+	rc.nickname = nullptr;
+	rc.realname = nullptr;
+	rc.hostname = nullptr;
+	rc.servername = nullptr;
+	rc.recorddate = nullptr;
+	rc.gameFont = nullptr;
+	rc.msgFont = nullptr;
 }
 
 CXPreplayDoc::~CXPreplayDoc()
@@ -80,7 +80,7 @@ void CXPreplayDoc::Serialize(CArchive &ar)
 
 		if (!file.Open((LPCTSTR)filename, CFile::modeRead))
 		{
-			MessageBox(NULL, "Save failed, unable to open sourcefile", "Error", MB_OK | MB_ICONSTOP);
+			MessageBox(nullptr, "Save failed, unable to open sourcefile", "Error", MB_OK | MB_ICONSTOP);
 			return;
 		}
 
@@ -129,7 +129,7 @@ void CXPreplayDoc::Serialize(CArchive &ar)
 			frm = frm->next;
 			delete frm->prev;
 		}
-		frm->prev = NULL;
+		frm->prev = nullptr;
 		rc.head = frm;
 		rc.cur = frm;
 		offset = frm->filepos - offset;
@@ -142,7 +142,7 @@ void CXPreplayDoc::Serialize(CArchive &ar)
 			frm = frm->prev;
 			delete frm->next;
 		}
-		frm->next = NULL;
+		frm->next = nullptr;
 		rc.tail = frm;
 
 		frm = rc.head;
@@ -156,7 +156,7 @@ void CXPreplayDoc::Serialize(CArchive &ar)
 
 		minSelection = 0;
 		maxSelection = frame_count - 1;
-		UpdateAllViews(NULL);
+		UpdateAllViews(nullptr);
 		filename = ar.GetFile()->GetFilePath();
 
 		EndWaitCursor();
@@ -169,13 +169,13 @@ void CXPreplayDoc::Serialize(CArchive &ar)
 			docOpened = 0;
 			FreeFrames();
 			FreeRC();
-			rc.head = NULL;
-			rc.tail = NULL;
-			rc.cur = NULL;
+			rc.head = nullptr;
+			rc.tail = nullptr;
+			rc.cur = nullptr;
 		}
 
 		frame_count = 0;
-		rc.tail = NULL;
+		rc.tail = nullptr;
 		max.x = -9999;
 		max.y = -9999;
 		rc.eof = false;
@@ -244,7 +244,7 @@ void CXPreplayDoc::ReadHeader(CArchive &ar)
 	ar >> nl;
 	if (strcmp(magic, "XPRC") || dot != '.' || nl != '\n')
 	{
-		MessageBox(NULL, "Not a valid XPilot Recording file.", "Read error", MB_OK | MB_ICONHAND);
+		MessageBox(nullptr, "Not a valid XPilot Recording file.", "Read error", MB_OK | MB_ICONHAND);
 		return;
 	}
 	/*
@@ -256,7 +256,7 @@ void CXPreplayDoc::ReadHeader(CArchive &ar)
 	{
 		errormessage.Format("Incompatible version. (file: %c.%c)(program: %c.%c)",
 							major, minor, RC_MAJORVERSION, RC_MINORVERSION);
-		MessageBox(NULL, (LPCTSTR)errormessage, "Read error", MB_OK | MB_ICONHAND);
+		MessageBox(nullptr, (LPCTSTR)errormessage, "Read error", MB_OK | MB_ICONHAND);
 		return;
 	}
 	rc.majorversion = major;
@@ -387,7 +387,7 @@ void CXPreplayDoc::ReadFont(CArchive &ar, char **fontname, int *fontsize)
 void CXPreplayDoc::ReadNextFrame(CArchive &ar)
 {
 	char c;
-	struct frame *f = NULL;
+	struct frame *f = nullptr;
 
 	if (rc.eof)
 	{
@@ -409,7 +409,7 @@ void CXPreplayDoc::ReadNextFrame(CArchive &ar)
 		CString errormessage;
 
 		errormessage.Format("Corrupt record file, next frame expected, not %d.  Truncating.", c);
-		MessageBox(NULL, (LPCTSTR)errormessage, "Read error", MB_OK | MB_ICONHAND);
+		MessageBox(nullptr, (LPCTSTR)errormessage, "Read error", MB_OK | MB_ICONHAND);
 
 		rc.eof = true;
 		return;
@@ -421,23 +421,23 @@ void CXPreplayDoc::ReadNextFrame(CArchive &ar)
 	f->filepos = ar.GetFile()->GetPosition() - 1; // starting at RC_NEWFRAME
 	ar >> f->width;
 	ar >> f->height;
-	f->shapes = NULL;
-	f->next = NULL;
-	f->prev = NULL;
+	f->shapes = nullptr;
+	f->next = nullptr;
+	f->prev = nullptr;
 	f->number = frame_count;
 
 	ReadFrameData(ar, f);
 
-	if (rc.tail == NULL)
+	if (rc.tail == nullptr)
 	{
-		f->next = NULL;
-		f->prev = NULL;
+		f->next = nullptr;
+		f->prev = nullptr;
 		rc.tail = rc.head = rc.cur = f;
 	}
 	else
 	{
 		f->prev = rc.tail;
-		f->next = NULL;
+		f->next = nullptr;
 		rc.tail->next = f;
 		rc.tail = f;
 	}
@@ -448,8 +448,8 @@ void CXPreplayDoc::ReadNextFrame(CArchive &ar)
 void CXPreplayDoc::ReadFrameData(CArchive &ar, struct frame *f)
 {
 	char c = 0, prev_c;
-	struct rShape *shp = NULL,
-				  *shphead = NULL,
+	struct rShape *shp = nullptr,
+				  *shphead = nullptr,
 				  *newshp;
 	CPoint *xpp;
 	CRect *xrp;
@@ -471,7 +471,7 @@ void CXPreplayDoc::ReadFrameData(CArchive &ar, struct frame *f)
 		}
 		catch (CArchiveException *e)
 		{
-			MessageBox(NULL, "Premature End-Of-File encountered. Truncating.", "Read error", MB_OK | MB_ICONWARNING);
+			MessageBox(nullptr, "Premature End-Of-File encountered. Truncating.", "Read error", MB_OK | MB_ICONWARNING);
 			done = true;
 			rc.eof = true;
 			continue;
@@ -497,10 +497,10 @@ void CXPreplayDoc::ReadFrameData(CArchive &ar, struct frame *f)
 		case RC_DRAWSEGMENTS:
 		case RC_DAMAGED:
 			newshp = new struct rShape;
-			newshp->next = NULL;
+			newshp->next = nullptr;
 			newshp->type = 0;
 
-			if (shp == NULL)
+			if (shp == nullptr)
 			{
 				shp = newshp;
 				shphead = shp;
@@ -734,7 +734,7 @@ void CXPreplayDoc::ReadFrameData(CArchive &ar, struct frame *f)
 			CString errormessage;
 
 			errormessage.Format("Unknown shape type %d (previous = %d) when reading frame %d.\nTruncating...", c, prev_c, frame_count); //, frames_in_core);
-			MessageBox(NULL, (LPCTSTR)errormessage, "Read error", MB_OK | MB_ICONEXCLAMATION);
+			MessageBox(nullptr, (LPCTSTR)errormessage, "Read error", MB_OK | MB_ICONEXCLAMATION);
 
 			done = true;
 			continue;
@@ -763,15 +763,15 @@ CXPreplayDoc::miniGC *CXPreplayDoc::ReadGCValues(CArchive &ar)
 
 	if (c == RC_NOGC)
 	{
-		return NULL;
+		return nullptr;
 	}
 	else if (c != RC_GC)
 	{
 		CString errormessage;
 
 		errormessage.Format("GC expected, not %d", c);
-		MessageBox(NULL, (LPCTSTR)errormessage, "Read error", MB_OK | MB_ICONHAND);
-		return NULL;
+		MessageBox(nullptr, (LPCTSTR)errormessage, "Read error", MB_OK | MB_ICONHAND);
+		return nullptr;
 	}
 	else
 	{
@@ -883,7 +883,7 @@ void CXPreplayDoc::SkipTile(CArchive &ar)
 		CString errormessage;
 
 		errormessage.Format("Error: New tile expected, not found! (%d) (%d)\n", ch, count);
-		MessageBox(NULL, (LPCTSTR)errormessage, "Read error", MB_OK | MB_ICONEXCLAMATION);
+		MessageBox(nullptr, (LPCTSTR)errormessage, "Read error", MB_OK | MB_ICONEXCLAMATION);
 		rc.eof = true;
 		return;
 	}

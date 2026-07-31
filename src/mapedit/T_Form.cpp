@@ -26,7 +26,7 @@
 
 #include "T_Toolkit.h"
 
-T_Form_t *T_Form = NULL;
+T_Form_t *T_Form = nullptr;
 
 /***************************************************************************/
 /* T_FormEventCheck                                                        */
@@ -72,10 +72,10 @@ void T_FormExpose(XEvent *report)
 
     win = report->xexpose.window;
     form = (*(SeekForm(win, 0)));
-    if (form == NULL)
+    if (form == nullptr)
         return;
     field = form->field;
-    while (field != NULL)
+    while (field != nullptr)
     {
         if (field->active != INACTIVE)
         {
@@ -111,9 +111,9 @@ void T_FormExpose(XEvent *report)
                                              i * h + field->y, w - 1, h - 1, RAISED, label);
                         }
                         multi++;
-                        if (label != NULL)
+                        if (label != nullptr)
                         {
-                            label = strtok(NULL, ";");
+                            label = strtok(nullptr, ";");
                         }
                     }
                 }
@@ -126,7 +126,7 @@ void T_FormExpose(XEvent *report)
 
             case T_STRING_ENTRY:
                 T_DrawEntryField(form, field);
-                if (field->label != NULL)
+                if (field->label != nullptr)
                 {
                     w = XTextWidth(T_Font, field->label, strlen(field->label));
                     i = field->x + field->x2;
@@ -163,10 +163,10 @@ void T_FormButtonPress(XEvent *report)
     btn = report->xbutton.button;
 
     form = (*(SeekForm(win, 0)));
-    if (form == NULL)
+    if (form == nullptr)
         return;
     field = form->field;
-    while (field != NULL)
+    while (field != nullptr)
     {
         if ((x > field->x) && (y > field->y) && (x < (field->x + field->width)) &&
             (y < (field->y + field->height)) && (field->active == ACTIVE))
@@ -310,9 +310,9 @@ void T_FormKeyPress(XEvent *report)
     char *tmpstr, *tmpstr2;
 
     form = (*(SeekForm(report->xkey.window, 0)));
-    if (form == NULL)
+    if (form == nullptr)
         return;
-    if (form->entry == NULL)
+    if (form->entry == nullptr)
         return;
     count = XLookupString(&report->xkey, buffer, bufsize, &keysym, &compose);
     buffer[bufsize] = '\0';
@@ -423,7 +423,7 @@ void CallFieldHandler(T_Form_t *form, T_Field_t *field, int x, int y,
 {
     HandlerInfo_t info;
 
-    if (handler == NULL)
+    if (handler == nullptr)
         return;
     info.form = form;
     info.field = field;
@@ -447,23 +447,23 @@ void T_FormClear(Window win)
 
     /* traverse until we find the form correct window */
     form = SeekForm(win, 0);
-    if ((*form) == NULL)
+    if ((*form) == nullptr)
         return;
 
     /* traverse fields and free as we go */
     field = (*form)->field;
-    while (field != NULL)
+    while (field != nullptr)
     {
         delfield = field->next;
         free(field);
         field = delfield;
     }
-    (*form)->field = NULL;
-    (*form)->entry = NULL;
+    (*form)->field = nullptr;
+    (*form)->entry = nullptr;
     (*form)->entry_cursor = (*form)->entry_pos = 0;
     if ((*form)->entry_restore)
         free((*form)->entry_restore);
-    (*form)->entry_restore = (char *)NULL;
+    (*form)->entry_restore = (char *)nullptr;
 }
 /***************************************************************************/
 /* T_FormCloseWindow                                                       */
@@ -478,7 +478,7 @@ void T_FormCloseWindow(Window win)
 
     /* traverse until we find the form correct window */
     form = SeekForm(win, 0);
-    if ((*form) == NULL)
+    if ((*form) == nullptr)
         return;
 
     XDestroyWindow(display, win);
@@ -488,7 +488,7 @@ void T_FormCloseWindow(Window win)
 
     /* traverse fields and free as we go */
     field = delform->field;
-    while (field != NULL)
+    while (field != nullptr)
     {
         delfield = field->next;
         free(field);
@@ -512,21 +512,21 @@ T_Form_t **SeekForm(Window win, short add)
 
     /* traverse until we find the form with the specified window */
     form = &T_Form;
-    while (((*form) != NULL) && ((*form)->window != win))
+    while (((*form) != nullptr) && ((*form)->window != win))
     {
         form = &((*form)->next);
     }
 
     /* if we are at the end add a window */
-    if (((*form) == NULL) && (add))
+    if (((*form) == nullptr) && (add))
     {
         (*form) = (T_Form_t *)malloc(sizeof(T_Form_t));
         (*form)->window = win;
-        (*form)->field = NULL;
-        (*form)->entry = NULL;
+        (*form)->field = nullptr;
+        (*form)->entry = nullptr;
         (*form)->entry_cursor = (*form)->entry_pos = 0;
-        (*form)->entry_restore = NULL;
-        (*form)->next = NULL;
+        (*form)->entry_restore = nullptr;
+        (*form)->next = nullptr;
     }
 
     return form;
@@ -543,17 +543,17 @@ void ChangeField(Window win, const char *name, const char *label,
                  int charvar_length, short null)
 {
     T_Form_t **form;
-    T_Field_t **field, *next = NULL;
+    T_Field_t **field, *next = nullptr;
 
-    if ((win == 0) || (name == NULL))
+    if ((win == 0) || (name == nullptr))
         return;
     form = SeekForm(win, 1);
     field = &((*form)->field);
-    while (((*field) != NULL) && (strcmp((*field)->name, name)))
+    while (((*field) != nullptr) && (strcmp((*field)->name, name)))
     {
         field = &((*field)->next);
     }
-    if ((*field) != NULL)
+    if ((*field) != nullptr)
     {
         next = (*field)->next;
         free(*field);
@@ -561,14 +561,14 @@ void ChangeField(Window win, const char *name, const char *label,
     (*field) = (T_Field_t *)malloc(sizeof(T_Field_t));
     (*field)->name = (char *)malloc(strlen(name) + 1);
     strcpy((*field)->name, name);
-    if (label != NULL)
+    if (label != nullptr)
     {
         (*field)->label = (char *)malloc(strlen(label) + 1);
         strcpy((*field)->label, label);
     }
     else
     {
-        (*field)->label = NULL;
+        (*field)->label = nullptr;
     }
     (*field)->type = type;
     (*field)->active = active;
@@ -603,7 +603,7 @@ void T_FormHoldButton(Window win, const char *name, short x, short y,
                       short width, short height, const char *label, int (*handler)(HandlerInfo))
 {
     ChangeField(win, name, label, T_HOLD_BUTTON, ACTIVE, x, y, width, height, 0, 0,
-                handler, (int *)NULL, (char *)NULL, 0, 0);
+                handler, (int *)nullptr, (char *)nullptr, 0, 0);
 }
 
 /***************************************************************************/
@@ -623,7 +623,7 @@ void T_FormButton(Window win, const char *name, short x, short y,
                   short width, short height, const char *label, int (*handler)(HandlerInfo))
 {
     ChangeField(win, name, label, T_BUTTON, ACTIVE, x, y, width, height, 0, 0,
-                handler, (int *)NULL, (char *)NULL, 0, 0);
+                handler, (int *)nullptr, (char *)nullptr, 0, 0);
 }
 
 /***************************************************************************/
@@ -647,7 +647,7 @@ void T_FormMultiButton(Window win, const char *name, short x, short y,
                        int *intvar, short null)
 {
     ChangeField(win, name, label, T_MULTI_BUTTON, ACTIVE, x, y, width, height, x2, y2,
-                NULL, intvar, (char *)NULL, 0, null);
+                nullptr, intvar, (char *)nullptr, 0, null);
 }
 
 /***************************************************************************/
@@ -666,8 +666,8 @@ void T_FormMultiButton(Window win, const char *name, short x, short y,
 void T_FormScrollArea(Window win, const char *name, short type, short x, short y,
                       short width, short height, int (*handler)(HandlerInfo))
 {
-    ChangeField(win, name, NULL, type, ACTIVE, x, y, width, height, 0, 0,
-                handler, (int *)NULL, (char *)NULL, 0, 0);
+    ChangeField(win, name, nullptr, type, ACTIVE, x, y, width, height, 0, 0,
+                handler, (int *)nullptr, (char *)nullptr, 0, 0);
 }
 
 /***************************************************************************/
@@ -687,7 +687,7 @@ void T_FormText(Window win, const char *name, short x, short y,
                 short width, short height, const char *label, short justify)
 {
     ChangeField(win, name, label, T_TEXT, ACTIVE, x, y, width, height, justify, 0,
-                NULL, (int *)NULL, (char *)NULL, 0, 0);
+                nullptr, (int *)nullptr, (char *)nullptr, 0, 0);
 }
 
 /***************************************************************************/
@@ -710,7 +710,7 @@ void T_FormStringEntry(Window win, const char *name, short x, short y,
                        const char *charvar, int charvar_length, int (*handler)(HandlerInfo))
 {
     ChangeField(win, name, label, T_STRING_ENTRY, ACTIVE, x, y, width, height, x2, y2,
-                handler, (int *)NULL, charvar, charvar_length, 0);
+                handler, (int *)nullptr, charvar, charvar_length, 0);
 }
 
 /***************************************************************************/
@@ -749,7 +749,7 @@ void T_DrawEntryField(T_Form_t *form, T_Field_t *field)
 /*    x                                                                    */
 /* Purpose : Set global variables that point to the current text entry     */
 /*           field. Popup the old text entry field and execute the         */
-/*           function if it is not NULL.                                   */
+/*           function if it is not nullptr.                                   */
 /***************************************************************************/
 void T_SetEntryField(T_Form_t *form, T_Field_t *field, int x)
 {
@@ -768,7 +768,7 @@ void T_SetEntryField(T_Form_t *form, T_Field_t *field, int x)
     }
     else
     {
-        if (form->entry != NULL)
+        if (form->entry != nullptr)
         {
             /* BG hackfix: remember what our window is. */
             Window form_window = form->window;
@@ -785,12 +785,12 @@ void T_SetEntryField(T_Form_t *form, T_Field_t *field, int x)
             {
                 return;
             }
-            form->entry = NULL;
+            form->entry = nullptr;
             T_FormRedrawEntryField(charvar);
             free(form->entry_restore);
         }
         form->entry = field;
-        if (form->entry == NULL)
+        if (form->entry == nullptr)
             return;
 
         form->entry_restore = (char *)malloc(strlen(field->charvar) + 1);
@@ -820,10 +820,10 @@ void T_FormRedrawEntryField(char *charvar)
 
     form = T_Form;
 
-    while (form != NULL)
+    while (form != nullptr)
     {
         field = form->field;
-        while (field != NULL)
+        while (field != nullptr)
         {
             if ((field->type == T_STRING_ENTRY) && (field->charvar == charvar) && (field->active != INACTIVE))
             {

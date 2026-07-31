@@ -26,7 +26,7 @@
 
 #include "T_Toolkit.h"
 
-T_Popup_t *T_Popup = NULL;
+T_Popup_t *T_Popup = nullptr;
 
 /***************************************************************************/
 /* T_PopupCreate                                                           */
@@ -43,14 +43,14 @@ Window T_PopupCreate(int x, int y, int width, int height, const char *title)
     T_Popup_t **popup;
 
     popup = &T_Popup;
-    while ((*popup) != NULL)
+    while ((*popup) != nullptr)
     {
         popup = (T_Popup_t **)&((*popup)->next);
     }
 
     /* add a popup window to stack */
     (*popup) = (T_Popup_t *)malloc(sizeof(T_Popup_t));
-    (*popup)->next = NULL;
+    (*popup)->next = nullptr;
     if (x < 0)
         x = (root_width - width) / 2;
     if (y < 0)
@@ -89,15 +89,15 @@ Window T_PopupAlert(int type, const char *message, const char *btn1, const char 
     }
     else if (type == 2)
     {
-        // if ( btn1 == NULL ) {
+        // if ( btn1 == nullptr ) {
         //    btn1 = (char *) malloc(3);
         //    strcpy(btn1,"Ok");
         // }
-        // if ( btn2 == NULL ) {
+        // if ( btn2 == nullptr ) {
         //    btn2 = (char *) malloc(7);
         //    strcpy(btn2,"Cancel");
         // }
-        if (handler2 == NULL)
+        if (handler2 == nullptr)
         {
             handler2 = PopupCloseHandler;
         }
@@ -178,7 +178,7 @@ int T_IsPopupOpen(Window win)
     T_Popup_t *popup;
 
     popup = T_Popup;
-    while (popup != NULL)
+    while (popup != nullptr)
     {
         if (popup->window == win)
             return 1;
@@ -200,12 +200,12 @@ void T_PopupClose(Window win)
     T_Popup_t *last;
 
     popup = &T_Popup;
-    while (((*popup) != NULL) && ((*popup)->window != win))
+    while (((*popup) != nullptr) && ((*popup)->window != win))
     {
         popup = (T_Popup_t **)&((*popup)->next);
     }
 
-    if ((*popup) == NULL)
+    if ((*popup) == nullptr)
         return;
 
     /* erase this popup */

@@ -161,8 +161,8 @@ int sock_init(sock_t *sock)
 
     sock_flags_set(sock, SOCK_FLAG_INIT);
     sock->fd = SOCK_FD_INVALID;
-    sock->hostname = (char *)NULL;
-    sock->lastaddr = (void *)NULL;
+    sock->hostname = (char *)nullptr;
+    sock->lastaddr = (void *)nullptr;
     sock->timeout.seconds = SOCK_TIMEOUT_SECONDS;
 
     return sock_check(sock);
@@ -321,7 +321,7 @@ int sock_open_tcp_connected_non_blocking(sock_t *sock, char *host, int port)
          * Let's hope errno is meaningful too.
          */
         errno = 0;
-        if ((hp = sock_get_host_by_name(host)) == NULL)
+        if ((hp = sock_get_host_by_name(host)) == nullptr)
         {
             sock_set_error(sock, errno, SOCK_CALL_GETHOSTBYNAME, __LINE__);
             sock_close(sock);
@@ -384,7 +384,7 @@ int sock_connect(sock_t *sock, char *host, int port)
     if ((dest.sin_addr.s_addr & 0xFFFFFFFF) == 0xFFFFFFFF)
     {
         errno = 0;
-        if ((hp = sock_get_host_by_name(host)) == NULL)
+        if ((hp = sock_get_host_by_name(host)) == nullptr)
         {
             sock_set_error(sock, errno, SOCK_CALL_GETHOSTBYNAME, __LINE__);
             return SOCK_IS_ERROR;
@@ -449,7 +449,7 @@ char *sock_get_last_name(sock_t *sock)
         lastaddr = (struct sockaddr_in *)(sock->lastaddr);
         hp = sock_get_host_by_addr((char *)&(lastaddr->sin_addr),
                                    sizeof(lastaddr->sin_addr), AF_INET);
-        if (hp == NULL)
+        if (hp == nullptr)
             str = inet_ntoa(lastaddr->sin_addr);
         else
             str = hp->h_name;
@@ -503,7 +503,7 @@ int sock_send_dest(sock_t *sock, const char *host, int port, char *buf, int len)
     if ((dest.sin_addr.s_addr & 0xFFFFFFFF) == 0xFFFFFFFF)
     {
         errno = 0;
-        if ((hp = sock_get_host_by_name(host)) == NULL)
+        if ((hp = sock_get_host_by_name(host)) == nullptr)
             return sock_set_error(sock, errno, SOCK_CALL_GETHOSTBYNAME, __LINE__);
 
         dest.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr_list[0]))->s_addr;
@@ -534,7 +534,7 @@ char *sock_get_addr_by_name(const char *name)
     hp = sock_get_host_by_name(name);
 
     if (!hp)
-        return (char *)NULL;
+        return (char *)nullptr;
 
     return inet_ntoa(*(struct in_addr *)(hp->h_addr_list[0]));
 }
@@ -547,15 +547,15 @@ unsigned long sock_get_inet_by_addr(char *dotaddr)
 void sock_get_local_hostname(char *name, unsigned size,
                              int search_domain_for_xpilot)
 {
-    struct hostent *he = NULL;
-    struct hostent *xpilot_he = NULL;
+    struct hostent *he = nullptr;
+    struct hostent *xpilot_he = nullptr;
     int xpilot_len;
     char *dot;
     char xpilot_hostname[SOCK_HOSTNAME_LENGTH];
     static const char xpilot[] = "xpilot";
 
     gethostname(name, size);
-    if ((he = sock_get_host_by_name(name)) == NULL)
+    if ((he = sock_get_host_by_name(name)) == nullptr)
         return;
     strlcpy(name, he->h_name, size);
 
@@ -565,11 +565,11 @@ void sock_get_local_hostname(char *name, unsigned size,
      * then we try to get the FQDN via the backdoor of the IP address.
      * Let's hope it works :)
      */
-    if (strchr(he->h_name, '.') == NULL && he->h_addrtype == AF_INET)
+    if (strchr(he->h_name, '.') == nullptr && he->h_addrtype == AF_INET)
     {
         struct in_addr in;
         memcpy((void *)&in, he->h_addr_list[0], sizeof(in));
-        if ((he = sock_get_host_by_addr((char *)&in, sizeof(in), AF_INET)) != NULL && strchr(he->h_name, '.') != NULL)
+        if ((he = sock_get_host_by_addr((char *)&in, sizeof(in), AF_INET)) != nullptr && strchr(he->h_name, '.') != nullptr)
             strlcpy(name, he->h_name, size);
         else
         {
@@ -580,7 +580,7 @@ void sock_get_local_hostname(char *name, unsigned size,
                 char *s, buf[256];
                 while (fgets(buf, sizeof buf, fp))
                 {
-                    if ((s = strtok(buf, " \t\r\n")) != NULL && !strcmp(s, "domain") && (s = strtok(NULL, " \t\r\n")) != NULL)
+                    if ((s = strtok(buf, " \t\r\n")) != nullptr && !strcmp(s, "domain") && (s = strtok(nullptr, " \t\r\n")) != nullptr)
                     {
                         strcat(name, ".");
                         strcat(name, s);
@@ -591,7 +591,7 @@ void sock_get_local_hostname(char *name, unsigned size,
             }
         }
         /* make sure this is a valid FQDN. */
-        if ((he = sock_get_host_by_name(name)) == NULL)
+        if ((he = sock_get_host_by_name(name)) == nullptr)
         {
             gethostname(name, size);
             return;
@@ -608,7 +608,7 @@ void sock_get_local_hostname(char *name, unsigned size,
 
     /* Make a wild guess that a "xpilot" hostname or alias is in this domain */
     dot = name;
-    while ((dot = strchr(dot, '.')) != NULL)
+    while ((dot = strchr(dot, '.')) != nullptr)
     {
         if (xpilot_len + strlen(dot) < sizeof(xpilot_hostname))
         {
@@ -619,14 +619,14 @@ void sock_get_local_hostname(char *name, unsigned size,
              * FQDN we guessed above.  It is hard to know our IP to know
              * that an A record points to us.
              */
-            if ((xpilot_he = sock_get_host_by_name(xpilot_hostname)) != NULL &&
+            if ((xpilot_he = sock_get_host_by_name(xpilot_hostname)) != nullptr &&
                 !strcmp(name, xpilot_he->h_name))
                 break;
-            xpilot_he = NULL;
+            xpilot_he = nullptr;
         }
         ++dot;
     }
-    if (xpilot_he != NULL)
+    if (xpilot_he != nullptr)
         strlcpy(name, xpilot_hostname, size);
 }
 
@@ -715,7 +715,7 @@ int sock_readable(sock_t *sock)
     FD_ZERO(&readfds);
     FD_SET(sock->fd, &readfds);
 
-    n = select(sock->fd + 1, &readfds, NULL, NULL, &timeout);
+    n = select(sock->fd + 1, &readfds, nullptr, nullptr, &timeout);
     if (n == -1)
     {
         if (errno != EINTR)
@@ -747,7 +747,7 @@ static struct hostent *sock_get_host_by_name(const char *name)
     {
         alarm(0);
         signal(SIGALRM, SIG_DFL);
-        return (struct hostent *)NULL;
+        return (struct hostent *)nullptr;
     }
 
     signal(SIGALRM, sock_catch_alarm);
@@ -769,7 +769,7 @@ static struct hostent *sock_get_host_by_addr(const char *addr, int len, int type
     {
         alarm(0);
         signal(SIGALRM, SIG_DFL);
-        return (struct hostent *)NULL;
+        return (struct hostent *)nullptr;
     }
 
     signal(SIGALRM, sock_catch_alarm);

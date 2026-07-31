@@ -106,7 +106,7 @@ int Init_asteroids(void)
      */
     point_size = sizeof(position_t) * ANGLE_RESOLUTION;
     total_size = point_size * NUM_ASTEROID_POINTS * NUM_ASTEROID_SHAPES;
-    if ((dynmem = (char *)malloc(total_size)) == NULL)
+    if ((dynmem = (char *)malloc(total_size)) == nullptr)
     {
         error("Not enough memory for asteroid shapes");
         return -1;
@@ -256,7 +256,7 @@ static void Gui_paint_mine_name(int x, int y, char *name)
     name_len = strlen(name);
     name_width = XTextWidth(gameFont, name, name_len);
 
-    if (name != NULL)
+    if (name != nullptr)
     {
         rd.drawString(dpy, drawPixmap, gameGC,
                       WINSCALE(x) - name_width / 2,
@@ -582,7 +582,7 @@ void Gui_paint_appearing(int x, int y, int id, int count)
     if (version >= 0x4F12)
     {
         homebase_t *base = Homebase_by_id(id);
-        if (base != NULL)
+        if (base != nullptr)
             base->appeartime = (long)(loops + (count * clientFPS) / 120);
     }
 
@@ -728,7 +728,7 @@ static int Gui_is_my_tank(other_t *other)
 {
     char tank_name[MAX_NAME_LEN];
 
-    if (self == NULL || other == NULL || other->mychar != 'T' || (BIT(Setup->mode, TEAM_PLAY) && self->team != other->team))
+    if (self == nullptr || other == nullptr || other->mychar != 'T' || (BIT(Setup->mode, TEAM_PLAY) && self->team != other->team))
     {
         return 0;
     }
@@ -747,10 +747,10 @@ static int Gui_calculate_ship_color(int id, other_t *other)
     int ship_color = WHITE;
 
 #ifndef NO_BLUE_TEAM
-    if (BIT(Setup->mode, TEAM_PLAY) && self != NULL && self->id != id && other != NULL && self->team == other->team)
+    if (BIT(Setup->mode, TEAM_PLAY) && self != nullptr && self->id != id && other != nullptr && self->team == other->team)
         ship_color = BLUE;
 
-    if (self != NULL && self->id != id && other != NULL && self->alliance != ' ' && self->alliance == other->alliance)
+    if (self != nullptr && self->id != id && other != nullptr && self->alliance != ' ' && self->alliance == other->alliance)
         ship_color = BLUE;
 
     if (Gui_is_my_tank(other))
@@ -771,13 +771,13 @@ static int Gui_calculate_ship_color(int id, other_t *other)
     if (BIT(Setup->mode, LIMITED_LIVES))
     {
         /* Paint your ship in selfLWColor when on last life */
-        if (eyes != NULL && eyes->id == id && eyes->life == 0)
+        if (eyes != nullptr && eyes->id == id && eyes->life == 0)
         {
             ship_color = selfLWColor;
         }
 
         /* Paint enemy ships with last life in enemyLWColor */
-        if (eyes != NULL && eyes->id != id && other != NULL && eyeTeam != other->team && other->life == 0)
+        if (eyes != nullptr && eyes->id != id && other != nullptr && eyeTeam != other->team && other->life == 0)
         {
             ship_color = enemyLWColor;
         }
@@ -974,9 +974,9 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
     ship_color = WHITE;
 
     /* mara attempts similar behaviour to the kth ss hack */
-    if ((!instruments.showShipShapes) && (self != NULL) && (self->id != id))
+    if ((!instruments.showShipShapes) && (self != nullptr) && (self->id != id))
         cnt = set_shipshape(x, y, dir, Default_ship(), points);
-    else if ((!instruments.showMyShipShape) && (self != NULL) && (self->id == id))
+    else if ((!instruments.showMyShipShape) && (self != nullptr) && (self->id == id))
         cnt = set_shipshape(x, y, dir, Default_ship(), points);
     else
         cnt = set_shipshape(x, y, dir, ship, points);
@@ -985,8 +985,8 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
      * Determine if the name of the player should be drawn below
      * his/her ship.
      */
-    // if (self != NULL && self->id != id && other != NULL)
-    if (other != NULL)
+    // if (self != nullptr && self->id != id && other != nullptr)
+    if (other != nullptr)
         Gui_paint_ship_name(x, y, other);
 
     if (roundDelay > 0 && roundDelay % FPS < FPS / 2)
@@ -1022,7 +1022,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
         {
             if (ship_color == BLUE)
                 ship_shape = BM_SHIP_FRIEND;
-            else if (self != NULL && self->id != id)
+            else if (self != nullptr && self->id != id)
                 ship_shape = BM_SHIP_ENEMY;
             else
                 ship_shape = BM_SHIP_SELF;

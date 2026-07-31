@@ -65,14 +65,14 @@ static struct buf
     int num_read;
 } bufs[] =
     {
-        BUF_INITIALIZER((void **)&playback_ints, REC_INT, 5000, 4000, NULL, 0),
-        BUF_INITIALIZER((void **)&playback_errnos, REC_ERRNO, 5000, 4000, NULL, 0),
-        BUF_INITIALIZER((void **)&playback_shorts, REC_SHORT, 25000, 23000, NULL, 0),
-        BUF_INITIALIZER((void **)&playback_data, REC_CHAR, 200000, 100000, NULL, 0),
-        BUF_INITIALIZER((void **)&playback_sched, REC_CHAR, 50000, 40000, NULL, 0),
-        BUF_INITIALIZER((void **)&playback_ei, REC_INT, 2000, 1000, NULL, 0),
-        BUF_INITIALIZER((void **)&playback_es, REC_CHAR, 5000, 4000, NULL, 0),
-        BUF_INITIALIZER((void **)&playback_opttout, REC_INT, 2000, 100, NULL, 0)};
+        BUF_INITIALIZER((void **)&playback_ints, REC_INT, 5000, 4000, nullptr, 0),
+        BUF_INITIALIZER((void **)&playback_errnos, REC_ERRNO, 5000, 4000, nullptr, 0),
+        BUF_INITIALIZER((void **)&playback_shorts, REC_SHORT, 25000, 23000, nullptr, 0),
+        BUF_INITIALIZER((void **)&playback_data, REC_CHAR, 200000, 100000, nullptr, 0),
+        BUF_INITIALIZER((void **)&playback_sched, REC_CHAR, 50000, 40000, nullptr, 0),
+        BUF_INITIALIZER((void **)&playback_ei, REC_INT, 2000, 1000, nullptr, 0),
+        BUF_INITIALIZER((void **)&playback_es, REC_CHAR, 5000, 4000, nullptr, 0),
+        BUF_INITIALIZER((void **)&playback_opttout, REC_INT, 2000, 100, nullptr, 0)};
 
 const int num_types = sizeof(bufs) / sizeof(struct buf);
 
@@ -345,7 +345,7 @@ void Handle_recording_buffers(void)
     if (options.recordMode != 1)
         return;
 
-    tt = time(NULL);
+    tt = time(nullptr);
     if (options.recordFlushInterval)
     {
         if (tt > t + options.recordFlushInterval)

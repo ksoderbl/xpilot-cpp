@@ -40,8 +40,8 @@
 
 #include "gfx2d.h"
 
-char *texturePath = NULL;     /* Configured list of texture directories */
-char *realTexturePath = NULL; /* Real texture lookup path */
+char *texturePath = nullptr;     /* Configured list of texture directories */
+char *realTexturePath = nullptr; /* Real texture lookup path */
 
 /*
  *   Purpose: initialize xp_picture structure and load it from file.
@@ -95,7 +95,7 @@ static int Picture_find_path(const char *filename, char *path,
      * If filename doesn't contain a slash
      * then we also try the realTexturePath, if it exists.
      */
-    if (!strchr(filename, PATHNAME_SEP) && realTexturePath != NULL)
+    if (!strchr(filename, PATHNAME_SEP) && realTexturePath != nullptr)
     {
         for (dir = realTexturePath; *dir; dir = colon)
         {
@@ -202,7 +202,7 @@ int Picture_load(xp_picture_t *picture, const char *filename)
         return -1;
     }
 
-    if ((f = fopen(path, "rb")) == NULL)
+    if ((f = fopen(path, "rb")) == nullptr)
     {
         error("Cannot open \"%s\"", path);
         return -1;

@@ -82,8 +82,8 @@ static bool Player_lock_allowed(player_t *pl, player_t *lock_pl)
 {
     world_t *world = &World;
 
-    /* we can never lock on ourselves, nor on NULL. */
-    if (lock_pl == NULL || pl->id == lock_pl->id)
+    /* we can never lock on ourselves, nor on nullptr. */
+    if (lock_pl == nullptr || pl->id == lock_pl->id)
         return false;
 
     /* if we are actively playing then we can lock since we are not viewing. */
@@ -156,7 +156,7 @@ int Player_lock_closest(player_t *pl, bool next)
     world_t *world = &World;
     int i;
     double dist = 0.0, best, l;
-    player_t *lock_pl = NULL, *new_pl = NULL;
+    player_t *lock_pl = nullptr, *new_pl = nullptr;
 
     if (!next)
         CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
@@ -198,7 +198,7 @@ int Player_lock_closest(player_t *pl, bool next)
             new_pl = pl_i;
         }
     }
-    if (new_pl == NULL)
+    if (new_pl == nullptr)
         return 0;
 
     SET_BIT(pl->lock.tagged, LOCK_PLAYER);
@@ -286,7 +286,7 @@ static void Player_change_home(player_t *pl)
 
 #if 0
     /* kps - perhaps this isn't a good idea. */
-    if (pl2 != NULL && Players_are_teammates(pl, pl2) && Get_Score(pl) <= Get_Score(pl2))
+    if (pl2 != nullptr && Players_are_teammates(pl, pl2) && Get_Score(pl) <= Get_Score(pl2))
     {
         Set_player_message(pl, "You must have a higher score than your "
                                "teammate to take over their base. "
@@ -567,7 +567,7 @@ void Pause_player(player_t *pl, bool on)
         Player_set_state(pl, PL_STATE_PAUSED);
         updateScores = true;
         if (BIT(pl->have, HAS_BALL))
-            Detach_ball(pl, NULL);
+            Detach_ball(pl, nullptr);
     }
     else if (!on && Player_is_paused(pl))
     {
@@ -798,7 +798,7 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_DROP_BALL:
-                Detach_ball(pl, NULL);
+                Detach_ball(pl, nullptr);
                 break;
 
             case KEY_FIRE_SHOT:

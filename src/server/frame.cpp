@@ -144,7 +144,7 @@ static unsigned fastshot_num[DEBRIS_TYPES * 2],
             M = ((M) << 1) + (E);                 \
             P = (T *)realloc(P, (M) * sizeof(T)); \
         }                                         \
-        if (P == NULL)                            \
+        if (P == nullptr)                         \
         {                                         \
             error("No memory");                   \
             N = M = 0;                            \
@@ -219,7 +219,7 @@ static inline bool click_inview(click_visibility_t &cv, int cx, int cy)
             ptr_ = (debris_t *)malloc((max_ = 16) * sizeof(*ptr_));                                                     \
         else                                                                                                            \
             ptr_ = (debris_t *)realloc(ptr_, (max_ += max_) * sizeof(*ptr_));                                           \
-        if (ptr_ == NULL)                                                                                               \
+        if (ptr_ == nullptr)                                                                                            \
         {                                                                                                               \
             error("No memory for debris");                                                                              \
             num_ = 0;                                                                                                   \
@@ -422,7 +422,7 @@ static void Frame_radar_buffer_send(connection_t *conn, player_t *pl)
         num_radar = MIN(256, MAX_SHUFFLE_INDEX);
     shuffle_bufsize = (num_radar * sizeof(shuffle_t));
     radar_shuffle = (shuffle_t *)malloc(shuffle_bufsize);
-    if (radar_shuffle == (shuffle_t *)NULL)
+    if (radar_shuffle == (shuffle_t *)nullptr)
         return;
     for (i = 0; i < num_radar; i++)
         radar_shuffle[i] = i;
@@ -691,7 +691,7 @@ static void Frame_shuffle_objects(void)
         XFREE(object_shuffle_ptr);
         max_object_shuffle = num_object_shuffle;
         object_shuffle_ptr = XMALLOC(shuffle_t, max_object_shuffle);
-        if (object_shuffle_ptr == NULL)
+        if (object_shuffle_ptr == nullptr)
             max_object_shuffle = 0;
     }
 
@@ -725,7 +725,7 @@ static void Frame_shuffle_players(void)
         XFREE(player_shuffle_ptr);
         max_player_shuffle = num_player_shuffle;
         player_shuffle_ptr = XMALLOC(shuffle_t, max_player_shuffle);
-        if (player_shuffle_ptr == NULL)
+        if (player_shuffle_ptr == nullptr)
             max_player_shuffle = 0;
     }
 
@@ -1127,7 +1127,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
             }
         }
 
-        if (pl_i->ball != NULL && clpos_inview(&cv, pl_i->ball->pos))
+        if (pl_i->ball != nullptr && clpos_inview(&cv, pl_i->ball->pos))
             Send_connector(conn, pl_i->ball->pos, pl_i->pos, 0);
     }
 }
@@ -1304,7 +1304,7 @@ void Frame_update(void)
 
     Frame_shuffle();
 
-    if (options.gameDuration > 0.0 && game_over_called == false && oldTimeLeft != (newTimeLeft = gameOverTime - time(NULL)))
+    if (options.gameDuration > 0.0 && game_over_called == false && oldTimeLeft != (newTimeLeft = gameOverTime - time(nullptr)))
     {
         /*
          * Do this once a second.
@@ -1321,7 +1321,7 @@ void Frame_update(void)
     {
         pl = Player_by_index(i);
         conn = pl->conn;
-        if (conn == NULL)
+        if (conn == nullptr)
             continue;
         if (BIT(pl->obj_status, LEGACY_PAUSE | LEGACY_GAME_OVER) && !options.allowViewing)
         {
@@ -1424,7 +1424,7 @@ void Set_message(const char *message)
     for (i = 0; i < NumPlayers; i++)
     {
         pl = Player_by_index(i);
-        if (pl->conn != NULL)
+        if (pl->conn != nullptr)
             Send_message(pl->conn, msg);
     }
 }
@@ -1443,7 +1443,7 @@ void Set_player_message(player_t *pl, const char *message)
     }
     else
         msg = message;
-    if (pl->conn != NULL)
+    if (pl->conn != nullptr)
         Send_message(pl->conn, msg);
     else if (Player_is_robot(pl))
         Robot_message(pl, msg);
@@ -1474,7 +1474,7 @@ void Set_message_f(const char *fmt, ...)
     for (i = 0; i < NumPlayers; i++)
     {
         pl = Player_by_index(i);
-        if (pl->conn != NULL)
+        if (pl->conn != nullptr)
             Send_message(pl->conn, msg);
     }
     // for (i = 0; i < NumSpectators; i++)
@@ -1505,7 +1505,7 @@ void Set_player_message_f(player_t *pl, const char *fmt, ...)
         assert(strlen(msg) < MSG_LEN);
     }
 
-    if (pl->conn != NULL)
+    if (pl->conn != nullptr)
         Send_message(pl->conn, msg);
     else if (Player_is_robot(pl))
         Robot_message(pl, msg);

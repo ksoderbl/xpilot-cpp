@@ -391,7 +391,7 @@ static void PlayerCollision(void)
                             Score_players(j_tank_owner_pl, sc, pl->name,
                                           pl, -sc, pl_j->name);
                         } /* don't bother scoring two tanks */
-                        Handle_Scoring(SCORE_COLLISION, pl, pl_j, NULL, NULL);
+                        Handle_Scoring(SCORE_COLLISION, pl, pl_j, nullptr, nullptr);
                     }
                     else
                     {
@@ -413,7 +413,7 @@ static void PlayerCollision(void)
                             sc = (int)floor(Rate(pl->score, pl_j->score) * options.runoverKillScoreMult);
                         Score_players(i_tank_owner_pl, sc, pl_j->name,
                                       pl_j, -sc, pl->name);
-                        Handle_Scoring(SCORE_ROADKILL, pl, pl_j, NULL, NULL);
+                        Handle_Scoring(SCORE_ROADKILL, pl, pl_j, nullptr, nullptr);
                     }
                 }
                 else
@@ -436,7 +436,7 @@ static void PlayerCollision(void)
                             sc = (int)floor(Rate(pl_j->score, pl->score) * options.runoverKillScoreMult);
                         Score_players(j_tank_owner_pl, sc, pl->name,
                                       pl, -sc, pl_j->name);
-                        Handle_Scoring(SCORE_ROADKILL, pl_j, pl, NULL, NULL);
+                        Handle_Scoring(SCORE_ROADKILL, pl_j, pl, nullptr, nullptr);
                     }
                 }
 
@@ -460,13 +460,13 @@ static void PlayerCollision(void)
         /* Player picking up ball/treasure */
         if (!BIT(pl->used, USES_CONNECTOR) || BIT(pl->used, USES_PHASING_DEVICE))
         {
-            pl->ball = NULL;
+            pl->ball = nullptr;
         }
-        else if (pl->ball != NULL)
+        else if (pl->ball != nullptr)
         {
             ballobject_t *ball = pl->ball;
             if (ball->obj_life <= 0 || ball->id != NO_ID)
-                pl->ball = NULL;
+                pl->ball = nullptr;
             else
             {
                 double distance = World_wrap_length(
@@ -490,7 +490,7 @@ static void PlayerCollision(void)
                     // World.treasures[ball->treasure].have = false;
                     ball->ball_treasure->have = false;
                     SET_BIT(pl->have, HAS_BALL);
-                    pl->ball = NULL;
+                    pl->ball = nullptr;
                     sound_play_sensors(pl->pos, CONNECT_BALL_SOUND);
                 }
             }
@@ -810,7 +810,7 @@ static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radi
         Set_message_f("%s was killed by a ball.", pl->name);
         sc = (int)floor(Rate(0, pl->score) * options.ballKillScoreMult * options.unownedKillScoreMult);
         Score(pl, -sc, pl->pos, "Ball");
-        Handle_Scoring(SCORE_BALL_KILL, NULL, pl, NULL, NULL);
+        Handle_Scoring(SCORE_BALL_KILL, nullptr, pl, nullptr, nullptr);
     }
     else
     {
@@ -1024,7 +1024,7 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
 static void Player_collides_with_mine(player_t *pl, mineobject_t *mine)
 {
     int sc;
-    player_t *kp = NULL;
+    player_t *kp = nullptr;
 
     sound_play_sensors(pl->pos, PLAYER_HIT_MINE_SOUND);
     if (mine->id == NO_ID && mine->mine_owner == NO_ID)
@@ -1080,13 +1080,13 @@ static void Player_collides_with_mine(player_t *pl, mineobject_t *mine)
         sc = (int)floor(Rate(kp->score, pl->score) * options.mineScoreMult);
         Score_players(kp, sc, pl->name,
                       pl, -sc, kp->name);
-        Handle_Scoring(SCORE_HIT_MINE, kp, pl, NULL, NULL);
+        Handle_Scoring(SCORE_HIT_MINE, kp, pl, nullptr, nullptr);
     }
 }
 
 static void Player_collides_with_debris(player_t *pl, object_t *obj)
 {
-    player_t *kp = NULL;
+    player_t *kp = nullptr;
     int sc;
     double cost;
     char msg[MSG_LEN];
@@ -1099,7 +1099,7 @@ static void Player_collides_with_debris(player_t *pl, object_t *obj)
     {
         Player_set_state(pl, PL_STATE_KILLED);
         sprintf(msg, "%s succumbed to an explosion.", pl->name);
-        player_t *kp = NULL;
+        player_t *kp = nullptr;
         if (obj->id != NO_ID)
         {
             kp = Player_by_id(obj->id);
@@ -1121,7 +1121,7 @@ static void Player_collides_with_debris(player_t *pl, object_t *obj)
             Score_players(kp, sc, pl->name,
                           pl, -sc, kp->name);
         }
-        Handle_Scoring(SCORE_EXPLOSION, kp, pl, NULL, NULL);
+        Handle_Scoring(SCORE_EXPLOSION, kp, pl, nullptr, nullptr);
         obj->obj_life = 0.0;
         return;
     }
@@ -1140,7 +1140,7 @@ static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
     if (ast->obj_life == 0 && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
     {
         Score(pl, options.asteroidPoints, ast->pos, "");
-        Handle_Scoring(SCORE_ASTEROID_KILL, pl, NULL, ast, NULL);
+        Handle_Scoring(SCORE_ASTEROID_KILL, pl, nullptr, ast, nullptr);
     }
     if (!Player_uses_emergency_shield(pl))
         Player_add_fuel(pl, -cost);
@@ -1157,13 +1157,13 @@ static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
 
         sc = (int)floor(Rate(0, pl->score) * options.unownedKillScoreMult);
         Score(pl, -sc, pl->pos, "[Asteroid]");
-        Handle_Scoring(SCORE_ASTEROID_DEATH, NULL, pl, NULL, NULL);
+        Handle_Scoring(SCORE_ASTEROID_DEATH, nullptr, pl, nullptr, nullptr);
         if (Player_is_tank(pl) && options.asteroidPoints > 0)
         {
             player_t *owner_pl = Player_by_id(pl->lock.pl_id);
             if (owner_pl->score <= options.asteroidMaxScore)
                 Score(owner_pl, options.asteroidPoints, ast->pos, "");
-            Handle_Scoring(SCORE_ASTEROID_KILL, owner_pl, NULL, ast, NULL);
+            Handle_Scoring(SCORE_ASTEROID_KILL, owner_pl, nullptr, ast, nullptr);
         }
         return;
     }
@@ -1180,7 +1180,7 @@ static inline double Missile_hit_drain(missileobject_t *missile)
 static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
 {
     int sc;
-    player_t *kp = NULL;
+    player_t *kp = nullptr;
     double drainfactor, drain;
 
     /*
@@ -1348,7 +1348,7 @@ static void AsteroidCollision(void)
 {
     int j, radius, obj_count;
     object_t *ast;
-    object_t *obj = NULL, **obj_list;
+    object_t *obj = nullptr, **obj_list;
     double damage = 0.0;
     bool sound = false;
 
@@ -1378,7 +1378,7 @@ static void AsteroidCollision(void)
         for (j = 0; j < obj_count; j++)
         {
             obj = obj_list[j];
-            assert(obj != NULL);
+            assert(obj != nullptr);
             if (obj->obj_life <= 0.0)
                 continue;
 

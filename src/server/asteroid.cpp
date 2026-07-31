@@ -279,7 +279,7 @@ static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
     }
 
     asteroid = WIRE_PTR(Object_allocate());
-    if (asteroid == NULL)
+    if (asteroid == nullptr)
         return;
 
     asteroid->color = WHITE;
@@ -337,7 +337,7 @@ static void Place_asteroid(void)
     if (Num_asteroidConcs() > 0 && rfrac() < options.asteroidConcentratorProb)
         con = AsteroidConc_by_index((int)(rfrac() * Num_asteroidConcs()));
     else
-        con = NULL;
+        con = nullptr;
 
     /*
      * We bail out after some unsuccessful attempts to avoid wasting

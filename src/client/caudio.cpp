@@ -102,7 +102,7 @@ void audioInit(char *display)
             continue;
 
         soundstr = strtok(buf, " \t");
-        file = strtok(NULL, " \t\n");
+        file = strtok(nullptr, " \t\n");
 
         for (i = 0; i < MAX_SOUNDS; i++)
             if (!strcmp(soundstr, soundNames[i]))
@@ -122,14 +122,14 @@ void audioInit(char *display)
                     {
                         size_t filename_size = strlen(Conf_sounddir()) + strlen(ifile) + 1;
                         table[i].filenames[j] = (char *)malloc(filename_size);
-                        if (table[i].filenames[j] != NULL)
+                        if (table[i].filenames[j] != nullptr)
                         {
                             strcpy(table[i].filenames[j], Conf_sounddir());
                             strcat(table[i].filenames[j], ifile);
                         }
                     }
                     j++;
-                    ifile = strtok(NULL, " \t\n|");
+                    ifile = strtok(nullptr, " \t\n|");
                 }
                 table[i].nsounds = j;
                 break;

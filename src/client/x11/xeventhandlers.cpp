@@ -114,7 +114,7 @@ static void Selection_request(void)
 {
     Atom prop;
 
-    if (selection.txt != NULL)
+    if (selection.txt != nullptr)
     {
         /* internal selection */
         if (Talk_paste(selection.txt, selection.len, False) > 0)
@@ -276,7 +276,7 @@ void KeyChanged_event(XEvent *event)
 #ifdef DEVELOPMENT
     if (back_in_play_since)
     {
-        time_t now = time(NULL);
+        time_t now = time(nullptr);
         if (now - back_in_play_since > 0)
             back_in_play_since = 0;
         else
@@ -294,7 +294,7 @@ void KeyChanged_event(XEvent *event)
         if (event->type == KeyPress)
         {
             talk_key_repeating = 1;
-            gettimeofday(&talk_key_repeat_time, NULL);
+            gettimeofday(&talk_key_repeat_time, nullptr);
             talk_key_repeat_event = *event;
         }
         else if (talk_key_repeating && event->xkey.keycode ==

@@ -62,7 +62,7 @@ static void sig_ok(int signum, int flag)
 
     sigemptyset(&sigset);
     sigaddset(&sigset, signum);
-    if (sigprocmask((flag) ? SIG_UNBLOCK : SIG_BLOCK, &sigset, NULL) == -1)
+    if (sigprocmask((flag) ? SIG_UNBLOCK : SIG_BLOCK, &sigset, nullptr) == -1)
     {
         error("sigprocmask(%d,%d)", signum, flag);
         exit(1);
@@ -140,7 +140,7 @@ static void setup_timer(void)
     act.sa_flags = 0;
     sigemptyset(&act.sa_mask);
     sigaddset(&act.sa_mask, SIGALRM);
-    if (sigaction(SIGALRM, &act, (struct sigaction *)NULL) == -1)
+    if (sigaction(SIGALRM, &act, (struct sigaction *)nullptr) == -1)
     {
         error("sigaction SIGALRM");
         exit(1);
@@ -163,7 +163,7 @@ static void setup_timer(void)
     itv.it_interval.tv_sec = 0;
     itv.it_interval.tv_usec = 1000000 / timer_freq;
     itv.it_value = itv.it_interval;
-    if (setitimer(ITIMER_REAL, &itv, NULL) == -1)
+    if (setitimer(ITIMER_REAL, &itv, nullptr) == -1)
     {
         error("setitimer");
         exit(1);
@@ -201,8 +201,8 @@ struct to_handler
     void (*func)(void *);
     void *arg;
 };
-static struct to_handler *to_busy_list = NULL;
-static struct to_handler *to_free_list = NULL;
+static struct to_handler *to_busy_list = nullptr;
+static struct to_handler *to_free_list = nullptr;
 static int to_min_free = 3;
 static int to_max_free = 5;
 static int to_cur_free = 0;
@@ -270,7 +270,7 @@ void install_timeout(void (*func)(void *), int offset, void *arg)
     top->arg = arg;
     if (!to_busy_list || to_busy_list->when >= top->when)
     {
-        top->next = NULL;
+        top->next = nullptr;
         to_busy_list = top;
     }
     else
@@ -526,7 +526,7 @@ void sched(void)
             }
             if (io_todo == 0)
             {
-                tvp = NULL;
+                tvp = nullptr;
             }
         }
     }

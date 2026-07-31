@@ -98,7 +98,7 @@ void Cannon_dies(cannon_t *cannon, player_t *pl);
 //    int ind;
 
 //    if (id < MIN_CANNON_ID || id > MAX_CANNON_ID)
-//       return NULL;
+//       return nullptr;
 //    ind = id - MIN_CANNON_ID;
 //    return Cannon_by_index(ind);
 // }
@@ -150,7 +150,7 @@ static inline cannon_t *Cannon_by_id(int id)
    int ind;
 
    if (id < MIN_CANNON_ID || id > MAX_CANNON_ID)
-      return NULL;
+      return nullptr;
    ind = id - MIN_CANNON_ID;
    return Cannon_by_index(ind);
 }

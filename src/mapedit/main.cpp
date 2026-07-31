@@ -30,7 +30,7 @@
 #include "main.h"
 #include "default_colors.h"
 
-static char *display_name = NULL;
+static char *display_name = nullptr;
 char *progname;
 
 Window mapwin, prefwin;
@@ -585,7 +585,7 @@ prefs_t prefs[] = {
     {"cannonpoints", "", "Cannon Pts:", 19, FLOAT, map.cannonPoints, 0, 3, 1, 8, 0},
     {"cannonmaxscore", "", "CannonMaxScore:", 19, FLOAT, map.cannonMaxScore, 0, 4, 1, 8, 0},
 
-    {"mapdata", "", NULL, 0, MAPDATA, NULL, 0, 0, 0, 0, 0}};
+    {"mapdata", "", nullptr, 0, MAPDATA, nullptr, 0, 0, 0, 0, 0}};
 
 int numprefs = NELEM(prefs);
 
@@ -684,7 +684,7 @@ void SetDefaults(int argc, char *argv[])
 
     if (map.comments)
         free(map.comments);
-    map.comments = (char *)NULL;
+    map.comments = (char *)nullptr;
     map.mapName[0] = map.mapFileName[0] = '\0';
     /*   strcpy(map.author,"Captain America (mbcaprt@mphhpd.ph.man.ac.uk)\0");*/
     map.width = DEFAULT_WIDTH;

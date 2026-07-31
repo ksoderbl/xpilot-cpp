@@ -38,7 +38,7 @@ dbuff_state_t *dbuf_state; /* Holds current dbuff state */
 
 static void dbuff_release(dbuff_state_t *state)
 {
-    if (state != NULL)
+    if (state != nullptr)
     {
         XFREE(state->colormaps[0]);
         XFREE(state->colormaps[1]);
@@ -74,19 +74,19 @@ dbuff_state_t *start_dbuff(Display *display, Colormap xcolormap,
     int i, high_mask, low_mask;
 
     state = XCALLOC(dbuff_state_t, 1);
-    if (state == NULL)
-        return NULL;
+    if (state == nullptr)
+        return nullptr;
 
     state->colormap_size = 1 << (2 * num_planes);
     state->colormaps[0] = XMALLOC(XColor, state->colormap_size);
     state->colormaps[1] = XMALLOC(XColor, state->colormap_size);
     state->planes = XCALLOC(unsigned long, 2 * num_planes);
-    if (state->colormaps[1] == NULL ||
-        state->colormaps[0] == NULL ||
-        state->planes == NULL)
+    if (state->colormaps[1] == nullptr ||
+        state->colormaps[0] == nullptr ||
+        state->planes == nullptr)
     {
         dbuff_release(state);
-        return NULL;
+        return nullptr;
     }
     state->display = display;
     state->xcolormap = xcolormap;
@@ -122,7 +122,7 @@ dbuff_state_t *start_dbuff(Display *display, Colormap xcolormap,
                     XFreeColors(display, xcolormap, &colorarray[i].pixel,
                                 1, 0);
                 dbuff_release(state);
-                return NULL;
+                return nullptr;
             }
         }
     }

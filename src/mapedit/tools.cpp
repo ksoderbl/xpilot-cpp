@@ -33,7 +33,7 @@ int prefx = PREF_X, prefy = PREF_Y;
 int prevdraw_x, prevdraw_y;
 int prevline_x, prevline_y, prevlinend_x, prevlinend_y;
 int selectfrom_x = -1, selectfrom_y, selectto_x, selectto_y;
-undo_t *undolist = NULL;
+undo_t *undolist = nullptr;
 
 /***************************************************************************/
 /* DrawMapIcon                                                             */
@@ -578,7 +578,7 @@ int ExitApplication(HandlerInfo_t info)
     if (T_IsPopupOpen(changedwin))
     {
         T_PopupClose(changedwin);
-        changedwin = (Window)NULL;
+        changedwin = (Window) nullptr;
     }
     T_FormCloseWindow(mapwin);
     T_FormCloseWindow(prefwin);
@@ -612,7 +612,7 @@ int ExitApplication(HandlerInfo_t info)
 /***************************************************************************/
 int SaveUndoIcon(int x, int y, char icon)
 {
-    struct undo_t *undo = NULL;
+    struct undo_t *undo = nullptr;
 
     undo = (struct undo_t *)undolist;
     undolist = (undo_t *)malloc(sizeof(undo_t));
@@ -636,7 +636,7 @@ int Undo(HandlerInfo_t info)
 
     ClearSelectArea();
     /* if the first icon is a breakpoint, skip it */
-    if (undolist != NULL)
+    if (undolist != nullptr)
     {
         if (undolist->icon == '\n')
         {
@@ -645,7 +645,7 @@ int Undo(HandlerInfo_t info)
             undolist = traverse;
         }
     }
-    while (undolist != NULL)
+    while (undolist != nullptr)
     {
 
         /* check if we are at a breakpoint */
@@ -689,10 +689,10 @@ int NewMap(HandlerInfo_t info)
     if (T_IsPopupOpen(changedwin))
     {
         T_PopupClose(changedwin);
-        changedwin = (Window)NULL;
+        changedwin = (Window) nullptr;
     }
     free(map.comments);
-    map.comments = (char *)NULL;
+    map.comments = (char *)nullptr;
     map.mapName[0] = map.mapAuthor[0] = map.mapFileName[0] =
         map.gravity[0] = '\0';
     map.shipMass[0] = map.maxRobots[0] = map.worldLives[0] = '\0';
@@ -983,7 +983,7 @@ char MapData(int x, int y)
 /***************************************************************************/
 int ChangedPrompt(int (*handler)(HandlerInfo))
 {
-    if (changedwin != (Window)NULL)
+    if (changedwin != (Window) nullptr)
         return 0;
     if (map.changed == 0)
         return 0;

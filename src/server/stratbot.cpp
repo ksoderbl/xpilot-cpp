@@ -228,7 +228,7 @@ static void Stratbot_message(int ind, const char *message)
         len--;
     }
     strlcpy(msg, message, len);        /* copy real message */
-    if ((ptr = strchr(sender_name, ']')) != NULL) {
+    if ((ptr = strchr(sender_name, ']')) != nullptr) {
         *ptr = '\0';        /* remove the ']' separator */
     }
     printf("%s got message \"%s\" from \"%s\"\n", pl->name, msg, sender_name);
@@ -243,7 +243,7 @@ static void Stratbot_destroy(int ind)
     // player_t *pl = PlayersArray[ind];
 
     free(pl->robot_data_ptr->private_data);
-    pl->robot_data_ptr->private_data = NULL;
+    pl->robot_data_ptr->private_data = nullptr;
 }
 
 /*

@@ -74,14 +74,14 @@ static int rounds_played = 0;
 #define DP(x)
 
 static const char *shottypes[] = {
-    "a shot", NULL};
+    "a shot", nullptr};
 static const char head_first[] = " head first";
 static const char *crashes[] = {
-    "crashed", "smashed", "smacked", "was trashed", NULL};
+    "crashed", "smashed", "smacked", "was trashed", nullptr};
 static const char *obstacles[] = {
-    "wall", "target", "treasure", "cannon", NULL};
+    "wall", "target", "treasure", "cannon", nullptr};
 static const char *teamnames[] = {
-    "2", "4", "0", "1", "3", "5", "6", "7", "8", "9", NULL};
+    "2", "4", "0", "1", "3", "5", "6", "7", "8", "9", nullptr};
 
 /* increase if you want to look for messages with more player names. */
 #define MSG_MAX_NAMES 3
@@ -117,7 +117,7 @@ bool Msg_match_fmt(const char *msg, const char *fmt, msgnames_t *mn)
 
     /* check that msg and fmt match to % */
     fp = strstr(fmt, "%");
-    if (fp == NULL)
+    if (fp == nullptr)
     {
         /* NOTE: if msg contains stuff beyond fmt, don't care */
         if (strncmp(msg, fmt, strlen(fmt)) == 0)
@@ -158,7 +158,7 @@ bool Msg_match_fmt(const char *msg, const char *fmt, msgnames_t *mn)
         }
         break;
     case 's': /* shot type */
-        for (i = 0; shottypes[i] != NULL; i++)
+        for (i = 0; shottypes[i] != nullptr; i++)
         {
             if (strncmp(msg, shottypes[i], strlen(shottypes[i])) == 0)
             {
@@ -172,7 +172,7 @@ bool Msg_match_fmt(const char *msg, const char *fmt, msgnames_t *mn)
             msg += strlen(head_first);
         return Msg_match_fmt(msg, fmt, mn);
     case 'o': /* obstacle */
-        for (i = 0; obstacles[i] != NULL; i++)
+        for (i = 0; obstacles[i] != nullptr; i++)
         {
             if (strncmp(msg, obstacles[i], strlen(obstacles[i])) == 0)
             {
@@ -182,7 +182,7 @@ bool Msg_match_fmt(const char *msg, const char *fmt, msgnames_t *mn)
         }
         break;
     case 'c': /* some sort of crash */
-        for (i = 0; crashes[i] != NULL; i++)
+        for (i = 0; crashes[i] != nullptr; i++)
         {
             if (strncmp(msg, crashes[i], strlen(crashes[i])) == 0)
             {
@@ -192,7 +192,7 @@ bool Msg_match_fmt(const char *msg, const char *fmt, msgnames_t *mn)
         }
         break;
     case 't': /* "nick" of a team */
-        for (i = 0; teamnames[i] != NULL; i++)
+        for (i = 0; teamnames[i] != nullptr; i++)
         {
             if (strncmp(msg, teamnames[i], strlen(teamnames[i])) == 0)
             {
@@ -375,11 +375,11 @@ bool Msg_is_game_msg(const char *message)
 void Msg_scan_game_msg(const char *message)
 {
     msgnames_t mn;
-    char *killer = NULL, *victim = NULL, *victim2 = NULL;
+    char *killer = nullptr, *victim = nullptr, *victim2 = nullptr;
     bool i_am_killer = false;
     bool i_am_victim = false;
     bool i_am_victim2 = false;
-    other_t *other = NULL;
+    other_t *other = nullptr;
 
     DP(printf("MESSAGE: \"%s\"\n", message));
 
@@ -408,7 +408,7 @@ void Msg_scan_game_msg(const char *message)
 
     if (!self)
     {
-        // warn("Variable 'self' is NULL!");
+        // warn("Variable 'self' is nullptr!");
         return;
     }
 
@@ -497,21 +497,21 @@ void Msg_scan_game_msg(const char *message)
         /* none of the above, nothing to do */
         return;
 
-    if (killer != NULL)
+    if (killer != nullptr)
     {
         DP(printf("Killer is %s.\n", killer));
         if (strcmp(killer, self->nick_name) == 0)
             i_am_killer = true;
     }
 
-    if (victim != NULL)
+    if (victim != nullptr)
     {
         DP(printf("Victim is %s.\n", victim));
         if (strcmp(victim, self->nick_name) == 0)
             i_am_victim = true;
     }
 
-    if (victim2 != NULL)
+    if (victim2 != nullptr)
     {
         DP(printf("Second victim is %s.\n", victim2));
         if (strcmp(victim2, self->nick_name) == 0)
@@ -519,13 +519,13 @@ void Msg_scan_game_msg(const char *message)
     }
 
     /* handle death array */
-    if (victim != NULL)
+    if (victim != nullptr)
     {
         other = Other_by_name(victim, false);
 
         /*for safety... could possibly happen with
           loss or parser bugs =) */
-        if (other != NULL)
+        if (other != nullptr)
             Msg_scan_death(other->id);
     }
     else
@@ -534,10 +534,10 @@ void Msg_scan_game_msg(const char *message)
                   victim));
     }
 
-    if (victim2 != NULL)
+    if (victim2 != nullptr)
     {
         other = Other_by_name(victim, false);
-        if (other != NULL)
+        if (other != nullptr)
             Msg_scan_death(other->id);
     }
     else
@@ -573,7 +573,7 @@ void Msg_scan_game_msg(const char *message)
     //       int kills, deaths; */
 
     //     /* handle case where there is a victim and a killer */
-    //     if (killer != NULL && victim != NULL)
+    //     if (killer != nullptr && victim != nullptr)
     //     {
     //         if (i_am_killer && !i_am_victim)
     //         {
@@ -633,7 +633,7 @@ void Partition_talk_message(char *message,
 
     /* Let's count how many times " [" occurs in the message. */
     s = message;
-    while ((s = strstr(s, " [")) != NULL)
+    while ((s = strstr(s, " [")) != nullptr)
     {
         count++;
         s += 2;
@@ -649,14 +649,14 @@ void Partition_talk_message(char *message,
         int count2 = 0;
 
         s = message;
-        while ((s = strstr(s, " [")) != NULL)
+        while ((s = strstr(s, " [")) != nullptr)
         {
             count2++;
             if (count2 == i)
                 break;
             s += 2;
         }
-        assert(s != NULL);
+        assert(s != nullptr);
 
         /*printf("%s\n", s);*/
         memset(&mn, 0, sizeof(mn));

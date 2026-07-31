@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 
     init_error(argv[0]);
 
-    seedMT((unsigned)time(NULL) ^ Get_process_id());
+    seedMT((unsigned)time(nullptr) ^ Get_process_id());
 
     memset(&connectParam, 0, sizeof(Connect_param_t));
     connectParam.contact_port = SERVER_PORT;
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
         if (!Contact_servers(argc - 1, &argv[1],
                              xpArgs.auto_connect, xpArgs.list_servers,
                              auto_shutdown, xpArgs.shutdown_reason,
-                             0, NULL, NULL, NULL, NULL,
+                             0, nullptr, nullptr, nullptr, nullptr,
                              &connectParam))
             return 0;
         if (Init_window())

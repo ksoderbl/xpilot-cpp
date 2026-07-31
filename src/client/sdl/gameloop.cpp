@@ -53,7 +53,7 @@ void Game_loop(void)
         if (maxMouseTurnsPS > 0)
             Client_check_pointer_move_interval();
 
-        n = select(netfd + 1, &rfds, NULL, NULL, &tv);
+        n = select(netfd + 1, &rfds, nullptr, nullptr, &tv);
         if (n == -1)
         {
             if (errno == EINTR)

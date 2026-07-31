@@ -82,7 +82,7 @@ void Close_Widget(GLWidget **widget);
 /*void Close_WidgetTree ( GLWidget **widget );*/
 /* to reshape the widget, and automagically reshape and place sub-widgets */
 void SetBounds_GLWidget(GLWidget *wid, SDL_Rect *b);
-/* Initializes the appropriate config widget (if implemented), returns NULL otherwise */
+/* Initializes the appropriate config widget (if implemented), returns nullptr otherwise */
 GLWidget *Init_OptionWidget(xp_option_t *opt, Uint32 *fgcolor, Uint32 *bgcolor);
 
 bool AppendGLWidgetList(GLWidget **list, GLWidget *widget);

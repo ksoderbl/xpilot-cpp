@@ -239,7 +239,7 @@ void Place_item(player_t *pl, int item)
         if (Num_itemConcs() > 0 && rfrac() < options.itemConcentratorProb)
             con = ItemConc_by_index((int)(rfrac() * Num_itemConcs()));
         else
-            con = NULL;
+            con = nullptr;
         /*
          * kps - write a generic function that can be used here and
          * with asteroids.
@@ -338,7 +338,7 @@ void Make_item(clpos_t pos, vector_t vel,
     if (World.items[type].num >= World.items[type].max)
         return;
 
-    if ((item = ITEM_PTR(Object_allocate())) == NULL)
+    if ((item = ITEM_PTR(Object_allocate())) == nullptr)
         return;
 
     item->type = OBJ_ITEM;
@@ -619,7 +619,7 @@ void Do_deflector(player_t *pl)
 void Do_transporter(player_t *pl)
 {
     world_t *world = &World;
-    player_t *victim = NULL;
+    player_t *victim = nullptr;
     int i;
     double dist, closest = TRANSPORTER_DISTANCE;
 
@@ -660,14 +660,14 @@ void Do_transporter(player_t *pl)
     }
 
     /* victim found */
-    Do_general_transporter(pl->id, pl->pos, victim, NULL, NULL);
+    Do_general_transporter(pl->id, pl->pos, victim, nullptr, nullptr);
 }
 
 void Do_general_transporter(int id, clpos_t pos,
                             player_t *victim, int *itemp, double *amountp)
 {
     char msg[MSG_LEN];
-    const char *what = NULL;
+    const char *what = nullptr;
     int i, item = ITEM_FUEL;
     double amount;
     player_t *pl = Player_by_id(id);
@@ -959,7 +959,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
 {
     world_t *world = &World;
     object_t *shot;
-    mineobject_t *closest_mine = NULL;
+    mineobject_t *closest_mine = nullptr;
     smartobject_t *smart;
     mineobject_t *mine;
     double closest_mine_range = World.hypotenuse;
@@ -972,7 +972,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
     if (Num_ecms() >= MAX_TOTAL_ECMS)
         return;
     // Ecms[World.NumEcms] = (ecm_t *)malloc(sizeof(ecm_t));
-    // if (Ecms[World.NumEcms] == NULL)
+    // if (Ecms[World.NumEcms] == nullptr)
     //     return;
     // ecm = &World.ecms[World.NumEcms];
     // ecm->pos = pos;
@@ -1095,7 +1095,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
                 break;
             }
             mine->mine_count = ((8 * (1 - range)) + 2) * 12;
-            if (!BIT(mine->obj_status, CONFUSED) && (closest_mine == NULL || range < closest_mine_range))
+            if (!BIT(mine->obj_status, CONFUSED) && (closest_mine == nullptr || range < closest_mine_range))
             {
                 closest_mine = mine;
                 closest_mine_range = range;
@@ -1115,7 +1115,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
      *  50                75
      *         0 (closest)        100
      */
-    if (options.ecmsReprogramMines && closest_mine != NULL)
+    if (options.ecmsReprogramMines && closest_mine != nullptr)
     {
         range = closest_mine_range;
         if (range <= 0 || (int)(rfrac() * 100.0) < (100 - (int)(50 * range)))

@@ -114,7 +114,7 @@ GLuint SDL_GL_LoadTexture(SDL_Surface *surface, texcoord_t *texcoord)
         GMASK,
         BMASK,
         AMASK);
-    if (image == NULL)
+    if (image == nullptr)
     {
         return 0;
     }
@@ -175,7 +175,7 @@ int FTinit(font_data *font, const char *fontname, int ptsize)
         return(2);
     }*/
     font->ttffont = TTF_OpenFont(fontname, ptsize);
-    if (font->ttffont == NULL)
+    if (font->ttffont == nullptr)
     {
         fprintf(stderr, "Couldn't load %d pt font from %s: %s\n", ptsize, fontname, SDL_GetError());
         return (2);
@@ -188,7 +188,7 @@ int FTinit(font_data *font, const char *fontname, int ptsize)
 
     for (i = 0; i < NUMCHARS; i++)
     {
-        SDL_Surface *glyph = NULL;
+        SDL_Surface *glyph = nullptr;
         GLuint height = 0; /* kps - added default value */
 
         forecol = &white;
@@ -203,7 +203,7 @@ int FTinit(font_data *font, const char *fontname, int ptsize)
 
             font->W[i] = glyph->w;
             height = glyph->h;
-            TTF_GlyphMetrics(font->ttffont, i, &minx, &maxx, &miny, &maxy, NULL);
+            TTF_GlyphMetrics(font->ttffont, i, &minx, &maxx, &miny, &maxy, nullptr);
         }
         SDL_FreeSurface(glyph);
 
@@ -244,10 +244,10 @@ int fontinit(font_data *ft_font, const char *fname, unsigned int size)
 
 void fontclean(font_data *ft_font)
 {
-    if (ft_font == NULL)
+    if (ft_font == nullptr)
         return;
     glDeleteLists(ft_font->list_base, next_p2(NUMCHARS));
-    if (ft_font->textures != NULL)
+    if (ft_font->textures != nullptr)
     {
         glDeleteTextures(NUMCHARS, ft_font->textures);
     }
@@ -292,11 +292,11 @@ fontbounds nprintsize(font_data *ft_font, int length, const char *fmt, ...)
     returnval.width = 0.0;
     returnval.height = 0.0;
 
-    if (ft_font == NULL)
+    if (ft_font == nullptr)
         return returnval;
 
-    if (fmt == NULL) /* If There's No Text */
-        *text = 0;   /* Do Nothing */
+    if (fmt == nullptr) /* If There's No Text */
+        *text = 0;      /* Do Nothing */
     else
     {
         va_start(ap, fmt);                 /* Parses The String For Variables */
@@ -349,11 +349,11 @@ fontbounds printsize(font_data *ft_font, const char *fmt, ...)
     returnval.width = 0.0;
     returnval.height = 0.0;
 
-    if (ft_font == NULL)
+    if (ft_font == nullptr)
         return returnval;
 
-    if (fmt == NULL) /* If There's No Text */
-        *text = 0;   /* Do Nothing */
+    if (fmt == nullptr) /* If There's No Text */
+        *text = 0;      /* Do Nothing */
     else
     {
         va_start(ap, fmt);                 /* Parses The String For Variables */
@@ -367,8 +367,8 @@ bool render_text(font_data *ft_font, const std::string &text, string_tex_t *stri
 {
     SDL_Color white = {0xFF, 0xFF, 0xFF, 0x00};
     SDL_Color *forecol;
-    SDL_Surface *string_glyph = NULL;
-    SDL_Surface *glyph = NULL;
+    SDL_Surface *string_glyph = nullptr;
+    SDL_Surface *glyph = nullptr;
     SDL_Rect src, dest;
     GLenum gl_error;
     const std::string rendered_text = text.empty() ? " " : text;
@@ -652,8 +652,8 @@ void mapnprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int
     char text[BUFSIZE]; /* Holds Our String */
     va_list ap;         /* Pointer To List Of Arguments */
 
-    if (fmt == NULL) /* If There's No Text */
-        *text = 0;   /* Do Nothing */
+    if (fmt == nullptr) /* If There's No Text */
+        *text = 0;      /* Do Nothing */
     else
     {
         va_start(ap, fmt);                 /* Parses The String For Variables */
@@ -665,7 +665,7 @@ void mapnprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int
         return;
     }
 
-    if (ft_font == NULL)
+    if (ft_font == nullptr)
         return;
 
     print(ft_font, color, XALIGN, YALIGN, x, y, length, text, false);
@@ -678,8 +678,8 @@ void HUDnprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int
     char text[BUFSIZE]; /* Holds Our String */
     va_list ap;         /* Pointer To List Of Arguments */
 
-    if (fmt == NULL) /* If There's No Text */
-        *text = 0;   /* Do Nothing */
+    if (fmt == nullptr) /* If There's No Text */
+        *text = 0;      /* Do Nothing */
     else
     {
         va_start(ap, fmt);                 /* Parses The String For Variables */
@@ -691,7 +691,7 @@ void HUDnprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int
         return;
     }
 
-    if (ft_font == NULL)
+    if (ft_font == nullptr)
         return;
 
     print(ft_font, color, XALIGN, YALIGN, x, y, length, text, true);
@@ -704,8 +704,8 @@ void mapprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int 
     char text[BUFSIZE]; /* Holds Our String */
     va_list ap;         /* Pointer To List Of Arguments */
 
-    if (fmt == NULL) /* If There's No Text */
-        *text = 0;   /* Do Nothing */
+    if (fmt == nullptr) /* If There's No Text */
+        *text = 0;      /* Do Nothing */
     else
     {
         va_start(ap, fmt);                 /* Parses The String For Variables */
@@ -717,7 +717,7 @@ void mapprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int 
         return;
     }
 
-    if (ft_font == NULL)
+    if (ft_font == nullptr)
         return;
 
     print(ft_font, color, XALIGN, YALIGN, x, y, BUFSIZE, text, false);
@@ -730,8 +730,8 @@ void HUDprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int 
     char text[BUFSIZE]; /* Holds Our String */
     va_list ap;         /* Pointer To List Of Arguments */
 
-    if (fmt == NULL) /* If There's No Text */
-        *text = 0;   /* Do Nothing */
+    if (fmt == nullptr) /* If There's No Text */
+        *text = 0;      /* Do Nothing */
     else
     {
         va_start(ap, fmt);                 /* Parses The String For Variables */
@@ -743,7 +743,7 @@ void HUDprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int 
         return;
     }
 
-    if (ft_font == NULL)
+    if (ft_font == nullptr)
         return;
 
     print(ft_font, color, XALIGN, YALIGN, x, y, BUFSIZE, text, true);

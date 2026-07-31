@@ -164,7 +164,7 @@ static void Radar_paint_world_blocks(GLWidget *radar, SDL_Surface *s)
 
     if (SDL_MUSTLOCK(s))
         SDL_LockSurface(s);
-    SDL_FillRect(s, NULL, RGBA(bgRadarColorValue));
+    SDL_FillRect(s, nullptr, RGBA(bgRadarColorValue));
 
     /* Scan the map and paint the blocks */
     for (xi = 0; xi < Setup->x; xi++)
@@ -217,7 +217,7 @@ static void Radar_paint_world_polygons(GLWidget *radar, SDL_Surface *s)
 
     if (SDL_MUSTLOCK(s))
         SDL_LockSurface(s);
-    SDL_FillRect(s, NULL, RGBA(bgRadarColorValue));
+    SDL_FillRect(s, nullptr, RGBA(bgRadarColorValue));
 
     for (auto &polygon : clMap.polygons)
     {
@@ -444,7 +444,7 @@ GLWidget *Init_RadarWidget(void)
     if (!tmp)
     {
         error("Failed to malloc in Init_RadarWidget");
-        return NULL;
+        return nullptr;
     }
     tmp->WIDGET = RADARWIDGET;
     tmp->bounds.x = radar_bounds.x;
@@ -461,7 +461,7 @@ GLWidget *Init_RadarWidget(void)
     if (Radar_init(tmp) != 0)
     {
         free(tmp);
-        return NULL;
+        return nullptr;
     }
 
     radar_widget = tmp;
@@ -480,7 +480,7 @@ static void Radar_set_bounds(GLWidget *widget, int x, int y, int w, int h)
     radar_bounds.y = y;
     radar_bounds.w = w;
     radar_bounds.h = h;
-    if (widget != NULL)
+    if (widget != nullptr)
     {
         widget->bounds.x = x;
         widget->bounds.y = y;
@@ -663,9 +663,9 @@ static xp_option_t radar_options[] = {
     XP_STRING_OPTION(
         "radarGeometry",
         "200x200+10+10",
-        NULL,
+        nullptr,
         0,
-        Set_geometry, NULL, Get_geometry,
+        Set_geometry, nullptr, Get_geometry,
         XP_OPTFLAG_DEFAULT,
         "Set the radar geometry.\n")};
 

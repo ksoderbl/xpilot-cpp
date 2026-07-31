@@ -56,7 +56,7 @@ int num_ok_options = 0;
 static void Parse_xpilotrc_line(const char *line)
 {
     char *lcpy = xp_safe_strdup(line);
-    char *l = lcpy, *colon, *name, *value, *semicolon, *comment = NULL;
+    char *l = lcpy, *colon, *name, *value, *semicolon, *comment = nullptr;
     xpilotrc_line_t t;
     xp_option_t *opt;
     int i;
@@ -70,7 +70,7 @@ static void Parse_xpilotrc_line(const char *line)
     l += strlen("xpilot.");
 
     colon = strchr(l, ':');
-    if (colon == NULL)
+    if (colon == nullptr)
     {
         /* no colon on line, not ok */
         warn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
@@ -95,7 +95,7 @@ static void Parse_xpilotrc_line(const char *line)
       name, Find_option(name) ? "found" : "not found");*/
 
     opt = Find_option(name);
-    if (opt == NULL)
+    if (opt == nullptr)
         goto line_is_comment;
 
     if (Option_get_flags(opt) & XP_OPTFLAG_NEVER_SAVE)
@@ -163,7 +163,7 @@ line_is_comment:
      */
     /*warn("Comment: \"%s\"", line);*/
     XFREE(comment);
-    t.opt = NULL;
+    t.opt = nullptr;
     t.comment = xp_safe_strdup(line);
     STORE(xpilotrc_line_t,
           xpilotrc_lines, num_xpilotrc_lines, max_xpilotrc_lines, t);
@@ -186,7 +186,7 @@ int Xpilotrc_read(const char *path)
     }
 
     fp = fopen(path, "r");
-    if (fp == NULL)
+    if (fp == nullptr)
     {
         error("Xpilotrc_read: Failed to open file \"%s\"", path);
         warn("Xpilotrc_read => Returning -2");
@@ -227,7 +227,7 @@ static void Xpilotrc_create_line(char *buf, size_t size,
 {
     int len, numtabs, i;
 
-    assert(buf != NULL);
+    assert(buf != nullptr);
 
     if (comment_whole_line)
     {
@@ -282,7 +282,7 @@ int Xpilotrc_write(const char *path)
     }
 
     fp = fopen(path, "w");
-    if (fp == NULL)
+    if (fp == nullptr)
     {
         error("Xpilotrc_write: Failed to open file \"%s\"", path);
         return -2;
@@ -334,13 +334,13 @@ int Xpilotrc_write(const char *path)
             char buf[4096];
             bool found = false;
 
-            Xpilotrc_create_line(buf, sizeof(buf), opt, NULL, true);
+            Xpilotrc_create_line(buf, sizeof(buf), opt, nullptr, true);
 
             for (j = 0; j < num_xpilotrc_lines; j++)
             {
                 xpilotrc_line_t *lp = &xpilotrc_lines[j];
 
-                if (lp->opt == NULL && lp->comment != NULL && !strcmp(buf, lp->comment))
+                if (lp->opt == nullptr && lp->comment != nullptr && !strcmp(buf, lp->comment))
                 {
                     found = true;
                     break;
@@ -381,9 +381,9 @@ void Xpilotrc_get_filename(char *path, size_t size)
     const char *defaultFile = ".xpilotrc";
     const char *optionalFile = getenv("XPILOTRC");
 
-    if (optionalFile != NULL)
+    if (optionalFile != nullptr)
         strlcpy(path, optionalFile, size);
-    else if (home != NULL)
+    else if (home != nullptr)
     {
         strlcpy(path, home, size);
         strlcat(path, "/", size);

@@ -86,14 +86,14 @@ struct xp_option
     /* noarg option stuff */
 
 #define XP_NOARG_OPTION_DUMMY \
-    NULL
+    nullptr
 
     bool *noarg_ptr;
 
     /* bool option stuff */
 
 #define XP_BOOL_OPTION_DUMMY \
-    false, NULL, NULL
+    false, nullptr, nullptr
 
     bool bool_defval;
     bool *bool_ptr;
@@ -102,7 +102,7 @@ struct xp_option
     /* integer option stuff */
 
 #define XP_INT_OPTION_DUMMY \
-    0, 0, 0, NULL, NULL
+    0, 0, 0, nullptr, nullptr
 
     int int_defval;
     int int_minval;
@@ -113,7 +113,7 @@ struct xp_option
     /* double option stuff */
 
 #define XP_DOUBLE_OPTION_DUMMY \
-    0, 0, 0, NULL, NULL
+    0, 0, 0, nullptr, nullptr
 
     double dbl_defval;
     double dbl_minval;
@@ -124,7 +124,7 @@ struct xp_option
     /* string option stuff */
 
 #define XP_STRING_OPTION_DUMMY \
-    NULL, NULL, 0, NULL, NULL
+    nullptr, nullptr, 0, nullptr, nullptr
 
     const char *str_defval;
     char *str_ptr;
@@ -135,7 +135,7 @@ struct xp_option
     /* key option stuff */
 
 #define XP_KEY_OPTION_DUMMY \
-    NULL, NULL, KEY_DUMMY
+    nullptr, nullptr, KEY_DUMMY
 
     const char *key_defval;
     char *key_string;
@@ -242,7 +242,7 @@ static inline xp_option_t *Option_by_index(int ind)
         flags,                                     \
         xp_option_origin_default,                  \
         help,                                      \
-        NULL,                                      \
+        nullptr,                                   \
         valptr,                                    \
         XP_BOOL_OPTION_DUMMY,                      \
         XP_INT_OPTION_DUMMY,                       \
@@ -258,7 +258,7 @@ static inline xp_option_t *Option_by_index(int ind)
         flags,                                                     \
         xp_option_origin_default,                                  \
         help,                                                      \
-        NULL,                                                      \
+        nullptr,                                                   \
         XP_NOARG_OPTION_DUMMY,                                     \
         defval,                                                    \
         valptr,                                                    \
@@ -276,7 +276,7 @@ static inline xp_option_t *Option_by_index(int ind)
         flags,                                                                    \
         xp_option_origin_default,                                                 \
         help,                                                                     \
-        NULL,                                                                     \
+        nullptr,                                                                  \
         XP_NOARG_OPTION_DUMMY,                                                    \
         XP_BOOL_OPTION_DUMMY,                                                     \
         defval,                                                                   \
@@ -290,7 +290,7 @@ static inline xp_option_t *Option_by_index(int ind)
     }
 
 #define COLOR_INDEX_OPTION(name, defval, valptr, help) \
-    XP_INT_OPTION(name, defval, 0, MAX_COLORS - 1, valptr, NULL, XP_OPTFLAG_CONFIG_COLORS, help)
+    XP_INT_OPTION(name, defval, 0, MAX_COLORS - 1, valptr, nullptr, XP_OPTFLAG_CONFIG_COLORS, help)
 
 #define COLOR_INDEX_OPTION_WITH_SETFUNC(name, defval, valptr, setfunc, help) \
     XP_INT_OPTION(name, defval, 0, MAX_COLORS - 1, valptr, setfunc, XP_OPTFLAG_CONFIG_COLORS, help)
@@ -302,7 +302,7 @@ static inline xp_option_t *Option_by_index(int ind)
         flags,                                                                       \
         xp_option_origin_default,                                                    \
         help,                                                                        \
-        NULL,                                                                        \
+        nullptr,                                                                     \
         XP_NOARG_OPTION_DUMMY,                                                       \
         XP_BOOL_OPTION_DUMMY,                                                        \
         XP_INT_OPTION_DUMMY,                                                         \
@@ -342,14 +342,14 @@ static inline xp_option_t *Option_by_index(int ind)
         XP_OPTFLAG_DEFAULT,                    \
         xp_option_origin_default,              \
         help,                                  \
-        NULL,                                  \
+        nullptr,                               \
         XP_NOARG_OPTION_DUMMY,                 \
         XP_BOOL_OPTION_DUMMY,                  \
         XP_INT_OPTION_DUMMY,                   \
         XP_DOUBLE_OPTION_DUMMY,                \
         XP_STRING_OPTION_DUMMY,                \
         defval,                                \
-        NULL,                                  \
+        nullptr,                               \
         key,                                   \
     }
 

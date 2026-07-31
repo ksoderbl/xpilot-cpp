@@ -178,11 +178,11 @@ static void SetBounds_PlayerListWidget(GLWidget *widget, SDL_Rect *b)
     info = (PlayerListWidget *)widget->wid_info;
     list_height = info->players.size() * ROW_HEIGHT + ROW_HEIGHT;
 
-    if (info->scrollbar != NULL)
+    if (info->scrollbar != nullptr)
     {
         DelGLWidgetListItem(&(widget->children), info->scrollbar);
         Close_Widget(&(info->scrollbar));
-        info->scrollbar = NULL;
+        info->scrollbar = nullptr;
     }
 
     y = b->y + ROW_HEIGHT;
@@ -204,7 +204,7 @@ static void SetBounds_PlayerListWidget(GLWidget *widget, SDL_Rect *b)
         info->scrollbar =
             Init_ScrollbarWidget(false, 0.0f, ((GLfloat)b->h) / list_height,
                                  SB_VERTICAL, Scroll_PlayerListWidget, widget);
-        if (info->scrollbar != NULL)
+        if (info->scrollbar != nullptr)
         {
             wb = &(widget->bounds);
             sb.x = wb->x + wb->w - 10;
@@ -220,7 +220,7 @@ static void SetBounds_PlayerListWidget(GLWidget *widget, SDL_Rect *b)
             return;
         }
     }
-    if (info->header != NULL)
+    if (info->header != nullptr)
     {
         hb.x = widget->bounds.x + 1;
         hb.y = widget->bounds.y - 1;
@@ -235,7 +235,7 @@ static std::vector<std::string> create_player_list(char *players_str)
     std::vector<std::string> players;
     char *t;
 
-    for (t = strtok(players_str, ","); t; t = strtok(NULL, ","))
+    for (t = strtok(players_str, ","); t; t = strtok(nullptr, ","))
         players.emplace_back(t);
 
     return players;
@@ -254,7 +254,7 @@ static void Close_PlayerListWidget(GLWidget *widget)
     info = (PlayerListWidget *)widget->wid_info;
     if (info->players_str)
         free(info->players_str);
-    info->players_str = NULL;
+    info->players_str = nullptr;
     info->players.clear();
 }
 
@@ -279,20 +279,20 @@ static GLWidget *Init_PlayerListWidget(server_info_t *sip)
     if (!(players_str = strdup(sip->playlist.c_str())))
     {
         error("out of memory");
-        return NULL;
+        return nullptr;
     }
     if (!(tmp = Init_EmptyBaseGLWidget()))
     {
         error("Widget init failed");
         free(players_str);
-        return NULL;
+        return nullptr;
     }
     if (!(info = (PlayerListWidget *)malloc(sizeof(PlayerListWidget))))
     {
         error("out of memory");
         free(players_str);
         free(tmp);
-        return NULL;
+        return nullptr;
     }
     new (&info->players) std::vector<std::string>();
 
@@ -307,12 +307,12 @@ static GLWidget *Init_PlayerListWidget(server_info_t *sip)
         free(players_str);
         free(tmp);
         free(info);
-        return NULL;
+        return nullptr;
     }
 
     info->players_str = players_str;
     info->players = create_player_list(players_str);
-    info->scrollbar = NULL;
+    info->scrollbar = nullptr;
     info->header = header;
     info->header_fg = PLIST_HEADER_FG;
     info->header_bg = PLIST_HEADER_BG;
@@ -432,13 +432,13 @@ static GLWidget *Init_StatusWidget(server_info_t *sip)
     if (!(tmp = Init_EmptyBaseGLWidget()))
     {
         error("Widget init failed");
-        return NULL;
+        return nullptr;
     }
     if (!(info = (StatusWidget *)malloc(sizeof(StatusWidget))))
     {
         error("out of memory");
         free(tmp);
-        return NULL;
+        return nullptr;
     }
     sprintf(info->address_str, "%s:%u", sip->ip_str.c_str(), sip->port);
     sprintf(info->fps_str, "%u", sip->fps);
@@ -481,11 +481,11 @@ static void SelectRow_MetaWidget(GLWidget *widget, MetaRowWidget *row)
         return;
     }
     meta = (MetaWidget *)widget->wid_info;
-    if (meta->status != NULL)
+    if (meta->status != nullptr)
     {
         DelGLWidgetListItem(&(widget->children), meta->status);
         Close_Widget(&(meta->status));
-        meta->status = NULL;
+        meta->status = nullptr;
     }
     status_bounds.x = widget->bounds.x + 22;
     status_bounds.y = widget->bounds.y + 598;
@@ -500,11 +500,11 @@ static void SelectRow_MetaWidget(GLWidget *widget, MetaRowWidget *row)
     {
         error("failed to create a status widget");
     }
-    if (meta->players != NULL)
+    if (meta->players != nullptr)
     {
         DelGLWidgetListItem(&(widget->children), meta->players);
         Close_Widget(&(meta->players));
-        meta->players = NULL;
+        meta->players = nullptr;
     }
     plist_bounds.x = status_bounds.x + status_bounds.w;
     plist_bounds.y = status_bounds.y;
@@ -533,7 +533,7 @@ static server_info_t *GetSelectedServer_MetaWidget(GLWidget *widget)
     if (widget->WIDGET != METAWIDGET)
     {
         error("expected METAWIDGET got [%d]", widget->WIDGET);
-        return NULL;
+        return nullptr;
     }
     meta = (MetaWidget *)widget->wid_info;
     return ((MetaTableWidget *)meta->table->wid_info)->selected->sip;
@@ -676,13 +676,13 @@ static GLWidget *Init_MetaRowWidget(server_info_t *sip,
     if (!(tmp = Init_EmptyBaseGLWidget()))
     {
         error("Widget init failed");
-        return NULL;
+        return nullptr;
     }
     if (!(row = (MetaRowWidget *)malloc(sizeof(MetaRowWidget))))
     {
         error("out of memory");
         free(tmp);
-        return NULL;
+        return nullptr;
     }
     row->fg = ROW_FG;
     row->bg = bg;
@@ -696,12 +696,12 @@ static GLWidget *Init_MetaRowWidget(server_info_t *sip,
     tmp->button = Button_MetaRowWidget;
     tmp->buttondata = tmp;
 
-#define COLUMN(TEXT)                                                      \
-    if ((col = Init_LabelWidget((TEXT), &(row->fg), NULL, LEFT, CENTER))) \
-    {                                                                     \
-        col->button = Button_MetaRowWidget;                               \
-        col->buttondata = tmp;                                            \
-        AppendGLWidgetList(&(tmp->children), col);                        \
+#define COLUMN(TEXT)                                                         \
+    if ((col = Init_LabelWidget((TEXT), &(row->fg), nullptr, LEFT, CENTER))) \
+    {                                                                        \
+        col->button = Button_MetaRowWidget;                                  \
+        col->buttondata = tmp;                                               \
+        AppendGLWidgetList(&(tmp->children), col);                           \
     }
     COLUMN(sip->hostname.c_str());
     COLUMN(sip->mapname.c_str());
@@ -720,13 +720,13 @@ static GLWidget *Init_MetaHeaderWidget(void)
     if (!(tmp = Init_EmptyBaseGLWidget()))
     {
         error("Widget init failed");
-        return NULL;
+        return nullptr;
     }
     if (!(info = (MetaHeaderWidget *)malloc(sizeof(MetaHeaderWidget))))
     {
         error("out of memory");
         free(tmp);
-        return NULL;
+        return nullptr;
     }
     info->fg = HEADER_FG;
     info->bg = HEADER_BG;
@@ -795,11 +795,11 @@ static void SetBounds_MetaTableWidget(GLWidget *widget, SDL_Rect *b)
     info = (MetaTableWidget *)widget->wid_info;
     table_height = info->server_list.size() * ROW_HEIGHT;
 
-    if (info->scrollbar != NULL)
+    if (info->scrollbar != nullptr)
     {
         DelGLWidgetListItem(&(widget->children), info->scrollbar);
         Close_Widget(&(info->scrollbar));
-        info->scrollbar = NULL;
+        info->scrollbar = nullptr;
     }
 
     y = b->y + ROW_HEIGHT;
@@ -821,7 +821,7 @@ static void SetBounds_MetaTableWidget(GLWidget *widget, SDL_Rect *b)
         info->scrollbar =
             Init_ScrollbarWidget(false, 0.0f, ((GLfloat)b->h) / table_height,
                                  SB_VERTICAL, Scroll_MetaTableWidget, widget);
-        if (info->scrollbar != NULL)
+        if (info->scrollbar != nullptr)
         {
             wb = &(widget->bounds);
             sb.x = wb->x + wb->w - 10;
@@ -837,7 +837,7 @@ static void SetBounds_MetaTableWidget(GLWidget *widget, SDL_Rect *b)
             return;
         }
     }
-    if (info->header != NULL)
+    if (info->header != nullptr)
     {
         hb.x = widget->bounds.x;
         hb.y = widget->bounds.y - 1; /* don't ask why */
@@ -856,22 +856,22 @@ static GLWidget *Init_MetaTableWidget(GLWidget *meta, const server_list_t &serve
     if (!(tmp = Init_EmptyBaseGLWidget()))
     {
         error("Widget init failed");
-        return NULL;
+        return nullptr;
     }
     if (!(info = (MetaTableWidget *)malloc(sizeof(MetaTableWidget))))
     {
         error("out of memory");
         free(tmp);
-        return NULL;
+        return nullptr;
     }
     new (&info->server_list) server_list_t();
 
     info->meta = meta;
     info->server_list = servers;
-    info->scrollbar = NULL;
-    info->header = NULL;
-    info->selected = NULL;
-    info->first_row = NULL;
+    info->scrollbar = nullptr;
+    info->header = nullptr;
+    info->selected = nullptr;
+    info->first_row = nullptr;
 
     tmp->wid_info = info;
     tmp->WIDGET = METATABLEWIDGET;
@@ -882,7 +882,7 @@ static GLWidget *Init_MetaTableWidget(GLWidget *meta, const server_list_t &serve
         row = Init_MetaRowWidget(sip, info, false, bg ? ROW_BG1 : ROW_BG2);
         if (!row)
             break;
-        if (info->first_row == NULL)
+        if (info->first_row == nullptr)
             info->first_row = (MetaRowWidget *)row->wid_info;
         AppendGLWidgetList(&(tmp->children), row);
         bg = !bg;
@@ -953,7 +953,7 @@ static void OnClick_Join(GLWidget *widget)
     SDL_Event evt;
     evt.type = SDL_USEREVENT;
     evt.user.code = EVENT_JOIN;
-    evt.user.data1 = NULL;
+    evt.user.data1 = nullptr;
     SDL_PushEvent(&evt);
 }
 
@@ -962,7 +962,7 @@ static void OnClick_Refresh(GLWidget *widget)
     SDL_Event evt;
     evt.type = SDL_USEREVENT;
     evt.user.code = EVENT_REFRESH;
-    evt.user.data1 = NULL;
+    evt.user.data1 = nullptr;
     SDL_PushEvent(&evt);
 }
 
@@ -984,17 +984,17 @@ static GLWidget *Init_MetaWidget(const server_list_t &servers)
     if (!(tmp = Init_EmptyBaseGLWidget()))
     {
         error("Widget init failed");
-        return NULL;
+        return nullptr;
     }
     if (!(info = (MetaWidget *)malloc(sizeof(MetaWidget))))
     {
         error("out of memory");
         free(tmp);
-        return NULL;
+        return nullptr;
     }
-    info->table = NULL;
-    info->status = NULL;
-    info->players = NULL;
+    info->table = nullptr;
+    info->status = nullptr;
+    info->players = nullptr;
     info->texture = 0;
     tmp->WIDGET = METAWIDGET;
     tmp->bounds.x = (draw_width - META_WIDTH) / 2;
@@ -1008,7 +1008,7 @@ static GLWidget *Init_MetaWidget(const server_list_t &servers)
     if (!(info->table = Init_MetaTableWidget(tmp, servers)))
     {
         free(tmp);
-        return NULL;
+        return nullptr;
     }
     table = (MetaTableWidget *)info->table->wid_info;
     table_bounds.x = tmp->bounds.x + 20;
@@ -1027,7 +1027,7 @@ static GLWidget *Init_MetaWidget(const server_list_t &servers)
     }
 #endif
 
-    if (table->first_row != NULL)
+    if (table->first_row != nullptr)
         SelectRow_MetaWidget(tmp, table->first_row);
 
     return tmp;
@@ -1040,8 +1040,8 @@ static bool join_server(Connect_param_t *conpar, server_info_t *sip)
             sizeof(conpar->server_name));
     strlcpy(conpar->server_addr, sip->ip_str.c_str(), sizeof(conpar->server_addr));
     conpar->contact_port = sip->port;
-    if (Contact_servers(1, &server_addr_ptr, 1, 0, 0, NULL,
-                        0, NULL, NULL, NULL, NULL, conpar))
+    if (Contact_servers(1, &server_addr_ptr, 1, 0, 0, nullptr,
+                        0, nullptr, nullptr, nullptr, nullptr, conpar))
     {
         return true;
     }
@@ -1090,13 +1090,13 @@ int Meta_window(Connect_param_t *conpar)
     static char err[MSG_LEN] = {0};
     int num_serv = 0;
     int btn_x, btn_y, btn_h;
-    GLWidget *btn, *root, *meta, *target = NULL;
+    GLWidget *btn, *root, *meta, *target = nullptr;
     SDL_Event evt;
-    server_info_t *server = NULL;
+    server_info_t *server = nullptr;
 
     if (server_list.empty() ||
         (int)server_list.size() < 10 ||
-        server_list_creation_time + 5 < time(NULL))
+        server_list_creation_time + 5 < time(nullptr))
     {
 
         Delete_server_list();
@@ -1215,7 +1215,7 @@ int Meta_window(Connect_param_t *conpar)
                 if (evt.user.code == EVENT_JOIN)
                 {
                     server = (server_info_t *)evt.user.data1;
-                    if (server == NULL)
+                    if (server == nullptr)
                         server = GetSelectedServer_MetaWidget(meta);
                     if (!server)
                         break;
@@ -1259,7 +1259,7 @@ int Meta_window(Connect_param_t *conpar)
                                    evt.button.x,
                                    evt.button.y,
                                    target->buttondata);
-                    target = NULL;
+                    target = nullptr;
                 }
                 break;
 

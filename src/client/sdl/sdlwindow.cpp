@@ -37,7 +37,7 @@ static int next_p2(int t)
 int sdl_window_init(sdl_window_t *win, int x, int y, int w, int h)
 {
     glGenTextures(1, &win->tx_id);
-    win->surface = NULL;
+    win->surface = nullptr;
     if (sdl_window_resize(win, w, h))
     {
         warn("failed to resize window");
@@ -65,7 +65,7 @@ int sdl_window_resize(sdl_window_t *win, int width, int height)
         return -1;
     }
 
-    if (win->surface != NULL)
+    if (win->surface != nullptr)
     {
         SDL_FreeSurface(win->surface);
     }
@@ -116,6 +116,6 @@ void sdl_window_paint(sdl_window_t *win)
 void sdl_window_destroy(sdl_window_t *win)
 {
     glDeleteTextures(1, &win->tx_id);
-    if (win->surface != NULL)
+    if (win->surface != nullptr)
         SDL_FreeSurface(win->surface);
 }

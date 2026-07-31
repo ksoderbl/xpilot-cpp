@@ -118,8 +118,8 @@ int main(int argc, char **argv)
      * Make output always linebuffered.  By default pipes
      * and remote shells cause stdout to be fully buffered.
      */
-    setvbuf(stdout, NULL, _IOLBF, BUFSIZ);
-    setvbuf(stderr, NULL, _IOLBF, BUFSIZ);
+    setvbuf(stdout, nullptr, _IOLBF, BUFSIZ);
+    setvbuf(stderr, nullptr, _IOLBF, BUFSIZ);
 
     /*
      * --- Output copyright notice ---
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
     if (options.serverHost)
     {
         addr = sock_get_addr_by_name(options.serverHost);
-        if (addr == NULL)
+        if (addr == nullptr)
         {
             warn("Failed name lookup on: %s", options.serverHost);
             exit(1);
@@ -209,7 +209,7 @@ int main(int argc, char **argv)
     /*
      * Set the time the server started
      */
-    serverStartTime = time(NULL);
+    serverStartTime = time(nullptr);
 
     printf("%s Server runs at %d frames per second\n",
            showtime(), options.framesPerSecond);
@@ -233,7 +233,7 @@ void Main_loop(void)
 {
     struct timeval tv1, tv2;
 
-    gettimeofday(&tv1, NULL);
+    gettimeofday(&tv1, nullptr);
 
     main_loops++;
 
@@ -271,7 +271,7 @@ void Main_loop(void)
                 {
                     printf("%s Server will stop in %g minutes.\n",
                            showtime(), options.gameDuration);
-                    gameOverTime = (time_t)(options.gameDuration * 60) + time(NULL);
+                    gameOverTime = (time_t)(options.gameDuration * 60) + time(nullptr);
                 }
             }
         }
@@ -290,7 +290,7 @@ void Main_loop(void)
 
         if (!NoPlayersEnteredYet)
             End_game();
-        if (serverStartTime + 5 * 60 < time(NULL))
+        if (serverStartTime + 5 * 60 < time(nullptr))
         {
             error("First player has yet to show his butt, I'm bored... Bye!");
             Log_game("NOSHOW");
@@ -305,7 +305,7 @@ void Main_loop(void)
     {
         int s, us;
 
-        gettimeofday(&tv2, NULL);
+        gettimeofday(&tv2, nullptr);
 
         s = tv2.tv_sec - tv1.tv_sec;
         us = tv2.tv_usec - tv1.tv_usec;
@@ -337,7 +337,7 @@ void End_game(void)
     while (NumPlayers > 0)
     { /* Kick out all remaining players */
         pl = Player_by_index(NumPlayers - 1);
-        if (pl->conn == NULL)
+        if (pl->conn == nullptr)
             Delete_player(pl);
         else
             Destroy_connection(pl->conn, msg);
@@ -507,7 +507,7 @@ const char *Describe_game_status(void)
 void Server_info(char *str, size_t max_size)
 {
     int i, j, k;
-    player_t *pl, **order, *best = NULL;
+    player_t *pl, **order, *best = nullptr;
     double ratio, best_ratio = -1e7;
     char name[MAX_CHARS * 2 + 4];
     char lblstr[MAX_CHARS];
@@ -549,7 +549,7 @@ void Server_info(char *str, size_t max_size)
     }
     strlcat(str, msg, max_size);
 
-    if ((order = (player_t **)malloc(NumPlayers * sizeof(player_t *))) == NULL)
+    if ((order = (player_t **)malloc(NumPlayers * sizeof(player_t *))) == nullptr)
     {
         error("No memory for order");
         return;
@@ -565,7 +565,7 @@ void Server_info(char *str, size_t max_size)
         {
             ratio = (double)Get_Score(pl) / (pl->pl_life + 1);
         }
-        if ((best == NULL || ratio > best_ratio) && !Player_is_paused(pl))
+        if ((best == nullptr || ratio > best_ratio) && !Player_is_paused(pl))
         {
             best_ratio = ratio;
             best = pl;
@@ -659,7 +659,7 @@ void Log_game(const char *heading)
     if (!options.Log)
         return;
 
-    lt = time(NULL);
+    lt = time(nullptr);
     ptr = localtime(&lt);
     strftime(timenow, 79, "%I:%M:%S %p %Z %A, %B %d, %Y", ptr);
 
@@ -667,7 +667,7 @@ void Log_game(const char *heading)
              "%-50.50s\t%10.10s@%-15.15s\tWorld: %-25.25s\t%10.10s\n",
              timenow, Server.owner, Server.host, World.name, heading);
 
-    if ((fp = fopen(Conf_logfile(), "a")) == NULL)
+    if ((fp = fopen(Conf_logfile(), "a")) == nullptr)
     {
         error("Couldn't open log file, contact %s", Conf_localguru());
         return;
@@ -683,7 +683,7 @@ void Game_Over(void)
     double maxsc, minsc;
     int i, win_team = TEAM_NOT_SET, lose_team = TEAM_NOT_SET;
     char msg[MSG_LEN];
-    player_t *win_pl = NULL, *lose_pl = NULL;
+    player_t *win_pl = nullptr, *lose_pl = nullptr;
 
     Set_message("Game over...");
 
@@ -820,14 +820,14 @@ void Server_log_admin_message(player_t *pl, const char *str)
     struct stat st;
     char msg[MSG_LEN * 2];
 
-    if ((logfilename != NULL) &&
+    if ((logfilename != nullptr) &&
         (logfilename[0] != '\0') &&
         (logfile_size_limit > 0) &&
         (access(logfilename, 2) == 0) &&
         (stat(logfilename, &st) == 0) &&
         (st.st_size + 80 < logfile_size_limit) &&
         ((size_t)(logfile_size_limit - st.st_size - 80) > strlen(str)) &&
-        ((fp = fopen(logfilename, "a")) != NULL))
+        ((fp = fopen(logfilename, "a")) != nullptr))
     {
         fprintf(fp,
                 "%s[%s]{%s@%s(%s)|%s}:\n"
