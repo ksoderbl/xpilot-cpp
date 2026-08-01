@@ -54,6 +54,9 @@
 #include "netserver.h"
 #include "score.h"
 
+#include "teamcup.h"
+#include "srecord.h"
+
 /*
  * Look if any player's name is exactly 'str',
  * If not, look if any player's name contains 'str'.
@@ -1022,13 +1025,13 @@ static int Cmd_queue(char *arg, player_t *pl, bool oper, char *msg, size_t size)
 {
     int result;
 
-    // if (record || playback)
-    // {
-    //     strlcpy(msg, "Command currently disabled during recording for "
-    //                  "technical reasons.",
-    //             size);
-    //     return CMD_RESULT_ERROR;
-    // }
+    if (record || playback)
+    {
+        strlcpy(msg, "Command currently disabled during recording for "
+                     "technical reasons.",
+                size);
+        return CMD_RESULT_ERROR;
+    }
 
     result = Queue_show_list(msg, size);
 
@@ -1070,9 +1073,8 @@ static int Cmd_reset(char *arg, player_t *pl, bool oper, char *msg, size_t size)
         Set_message(msg);
         strlcpy(msg, "", size);
 
-        // TODO
-        // teamcup_game_over();
-        // teamcup_game_start();
+        teamcup_game_over();
+        teamcup_game_start();
     }
     else
     {
@@ -1167,6 +1169,8 @@ static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)
         else if (options.reserveRobotTeam && team == options.robotTeam)
             snprintf(msg, size,
                      "You cannot join the robot team on this server.");
+        else if (pl->rectype == 2)
+            snprintf(msg, size, "Spectators cannot change team.");
         else
             swap_allowed = true;
     }

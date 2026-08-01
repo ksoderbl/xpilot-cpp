@@ -65,13 +65,6 @@ struct MetaServer meta_servers[2] = {
      META_IP_TWO},
 };
 
-extern sock_t contactSocket;
-static char msg[MSG_LEN];
-
-extern int NumPlayers, NumRobots, NumPseudoPlayers, NumQueuedPlayers;
-extern int login_in_progress;
-extern time_t serverStartTime;
-
 void Meta_send(char *mesg, size_t len)
 {
     int i;
@@ -81,10 +74,12 @@ void Meta_send(char *mesg, size_t len)
 
     for (i = 0; i < NELEM(meta_servers); i++)
     {
-        if (sock_send_dest(&contactSocket, meta_servers[i].addr, META_PORT, mesg, len) != len)
+        if (sock_send_dest(&contactSocket, meta_servers[i].addr,
+                           META_PORT, mesg, (int)len) != (int)len)
         {
             sock_get_error(&contactSocket);
-            sock_send_dest(&contactSocket, meta_servers[i].addr, META_PORT, mesg, len);
+            sock_send_dest(&contactSocket, meta_servers[i].addr,
+                           META_PORT, mesg, (int)len);
         }
     }
 }
@@ -128,7 +123,6 @@ void Meta_init(void)
         addr = sock_get_addr_by_name(meta_servers[i].name);
         if (addr)
             strlcpy(meta_servers[i].addr, addr, sizeof(meta_servers[i].addr));
-
         if (addr)
             printf("found %d", i + 1);
         else
@@ -141,26 +135,47 @@ void Meta_init(void)
     }
 }
 
+#if 0
+static void asciidump(void *p, size_t size)
+{
+    int i;
+    uint8_t *up = p;
+    char c;
+
+    for (i = 0; i < size; i++)
+    {
+        if (!(i % 64))
+            printf("\n%08x ", i);
+        c = *(up + i);
+        if (isprint(c))
+            printf("%c", c);
+        else
+            printf(".");
+    }
+    printf("\n\n");
+}
+#endif
+
+static char meta_update_string[MAX_STR_LEN];
+
+void Meta_update_max_size_tuner(void)
+{
+    LIMIT(options.metaUpdateMaxSize, 1, (int)sizeof(meta_update_string));
+}
+
 void Meta_update(bool change)
 {
-#ifdef SOUND
-#define SOUND_SUPPORT_STR "yes"
-#else
-#define SOUND_SUPPORT_STR "no"
-#endif
 #define GIVE_META_SERVER_A_HINT 180
 
     world_t *world = &World;
-    char string[MAX_STR_LEN];
-    int i, j, len;
-    int num_active_players;
-    bool first = true;
+    char *string = meta_update_string, freebases[120];
+    int i, num_active_players, active_per_team[MAX_TEAMS];
+    size_t len, max_size;
     time_t currentTime;
     const char *game_mode;
-    char freebases[120];
-    int active_per_team[MAX_TEAMS];
     static time_t lastMetaSendTime = 0;
     static int queue_length = 0;
+    bool first;
 
     if (!options.reportToMetaServer)
         return;
@@ -175,131 +190,159 @@ void Meta_update(bool change)
                 return;
         }
     }
+
+    Meta_update_max_size_tuner();
+    max_size = options.metaUpdateMaxSize;
+
     lastMetaSendTime = currentTime;
     queue_length = NumQueuedPlayers;
 
     /* Find out the number of active players. */
     num_active_players = 0;
     memset(active_per_team, 0, sizeof active_per_team);
+
     for (i = 0; i < NumPlayers; i++)
     {
         player_t *pl = Player_by_index(i);
 
-        if (Player_is_human(pl) && !Player_is_paused(pl))
-        {
-            num_active_players++;
-            if (Team_play(world))
-            {
-                active_per_team[i]++;
-            }
-        }
+        if (!Player_is_human(pl) ||
+            Player_is_paused(pl))
+            continue;
+
+        num_active_players++;
+        if (Team_play(world))
+            active_per_team[pl->team]++;
     }
 
-    game_mode = (game_lock && ShutdownServer == -1)    ? "locked"
-                : (!game_lock && ShutdownServer != -1) ? "shutting down"
-                : (game_lock && ShutdownServer != -1)  ? "locked and shutting down"
-                                                       : "ok";
+    game_mode = Describe_game_status();
 
     /* calculate number of available homebases per team. */
     freebases[0] = '\0';
     if (Team_play(world))
     {
-        j = 0;
+        bool firstteam = true;
+
         for (i = 0; i < MAX_TEAMS; i++)
         {
+            team_t *team = Team_by_index(i);
+
             if (i == options.robotTeam && options.reserveRobotTeam)
-            {
                 continue;
-            }
-            if (World.teams[i].NumBases > 0)
+
+            if (team->NumBases > 0)
             {
-                sprintf(&freebases[j], "%d=%d,", i,
-                        World.teams[i].NumBases - active_per_team[i]);
-                j += strlen(&freebases[j]);
+                char str[32];
+
+                snprintf(str, sizeof(str), "%s%d=%d",
+                         (firstteam ? "" : ","), i,
+                         team->NumBases - active_per_team[i]);
+                firstteam = false;
+                strlcat(freebases, str, sizeof(freebases));
             }
-        }
-        /* strip trailing comma. */
-        if (j)
-        {
-            freebases[j - 1] = '\0';
         }
     }
     else
-    {
-        sprintf(freebases, "=%d",
-                Num_bases() - num_active_players - login_in_progress);
-    }
+        snprintf(freebases, sizeof(freebases), "=%d",
+                 Num_bases() - num_active_players - login_in_progress);
 
-    sprintf(string,
-            "add server %s\n"
-            "add users %d\n"
-            "add version %s\n"
-            "add map %s\n"
-            "add sizeMap %3dx%3d\n"
-            "add author %s\n"
-            "add bases %d\n"
-            "add fps %d\n"
-            "add port %d\n"
-            "add mode %s\n"
-            "add teams %d\n"
-            "add free %s\n"
-            "add timing %d\n"
-            "add stime %ld\n"
-            "add queue %d\n"
-            "add sound " SOUND_SUPPORT_STR "\n",
-            Server.host, num_active_players,
-            META_VERSION, World.name, World.x, World.y, World.author,
-            Num_bases(), FPS, options.contactPort,
-            game_mode, World.NumTeamBases, freebases,
-            BIT(World.rules->mode, TIMING) ? 1 : 0,
-            (long)(time(nullptr) - serverStartTime),
-            queue_length);
+    snprintf(string, max_size,
+             "add server %s\n"
+             "add users %d\n"
+             "add version %s\n"
+             "add map %s\n"
+             "add sizeMap %3dx%3d\n"
+             "add author %s\n"
+             "add bases %d\n"
+             "add fps %d\n"
+             "add port %d\n"
+             "add mode %s\n"
+             "add teams %d\n"
+             "add free %s\n"
+             "add timing %d\n"
+             "add stime %ld\n"
+             "add queue %d\n"
+             "add sound %s\n",
+             Server.host, num_active_players,
+             META_VERSION, World.name, World.x, World.y, World.author,
+             Num_bases(), FPS, options.contactPort,
+             game_mode, World.NumTeamBases, freebases,
+             BIT(World.rules->mode, TIMING) ? 1 : 0,
+             (long)(time(nullptr) - serverStartTime),
+             queue_length, options.sound ? "yes" : "no");
 
     /*
      * 'len' must always hold the exact number of
      * non-zero bytes which are in string[].
      */
     len = strlen(string);
+    first = true;
 
     for (i = 0; i < NumPlayers; i++)
     {
         player_t *pl = Player_by_index(i);
+        char str[4 * MAX_CHARS];
+        char tstr[32];
 
-        if (Player_is_human(pl) && !Player_is_paused(pl))
+        if (!Player_is_human(pl) ||
+            Player_is_paused(pl))
+            continue;
+
+        snprintf(str, sizeof(str),
+                 "%s%s=%s@%s",
+                 first ? "add players " : ",",
+                 pl->name,
+                 pl->username,
+                 pl->hostname);
+
+        if (Team_play(world))
         {
-            if ((len + (4 * MAX_CHARS)) < sizeof(string))
-            {
-                sprintf(string + len,
-                        "%s%s=%s@%s",
-                        (first) ? "add players " : ",",
-                        pl->name,
-                        pl->username,
-                        pl->hostname);
-                len += strlen(&string[len]);
-
-                if (Team_play(world))
-                {
-                    sprintf(string + len, "{%d}", pl->team);
-                    len += strlen(&string[len]);
-                }
-
-                first = false;
-            }
+            snprintf(tstr, sizeof(tstr), "{%d}", pl->team);
+            strlcat(str, tstr, sizeof(str));
         }
+
+        if (len + strlen(str) + 1 > max_size)
+            break;
+
+        strlcat(string, str, max_size);
+        len += strlen(str);
+        first = false;
     }
 
-    if (len + MSG_LEN < sizeof(string))
+#if 0
+    /* kps - don't bother to send status, it probably isn't useful */
+    if (len + MSG_LEN < max_size)
     {
         char status[MAX_STR_LEN];
 
-        strlcpy(&string[len], "\nadd status ", sizeof(string) - len);
+        strlcpy(&string[len], "\nadd status ", max_size - len);
         len += strlen(&string[len]);
 
         Server_info(status, sizeof(status));
 
-        strlcpy(&string[len], status, sizeof(string) - len);
+        strlcpy(&string[len], status, max_size - len);
         len += strlen(&string[len]);
     }
+#else
+    {
+        char status[MAX_STR_LEN];
+
+        strlcpy(status,
+                "\nadd status Use server text interface to query status.",
+                sizeof(status));
+        if (len + strlen(status) + 1 <= max_size)
+        {
+            strlcat(string, status, max_size);
+            len += strlen(status);
+        }
+    }
+#endif
+
+#if 0
+    warn("Meta update string len is %d (limit is %d)",
+         len, options.metaUpdateMaxSize);
+
+    asciidump(string, len);
+#endif
 
     Meta_send(string, len + 1);
 }

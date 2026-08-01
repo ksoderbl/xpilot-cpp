@@ -118,7 +118,7 @@ typedef struct
     int debrisWallBounce;
     int asteroidsWallBounce;
     int cloakedExhaust;
-    int cloakedShield;
+    // int cloakedShield;
     char maxObjectWallBounceSpeed[20];
     char maxShieldedWallBounceSpeed[20];
     char maxUnshieldedWallBounceSpeed[20];

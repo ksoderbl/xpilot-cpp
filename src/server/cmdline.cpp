@@ -6,6 +6,11 @@
  *      Bert Gijsbers
  *      Dick Balaska
  *
+ * Copyright (C) 2000-2004 by
+ *
+ *      Uoti Urpala
+ *      Kristian Söderblom
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -20,6 +25,7 @@
  * along with this program; if not, see
  * <https://www.gnu.org/licenses/>.
  */
+
 /* Options parsing code contributed by Ted Lemon <mellon@ncd.com> */
 
 #include <cstdlib>
@@ -30,7 +36,10 @@
 #include "serveroption.h"
 
 #include "contact.h"
+#include "metaserver.h"
 #include "server.h"
+#include "serverrules.h"
+#include "srecord.h"
 
 #include "xpconfig.h"
 #include "serverconst.h"
@@ -49,9 +58,13 @@ double coriolisCosine, coriolisSine; /* cos and sin of cor. angle */
 int roundsPlayed = 0;                /* # of rounds played sofar. */
 extern char conf_logfile_string[];   /* Default name of log file */
 
-double timeStep = 1.0; /* Game time step per frame */
-double timePerFrame;   /* Real time elapsed per frame */
-double ecmSizeFactor;  /* Factor for ecm size update */
+//
+// timeStep should be 1 for classic/legacy xpilot gameplay, meaning that
+// for each "real" frame send to clients, game time proceeds by one tick.
+//
+double timeStep;      /* Game time step per frame */
+double timePerFrame;  /* Real time elapsed per frame */
+double ecmSizeFactor; /* Factor for ecm size update */
 struct options options;
 
 /*
@@ -159,19 +172,19 @@ static option_desc opts[] = {
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"shotLife",
      "shotLife",
-     "60",
+     "60.0",
      &options.shotLife,
-     valInt,
+     valReal,
      tuner_dummy,
      "Life of bullets in ticks.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"fireRepeatRate",
      "fireRepeat",
-     "2",
+     "2.0",
      &options.fireRepeatRate,
-     valInt,
+     valReal,
      tuner_dummy,
-     "Number of frames per automatic fire (0=off).\n",
+     "Number of ticks per automatic fire (0=off).\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"maxRobots",
      "robots",
@@ -269,7 +282,7 @@ static option_desc opts[] = {
      &options.robotUserName,
      valString,
      Tune_robot_user_name,
-     "What is the robots' apparent real name?\n",
+     "What is the robots' apparent user name?\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"robotHostName",
      "robotHostName",
@@ -285,7 +298,7 @@ static option_desc opts[] = {
      &options.tankUserName,
      valString,
      Tune_tank_user_name,
-     "What is the tanks' apparent real name?\n",
+     "What is the tanks' apparent user name?\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"tankHostName",
      "tankHostName",
@@ -313,9 +326,9 @@ static option_desc opts[] = {
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"defaultShipShape",
      "defaultShipShape",
-     "(NM:Default)(AU:Unknown)(SH: 15,0 -9,8 -9,-8)(MG: 15,0)(LG: 15,0)"
-     "(RG: 15,0)(EN: -9,0)(LR: -9,8)(RR: -9,-8)(LL: -9,8)(RL: -9,-8)"
-     "(MR: 15,0)",
+     "(NM:Default)(AU:Unknown)(SH: 14,0 -8,8 -8,-8)(MG: 14,0)(LG: 14,0)"
+     "(RG: 14,0)(EN: -8,0)(LR: -8,8)(RR: -8,-8)(LL: -8,8)(RL: -8,-8)"
+     "(MR: 14,0)",
      &options.defaultShipShape,
      valString,
      tuner_none,
@@ -364,7 +377,8 @@ static option_desc opts[] = {
      &options.RawMode,
      valBool,
      tuner_dummy,
-     "Do robots keep on playing even if all human players quit?\n",
+     "Does server calculate frames and do robots keep on playing even\n"
+     "if all human players quit?\n",
      OPT_COMMAND | OPT_DEFAULTS | OPT_VISIBLE},
     {"noQuit",
      "noQuit",
@@ -426,6 +440,14 @@ static option_desc opts[] = {
      tuner_none,
      "The name of the map author.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
+    {"mapData",
+     "mapData",
+     nullptr,
+     &options.mapData,
+     valString,
+     tuner_none,
+     "Block map topology.\n",
+     OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"contactPort",
      "port",
      "15345",
@@ -442,14 +464,6 @@ static option_desc opts[] = {
      tuner_none,
      "The server's fully qualified domain name (for multihomed hosts).\n",
      OPT_COMMAND | OPT_DEFAULTS | OPT_VISIBLE},
-    {"mapData",
-     "mapData",
-     nullptr,
-     &options.mapData,
-     valString,
-     tuner_none,
-     "The map's topology.\n",
-     OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"greeting",
      "xpilotGreeting",
      nullptr,
@@ -598,7 +612,7 @@ static option_desc opts[] = {
     //  OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"maxObjectWallBounceSpeed",
      "maxObjectBounceSpeed",
-     "40",
+     "40.0",
      &options.maxObjectWallBounceSpeed,
      valReal,
      Move_init,
@@ -606,7 +620,7 @@ static option_desc opts[] = {
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"maxShieldedWallBounceSpeed",
      "maxShieldedBounceSpeed",
-     "50",
+     "50.0",
      &options.maxShieldedWallBounceSpeed,
      valReal,
      Move_init,
@@ -614,7 +628,7 @@ static option_desc opts[] = {
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"maxUnshieldedWallBounceSpeed",
      "maxUnshieldedBounceSpeed",
-     "20",
+     "20.0",
      &options.maxUnshieldedWallBounceSpeed,
      valReal,
      Move_init,
@@ -622,7 +636,7 @@ static option_desc opts[] = {
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"maxShieldedPlayerWallBounceAngle",
      "maxShieldedBounceAngle",
-     "90",
+     "90.0",
      &options.maxShieldedWallBounceAngle,
      valReal,
      Move_init,
@@ -630,7 +644,7 @@ static option_desc opts[] = {
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"maxUnshieldedPlayerWallBounceAngle",
      "maxUnshieldedBounceAngle",
-     "30",
+     "30.0",
      &options.maxUnshieldedWallBounceAngle,
      valReal,
      Move_init,
@@ -685,6 +699,14 @@ static option_desc opts[] = {
      tuner_none,
      "Keep the meta server informed about our game?\n",
      OPT_COMMAND | OPT_DEFAULTS | OPT_VISIBLE},
+    {"metaUpdateMaxSize",
+     "metaUpdateMaxSize",
+     "4096",
+     &options.metaUpdateMaxSize,
+     valInt,
+     Meta_update_max_size_tuner,
+     "Maximum size of meta update messages.\n",
+     OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"searchDomainForXPilot",
      "searchDomainForXPilot",
      "false",
@@ -828,13 +850,22 @@ static option_desc opts[] = {
      tuner_none,
      "Is the map a team play map?\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
+    {"lockOtherTeam",
+     "lockOtherTeam",
+     "true",
+     &options.lockOtherTeam,
+     valBool,
+     tuner_dummy,
+     "Can you watch opposing players when rest of your team is \n"
+     "still alive?\n",
+     OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"teamFuel",
      "teamFuel",
      "false",
      &options.teamFuel,
      valBool,
      tuner_dummy,
-     "Are fuelstations only available to team members?\n",
+     "Do fuelstations belong to teams?\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"teamCannons",
      "teamCannons",
@@ -1102,15 +1133,6 @@ static option_desc opts[] = {
      valBool,
      tuner_dummy,
      "Do shots, mines and missiles remain after their owner leaves?\n",
-     OPT_ORIGIN_ANY | OPT_VISIBLE},
-    {"teamAssign",
-     "teamAssign",
-     "true",
-     &options.teamAssign,
-     valBool,
-     tuner_dummy,
-     "If players have not specified which team they like to join\n"
-     "should the server choose a team for them automatically?\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"teamImmunity",
      "teamImmunity",
@@ -2714,6 +2736,14 @@ static option_desc opts[] = {
      tuner_plock,
      "Whether the server is prevented from being swapped out of memory.\n",
      OPT_COMMAND | OPT_DEFAULTS | OPT_VISIBLE},
+    {"sound",
+     "sound",
+     "false",
+     &options.sound,
+     valBool,
+     tuner_dummy,
+     "Does the server send sound events to players that request sound.\n",
+     OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"timerResolution",
      "timerResolution",
      "0",
@@ -2751,6 +2781,40 @@ static option_desc opts[] = {
      tuner_dummy,
      "Use UDP ports clientPortStart - clientPortEnd (for firewalls)\n",
      OPT_COMMAND | OPT_DEFAULTS | OPT_VISIBLE},
+
+    {"recordMode",
+     "recordMode",
+     "0",
+     &options.recordMode,
+     valInt,
+     Init_recording,
+     "If this is set to 1 when the server starts, the game is saved\n"
+     "in the file specified by recordFileName. If set to 2 at startup,\n"
+     "the server replays the recorded game. Joining players are\n"
+     "spectators who can watch the recorded game from anyone's\n"
+     "viewpoint. Can be set to 0 in the middle of a game to stop"
+     "recording.\n",
+     OPT_COMMAND | OPT_DEFAULTS},
+    {"recordFileName",
+     "recordFile",
+     nullptr,
+     &options.recordFileName,
+     valString,
+     tuner_none,
+     "Name of the file where server recordings are saved.\n",
+     OPT_COMMAND | OPT_DEFAULTS},
+    {"recordFlushInterval",
+     "recordWait",
+     "0",
+     &options.recordFlushInterval,
+     valInt,
+     tuner_dummy,
+     "If set to a nonzero value x, the server will flush all recording\n"
+     "data in memory to the record file at least once every x seconds.\n"
+     "This is useful if you want to replay the game on another server\n"
+     "while it is still being played. There is a small overhead\n"
+     "(some dozens of bytes extra recording file size) for each flush.\n",
+     OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"maxPauseTime",
      "maxPauseTime",
      "14400", /* can pause 4 hours by default */

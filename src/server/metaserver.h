@@ -36,3 +36,4 @@ int Meta_from(char *addr, int port);
 void Meta_gone(void);
 void Meta_init(void);
 void Meta_update(bool change);
+void Meta_update_max_size_tuner(void);

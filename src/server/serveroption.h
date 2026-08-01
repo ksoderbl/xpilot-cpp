@@ -38,7 +38,7 @@ typedef struct options
     double shotSpeed;
 
     // Default number of ticks each shot will live
-    int shotLife;
+    double shotLife;
 
     // How many robots should enter the game?
     int maxRobots;
@@ -434,6 +434,8 @@ typedef struct options
     bool allowLaserModifiers;
     bool allowShipShapes;
 
+    int metaUpdateMaxSize;
+
     // Are players visible on radar?
     bool playersOnRadar;
 
@@ -573,6 +575,8 @@ typedef struct options
 
     // ignore client maxFPS request if 20
     bool ignore20MaxFPS;
+
+    bool sound;
 
     // OS timer resolution (times/sec)
     int timerResolution;

@@ -390,7 +390,7 @@ static int Parse_colors(Colormap cmap)
         {
             if (XParseColor(dpy, cmap, def[i], &colors[i]))
                 continue;
-            warn("Can't parse default color %d \"%s\"\n", i, def[i]);
+            warn("Can't parse default color %d \"%s\".", i, def[i]);
         }
         if (i < NUM_COLORS)
             return -1;
@@ -415,7 +415,7 @@ static void Fill_colormap(void)
 
     if (colormap == 0 || false != true)
     {
-        printf("Fill_colormap: returning early\n");
+        warn("Fill_colormap: returning early\n");
         return;
     }
     cells_needed = (maxColors == 16)  ? 256
@@ -465,28 +465,28 @@ int Colors_init(void)
 
     colormap = 0;
 
-    // printf("Colors_init: maxColors 0: %d\n", maxColors);
+    // warn("Colors_init: maxColors 0: %d\n", maxColors);
 
     Choose_visual();
 
-    // printf("Colors_init: Using visual %s\n", Visual_class_name(visualPtr->c_class));
+    // warn("Colors_init: Using visual %s\n", Visual_class_name(visualPtr->c_class));
 
     /*
      * Get misc. display info.
      */
     {
-        // printf("Colors_init: maxColors 1: %d\n", maxColors);
-        // printf("Colors_init: visualPtr->map_entries: %d\n", visualPtr->map_entries);
+        // warn("Colors_init: maxColors 1: %d\n", maxColors);
+        // warn("Colors_init: visualPtr->map_entries: %d\n", visualPtr->map_entries);
         maxColors = (maxColors >= 16 && visualPtr->map_entries >= 16) ? 16
                     : (maxColors >= 8 && visualPtr->map_entries >= 8) ? 8
                                                                       : 4;
-        // printf("Colors_init: maxColors 2: %d\n", maxColors);
+        // warn("Colors_init: maxColors 2: %d\n", maxColors);
     }
 
     num_planes = (maxColors == 16)  ? 4
                  : (maxColors == 8) ? 3
                                     : 2;
-    // printf("Colors_init: num_planes: %d\n", num_planes);
+    // warn("Colors_init: num_planes: %d\n", num_planes);
 
     if (Parse_colors(DefaultColormap(dpy, DefaultScreen(dpy))) == -1)
     {
@@ -494,7 +494,7 @@ int Colors_init(void)
         return -1;
     }
 
-    // printf("Colors_init: colormap: %d\n", colormap);
+    // warn("Colors_init: colormap: %d\n", colormap);
 
     if (colormap != 0)
         Fill_colormap();
@@ -538,7 +538,7 @@ int Colors_init(void)
     switch (dbuf_state->type)
     {
     case PIXMAP_COPY:
-        printf("Using pixmap copying\n");
+        warn("Using pixmap copying\n");
         break;
 
     default:
@@ -791,12 +791,11 @@ static int Colors_init_color_cube(void)
                              &color_cube->pixels[0],
                              (unsigned)n) == False)
         {
-            /*printf("Could not alloc %d colors for RGB cube\n", n);*/
+            /*warn("Could not alloc %d colors for RGB cube\n", n);*/
             continue;
         }
 
-        printf("Got %d colors for a %d*%d*%d RGB cube\n",
-               n, r, g, b);
+        printf("Got %d colors for a %d*%d*%d RGB cube\n", n, r, g, b);
 
         color_cube->mustfree = 1;
 
@@ -815,7 +814,7 @@ static int Colors_init_color_cube(void)
         return 0;
     }
 
-    printf("Could not alloc colors for RGB cube.");
+    warn("Could not alloc colors for RGB cube.");
 
     return -1;
 }
@@ -861,12 +860,12 @@ static int Colors_init_true_color(void)
           visualPtr->blue_mask) != 0))
     {
 
-        printf("Your visual \"%s\" has weird characteristics:\n",
-               Visual_class_name(visualPtr->c_class));
-        printf("\tred mask 0x%06lx, green mask 0x%06lx, blue mask 0x%06lx,\n",
-               visualPtr->red_mask, visualPtr->green_mask, visualPtr->blue_mask);
-        printf("\toverlap mask 0x%06lx\n",
-               visualPtr->red_mask & visualPtr->green_mask & visualPtr->blue_mask);
+        warn("Your visual \"%s\" has weird characteristics:\n",
+             Visual_class_name(visualPtr->c_class));
+        warn("\tred mask 0x%06lx, green mask 0x%06lx, blue mask 0x%06lx,\n",
+             visualPtr->red_mask, visualPtr->green_mask, visualPtr->blue_mask);
+        warn("\toverlap mask 0x%06lx\n",
+             visualPtr->red_mask & visualPtr->green_mask & visualPtr->blue_mask);
         return -1;
     }
 
@@ -1040,9 +1039,9 @@ void Init_spark_colors(void)
     unsigned col;
     int i;
 
-    // printf("Init_spark_colors: original sparkColors %s", sparkColors);
+    // warn("Init_spark_colors: original sparkColors %s", sparkColors);
     strlcpy(sparkColors, "8,5,3,10", sizeof sparkColors);
-    // printf("Init_spark_colors: changed  sparkColors %s", sparkColors);
+    // warn("Init_spark_colors: changed  sparkColors %s", sparkColors);
 
     num_spark_colors = 0;
     /*
@@ -1067,12 +1066,12 @@ void Init_spark_colors(void)
             src--;
 
             int ret = sscanf(buf, "%u", &col);
-            // printf("buf %s, col %d, ret %d", buf, col, ret);
+            // warn("buf %s, col %d, ret %d", buf, col, ret);
             if (ret == 1)
             {
                 if (col < (unsigned)maxColors)
                 {
-                    // printf("color: %d", col);
+                    // warn("color: %d", col);
                     spark_color[num_spark_colors++] = col;
                 }
             }
@@ -1112,8 +1111,8 @@ static bool Set_maxColors(xp_option_t *opt, int val)
 {
     if (val == 4 || val == 8)
     {
-        printf("Values 4 or 8 for maxColors are not actively "
-               "supported. Use at own risk.");
+        warn("Values 4 or 8 for maxColors are not actively "
+             "supported. Use at own risk.");
         maxColors = val;
     }
     else
@@ -1125,7 +1124,7 @@ static bool Set_color(xp_option_t *opt, const char *val)
 {
     char *buf = (char *)Option_get_private_data(opt);
 
-    /*printf("Set_color: name=%s, val=\"%s\", buf=%p", opt->name, val, buf);*/
+    /*warn("Set_color: name=%s, val=\"%s\", buf=%p", opt->name, val, buf);*/
     assert(val != nullptr);
     strlcpy(buf, val, MAX_COLOR_LEN);
 

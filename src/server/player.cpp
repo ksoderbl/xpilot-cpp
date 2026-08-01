@@ -575,9 +575,7 @@ int Init_player(int ind, shipshape_t *ship, int type)
         pl->pseudo_team = pseudo_team_no++;
     }
     pl->mychar = ' ';
-    pl->prev_mychar = pl->mychar;
     pl->pl_life = World.rules->lives;
-    pl->prev_life = pl->pl_life;
     pl->ball = nullptr;
 
     pl->player_fps = FPS;
@@ -604,10 +602,6 @@ int Init_player(int ind, shipshape_t *ship, int type)
         }
         if (too_late)
         {
-            // pl->mychar = 'W';
-            // pl->prev_life = pl->pl_life = 0;
-            // SET_BIT(pl->obj_status, GAME_OVER);
-            pl->prev_life = 0; // TODO, what is this?
             Player_set_state(pl, PL_STATE_WAITING);
         }
         // else
@@ -617,7 +611,6 @@ int Init_player(int ind, shipshape_t *ship, int type)
     pl->team = TEAM_NOT_SET;
 
     pl->alliance = ALLIANCE_NOT_SET;
-    pl->prev_alliance = ALLIANCE_NOT_SET;
     pl->invite = NO_ID;
 
     pl->lock.tagged = LOCK_NONE;
@@ -639,13 +632,13 @@ int Init_player(int ind, shipshape_t *ship, int type)
 
     pl->shove_next = 0;
     for (i = 0; i < MAX_RECORDED_SHOVES; i++)
-    {
         pl->shove_record[i].pusher_id = NO_ID;
-    }
 
     pl->frame_last_busy = frame_loops;
 
     pl->isoperator = 0;
+
+    pl->update_score = true;
 
     return pl->id;
 }
@@ -705,25 +698,16 @@ void Update_score_table(void)
     for (j = 0; j < NumPlayers; j++)
     {
         pl = Player_by_index(j);
-        if (Get_Score(pl) != pl->prev_score ||
-            pl->pl_life != pl->prev_life ||
-            pl->mychar != pl->prev_mychar ||
-            pl->alliance != pl->prev_alliance)
+        if (pl->update_score)
         {
-            pl->prev_score = Get_Score(pl);
-            pl->prev_life = pl->pl_life;
-            pl->prev_mychar = pl->mychar;
-            pl->prev_alliance = pl->alliance;
-
+            pl->update_score = false;
             for (i = 0; i < NumPlayers; i++)
             {
                 player_t *pl_i = Player_by_index(i);
 
                 if (pl_i->conn != nullptr)
-                {
                     Send_score(pl_i->conn, pl->id, Get_Score(pl), pl->pl_life,
                                pl->mychar, pl->alliance);
-                }
             }
         }
         if (BIT(World.rules->mode, TIMING))

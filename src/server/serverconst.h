@@ -288,6 +288,7 @@ constexpr double REFUEL_RATE = 5.0;
 #define TARGET_REPAIR_PER_TICK (TARGET_DAMAGE / (12 * 600))
 #define TARGET_UPDATE_DELAY (TARGET_DAMAGE / (TARGET_REPAIR_PER_TICK * BLOCK_SZ))
 
+// TODO: Move to alliance.h
 #define ALLIANCE_NOT_SET (-1)
 
 #define DEBRIS_MASS 4.5

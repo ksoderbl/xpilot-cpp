@@ -140,7 +140,8 @@ static int in_range_acd(
     else
         return 0;
 }
-#else
+#endif
+
 static int in_range_acd(
     int p1cx, int p1cy, int p2cx, int p2cy,
     int q1cx, int q1cy, int q2cx, int q2cy,
@@ -238,7 +239,6 @@ static int in_range_acd(
     else
         return 0;
 }
-#endif
 
 /*
  * Globals

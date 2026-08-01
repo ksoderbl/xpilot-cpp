@@ -46,12 +46,10 @@
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
-#define STR80 (80)
-
 typedef struct
 {
-    char owner[STR80];
-    char host[STR80];
+    char owner[80];
+    char host[80];
 } server_t;
 
 extern shape_t ball_wire, wormhole_wire, filled_wire;
@@ -80,7 +78,9 @@ extern int ObjCount;
 extern int NumAlliances;
 extern int NumRobots;
 extern int login_in_progress;
-// extern world_t World;
+extern char ShutdownReason[];
+extern sock_t contactSocket;
+extern time_t serverStartTime;
 extern server_t Server;
 
 extern uint32_t LEGACY_KILL_BITS;
