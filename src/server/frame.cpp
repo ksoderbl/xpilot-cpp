@@ -163,9 +163,9 @@ static unsigned fastshot_num[DEBRIS_TYPES * 2],
  * which means that the center of a block has to be visible to be
  * in view.
  */
-static inline bool clpos_inview2(click_visibility_t *v, clpos_t pos)
+static inline bool clpos_inview2(click_visibility_t &v, clpos_t pos)
 {
-    clpos_t wpos = v->unrealWorld, rwpos = v->realWorld;
+    clpos_t wpos = v.unrealWorld, rwpos = v.realWorld;
 
     if (!((pos.cx > wpos.cx && pos.cx < wpos.cx + view_cwidth) || (pos.cx > rwpos.cx && pos.cx < rwpos.cx + view_cwidth)))
         return false;
@@ -174,12 +174,12 @@ static inline bool clpos_inview2(click_visibility_t *v, clpos_t pos)
     return true;
 }
 
-static inline bool clpos_inview(click_visibility_t *cv, clpos_t pos)
+static inline bool clpos_inview(click_visibility_t &cv, clpos_t pos)
 {
-    bool retval = (((pos.cx > cv->unrealWorld.cx && pos.cx < cv->unrealWorld.cx + view_cwidth) ||
-                    (pos.cx > cv->realWorld.cx && pos.cx < cv->realWorld.cx + view_cwidth)) &&
-                   ((pos.cy > cv->unrealWorld.cy && pos.cy < cv->unrealWorld.cy + view_cheight) ||
-                    (pos.cy > cv->realWorld.cy && pos.cy < cv->realWorld.cy + view_cheight)));
+    bool retval = (((pos.cx > cv.unrealWorld.cx && pos.cx < cv.unrealWorld.cx + view_cwidth) ||
+                    (pos.cx > cv.realWorld.cx && pos.cx < cv.realWorld.cx + view_cwidth)) &&
+                   ((pos.cy > cv.unrealWorld.cy && pos.cy < cv.unrealWorld.cy + view_cheight) ||
+                    (pos.cy > cv.realWorld.cy && pos.cy < cv.realWorld.cy + view_cheight)));
     bool retval2 = clpos_inview2(cv, pos);
 
     if (retval == retval2)
@@ -194,11 +194,11 @@ static inline bool clpos_inview(click_visibility_t *cv, clpos_t pos)
     return retval;
 }
 
-static inline bool click_inview(click_visibility_t &cv, int cx, int cy)
-{
-    clpos_t pos = {cx, cy};
-    return clpos_inview(&cv, pos);
-}
+// static inline bool click_inview(click_visibility_t &cv, int cx, int cy)
+// {
+//     clpos_t pos = {cx, cy};
+//     return clpos_inview(cv, pos);
+// }
 
 static void fastshot_end(connection_t *conn)
 {
@@ -454,7 +454,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
                 Players_are_allies(pl, lock_pl))
 #endif
             && BIT(lock_pl->obj_status, LEGACY_PLAYING | LEGACY_GAME_OVER) == LEGACY_PLAYING &&
-            (options.playersOnRadar || click_inview(cv, lock_pl->pos.cx, lock_pl->pos.cy)) &&
+            (options.playersOnRadar || clpos_inview(cv, lock_pl->pos)) &&
             pl->lock.distance != 0)
         {
             SET_BIT(pl->lock.tagged, LOCK_VISIBLE);
@@ -534,7 +534,7 @@ static void Frame_map(connection_t *conn, player_t *pl)
             i = 0;
         targ = Target_by_index(i);
         if (BIT(targ->update_mask, conn_bit) ||
-            (BIT(targ->conn_mask, conn_bit) == 0 && clpos_inview(&cv, targ->pos)))
+            (BIT(targ->conn_mask, conn_bit) == 0 && clpos_inview(cv, targ->pos)))
         {
             Send_target(conn, i, (int)targ->dead_ticks, targ->damage);
             pl->last_target_update = i;
@@ -554,7 +554,7 @@ static void Frame_map(connection_t *conn, player_t *pl)
         if (++i >= Num_cannons())
             i = 0;
         cannon = Cannon_by_index(i);
-        if (clpos_inview(&cv, cannon->pos))
+        if (clpos_inview(cv, cannon->pos))
         {
             if (BIT(cannon->conn_mask, conn_bit) == 0)
             {
@@ -580,9 +580,7 @@ static void Frame_map(connection_t *conn, player_t *pl)
         fs = Fuel_by_index(i);
         if (BIT(fs->conn_mask, conn_bit) == 0)
         {
-            if (click_inview(cv,
-                             fs->pos.cx,
-                             fs->pos.cy))
+            if (clpos_inview(cv, fs->pos))
             {
                 Send_fuel(conn, i, fs->fuel);
                 pl->last_fuel_update = i;
@@ -605,7 +603,7 @@ static void Frame_map(connection_t *conn, player_t *pl)
         if (options.wormholeVisible &&
             worm->temporary &&
             (worm->type == WORM_IN || worm->type == WORM_NORMAL) &&
-            click_inview(cv, worm->pos.cx, worm->pos.cy))
+            clpos_inview(cv, worm->pos))
         {
             Send_wormhole(conn, worm->pos);
             pl->last_wormhole_update = i;
@@ -694,7 +692,6 @@ static void Frame_shuffle(void)
 static void Frame_shots(connection_t *conn, player_t *pl)
 {
     world_t *world = &World;
-    int cx, cy;
     int i, k, color;
     int fuzz = 0, teamshot, len;
     int obj_count;
@@ -715,11 +712,9 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         if (i >= obj_count)
             continue;
         shot = obj_list[i];
-        cx = shot->pos.cx;
-        cy = shot->pos.cy;
         pos = shot->pos;
 
-        if (!click_inview(cv, cx, cy))
+        if (!clpos_inview(cv, pos))
             continue;
 
         if ((color = shot->color) == BLACK)
@@ -907,7 +902,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         if (BIT(World.rules->mode, WRAP_PLAY))
             pos = World_wrap_clpos(world, pos);
 
-        if (clpos_inview(&cv, pos))
+        if (clpos_inview(cv, pos))
             dir = pulse->dir;
         else
         {
@@ -915,7 +910,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
             pos.cy += tsin(pulse->dir) * pulse->len * CLICK;
             if (BIT(World.rules->mode, WRAP_PLAY))
                 pos = World_wrap_clpos(world, pos);
-            if (clpos_inview(&cv, pos))
+            if (clpos_inview(cv, pos))
                 dir = MOD2(pulse->dir + ANGLE_RESOLUTION / 2, ANGLE_RESOLUTION);
             else
                 continue;
@@ -929,11 +924,12 @@ static void Frame_ships(connection_t *conn, player_t *pl)
 
         Send_laser(conn, color, pos, pulse->len, dir);
     }
+
     for (i = 0; i < Num_ecms(); i++)
     {
         ecm_t *ecm = Ecm_by_index(i);
 
-        if (clpos_inview(&cv, ecm->pos))
+        if (clpos_inview(cv, ecm->pos))
             Send_ecm(conn, ecm->pos, (int)ecm->size);
     }
 
@@ -946,6 +942,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         clpos_t pos = (tpl ? tpl->pos : trans->pos);
         Send_trans(conn, victim->pos, pos);
     }
+
     for (i = 0; i < Num_cannons(); i++)
     {
         cannon_t *cannon = Cannon_by_index(i);
@@ -953,7 +950,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         if (cannon->tractor_count > 0)
         {
             player_t *t = Player_by_id(cannon->tractor_target_id);
-            if (clpos_inview(&cv, t->pos))
+            if (clpos_inview(cv, t->pos))
             {
                 int j;
                 for (j = 0; j < 3; j++)
@@ -990,7 +987,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
             continue;
         }
 
-        if (!click_inview(cv, pl_i->pos.cx, pl_i->pos.cy))
+        if (!clpos_inview(cv, pl_i->pos))
         {
             // warn("pl_i is %s,  not in view, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
             continue;
@@ -1030,7 +1027,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         {
             fuel_t *fs = Fuel_by_index(pl_i->fs);
 
-            if (clpos_inview(&cv, fs->pos))
+            if (clpos_inview(cv, fs->pos))
                 Send_refuel(conn, fs->pos, pl_i->pos);
         }
 
@@ -1038,7 +1035,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         {
             target_t *targ = Target_by_index(pl_i->repair_target);
 
-            if (clpos_inview(&cv, targ->pos))
+            if (clpos_inview(cv, targ->pos))
                 /* same packet as refuel */
                 Send_refuel(conn, pl_i->pos, targ->pos);
         }
@@ -1047,7 +1044,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         {
             player_t *t = Player_by_id(pl_i->lock.pl_id);
 
-            if (clpos_inview(&cv, t->pos))
+            if (clpos_inview(cv, t->pos))
             {
                 int j;
 
@@ -1063,7 +1060,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
             }
         }
 
-        if (pl_i->ball != nullptr && clpos_inview(&cv, pl_i->ball->pos))
+        if (pl_i->ball != nullptr && clpos_inview(cv, pl_i->ball->pos))
             Send_connector(conn, pl_i->ball->pos, pl_i->pos, 0);
     }
 }
