@@ -1,5 +1,5 @@
 /*
- * XPilotNG/SDL, an SDL/OpenGL XPilot client.
+ * XPilot, a multiplayer gravity war game.
  *
  * Copyright (C) 2003-2004 Juha Lindström
  *
@@ -18,10 +18,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include <vector>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
-#include "commonmacros.h"
 #include "commonproto.h"
 #include "const.h"
 
@@ -31,8 +32,8 @@
 #include "images.h"
 #include "sdlpaint.h"
 
-static image_t *images = nullptr;
-static int num_images = 0, max_images = 0;
+static std::vector<image_t> imagesVector;
+
 static int first_texture = 0;
 
 static int pow2_ceil(int t)
@@ -53,7 +54,7 @@ static int Image_init(image_t *img)
         return -1;
 
     if (Picture_init(&pic,
-                     img->filename,
+                     img->filename.c_str(),
                      img->num_frames * (img->rotate ? 1 : -1)) == -1)
     {
         img->state = IMG_STATE_ERROR;
@@ -67,14 +68,14 @@ static int Image_init(image_t *img)
     img->data_height = pow2_ceil(img->height);
 
     warn("Loaded image %s: w=%d, h=%d, fw=%d, dw=%d, dh=%d",
-         img->filename, img->width, img->height, img->frame_width,
+         img->filename.c_str(), img->width, img->height, img->frame_width,
          img->data_width, img->data_height);
 
-    img->data = XCALLOC(unsigned int, img->data_width * img->data_height);
+    img->data = static_cast<unsigned int *>(calloc(img->data_width * img->data_height, sizeof(unsigned int)));
     if (img->data == nullptr)
     {
         error("Failed to allocate memory for: %s size %dx%d",
-              img->filename, img->data_width, img->data_height);
+              img->filename.c_str(), img->data_width, img->data_height);
         img->state = IMG_STATE_ERROR;
         return -1;
     }
@@ -110,7 +111,6 @@ static int Image_init(image_t *img)
 
 static void Image_free(image_t *img)
 {
-    XFREE(img->filename);
     if (img->state == IMG_STATE_READY)
     {
         glDeleteTextures(1, &img->name);
@@ -126,9 +126,9 @@ image_t *Image_get(int ind)
 
     image_t *img;
 
-    if (ind >= num_images)
+    if (ind >= imagesVector.size())
         return nullptr;
-    img = &images[ind];
+    img = &imagesVector[ind];
     if (img == nullptr)
         return nullptr;
     if (img->state == IMG_STATE_UNINITIALIZED)
@@ -310,7 +310,7 @@ int Images_init(void)
     DEF_IMG("target.ppm", 1);
     DEF_IMG("huditems.ppm", -30);
 
-    first_texture = num_images;
+    first_texture = imagesVector.size();
 
 #undef DEF_IMG
     return 0;
@@ -320,13 +320,10 @@ void Images_cleanup(void)
 {
     int i;
 
-    if (images == nullptr)
-        return;
+    for (i = 0; i < imagesVector.size(); i++)
+        Image_free(&imagesVector[i]);
 
-    for (i = 0; i < num_images; i++)
-        Image_free(images + i);
-
-    XFREE(images);
+    imagesVector.clear();
 }
 
 int Bitmap_add(const char *filename, int count, bool scalable)
@@ -337,7 +334,8 @@ int Bitmap_add(const char *filename, int count, bool scalable)
     img.num_frames = ABS(count);
     img.rotate = count > 1;
     img.state = IMG_STATE_UNINITIALIZED;
-    STORE(image_t, images, num_images, max_images, img);
 
-    return num_images - 1;
+    imagesVector.push_back(img);
+
+    return imagesVector.size() - 1;
 }

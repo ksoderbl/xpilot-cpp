@@ -1,5 +1,5 @@
 /*
- * XPilotNG/SDL, an SDL/OpenGL XPilot client.
+ * XPilot, a multiplayer gravity war game.
  *
  * Copyright (C) 2003-2004 Juha Lindström
  *
@@ -19,6 +19,8 @@
  */
 
 #pragma once
+
+#include <string>
 
 #include <SDL2/SDL.h>
 
@@ -41,18 +43,18 @@ typedef enum
  */
 typedef struct
 {
-    GLuint name;         /* OpenGL texture "name" */
-    char *filename;      /* the name of the image file */
-    int num_frames;      /* the number of frames */
-    bool rotate;         /* should this image be rotated */
-    bool scale;          /* should this image be scaled to fill data */
-    image_state_e state; /* the state of the image */
-    int width;           /* width of the whole image */
-    int height;          /* height of the whole image */
-    int data_width;      /* width of the image data */
-    int data_height;     /* height of the image data */
-    int frame_width;     /* width of one image frame */
-    unsigned int *data;  /* the image data */
+    GLuint name;          /* OpenGL texture "name" */
+    std::string filename; /* the name of the image file */
+    int num_frames;       /* the number of frames */
+    bool rotate;          /* should this image be rotated */
+    bool scale;           /* should this image be scaled to fill data */
+    image_state_e state;  /* the state of the image */
+    int width;            /* width of the whole image */
+    int height;           /* height of the whole image */
+    int data_width;       /* width of the image data */
+    int data_height;      /* height of the image data */
+    int frame_width;      /* width of one image frame */
+    unsigned int *data;   /* the image data */
 } image_t;
 
 #define IMG_HOLDER_FRIEND 0
