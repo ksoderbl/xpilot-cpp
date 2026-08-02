@@ -62,6 +62,7 @@
 #include "portability.h"
 #include "connection.h"
 #include "robot.h"
+#include "srecord.h"
 
 /*
  * Global variables
@@ -141,6 +142,7 @@ static int Kick_robot_players(int team)
             for (i = 0; i < NumPlayers; i++)
             {
                 player_t *pl_i = Player_by_index(i);
+
                 if (!Player_is_robot(pl_i) || pl_i->team == options.robotTeam)
                     continue;
                 if (Get_Score(pl_i) < low_score)
@@ -174,6 +176,7 @@ static int Kick_robot_players(int team)
             for (i = 0; i < NumPlayers; i++)
             {
                 player_t *pl_i = Player_by_index(i);
+
                 if (!Player_is_robot(pl_i) || pl_i->team != team)
                     continue;
                 if (Get_Score(pl_i) < low_score)
@@ -206,10 +209,12 @@ static int do_kick(int team, int nonlast)
     {
         player_t *pl_i = Player_by_index(i);
 
-        // if (pl_i->conn != nullptr && Player_is_paused(pl_i) && (team == TEAM_NOT_SET || (pl_i->team == team && pl_i->home_base != nullptr)) && !(pl_i->privs & PRIV_NOAUTOKICK) && (!nonlast || !(pl_i->privs & PRIV_AUTOKICKLAST)))
-        if (pl_i->conn != nullptr && Player_is_paused(pl_i) && (team == TEAM_NOT_SET || (pl_i->team == team)))
+        if (pl_i->conn != nullptr &&
+            Player_is_paused(pl_i) &&
+            (team == TEAM_NOT_SET ||
+             (pl_i->team == team && pl_i->home_base != nullptr)) &&
+            !(pl_i->privs & PRIV_NOAUTOKICK) && (!nonlast || !(pl_i->privs & PRIV_AUTOKICKLAST)))
         {
-
             if (team == TEAM_NOT_SET)
             {
                 Set_message_f("The paused \"%s\" was kicked because the "
@@ -284,6 +289,7 @@ static int Check_names(char *nick_name, char *user_name, char *host_name)
     for (i = 0; i < NumPlayers; i++)
     {
         player_t *pl_i = Player_by_index(i);
+
         if (strcasecmp(pl_i->name, nick_name) == 0)
         {
             D(printf("%s %s\n", pl_i->name, nick_name));
@@ -300,7 +306,6 @@ static int Check_names(char *nick_name, char *user_name, char *host_name)
  *
  * IMPORTANT! Adjust the next code if you're changing version numbers.
  */
-// TODO
 static unsigned Version_to_magic(unsigned version)
 {
     if (version >= 0x4203 && version <= MY_VERSION)
@@ -400,6 +405,7 @@ void Contact(int fd, void *arg)
         }
         if (Packet_scanf(&ibuf, "%ld", &key) <= 0)
             return;
+
         if (!Owner((int)reply_to, user_name, host_addr, port,
                    key == credentials))
         {
@@ -648,6 +654,7 @@ void Contact(int fd, void *arg)
             }
             if (change && Reply(host_addr, port) == -1)
                 bad = true;
+
         } while (!bad);
     }
         return;
@@ -777,7 +784,6 @@ void Queue_loop(void)
     /* here's a player in the queue without a login port. */
     if (qp)
     {
-
         if (qp->last_ack_recv + 30 * FPS < main_loops)
         {
             Queue_remove(qp, prev);
@@ -787,17 +793,14 @@ void Queue_loop(void)
         /* slow down the rate at which players enter the game. */
         if (last_unqueued_loops + 2 + (FPS >> 2) < main_loops)
         {
-
             /* is there a homebase available? */
             if (NumPlayers - NumPseudoPlayers + login_in_progress < Num_bases() ||
                 (Kick_robot_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < Num_bases()) ||
                 (Kick_paused_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < Num_bases()))
             {
-
                 /* find a team for this fellow. */
                 if (Team_play(world))
                 {
-
                     /* see if he has a reasonable suggestion. */
                     if (qp->team >= 0 && qp->team < MAX_TEAMS)
                     {
@@ -872,10 +875,8 @@ static int Queue_player(char *user, char *nick, char *disp, int team,
                         char *addr, char *host, unsigned version, int port,
                         int *qpos)
 {
-    int status = SUCCESS;
+    int status = SUCCESS, num_queued = 0, num_same_hosts = 0;
     struct queued_player *qp, *prev = 0;
-    int num_queued = 0;
-    int num_same_hosts = 0;
 
     *qpos = 0;
     if ((status = Check_names(nick, user, host)) != SUCCESS)
@@ -891,7 +892,9 @@ static int Queue_player(char *user, char *nick, char *disp, int team,
         if (!strcasecmp(nick, qp->nick_name))
         {
             /* same screen? */
-            if (!strcmp(addr, qp->host_addr) && !strcmp(user, qp->user_name) && !strcmp(disp, qp->disp_name))
+            if (!strcmp(addr, qp->host_addr) &&
+                !strcmp(user, qp->user_name) &&
+                !strcmp(disp, qp->disp_name))
             {
                 qp->last_ack_recv = main_loops;
                 qp->port = port;
@@ -1029,6 +1032,7 @@ int Queue_show_list(char *qmsg, size_t size)
 
     return 0;
 }
+
 /*
  * Returns true if <name> has owner status of this server.
  */
@@ -1066,6 +1070,7 @@ static int Check_address(char *str)
     addr = sock_get_inet_by_addr(str);
     if (addr == (unsigned long)-1 && strcmp(str, "255.255.255.255"))
         return -1;
+
     for (i = 0; i < num_addr_mask; i++)
     {
         if ((addr_mask_list[i].addr & addr_mask_list[i].mask) ==
@@ -1089,6 +1094,7 @@ void Set_deny_hosts(void)
 
     for (tok = strtok(list, list_sep); tok; tok = strtok(nullptr, list_sep))
         n++;
+
     addr_mask_list = (struct addr_plus_mask *)
         malloc(n * sizeof(*addr_mask_list));
     num_addr_mask = n;
@@ -1110,6 +1116,7 @@ void Set_deny_hosts(void)
         }
         else
             mask = 0xFFFFFFFF;
+
         addr = sock_get_inet_by_addr(tok);
         if (addr == (unsigned long)-1 && strcmp(tok, "255.255.255.255"))
         {

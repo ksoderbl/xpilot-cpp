@@ -62,9 +62,9 @@ extern char conf_logfile_string[];   /* Default name of log file */
 // timeStep should be 1 for classic/legacy xpilot gameplay, meaning that
 // for each "real" frame send to clients, game time proceeds by one tick.
 //
-double timeStep;      /* Game time step per frame */
-double timePerFrame;  /* Real time elapsed per frame */
-double ecmSizeFactor; /* Factor for ecm size update */
+double timeStep = 1.0; /* Game time step per frame */
+double timePerFrame;   /* Real time elapsed per frame */
+double ecmSizeFactor;  /* Factor for ecm size update */
 struct options options;
 
 /*
@@ -2659,14 +2659,6 @@ static option_desc opts[] = {
      valInt,
      tuner_racelaps,
      "How many laps a race is run over.\n",
-     OPT_ORIGIN_ANY | OPT_VISIBLE},
-    {"lockOtherTeam",
-     "lockOtherTeam",
-     "true",
-     &options.lockOtherTeam,
-     valBool,
-     tuner_dummy,
-     "Can you lock on players from other teams when you're dead.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"loseItemDestroys",
      "loseItemDestroys",
