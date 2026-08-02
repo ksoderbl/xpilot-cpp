@@ -333,10 +333,6 @@ bool Set_string_option(xp_option_t *opt, const char *value,
     return retval;
 }
 
-xp_keydefs_t *keydefs = nullptr;
-int num_keydefs = 0;
-int max_keydefs = 0;
-
 std::vector<xp_keydefs_t> keydefsVector;
 
 /*
@@ -350,7 +346,7 @@ std::vector<xp_keydefs_t> keydefsVector;
  */
 keys_t Generic_lookup_key(xp_keysym_t ks, bool reset)
 {
-    warn("Generic_lookup_key: ks = %d, reset = %d, num_keydefs = %d", ks, reset, num_keydefs);
+    warn("Generic_lookup_key: ks = %d, reset = %d, num_keydefs = %d", ks, reset, keydefsVector.size());
 
     keys_t ret = KEY_DUMMY;
     static int i = 0;
@@ -362,11 +358,11 @@ keys_t Generic_lookup_key(xp_keysym_t ks, bool reset)
      * Variable 'i' is already initialized.
      * Use brute force linear search to find the key.
      */
-    for (; i < num_keydefs; i++)
+    for (; i < keydefsVector.size(); i++)
     {
-        if (ks == keydefs[i].keysym)
+        if (ks == keydefsVector[i].keysym)
         {
-            ret = keydefs[i].key;
+            ret = keydefsVector[i].key;
             i++;
             break;
         }
@@ -383,9 +379,9 @@ static void Store_keydef(int ks, keys_t key)
     /*
      * first check if pair (ks, key) already exists
      */
-    for (i = 0; i < num_keydefs; i++)
+    for (i = 0; i < keydefsVector.size(); i++)
     {
-        xp_keydefs_t *kd = &keydefs[i];
+        xp_keydefs_t *kd = &keydefsVector[i];
 
         if (kd->keysym == ks && kd->key == key)
         {
@@ -403,9 +399,9 @@ static void Store_keydef(int ks, keys_t key)
     /*
      * find first KEY_DUMMY after lazy deletion
      */
-    for (i = 0; i < num_keydefs; i++)
+    for (i = 0; i < keydefsVector.size(); i++)
     {
-        xp_keydefs_t *kd = &keydefs[i];
+        xp_keydefs_t *kd = &keydefsVector[i];
 
         if (kd->key == KEY_DUMMY)
         {
@@ -418,7 +414,8 @@ static void Store_keydef(int ks, keys_t key)
     /*
      * no lazily deleted entry, ok, just store it then
      */
-    STORE(xp_keydefs_t, keydefs, num_keydefs, max_keydefs, keydef);
+    warn("Storing keydef: %d, %d", keydef.key, keydef.keysym);
+    keydefsVector.push_back(keydef);
 }
 
 static void Remove_key_from_keydefs(keys_t key)
@@ -426,9 +423,9 @@ static void Remove_key_from_keydefs(keys_t key)
     int i;
 
     assert(key != KEY_DUMMY);
-    for (i = 0; i < num_keydefs; i++)
+    for (i = 0; i < keydefsVector.size(); i++)
     {
-        xp_keydefs_t *kd = &keydefs[i];
+        xp_keydefs_t *kd = &keydefsVector[i];
 
         /*
          * lazy deletion
@@ -731,7 +728,6 @@ void Store_option(xp_option_t *opt)
 
     memcpy(&option, opt, sizeof(xp_option_t));
 
-    // STORE(xp_option_t, options, num_options, max_options, option);
     optionsVector.push_back(option);
 
     // TODO set all the values later.

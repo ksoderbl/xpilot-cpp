@@ -468,21 +468,21 @@ int keys_viewer = NO_WIDGET;
 
 int Keys_callback(int widget_desc, void *data, const char **unused)
 {
-    unsigned bufsize = (num_keydefs * 64);
+    unsigned bufsize = (keydefsVector.size() * 64);
     char *buf = XCALLOC(char, bufsize), *end = buf, *str;
     const char *help;
     int i, len, maxkeylen = 0;
 
-    for (i = 0; i < num_keydefs; i++)
+    for (i = 0; i < keydefsVector.size(); i++)
     {
-        if ((str = XKeysymToString((KeySym)keydefs[i].keysym)) != nullptr && (len = strlen(str)) > maxkeylen)
+        if ((str = XKeysymToString((KeySym)keydefsVector[i].keysym)) != nullptr && (len = strlen(str)) > maxkeylen)
         {
             maxkeylen = len;
         }
     }
-    for (i = 0; i < num_keydefs; i++)
+    for (i = 0; i < keydefsVector.size(); i++)
     {
-        if (!(str = XKeysymToString((KeySym)keydefs[i].keysym)) || !(help = Get_keyHelpString(keydefs[i].key)))
+        if (!(str = XKeysymToString((KeySym)keydefsVector[i].keysym)) || !(help = Get_keyHelpString(keydefsVector[i].key)))
             continue;
 
         if ((end - buf) + (maxkeylen + strlen(help) + 4) >= bufsize)
