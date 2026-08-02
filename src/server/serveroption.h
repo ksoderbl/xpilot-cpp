@@ -38,7 +38,7 @@ typedef struct options
     double shotSpeed;
 
     // Default number of ticks each shot will live
-    double shotLife;
+    int shotLife;
 
     // How many robots should enter the game?
     int maxRobots;

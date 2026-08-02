@@ -117,6 +117,9 @@ typedef struct
     int current;                /* Number of currently used tank */
     int num_tanks;              /* Number of tanks */
     double tank[1 + MAX_TANKS]; /* main fixed tank + extra tanks. */
+    // double l1;                  /* Fuel critical level */
+    // double l2;                  /* Fuel warning level */
+    // double l3;                  /* Fuel notify level */
 } pl_fuel_t;
 
 typedef struct
@@ -141,8 +144,9 @@ typedef struct
 
     int pl_type;         /* extended type info (tank, robot) */
     char pl_type_mychar; /* Special char for player type */
-    uint16_t pl_state;   /* one of PL_STATE_* */
-    uint32_t pl_status;  /* HOVERPAUSE etc. */
+
+    uint16_t pl_state;  /* one of PL_STATE_* */
+    uint32_t pl_status; /* HOVERPAUSE etc. */
 
     int pl_life;              /* Lives left (if lives limited) */
     int pl_deaths_since_join; /* Deaths since last joining server */
@@ -170,6 +174,8 @@ typedef struct
     double oldturnvel;                     /* Last velocity of turn (right) */
     double turnacc;                        /* Current acceleration of turn */
     int score;                             /* Current score of player */
+    int prev_score;                        /* Last score that has been updated */
+    int prev_life;                         /* Last life that has been updated */
     bool update_score;                     /* score table info needs to be sent */
     shipshape_t *ship;                     /* wire model of ship shape */
     double power;                          /* Force of thrust */
@@ -227,11 +233,13 @@ typedef struct
 
     short dir;                /* Direction of acceleration */
     char mychar;              /* Special char for player */
+    char prev_mychar;         /* Special char for player */
     char name[MAX_CHARS];     /* Nick-name of player */
     char username[MAX_CHARS]; /* Real name of player */
     char hostname[MAX_CHARS]; /* Hostname of client player uses */
     uint16_t pseudo_team;     /* Which team for detaching tanks */
     int alliance;             /* Member of which alliance? */
+    int prev_alliance;        /* prev. alliance for score */
     int invite;               /* Invitation for alliance */
     ballobject_t *ball;
 
@@ -280,7 +288,6 @@ typedef struct
     int player_fps; /* FPS that this player can do */
     int maxturnsps; /* turns per second limit */
 
-    int rectype; /* normal, saved or spectator */
     struct ranknode *rank;
 
     double pauseTime; /* seconds player has paused */

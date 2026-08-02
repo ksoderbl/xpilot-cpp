@@ -140,8 +140,7 @@ static int in_range_acd(
     else
         return 0;
 }
-#endif
-
+#else
 static int in_range_acd(
     int p1cx, int p1cy, int p2cx, int p2cy,
     int q1cx, int q1cy, int q2cx, int q2cy,
@@ -239,6 +238,7 @@ static int in_range_acd(
     else
         return 0;
 }
+#endif
 
 /*
  * Globals
@@ -606,7 +606,7 @@ static void PlayerObjectCollision(player_t *pl)
 {
     world_t *world = &World;
     int j, obj_count;
-    double range, radius;
+    int range, radius;
     object_t *obj, **obj_list;
 
     /*
@@ -1043,7 +1043,6 @@ static void Player_collides_with_mine(player_t *pl, mineobject_t *mine)
     else if (mine->mine_owner == NO_ID)
     {
         const char *reprogrammer_name = "some jerk";
-
         if (mine->id != NO_ID)
         {
             kp = Player_by_id(mine->id);
@@ -1057,7 +1056,6 @@ static void Player_collides_with_mine(player_t *pl, mineobject_t *mine)
     else
     {
         const char *reprogrammer_name = "some jerk";
-
         if (mine->id != NO_ID)
         {
             kp = Player_by_id(mine->id);
@@ -1147,7 +1145,7 @@ static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
     if (!Player_uses_emergency_shield(pl))
         Player_add_fuel(pl, -cost);
 
-    if (options.asteroidCollisionMayKill && (pl->fuel.sum == 0.0 || (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl))))
+    if (options.asteroidCollisionMayKill && (pl->fuel.sum == 0 || (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl))))
     {
         int sc;
         Player_set_state(pl, PL_STATE_KILLED);

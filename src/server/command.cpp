@@ -1169,8 +1169,8 @@ static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)
         else if (options.reserveRobotTeam && team == options.robotTeam)
             snprintf(msg, size,
                      "You cannot join the robot team on this server.");
-        else if (pl->rectype == 2)
-            snprintf(msg, size, "Spectators cannot change team.");
+        // else if (pl->rectype == 2)
+        //     snprintf(msg, size, "Spectators cannot change team.");
         else
             swap_allowed = true;
     }
