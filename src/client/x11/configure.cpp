@@ -21,6 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include <vector>
+
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -66,15 +68,8 @@ static int Config_save(int widget_desc, void *data, const char **strptr);
 static int Config_save_confirm_callback(int widget_desc, void *popup_desc,
                                         const char **strptr);
 
-// TODO: Put these in std::vector
-static int num_default_options = 0;
-static int max_default_options = 0;
-static int *default_option_indices = nullptr;
-
-// TODO: Put these in std::vector
-static int num_color_options = 0;
-static int max_color_options = 0;
-static int *color_option_indices = nullptr;
+static std::vector<int> defaultOptionIndicesVector;
+static std::vector<int> colorOptionIndicesVector;
 
 static bool config_created = false,
             config_mapped = false;
@@ -106,9 +101,9 @@ static int config_what = CONFIG_NONE;
 static int Nelem_config_creator(void)
 {
     if (config_what == CONFIG_DEFAULT)
-        return num_default_options + 1;
+        return defaultOptionIndicesVector.size() + 1;
     if (config_what == CONFIG_COLORS)
-        return num_color_options + 1;
+        return colorOptionIndicesVector.size() + 1;
     return 0;
 }
 
@@ -116,10 +111,10 @@ static xp_option_t *Config_creator_option(int i)
 {
     int ind = -1;
 
-    if (config_what == CONFIG_DEFAULT && i >= 0 && i < num_default_options)
-        ind = default_option_indices[i];
-    if (config_what == CONFIG_COLORS && i >= 0 && i < num_color_options)
-        ind = color_option_indices[i];
+    if (config_what == CONFIG_DEFAULT && i >= 0 && i < defaultOptionIndicesVector.size())
+        ind = defaultOptionIndicesVector[i];
+    if (config_what == CONFIG_COLORS && i >= 0 && i < colorOptionIndicesVector.size())
+        ind = colorOptionIndicesVector[i];
     return Option_by_index(ind);
 }
 
@@ -683,19 +678,13 @@ void Config_init(void)
         xp_option_t *opt = Option_by_index(i);
 
         if (Option_get_flags(opt) & XP_OPTFLAG_CONFIG_COLORS)
-        {
-            STORE(int, color_option_indices,
-                  num_color_options, max_color_options, i);
-        }
+            colorOptionIndicesVector.push_back(i);
         else if (Option_get_flags(opt) & XP_OPTFLAG_CONFIG_DEFAULT)
-        {
-            STORE(int, default_option_indices,
-                  num_default_options, max_default_options, i);
-        }
+            defaultOptionIndicesVector.push_back(i);
     }
 
     /* +1 is for the save widget */
-    max_ids = MAX(num_color_options, num_default_options) + 1;
+    max_ids = MAX(colorOptionIndicesVector.size(), defaultOptionIndicesVector.size()) + 1;
     config_widget_ids = XMALLOC(int, max_ids);
     if (config_widget_ids == nullptr)
     {
