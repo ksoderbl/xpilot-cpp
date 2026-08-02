@@ -23,6 +23,7 @@
 
 #include <vector>
 
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
@@ -53,7 +54,7 @@
 #include "player.h"
 #include "robot.h"
 
-#define MAX_SHUFFLE_INDEX 65535
+constexpr int MAX_SHUFFLE_INDEX = UINT16_MAX;
 
 typedef uint16_t shuffle_t;
 
@@ -63,14 +64,14 @@ typedef uint16_t shuffle_t;
  * The following always holds:
  *     (world.cx >= realWorld.cx && world.cy >= realWorld.cy)
  */
-typedef struct
-{
-    position_t world;     /* Lower left hand corner is this */
-                          /* world coordinate */
-    position_t realWorld; /* If the player is on the edge of
-                     the screen, these are the world
-                     coordinates before adjustment... */
-} pixel_visibility_t;
+// typedef struct
+// {
+//     position_t world;     /* Lower left hand corner is this */
+//                           /* world coordinate */
+//     position_t realWorld; /* If the player is on the edge of
+//                      the screen, these are the world
+//                      coordinates before adjustment... */
+// } pixel_visibility_t;
 
 typedef struct
 {
@@ -101,9 +102,10 @@ static shuffle_t *object_shuffle_ptr;
 static int num_object_shuffle;
 static int max_object_shuffle;
 
-static shuffle_t *player_shuffle_ptr;
-static int num_player_shuffle;
-static int max_player_shuffle;
+// static shuffle_t *player_shuffle_ptr;
+// static int num_player_shuffle;
+// static int max_player_shuffle;
+static std::vector<shuffle_t> playerShuffleVector;
 
 // static radar_t *radar_ptr;
 // static int num_radar, max_radar;
@@ -652,31 +654,39 @@ static void Frame_shuffle_players(void)
 {
     int i;
 
-    num_player_shuffle = MIN(NumPlayers, MAX_SHUFFLE_INDEX);
+    int num_player_shuffle = MIN(NumPlayers, MAX_SHUFFLE_INDEX);
 
-    if (max_player_shuffle < num_player_shuffle)
-    {
-        XFREE(player_shuffle_ptr);
-        max_player_shuffle = num_player_shuffle;
-        player_shuffle_ptr = XMALLOC(shuffle_t, max_player_shuffle);
-        if (player_shuffle_ptr == nullptr)
-            max_player_shuffle = 0;
-    }
+    // if (max_player_shuffle < num_player_shuffle)
+    // {
+    //     XFREE(player_shuffle_ptr);
+    //     max_player_shuffle = num_player_shuffle;
+    //     player_shuffle_ptr = XMALLOC(shuffle_t, max_player_shuffle);
+    //     if (player_shuffle_ptr == nullptr)
+    //         max_player_shuffle = 0;
+    // }
+    // playerShuffleVector.reserve(num_player_shuffle);
+    playerShuffleVector.clear();
 
-    if (max_player_shuffle < num_player_shuffle)
-        num_player_shuffle = max_player_shuffle;
+    // if (max_player_shuffle < num_player_shuffle)
+    //     num_player_shuffle = max_player_shuffle;
 
     for (i = 0; i < num_player_shuffle; i++)
-        player_shuffle_ptr[i] = i;
+        playerShuffleVector.push_back(i);
 
     /* permute. */
     for (i = 0; i < num_player_shuffle; i++)
     {
         int j = (int)(rfrac() * num_player_shuffle);
-        shuffle_t tmp = player_shuffle_ptr[j];
-        player_shuffle_ptr[j] = player_shuffle_ptr[i];
-        player_shuffle_ptr[i] = tmp;
+        shuffle_t tmp = playerShuffleVector[j];
+        playerShuffleVector[j] = playerShuffleVector[i];
+        playerShuffleVector[i] = tmp;
     }
+
+    // warn("playerShuffleVector.size = %d", playerShuffleVector.size());
+    // for (i = 0; i < num_player_shuffle; i++)
+    // {
+    //     warn("shuffle %d is %d", i, playerShuffleVector[i]);
+    // }
 }
 
 static void Frame_shuffle(void)
@@ -787,7 +797,9 @@ static void Frame_shots(connection_t *conn, player_t *pl)
 
         case OBJ_SHOT:
         case OBJ_CANNON_SHOT:
-            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && Player_is_paused(Player_by_id(shot->id))) || (shot->id == NO_ID && Team_play(world) && shot->team == pl->team))
+            if (Team_immune(shot->id, pl->id) ||
+                (shot->id != NO_ID && Player_is_paused(Player_by_id(shot->id))) ||
+                (shot->id == NO_ID && Team_play(world) && shot->team == pl->team))
             {
                 color = BLUE;
                 teamshot = DEBRIS_TYPES;
@@ -966,11 +978,16 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         }
     }
 
+    int num_player_shuffle = playerShuffleVector.size();
+
+    // warn("Frame_ships: num_player_shuffle = %d", num_player_shuffle);
+
     for (k = 0; k < num_player_shuffle; k++)
     {
         player_t *pl_i;
 
-        i = player_shuffle_ptr[k];
+        i = playerShuffleVector[k];
+
         pl_i = Player_by_index(i);
 
         // warn("pl_i is %s", pl_i->name);
@@ -1138,11 +1155,16 @@ static void Frame_radar(connection_t *conn, player_t *pl)
 
     if (options.playersOnRadar || Team_play(world) || NumPseudoPlayers > 0 || NumAlliances > 0)
     {
+        int num_player_shuffle = playerShuffleVector.size();
+
+        // warn("Frame_radar: num_player_shuffle = %d", num_player_shuffle);
+
         for (k = 0; k < num_player_shuffle; k++)
         {
             player_t *pl_i;
 
-            i = player_shuffle_ptr[k];
+            i = playerShuffleVector[k];
+
             pl_i = Player_by_index(i);
             /*
              * Don't show on the radar:
@@ -1250,10 +1272,17 @@ void Frame_update(void)
         }
     }
 
-    for (i = 0; i < num_player_shuffle; i++)
+    int num_player_shuffle = playerShuffleVector.size();
+
+    // warn("Frame_update: num_player_shuffle = %d", num_player_shuffle);
+
+    // This is odd, XPilot 4.5.5 used num_player_shuffle as loop limit while not using the shuffle array?
+    // for (i = 0; i < num_player_shuffle; i++)
+    for (i = 0; i < NumPlayers; i++)
     {
         pl = Player_by_index(i);
         conn = pl->conn;
+        // warn("Player %s conn is %p", pl->name, conn);
         if (conn == nullptr)
             continue;
         if (BIT(pl->obj_status, LEGACY_PAUSE | LEGACY_GAME_OVER) && !options.allowViewing)
