@@ -21,6 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include <vector>
+
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
@@ -94,14 +96,18 @@ long frame_loops = 1;
 long frame_loops_slow = 1;
 double frame_time = 0;
 static long last_frame_shuffle;
+
 static shuffle_t *object_shuffle_ptr;
 static int num_object_shuffle;
 static int max_object_shuffle;
+
 static shuffle_t *player_shuffle_ptr;
 static int num_player_shuffle;
 static int max_player_shuffle;
-static radar_t *radar_ptr;
-static int num_radar, max_radar;
+
+// static radar_t *radar_ptr;
+// static int num_radar, max_radar;
+static std::vector<radar_t> radarVector;
 
 static click_visibility_t cv;
 static int view_width,
@@ -130,27 +136,27 @@ static unsigned fastshot_num[DEBRIS_TYPES * 2],
  * The goal is to keep the number of malloc/realloc calls low
  * while not wasting too much memory because of over-allocation.
  */
-#define EXPAND(P, N, M, T, E)                     \
-    if ((N) + (E) > (M))                          \
-    {                                             \
-        if ((M) <= 0)                             \
-        {                                         \
-            M = (E) + 2;                          \
-            P = (T *)malloc((M) * sizeof(T));     \
-            N = 0;                                \
-        }                                         \
-        else                                      \
-        {                                         \
-            M = ((M) << 1) + (E);                 \
-            P = (T *)realloc(P, (M) * sizeof(T)); \
-        }                                         \
-        if (P == nullptr)                         \
-        {                                         \
-            error("No memory");                   \
-            N = M = 0;                            \
-            return; /* ! */                       \
-        }                                         \
-    }
+// #define EXPAND(P, N, M, T, E)                     \
+//     if ((N) + (E) > (M))                          \
+//     {                                             \
+//         if ((M) <= 0)                             \
+//         {                                         \
+//             M = (E) + 2;                          \
+//             P = (T *)malloc((M) * sizeof(T));     \
+//             N = 0;                                \
+//         }                                         \
+//         else                                      \
+//         {                                         \
+//             M = ((M) << 1) + (E);                 \
+//             P = (T *)realloc(P, (M) * sizeof(T)); \
+//         }                                         \
+//         if (P == nullptr)                         \
+//         {                                         \
+//             error("No memory");                   \
+//             N = M = 0;                            \
+//             return; /* ! */                       \
+//         }                                         \
+//     }
 
 /*
  * Note - I've changed the block_inview calls to clpos_inview calls,
@@ -315,18 +321,24 @@ static void debris_store(int cx, int cy, int color)
 
 static void Frame_radar_buffer_reset(void)
 {
-    num_radar = 0;
+    // num_radar = 0;
+    radarVector.clear();
 }
 
 static void Frame_radar_buffer_add(clpos_t pos, int s)
 {
-    radar_t *p;
-
-    EXPAND(radar_ptr, num_radar, max_radar, radar_t, 1);
-    p = &radar_ptr[num_radar++];
-    p->x = CLICK_TO_PIXEL(pos.cx);
-    p->y = CLICK_TO_PIXEL(pos.cy);
-    p->size = s;
+    // radar_t *p;
+    // EXPAND(radar_ptr, num_radar, max_radar, radar_t, 1);
+    // p = &radar_ptr[num_radar++];
+    // p->x = CLICK_TO_PIXEL(pos.cx);
+    // p->y = CLICK_TO_PIXEL(pos.cy);
+    // p->size = s;
+    // warn("Frame_radar_buffer_add: clpos=(%d, %d): %x", pos.cx, pos.cy, s);
+    radar_t t;
+    t.x = CLICK_TO_PIXEL(pos.cx);
+    t.y = CLICK_TO_PIXEL(pos.cy);
+    t.size = s;
+    radarVector.push_back(t);
 }
 
 static void Frame_radar_buffer_send(connection_t *conn, player_t *pl)
@@ -335,33 +347,35 @@ static void Frame_radar_buffer_send(connection_t *conn, player_t *pl)
     radar_t *p;
     const int radar_width = 256;
     int radar_height, radar_x, radar_y, send_x, send_y;
-    shuffle_t *radar_shuffle;
+    std::vector<shuffle_t> radarShuffleVector;
     size_t shuffle_bufsize;
 
     radar_height = (radar_width * World.height) / World.width;
 
+    int num_radar = radarVector.size();
     if (num_radar > MIN(256, MAX_SHUFFLE_INDEX))
         num_radar = MIN(256, MAX_SHUFFLE_INDEX);
-    shuffle_bufsize = (num_radar * sizeof(shuffle_t));
-    radar_shuffle = (shuffle_t *)malloc(shuffle_bufsize);
-    if (radar_shuffle == (shuffle_t *)nullptr)
-        return;
+    // shuffle_bufsize = (num_radar * sizeof(shuffle_t));
+    // radar_shuffle = (shuffle_t *)malloc(shuffle_bufsize);
+    // if (radar_shuffle == (shuffle_t *)nullptr)
+    //     return;
+    radarShuffleVector.reserve(num_radar);
     for (i = 0; i < num_radar; i++)
-        radar_shuffle[i] = i;
+        radarShuffleVector[i] = i;
     /* permute. */
     for (i = 0; i < num_radar; i++)
     {
         dest = (int)(rfrac() * num_radar);
-        tmp = radar_shuffle[i];
-        radar_shuffle[i] = radar_shuffle[dest];
-        radar_shuffle[dest] = tmp;
+        tmp = radarShuffleVector[i];
+        radarShuffleVector[i] = radarShuffleVector[dest];
+        radarShuffleVector[dest] = tmp;
     }
 
     if (!FEATURE(conn, F_FASTRADAR))
     {
         for (i = 0; i < num_radar; i++)
         {
-            p = &radar_ptr[radar_shuffle[i]];
+            p = &radarVector[radarShuffleVector[i]];
             radar_x = (radar_width * p->x) / World.width;
             radar_y = (radar_height * p->y) / World.height;
             send_x = (World.width * radar_x) / radar_width;
@@ -371,7 +385,6 @@ static void Frame_radar_buffer_send(connection_t *conn, player_t *pl)
     }
     else
     {
-
         uint8_t buf[3 * 256];
         int buf_index = 0;
         unsigned fast_count = 0;
@@ -380,7 +393,7 @@ static void Frame_radar_buffer_send(connection_t *conn, player_t *pl)
             num_radar = 256;
         for (i = 0; i < num_radar; i++)
         {
-            p = &radar_ptr[radar_shuffle[i]];
+            p = &radarVector[radarShuffleVector[i]];
             radar_x = (radar_width * p->x) / World.width;
             radar_y = (radar_height * p->y) / World.height;
             if (radar_y >= 1024)
@@ -397,14 +410,15 @@ static void Frame_radar_buffer_send(connection_t *conn, player_t *pl)
         if (fast_count > 0)
             Send_fastradar(conn, buf, fast_count);
     }
-    free(radar_shuffle);
+    // free(radar_shuffle);
 }
 
 static void Frame_radar_buffer_free(void)
 {
-    XFREE(radar_ptr);
-    num_radar = 0;
-    max_radar = 0;
+    radarVector.clear();
+    // XFREE(radar_ptr);
+    // num_radar = 0;
+    // max_radar = 0;
 }
 
 static int Frame_status(connection_t *conn, player_t *pl)

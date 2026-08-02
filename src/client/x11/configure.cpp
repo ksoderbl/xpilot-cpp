@@ -6,6 +6,8 @@
  *      Bert Gijsbers
  *      Dick Balaska
  *
+ * Copyright (C) 2003-2004 Kristian Söderblom
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +21,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see
  * <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ * Configure.cpp: real-time option control.
  */
 
 #include <vector>

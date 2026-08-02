@@ -61,35 +61,35 @@
  * The goal is to keep the number of malloc/realloc calls low
  * while not wasting too much memory because of over-allocation.
  */
-#define EXPAND(P, N, M, T, E)                     \
-    if ((N) + (E) > (M))                          \
-    {                                             \
-        if ((M) <= 0)                             \
-        {                                         \
-            M = (E) + 2;                          \
-            P = (T *)malloc((M) * sizeof(T));     \
-            N = 0;                                \
-        }                                         \
-        else                                      \
-        {                                         \
-            M = ((M) << 1) + (E);                 \
-            P = (T *)realloc(P, (M) * sizeof(T)); \
-        }                                         \
-        if (P == nullptr)                         \
-        {                                         \
-            error("No memory");                   \
-            N = M = 0;                            \
-            return; /* ! */                       \
-        }                                         \
-    }
+// #define EXPAND(P, N, M, T, E)                     \
+//     if ((N) + (E) > (M))                          \
+//     {                                             \
+//         if ((M) <= 0)                             \
+//         {                                         \
+//             M = (E) + 2;                          \
+//             P = (T *)malloc((M) * sizeof(T));     \
+//             N = 0;                                \
+//         }                                         \
+//         else                                      \
+//         {                                         \
+//             M = ((M) << 1) + (E);                 \
+//             P = (T *)realloc(P, (M) * sizeof(T)); \
+//         }                                         \
+//         if (P == nullptr)                         \
+//         {                                         \
+//             error("No memory");                   \
+//             N = M = 0;                            \
+//             return; /* ! */                       \
+//         }                                         \
+//     }
 
-#define UNEXPAND(P, N, M) \
-    if ((N) < ((M) >> 2)) \
-    {                     \
-        free(P);          \
-        M = 0;            \
-    }                     \
-    N = 0;
+// #define UNEXPAND(P, N, M) \
+//     if ((N) < ((M) >> 2)) \
+//     {                     \
+//         free(P);          \
+//         M = 0;            \
+//     }                     \
+//     N = 0;
 
 #ifndef PAINT_FREE
 #define PAINT_FREE 1
