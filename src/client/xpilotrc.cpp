@@ -33,10 +33,11 @@
 
 #include "commonmacros.h"
 #include "commonproto.h"
+#include "xperror.h"
 
-xpilotrc_line_t *xpilotrc_lines = nullptr;
-int num_xpilotrc_lines = 0, max_xpilotrc_lines = 0;
-int num_ok_options = 0;
+std::vector<xpilotrc_line_t> xpilotrcLines;
+
+static int num_ok_options = 0;
 
 /*
  * Function to parse an xpilotrc line if it is of the right form, otherwise
@@ -75,7 +76,7 @@ static void Parse_xpilotrc_line(const char *line)
     if (colon == nullptr)
     {
         /* no colon on line, not ok */
-        warn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
+        warn("Xpilotrc line %d:", xpilotrcLines.size() + 1);
         warn("Line has no colon after option name, ignoring.");
         goto line_is_comment;
     }
@@ -103,7 +104,7 @@ static void Parse_xpilotrc_line(const char *line)
     if (Option_get_flags(opt) & XP_OPTFLAG_NEVER_SAVE)
     {
         /* discard the line */
-        warn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
+        warn("Xpilotrc line %d:", xpilotrcLines.size() + 1);
         warn("Option %s must not be specified in xpilotrc.", name);
         warn("It will be removed from xpilotrc if you save configuration.");
         XFREE(lcpy);
@@ -111,14 +112,14 @@ static void Parse_xpilotrc_line(const char *line)
     }
 
     /* did we see this before ? */
-    for (i = 0; i < num_xpilotrc_lines; i++)
+    for (i = 0; i < xpilotrcLines.size(); i++)
     {
-        xpilotrc_line_t *x = &xpilotrc_lines[i];
+        xpilotrc_line_t *x = &xpilotrcLines[i];
 
         if (x->opt == opt)
         {
             /* same option defined several times in xpilotrc */
-            warn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
+            warn("Xpilotrc line %d:", xpilotrcLines.size() + 1);
             warn("Option %s previously given on line %d, ignoring new value.",
                  name, i + 1);
             goto line_is_comment;
@@ -144,7 +145,7 @@ static void Parse_xpilotrc_line(const char *line)
 
     if (!Set_option(name, value, xp_option_origin_xpilotrc))
     {
-        warn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
+        warn("Xpilotrc line %d:", xpilotrcLines.size() + 1);
         warn("Failed to set option %s value \"%s\", ignoring.", name, value);
         goto line_is_comment;
     }
@@ -153,8 +154,7 @@ static void Parse_xpilotrc_line(const char *line)
 
     t.opt = opt;
     t.comment = comment;
-    STORE(xpilotrc_line_t,
-          xpilotrc_lines, num_xpilotrc_lines, max_xpilotrc_lines, t);
+    xpilotrcLines.push_back(t);
     num_ok_options++;
     XFREE(lcpy);
     return;
@@ -167,8 +167,7 @@ line_is_comment:
     XFREE(comment);
     t.opt = nullptr;
     t.comment = xp_safe_strdup(line);
-    STORE(xpilotrc_line_t,
-          xpilotrc_lines, num_xpilotrc_lines, max_xpilotrc_lines, t);
+    xpilotrcLines.push_back(t);
     XFREE(lcpy);
 }
 
@@ -301,9 +300,9 @@ int Xpilotrc_write(const char *path)
 
         memset(&t, 0, sizeof(xpilotrc_line_t));
 
-        for (j = 0; j < num_xpilotrc_lines; j++)
+        for (j = 0; j < xpilotrcLines.size(); j++)
         {
-            xpilotrc_line_t *lp = &xpilotrc_lines[j];
+            xpilotrc_line_t *lp = &xpilotrcLines[j];
 
             if (lp->opt == opt)
                 was_in_xpilotrc = true;
@@ -338,9 +337,9 @@ int Xpilotrc_write(const char *path)
 
             Xpilotrc_create_line(buf, sizeof(buf), opt, nullptr, true);
 
-            for (j = 0; j < num_xpilotrc_lines; j++)
+            for (j = 0; j < xpilotrcLines.size(); j++)
             {
-                xpilotrc_line_t *lp = &xpilotrc_lines[j];
+                xpilotrc_line_t *lp = &xpilotrcLines[j];
 
                 if (lp->opt == nullptr && lp->comment != nullptr && !strcmp(buf, lp->comment))
                 {
@@ -358,14 +357,13 @@ int Xpilotrc_write(const char *path)
         else
             t.opt = opt;
 
-        STORE(xpilotrc_line_t,
-              xpilotrc_lines, num_xpilotrc_lines, max_xpilotrc_lines, t);
+        xpilotrcLines.push_back(t);
     }
 
-    for (i = 0; i < num_xpilotrc_lines; i++)
+    for (i = 0; i < xpilotrcLines.size(); i++)
     {
         char buf[4096];
-        xpilotrc_line_t *lp = &xpilotrc_lines[i];
+        xpilotrc_line_t *lp = &xpilotrcLines[i];
 
         Xpilotrc_create_line(buf, sizeof(buf), lp->opt, lp->comment, false);
 

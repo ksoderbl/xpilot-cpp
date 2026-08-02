@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "clientoption.h"
 
 typedef struct xpilotrc_line
@@ -34,11 +36,6 @@ typedef struct xpilotrc_line
     xp_option_t *opt;
     const char *comment;
 } xpilotrc_line_t;
-
-extern xpilotrc_line_t *xpilotrc_lines;
-extern int num_xpilotrc_lines;
-extern int max_xpilotrc_lines;
-extern int num_ok_options;
 
 extern void Xpilotrc_get_filename(char *path, size_t size);
 extern int Xpilotrc_read(const char *path);
