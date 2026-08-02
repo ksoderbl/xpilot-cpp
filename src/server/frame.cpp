@@ -98,9 +98,10 @@ long frame_loops_slow = 1;
 double frame_time = 0;
 static long last_frame_shuffle;
 
-static shuffle_t *object_shuffle_ptr;
-static int num_object_shuffle;
-static int max_object_shuffle;
+// static shuffle_t *object_shuffle_ptr;
+// static int num_object_shuffle;
+// static int max_object_shuffle;
+static std::vector<shuffle_t> objectShuffleVector;
 
 // static shuffle_t *player_shuffle_ptr;
 // static int num_player_shuffle;
@@ -620,32 +621,34 @@ static void Frame_shuffle_objects(void)
 {
     int i;
 
-    num_object_shuffle = MIN(NumObjs, options.maxVisibleObject);
+    int num_object_shuffle = MIN(NumObjs, options.maxVisibleObject);
 
-    if (max_object_shuffle < num_object_shuffle)
-    {
-        XFREE(object_shuffle_ptr);
-        max_object_shuffle = num_object_shuffle;
-        object_shuffle_ptr = XMALLOC(shuffle_t, max_object_shuffle);
-        if (object_shuffle_ptr == nullptr)
-            max_object_shuffle = 0;
-    }
+    // if (max_object_shuffle < num_object_shuffle)
+    // {
+    //     XFREE(object_shuffle_ptr);
+    //     max_object_shuffle = num_object_shuffle;
+    //     object_shuffle_ptr = XMALLOC(shuffle_t, max_object_shuffle);
+    //     if (object_shuffle_ptr == nullptr)
+    //         max_object_shuffle = 0;
+    // }
+    // objectShuffleVector.reserve(num_player_shuffle);
+    objectShuffleVector.clear();
 
-    if (max_object_shuffle < num_object_shuffle)
-        num_object_shuffle = max_object_shuffle;
+    // if (max_object_shuffle < num_object_shuffle)
+    //     num_object_shuffle = max_object_shuffle;
 
     for (i = 0; i < num_object_shuffle; i++)
-        object_shuffle_ptr[i] = i;
+        objectShuffleVector.push_back(i);
 
     /* permute. Not perfect distribution but probably doesn't matter here */
     for (i = num_object_shuffle - 1; i >= 0; --i)
     {
-        if (object_shuffle_ptr[i] == i)
+        if (objectShuffleVector[i] == i)
         {
             int j = (int)(rfrac() * i);
-            shuffle_t tmp = object_shuffle_ptr[j];
-            object_shuffle_ptr[j] = object_shuffle_ptr[i];
-            object_shuffle_ptr[i] = tmp;
+            shuffle_t tmp = objectShuffleVector[j];
+            objectShuffleVector[j] = objectShuffleVector[i];
+            objectShuffleVector[i] = tmp;
         }
     }
 }
@@ -709,6 +712,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
     object_t **obj_list;
     clpos_t pos;
     int hori_blocks, vert_blocks;
+    int num_object_shuffle = objectShuffleVector.size();
 
     hori_blocks = (view_width + (BLOCK_SZ - 1)) / (2 * BLOCK_SZ);
     vert_blocks = (view_height + (BLOCK_SZ - 1)) / (2 * BLOCK_SZ);
@@ -718,7 +722,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
                      &obj_count);
     for (k = 0; k < num_object_shuffle; k++)
     {
-        i = object_shuffle_ptr[k];
+        i = objectShuffleVector[k];
         if (i >= obj_count)
             continue;
         shot = obj_list[i];
