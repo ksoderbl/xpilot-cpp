@@ -21,6 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include <vector>
+
 #include <cstdlib>
 #include <cstdio>
 #include <cerrno>
@@ -33,7 +35,6 @@
 #include "paint.h"
 #include "paintdata.h"
 #include "gfx2d.h"
-#include "xpmemory.h"
 
 #include "xperror.h"
 #include "const.h"
@@ -96,8 +97,7 @@ xp_pixmap_t object_pixmaps[] = {
     XP_PIXMAP_INITIALIZER("asteroidconcentrator.ppm", 32),
     XP_PIXMAP_INITIALIZER("ball_gray16.ppm", -16)};
 
-xp_pixmap_t *pixmaps = 0;
-int num_pixmaps = 0, max_pixmaps = 0;
+std::vector<xp_pixmap_t> pixmaps;
 
 static int Bitmap_init(int img);
 static void Bitmap_picture_copy(xp_pixmap_t *xp_pixmap, int image);
@@ -119,7 +119,7 @@ int Bitmaps_init(void)
         pixmap = object_pixmaps[i];
         pixmap.scalable = (i == BM_LOGO || i == BM_SCORE_BG) ? false : true;
         pixmap.state = BMS_UNINITIALIZED;
-        STORE(xp_pixmap_t, pixmaps, num_pixmaps, max_pixmaps, pixmap);
+        pixmaps.push_back(pixmap);
     }
 
     return 0;
@@ -127,9 +127,7 @@ int Bitmaps_init(void)
 
 void Bitmaps_cleanup(void)
 {
-    if (pixmaps)
-        free(pixmaps);
-    pixmaps = 0;
+    pixmaps.clear();
 }
 
 /**
@@ -144,7 +142,8 @@ int Bitmap_add(const char *filename, int count, bool scalable)
     pixmap.count = count;
     pixmap.scalable = scalable;
     pixmap.state = BMS_UNINITIALIZED;
-    STORE(xp_pixmap_t, pixmaps, num_pixmaps, max_pixmaps, pixmap);
+    pixmaps.push_back(pixmap);
+    int num_pixmaps = pixmaps.size();
     return num_pixmaps - 1;
 }
 
@@ -207,10 +206,9 @@ void Bitmap_update_scale(void)
      * the current scale factor. Bitmap_create should take care of
      * releasing the device pixmaps no longer needed. */
 
-    int i;
-    for (i = 0; i < num_pixmaps; i++)
-        if (pixmaps[i].state == BMS_READY && pixmaps[i].scalable)
-            pixmaps[i].state = BMS_INITIALIZED;
+    for (auto &pixmap : pixmaps)
+        if (pixmap.state == BMS_READY && pixmap.scalable)
+            pixmap.state = BMS_INITIALIZED;
 }
 
 /**
@@ -221,7 +219,7 @@ void Bitmap_update_scale(void)
  */
 xp_bitmap_t *Bitmap_get(Drawable d, int img, int bmp)
 {
-    if (!fullColor || img < 0 || img >= num_pixmaps)
+    if (!fullColor || img < 0 || img >= pixmaps.size())
         return nullptr;
 
     if (pixmaps[img].state != BMS_READY)
@@ -288,7 +286,7 @@ xp_bitmap_t *Bitmap_get_blended(Drawable d, int img, int rgb)
 {
     int i;
 
-    if (!fullColor || img < 0 || img >= num_pixmaps)
+    if (!fullColor || img < 0 || img >= pixmaps.size())
         return nullptr;
 
     if (pixmaps[img].state != BMS_READY)

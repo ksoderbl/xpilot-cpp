@@ -21,72 +21,73 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BITMAPS_H
-#define BITMAPS_H
+#pragma once
+
+#include <vector>
 
 #include "gfx2d.h"
 #include "types.h"
 
-#define BM_HOLDER_FRIEND 0
-#define BM_HOLDER_ENEMY 1
-#define BM_BALL 2
-#define BM_SHIP_SELF 3
-#define BM_SHIP_FRIEND 4
-#define BM_SHIP_ENEMY 5
-#define BM_BULLET 6
-#define BM_BULLET_OWN 7
-#define BM_BASE_DOWN 8
-#define BM_BASE_LEFT 9
-#define BM_BASE_UP 10
-#define BM_BASE_RIGHT 11
-#define BM_FUELCELL 12
-#define BM_FUEL 13
-#define BM_ALL_ITEMS 14
-#define BM_CANNON_DOWN 15
-#define BM_CANNON_LEFT 16
-#define BM_CANNON_UP 17
-#define BM_CANNON_RIGHT 18
-#define BM_SPARKS 19
-#define BM_PAUSED 20
-#define BM_WALL_TOP 21
-#define BM_WALL_LEFT 22
-#define BM_WALL_BOTTOM 23
-#define BM_WALL_RIGHT 24
-#define BM_WALL_LU 25
-#define BM_WALL_RU 26
-#define BM_WALL_LD 27
-#define BM_WALL_RD 28
+constexpr int BM_HOLDER_FRIEND = 0;
+constexpr int BM_HOLDER_ENEMY = 1;
+constexpr int BM_BALL = 2;
+constexpr int BM_SHIP_SELF = 3;
+constexpr int BM_SHIP_FRIEND = 4;
+constexpr int BM_SHIP_ENEMY = 5;
+constexpr int BM_BULLET = 6;
+constexpr int BM_BULLET_OWN = 7;
+constexpr int BM_BASE_DOWN = 8;
+constexpr int BM_BASE_LEFT = 9;
+constexpr int BM_BASE_UP = 10;
+constexpr int BM_BASE_RIGHT = 11;
+constexpr int BM_FUELCELL = 12;
+constexpr int BM_FUEL = 13;
+constexpr int BM_ALL_ITEMS = 14;
+constexpr int BM_CANNON_DOWN = 15;
+constexpr int BM_CANNON_LEFT = 16;
+constexpr int BM_CANNON_UP = 17;
+constexpr int BM_CANNON_RIGHT = 18;
+constexpr int BM_SPARKS = 19;
+constexpr int BM_PAUSED = 20;
+constexpr int BM_WALL_TOP = 21;
+constexpr int BM_WALL_LEFT = 22;
+constexpr int BM_WALL_BOTTOM = 23;
+constexpr int BM_WALL_RIGHT = 24;
+constexpr int BM_WALL_LU = 25;
+constexpr int BM_WALL_RU = 26;
+constexpr int BM_WALL_LD = 27;
+constexpr int BM_WALL_RD = 28;
 
-#define BM_WALL_FILLED 29
-#define BM_WALL_UR 30
-#define BM_WALL_UL 31
+constexpr int BM_WALL_FILLED = 29;
+constexpr int BM_WALL_UR = 30;
+constexpr int BM_WALL_UL = 31;
 
-#define BM_SCORE_BG 32
-#define BM_LOGO 33
-#define BM_REFUEL 34
-#define BM_WORMHOLE 35
-#define BM_MINE_TEAM 36
-#define BM_MINE_OTHER 37
-#define BM_CONCENTRATOR 38
-#define BM_PLUSGRAVITY 39
-#define BM_MINUSGRAVITY 40
-#define BM_CHECKPOINT 41
-#define BM_METER 42
-#define BM_ASTEROIDCONC 43
-#define BM_BALL_GRAY 44
+constexpr int BM_SCORE_BG = 32;
+constexpr int BM_LOGO = 33;
+constexpr int BM_REFUEL = 34;
+constexpr int BM_WORMHOLE = 35;
+constexpr int BM_MINE_TEAM = 36;
+constexpr int BM_MINE_OTHER = 37;
+constexpr int BM_CONCENTRATOR = 38;
+constexpr int BM_PLUSGRAVITY = 39;
+constexpr int BM_MINUSGRAVITY = 40;
+constexpr int BM_CHECKPOINT = 41;
+constexpr int BM_METER = 42;
+constexpr int BM_ASTEROIDCONC = 43;
+constexpr int BM_BALL_GRAY = 44;
 
-#define NUM_OBJECT_BITMAPS 45
-#define NUM_BITMAPS 45
+constexpr int NUM_OBJECT_BITMAPS = 45;
+constexpr int NUM_BITMAPS = 45;
 
-#define BMS_UNINITIALIZED 0
-#define BMS_INITIALIZED 1
-#define BMS_READY 2
-#define BMS_ERROR -1
+constexpr int BMS_UNINITIALIZED = 0;
+constexpr int BMS_INITIALIZED = 1;
+constexpr int BMS_READY = 2;
+constexpr int BMS_ERROR = -1;
 
-#define BG_IMAGE_HEIGHT 442
-#define LOGO_HEIGHT 223
+constexpr int BG_IMAGE_HEIGHT = 442;
+constexpr int LOGO_HEIGHT = 223;
 
-#define RADAR_TEXTURE_SIZE 32
+constexpr int RADAR_TEXTURE_SIZE = 32;
 
 typedef struct
 {
@@ -115,8 +116,8 @@ typedef struct
     xp_picture_t picture;   /* the image data in RGB format */
 } xp_pixmap_t;
 
-extern xp_pixmap_t *pixmaps;
-extern int num_pixmaps, max_pixmaps;
+extern std::vector<xp_pixmap_t> pixmaps;
+
 extern xp_pixmap_t xp_pixmaps[];
 
 int Bitmaps_init(void);
@@ -129,5 +130,3 @@ void Bitmap_paint(Drawable d, int img, int x, int y, int bmp);
 void Bitmap_paint_area(Drawable d, xp_bitmap_t *bit, int x, int y, irec_t *r);
 xp_bitmap_t *Bitmap_get_blended(Drawable d, int img, int rgb);
 void Bitmap_paint_blended(Drawable d, int img, int x, int y, int rgb);
-
-#endif
