@@ -513,40 +513,34 @@ void Server_info(char *str, size_t max_size)
     char lblstr[MAX_CHARS];
     char msg[MSG_LEN];
 
-    sprintf(str,
-            "SERVER VERSION...: %s\n"
-            "STATUS...........: %s\n"
-            "MAX SPEED........: %d fps\n"
-            "WORLD (%3dx%3d)..: %s\n"
-            "      AUTHOR.....: %s\n"
-            "PLAYERS (%2d/%2d)..:\n",
-            VERSION,
-            (game_lock && ShutdownServer == -1) ? "locked" : (!game_lock && ShutdownServer != -1) ? "shutting down"
-                                                         : (game_lock && ShutdownServer != -1)    ? "locked and shutting down"
-                                                                                                  : "ok",
-            FPS,
-            World.x, World.y, World.name, World.author,
-            NumPlayers, Num_bases());
+    snprintf(str, max_size,
+             "SERVER VERSION..: %s\n"
+             "STATUS..........: %s\n"
+             "CURRENT FPS.....: %d\n"
+             "WORLD...........: %s\n"
+             "      AUTHOR....: %s\n"
+             "      SIZE......: %dx%d pixels\n"
+             "PLAYERS.........: %2d/%2d\n"
+             "XPILOT CPP SERVER, see\n"
+             "https://github.com/ksoderbl/xpilot-cpp\n"
+             "\n",
+             VERSION,
+             Describe_game_status(),
+             FPS,
+             World.name, World.author, World.width, World.height,
+             NumPlayers, Num_bases());
 
-    if (strlen(str) >= max_size)
-    {
-        errno = 0;
-        error("Server_info string overflow (%d)", max_size);
-        str[max_size - 1] = '\0';
-        return;
-    }
     if (NumPlayers <= 0)
-    {
         return;
-    }
 
-    sprintf(msg,
-            "\nNO:  TM: NAME:             LIFE:   SC:    PLAYER:\n"
-            "-------------------------------------------------\n");
+    strlcpy(msg, "\n"
+                 "NO:  TM: NAME:             LIFE:   SC:    PLAYER:\n"
+                 "-------------------------------------------------\n",
+            sizeof(msg));
+
     if (strlen(msg) + strlen(str) >= max_size)
-    {
         return;
-    }
+
     strlcat(str, msg, max_size);
 
     if ((order = (player_t **)malloc(NumPlayers * sizeof(player_t *))) == nullptr)
@@ -557,27 +551,13 @@ void Server_info(char *str, size_t max_size)
     for (i = 0; i < NumPlayers; i++)
     {
         pl = Player_by_index(i);
-        if (BIT(World.rules->mode, LIMITED_LIVES))
-        {
-            ratio = (double)Get_Score(pl);
-        }
-        else
-        {
-            ratio = (double)Get_Score(pl) / (pl->pl_life + 1);
-        }
-        if ((best == nullptr || ratio > best_ratio) && !Player_is_paused(pl))
-        {
-            best_ratio = ratio;
-            best = pl;
-        }
+
         for (j = 0; j < i; j++)
         {
-            if (order[j]->score < Get_Score(pl))
+            if (Get_Score(order[j]) < Get_Score(pl))
             {
                 for (k = i; k > j; k--)
-                {
                     order[k] = order[k - 1];
-                }
                 break;
             }
         }
@@ -587,26 +567,11 @@ void Server_info(char *str, size_t max_size)
     {
         pl = order[i];
         strlcpy(name, pl->name, MAX_CHARS);
-        if (Player_is_robot(pl))
-        {
-            if ((k = Robot_war_on_player(Player_by_id(pl->id))) != NO_ID)
-            {
-                sprintf(name + strlen(name), " (%s)", Player_by_id(k)->name);
-                if (strlen(name) >= 19)
-                {
-                    strcpy(&name[17], ")");
-                }
-            }
-        }
-        sprintf(lblstr, "%c%c %-19s%03d%6d",
-                (pl == best) ? '*' : pl->mychar,
-                (pl->team == TEAM_NOT_SET) ? ' ' : (pl->team + '0'),
-                name, (int)pl->pl_life, (int)Get_Score(pl));
-        sprintf(msg, "%2d... %-36s%s@%s\n",
-                i + 1, lblstr, pl->username,
-                Player_is_human(pl)
-                    ? pl->hostname
-                    : "xpilot.org");
+        snprintf(lblstr, sizeof(lblstr), "%c%c %-19s%03d%6d",
+                 pl->mychar, pl->team == TEAM_NOT_SET ? ' ' : (pl->team + '0'),
+                 name, pl->pl_life, (int)Get_Score(pl));
+        snprintf(msg, sizeof(msg), "%2d... %-36s%s@%s\n",
+                 i + 1, lblstr, pl->username, pl->hostname);
         if (strlen(msg) + strlen(str) >= max_size)
             break;
         strlcat(str, msg, max_size);

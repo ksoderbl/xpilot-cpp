@@ -133,7 +133,6 @@ static void Radar_paint_block(GLWidget *radar, SDL_Surface *s, int xi, int yi, c
  */
 static void Radar_paint_world_blocks(GLWidget *radar, SDL_Surface *s)
 {
-    double damage;
     int i, xi, yi, type, color;
     color_t bcolor[256]; /* color of a block indexed by block type */
 
@@ -262,7 +261,7 @@ static void Radar_paint_world_polygons(GLWidget *radar, SDL_Surface *s)
  */
 static void Radar_paint_objects(GLWidget *radar)
 {
-    int i, x, y, s;
+    int x, y, s;
 
     for (const auto &radarObject : clMap.radarObjects)
     {
@@ -526,15 +525,15 @@ static void Radar_blit_world(SDL_Rect *sr, SDL_Rect *dr)
  */
 static void Radar_paint(GLWidget *widget)
 {
-    float xf, yf;
+    // float xf, yf;
 
     radar_bounds.x = ((GLWidget *)widget)->bounds.x;
     radar_bounds.y = ((GLWidget *)widget)->bounds.y;
     radar_bounds.w = ((GLWidget *)widget)->bounds.w - 1;
     radar_bounds.h = ((GLWidget *)widget)->bounds.h - 1;
 
-    xf = (float)radar_bounds.w / (float)Setup->width;
-    yf = (float)radar_bounds.h / (float)Setup->height;
+    // xf = (float)radar_bounds.w / (float)Setup->width;
+    // yf = (float)radar_bounds.h / (float)Setup->height;
 
     if (instruments.slidingRadar)
     {

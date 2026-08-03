@@ -979,7 +979,6 @@ static GLWidget *Init_MetaWidget(const server_list_t &servers)
     MetaWidget *info;
     MetaTableWidget *table;
     SDL_Rect table_bounds;
-    SDL_Surface *surface;
 
     if (!(tmp = Init_EmptyBaseGLWidget()))
     {
@@ -1019,7 +1018,7 @@ static GLWidget *Init_MetaWidget(const server_list_t &servers)
     AppendGLWidgetList(&(tmp->children), info->table);
 
 #ifdef HAVE_SDL_IMAGE
-    surface = IMG_Load(CONF_TEXTUREDIR "sdlmetabg.png");
+    SDL_Surface *surface = IMG_Load(CONF_TEXTUREDIR "sdlmetabg.png");
     if (surface)
     {
         info->texture = SDL_GL_LoadTexture(surface, &(info->txc));
@@ -1087,7 +1086,6 @@ static void handleKeyPress(GLWidget *meta, SDL_Keysym *keysym)
 
 int Meta_window(Connect_param_t *conpar)
 {
-    static char err[MSG_LEN] = {0};
     int num_serv = 0;
     int btn_x, btn_y, btn_h;
     GLWidget *btn, *root, *meta, *target = nullptr;

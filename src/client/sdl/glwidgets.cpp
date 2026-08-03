@@ -4595,8 +4595,6 @@ GLWidget *Init_ImageButtonWidget(const char *text,
 {
     GLWidget *tmp;
     ImageButtonWidget *info;
-    SDL_Surface *surface;
-    char imagePath[256];
     int width, height;
 
     if (!text)
@@ -4636,8 +4634,9 @@ GLWidget *Init_ImageButtonWidget(const char *text,
     height = info->tex.height + 1;
 
 #ifdef HAVE_SDL_IMAGE
+    char imagePath[256];
     sprintf(imagePath, "%s%s", CONF_TEXTUREDIR, upImage);
-    surface = IMG_Load(imagePath);
+    SDL_Surface *surface = IMG_Load(imagePath);
     if (surface)
     {
         info->imageUp = SDL_GL_LoadTexture(surface, &(info->txcUp));

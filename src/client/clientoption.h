@@ -226,7 +226,7 @@ static inline void *Option_get_private_data(xp_option_t *opt)
 
 static inline xp_option_t *Option_by_index(int ind)
 {
-    if (ind < 0 || ind >= optionsVector.size())
+    if (ind < 0 || ind >= (int)optionsVector.size())
         return nullptr;
     return &optionsVector[ind];
 }

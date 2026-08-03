@@ -1846,7 +1846,7 @@ static void Paint_hudradar_dot(int x, int y, Uint32 col, int shape, int sz)
 static void Paint_hudradar(double hrscale, double xlimit, double ylimit, int sz)
 {
     Uint32 c;
-    int i, x, y, shape, size;
+    int x, y, shape, size;
     int hrw = (int)(hrscale * 256);
     int hrh = (int)(hrscale * RadarHeight);
     double xf = (double)hrw / (double)Setup->width;
@@ -2011,7 +2011,7 @@ void Paint_HUD(void)
     char str[50];
     int hud_pos_x, hud_pos_y, size;
     int did_fuel = 0;
-    int i, j, tex_index, modlen = 0;
+    int i, j, tex_index;
     static char autopilot[] = "Autopilot";
     int tempx, tempy, tempw, temph;
     static hud_text_t hud_texts[MAX_HUD_TEXS + MAX_SCORE_OBJECTS];
@@ -2195,7 +2195,6 @@ void Paint_HUD(void)
         }
 
         /* Update the modifiers */
-        modlen = strlen(mods);
         tex_index = 4;
         if (strcmp(mods, hud_texts[tex_index]) != 0)
         {

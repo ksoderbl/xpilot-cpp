@@ -75,7 +75,7 @@ endif()
 # )
 
 add_compile_options(
-    # -Wall
+    -Wall
     # -Wextra
     # -Wformat=2
     # -Wundef

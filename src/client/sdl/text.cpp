@@ -156,7 +156,7 @@ int FTinit(font_data *font, const char *fontname, int ptsize)
     SDL_Color white = {0xFF, 0xFF, 0xFF, 0x00};
     SDL_Color black = {0x00, 0x00, 0x00, 0};
     SDL_Color *forecol;
-    SDL_Color *backcol;
+    // SDL_Color *backcol;
     GLenum gl_error;
     texcoord_t texcoords;
     int minx = 0, miny = 0, maxx = 0, maxy = 0;
@@ -167,7 +167,7 @@ int FTinit(font_data *font, const char *fontname, int ptsize)
     rendertype = RENDER_LATIN1;
     /* Default is black and white */
     forecol = &white;
-    backcol = &black;
+    // backcol = &black;
 
     /* Initialize the TTF library */
     /*if ( TTF_Init() < 0 ) {

@@ -72,7 +72,6 @@
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #endif
 #define sqr(x) ((x) * (x))
-#define DELTA(a, b) (((a) >= (b)) ? ((a) - (b)) : ((b) - (a)))
 #define LENGTH(x, y) (hypot((double)(x), (double)(y)))
 #define VECTOR_LENGTH(v) (hypot((double)(v).x, (double)(v).y))
 #define QUICK_LENGTH(x, y) (ABS(x) + ABS(y)) /*-BA Only approx, but v. quick */

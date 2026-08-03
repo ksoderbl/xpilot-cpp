@@ -616,7 +616,7 @@ void DrawCommandLine()
     SDL_Rect rect;
     int x;
     int commandbuffer;
-    BitFont *CurrentFont;
+    // BitFont *CurrentFont;
     static Uint32 NextBlinkTime = 0; /* time the consoles cursor blinks again */
     static int LastCursorPos = 0;    /* Last Cursor Position */
     static int Blink = 0;            /* Is the cursor currently blinking */
@@ -626,7 +626,7 @@ void DrawCommandLine()
 
     commandbuffer = Topmost->VChars - strlen(Topmost->Prompt) - 1; /*  -1 to make cursor visible */
 
-    CurrentFont = DT_FontPointer(Topmost->FontNumber);
+    // CurrentFont = DT_FontPointer(Topmost->FontNumber);
 
     /* calculate display offset from current cursor position */
     if (Topmost->Offset < Topmost->CursorPos - commandbuffer)
