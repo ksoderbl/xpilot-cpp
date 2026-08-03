@@ -1,7 +1,5 @@
 /*
- * XPilot, a multiplayer gravity war game.
- *
- * Copyright (C) 1991-2001 by
+ * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
  *      Ken Ronny Schouten
@@ -26,6 +24,8 @@
  */
 
 #include "walls2.h"
+
+#include <vector>
 
 #include <cstdlib>
 #include <cstring>
@@ -87,13 +87,6 @@ static char msg[MSG_LEN];
 #error "This code assumes that negative numbers round upwards."
 #endif
 
-struct collans
-{
-    int line;
-    int point;
-    clvec_t moved;
-};
-
 struct tl2
 {
     int base;
@@ -147,14 +140,12 @@ shape_t ball_wire;
 struct bline *linet;
 #define S_LINES 100 /* stupid hack */
 
-struct group *groups = nullptr;
-int num_groups = 0, max_groups = 0;
+std::vector<struct group> groups;
 
 struct blockinfo *blockline;
 uint16_t *llist;
 uint16_t *plist;
 int num_lines = 0;
-int num_polys = 0;
 int mapx, mapy;
 
 static inline bool can_hit(group_t *gp, const move_t *move)
@@ -471,6 +462,16 @@ static uint16_t *Shape_lines(shape_t *s, int dir)
     return foo;
 }
 
+static inline group_t *Get_group(int group_ind)
+{
+    if (group_ind < 0 || group_ind >= groups.size())
+    {
+        warn("Get_group: group_ind = %d, num_groups = %d", group_ind, groups.size());
+        return nullptr;
+    }
+    return &groups[group_ind];
+}
+
 static int Bounce_object(object_t *obj, move_t *move, int line, int point)
 {
     world_t *world = &World;
@@ -480,8 +481,14 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
     int mapobj_ind;
 
     group = linet[line >= num_lines ? point : line].group;
-    type = groups[group].type;
-    mapobj_ind = groups[group].mapobj_ind;
+    group_t *gp = Get_group(group);
+
+    // TODO: Remove
+    if (gp == nullptr)
+        return 0;
+
+    type = gp->type;
+    mapobj_ind = gp->mapobj_ind;
 
     if (obj->collmode == 1)
     {
@@ -619,8 +626,16 @@ static void Bounce_player2(player_t *pl, move_t *move, int line, int point)
     sl = y / l;
 
     group = linet[line >= num_lines ? point : line].group;
-    type = groups[group].type;
-    mapobj_ind = groups[group].mapobj_ind;
+
+    group_t *gp = Get_group(group);
+
+    // TODO: Remove
+    if (gp == nullptr)
+        return;
+
+    type = gp->type;
+    mapobj_ind = gp->mapobj_ind;
+
     if (type == TREASURE && options.treasureCollisionKills)
     {
         Player_crash2(pl, CrashTreasure, NO_IND, 1);
@@ -1666,18 +1681,20 @@ int Polys_to_client(uint8_t **start)
         }
         STORE1(bstyles[i].flags);
     }
+    int num_polys = pdata.size();
     STORE2(num_polys);
-    for (i = 0; i < num_polys; i++)
+
+    for (auto &poly : pdata)
     {
-        STORE1(pdata[i].style);
-        j = pdata[i].num_points;
-        STORE2(pdata[i].num_echanges);
-        edges = estyleptr + pdata[i].estyles_start;
+        STORE1(poly.style);
+        j = poly.num_points;
+        STORE2(poly.num_echanges);
+        edges = &estyleptr[poly.estyles_start];
         while (*edges != INT_MAX)
             STORE2(*edges++);
-        startx = pdata[i].pos.cx;
-        starty = pdata[i].pos.cy;
-        edges = edgeptr + pdata[i].edges;
+        startx = poly.pos.cx;
+        starty = poly.pos.cy;
+        edges = &edgeptr[poly.edges];
         STORE2(j);
         STORE2(startx >> CLICK_SHIFT);
         STORE2(starty >> CLICK_SHIFT);
@@ -1931,7 +1948,7 @@ static void store_inside_line(int bx, int by, int ox, int oy, int dx, int dy)
     temparray[block].lines = s;
 }
 
-static void finish_inside(int block, int group)
+static void finish_inside(int block, int groupInd)
 {
     int inside;
     struct inside_block *gblock;
@@ -1949,7 +1966,7 @@ static void finish_inside(int block, int group)
         gblock->next = (struct inside_block *)ralloc(nullptr, sizeof(struct inside_block));
         gblock = gblock->next;
     }
-    gblock->group = group;
+    gblock->group = groupInd;
     gblock->next = nullptr;
     j = 0;
     yptr = temparray[block].y;
@@ -2110,24 +2127,28 @@ static void Inside_init(void)
 {
     world_t *world = &World;
     int dx, dy, bx, by, ox, oy, startx, starty;
-    int i, j, num_points, minx = -1, miny = -1, poly, group;
+    int i, j, num_points, minx = -1, miny = -1, polyInd, groupInd;
     int bx2, by2, maxx = -1, maxy = -1, dir;
     double dist;
     int *edges;
 
     allocate_inside();
-    for (group = 0; group < num_groups; group++)
+
+    // TODO: for (auto &gp: groups)
+    for (groupInd = 0; groupInd < groups.size(); groupInd++)
     {
         minx = -1;
-        for (poly = 0; poly < num_polys; poly++)
+
+        // TODO: for (auto &poly: pdata)
+        for (polyInd = 0; polyInd < pdata.size(); polyInd++)
         {
-            if (pdata[poly].is_decor || pdata[poly].group != group)
+            if (pdata[polyInd].is_decor || pdata[polyInd].group != groupInd)
                 continue;
-            num_points = pdata[poly].num_points;
+            num_points = pdata[polyInd].num_points;
             dx = 0;
             dy = 0;
-            startx = pdata[poly].pos.cx;
-            starty = pdata[poly].pos.cy;
+            startx = pdata[polyInd].pos.cx;
+            starty = pdata[polyInd].pos.cy;
             /* Better wrapping for bx2/by2 could be selected for speed here,
              * but this keeping track of min/max at all is probably
              * unnoticeable in practice. */
@@ -2138,7 +2159,7 @@ static void Inside_init(void)
                 minx = maxx = bx2;
                 miny = maxy = by2;
             }
-            edges = edgeptr + pdata[poly].edges;
+            edges = &edgeptr[pdata[polyInd].edges];
             closest_line(bx, by, 1e10, 0); /* For polygons within one block */
             for (j = 0; j < num_points; j++)
             {
@@ -2211,7 +2232,7 @@ static void Inside_init(void)
                         temparray[i * mapx + j].inside = 1;
                 }
                 if (bx2 < mapx)
-                    finish_inside(j + mapx * i, group);
+                    finish_inside(j + mapx * i, groupInd);
             }
         }
     }
@@ -2545,19 +2566,25 @@ static void Poly_to_lines(void)
     int *edges;
 
     num_lines = 0;
-    for (i = 0; i < num_polys; i++)
+
+    for (auto &poly : pdata)
     {
-        if (pdata[i].is_decor)
+        if (poly.is_decor)
             continue;
-        group = pdata[i].group;
-        np = pdata[i].num_points;
-        styleptr = estyleptr + pdata[i].estyles_start;
-        style = pstyles[pdata[i].style].defedge_id;
+
+        group = poly.group;
+        np = poly.num_points;
+
+        styleptr = &estyleptr[poly.estyles_start];
+
+        style = pstyles[poly.style].defedge_id;
         dx = 0;
         dy = 0;
-        startx = pdata[i].pos.cx;
-        starty = pdata[i].pos.cy;
-        edges = edgeptr + pdata[i].edges;
+        startx = poly.pos.cx;
+        starty = poly.pos.cy;
+
+        edges = &edgeptr[poly.edges];
+
         for (j = 0; j < np; j++)
         {
             if (j == *styleptr)
@@ -2584,9 +2611,7 @@ static void Poly_to_lines(void)
         }
         if (dx || dy)
         {
-            warn("Broken map: Polygon %d (%d points) doesn't form a "
-                 "closed loop",
-                 i + 1, np);
+            warn("Broken map: Polygon %d (%d points) doesn't form a closed loop", i + 1, np);
             exit(1);
         }
     }
@@ -2602,26 +2627,40 @@ void Walls_init2(void)
     double x, y, l2;
     int i;
 
+    warn("Walls_init2");
+
     mapx = (World.cwidth + B_MASK) >> B_SHIFT;
     mapy = (World.cheight + B_MASK) >> B_SHIFT;
 
+    warn("Walls_init2: calling Poly_to_lines");
+
     /* Break polygons down to a list of separate lines. */
     Poly_to_lines();
+
+    warn("Walls_init2: calling Distance_init");
 
     /* For each B_CLICKS x B_CLICKS rectangle on the map, find a list of
      * nearby lines that need to be checked for collision when moving
      * in that area. */
     Distance_init();
 
+    warn("Walls_init2: calling Corner_init");
+
     /* Like above, except list the map corners that could be hit by the
      * sides of a moving polygon shape. */
     Corner_init();
 
+    warn("Walls_init2: calling Ball_line_init2");
+
     Ball_line_init2();
+
+    warn("Walls_init2: calling Inside_init");
 
     /* Initialize the data structures used when determining whether a given
      * arbitrary point on the map is inside something. */
     Inside_init();
+
+    warn("Walls_init2: calling precalculate");
 
     /* Precalculate the .c and .s values used when calculating a bounce
      * from the line. */
@@ -2634,6 +2673,8 @@ void Walls_init2(void)
         linet[i].s = 2 * x * y / l2;
     }
 
+    warn("Walls_init2: create blockmap");
+
     if (is_polygon_map)
     {
         if (options.mapData)
@@ -2643,6 +2684,8 @@ void Walls_init2(void)
         }
         Create_blockmap_from_polygons();
     }
+
+    warn("Walls_init2: DONE");
 }
 
 static void Move_asteroid(object_t *obj)
@@ -2864,12 +2907,12 @@ bool in_move_player = false;
 
 void Move_player2(player_t *pl)
 {
+    world_t *world = &World;
     clpos_t pos;
     move_t mv;
     struct collans ans;
     double fric = friction;
     vector_t oldv;
-    world_t *world = &World;
 
     if (!Player_is_alive(pl))
     {

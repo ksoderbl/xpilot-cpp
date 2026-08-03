@@ -1266,18 +1266,17 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
             SET_BIT(targ->update_mask, conn_bit);
         }
     }
-    for (i = 0; i < num_polys; i++)
-    {
-        poly_t *poly = &pdata[i];
 
+    for (auto &poly : pdata)
+    {
         /*
          * The client assumes at startup that all polygons have their original
          * style.
          */
-        if (poly->style == poly->current_style)
-            CLR_BIT(poly->update_mask, conn_bit);
+        if (poly.style == poly.current_style)
+            CLR_BIT(poly.update_mask, conn_bit);
         else
-            SET_BIT(poly->update_mask, conn_bit);
+            SET_BIT(poly.update_mask, conn_bit);
     }
 
     sound_player_init(pl);
@@ -2649,7 +2648,7 @@ static int Receive_ack_polystyle(connection_t *connp)
             Destroy_connection(connp, "read error");
         return n;
     }
-    if (num >= num_polys)
+    if (num >= pdata.size())
     {
         Destroy_connection(connp, "bad polystyle ack");
         return -1;

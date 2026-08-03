@@ -912,19 +912,19 @@ bool Friction_area_hitfunc(group_t *groupptr, const move_t *move)
  */
 void Team_immunity_init(void)
 {
-    int group;
+    int groupInd = 0;
 
-    for (group = 0; group < num_groups; group++)
+    // for (group = 0; group < num_groups; group++)
+    for (auto &gp : groups)
     {
-        group_t *gp = groupptr_by_id(group);
-
-        if (gp->type == CANNON)
+        if (gp.type == CANNON)
         {
-            cannon_t *cannon = Cannon_by_index(gp->mapobj_ind);
+            cannon_t *cannon = Cannon_by_index(gp.mapobj_ind);
 
-            assert(cannon->group == group);
-            Cannon_set_hitmask(group, cannon);
+            assert(cannon->group == groupInd);
+            Cannon_set_hitmask(groupInd, cannon);
         }
+        groupInd++;
     }
 
 #if 0

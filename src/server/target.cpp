@@ -493,15 +493,18 @@ void Target_set_hitmask(int group, target_t *targ)
 
 void Target_init(void)
 {
-    int group;
+    int groupInd = 0;
 
-    for (group = 0; group < num_groups; group++)
+    // for (group = 0; group < num_groups; group++)
+    for (auto &gp : groups)
     {
-        group_t *gp = groupptr_by_id(group);
+        // group_t *gp = groupptr_by_id(group);
 
-        if (gp->type == TARGET)
-            Target_set_hitmask(group, Target_by_index(gp->mapobj_ind));
+        if (gp.type == TARGET)
+            Target_set_hitmask(groupInd, Target_by_index(gp.mapobj_ind));
+        groupInd++;
     }
+
 #if 0
     P_grouphack(TARGET, Target_set_hitmask);
 #endif
@@ -512,6 +515,16 @@ void World_restore_target(world_t *world, target_t *targ)
     blkpos_t blk = Clpos_to_blkpos(targ->pos);
 
     World_set_block(world, blk, TARGET);
+
+    // for (auto &poly : pdata)
+    // {
+    //     if (poly.group == targ->group)
+    //     {
+    //         poly.current_style = poly.style;
+    //         poly.update_mask = ~0;
+    //         poly.last_change = frame_loops;
+    //     }
+    // }
 
     targ->conn_mask = 0;
     targ->update_mask = ~0;

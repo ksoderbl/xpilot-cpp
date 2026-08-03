@@ -23,13 +23,50 @@
 
 #pragma once
 
+#include <vector>
+
 #include <cstdint>
 
 #include "click.h"
 #include "object.h"
+#include "xperror.h"
 
-// From walls2
+#include "pack.h"
 
+/*
+ * Hitmasks are 32 bits.
+ */
+#define ALL_BITS 0xffffffffU
+#define BALL_BIT (1U << 11)
+#define NONBALL_BIT (1U << 12)
+#define NOTEAM_BIT (1U << 10)
+#define HITMASK(team) ((team) == TEAM_NOT_SET ? NOTEAM_BIT : 1U << (team))
+typedef uint32_t hitmask_t;
+
+struct move;
+struct group;
+
+typedef struct move move_t;
+typedef struct group group_t;
+
+struct move
+{
+    clvec_t start;
+    clvec_t delta;
+    hitmask_t hitmask;
+    const object_t *obj;
+};
+
+typedef struct group
+{
+    int type;
+    int team;
+    hitmask_t hitmask;
+    bool (*hitfunc)(group_t *groupptr, const move_t *move);
+    int mapobj_ind;
+} group_t;
+
+/* kps change 100, 30 etc to something sane */
 struct polystyle
 {
     char id[100];
@@ -70,51 +107,32 @@ typedef struct
     long last_change;
 } poly_t;
 
-extern poly_t *pdata;
-
-#define ALL_BITS 0xffffffffU
-#define BALL_BIT (1U << 11)
-#define NONBALL_BIT (1U << 12)
-#define NOTEAM_BIT (1U << 10)
-#define HITMASK(team) ((team) == TEAM_NOT_SET ? NOTEAM_BIT : 1U << (team))
-typedef uint32_t hitmask_t;
-
-typedef struct move
-{
-    clvec_t start;
-    clvec_t delta;
-    hitmask_t hitmask;
-    const object_t *obj;
-} move_t;
-
-typedef struct group group_t;
-
-struct group
-{
-    int type;
-    int team;
-    hitmask_t hitmask;
-    bool (*hitfunc)(group_t *groupptr, const move_t *move);
-    int mapobj_ind;
-};
+extern int num_pstyles, num_estyles, num_bstyles;
 
 extern struct polystyle pstyles[256];
 extern struct edgestyle estyles[256];
 extern struct bmpstyle bstyles[256];
+
 // extern poly_t *pdata;
-extern int *estyleptr;
-extern int *edgeptr;
-extern group_t *groups;
-extern int num_groups, max_groups;
+extern std::vector<poly_t> pdata;
+
+// extern int *estyleptr;
+extern std::vector<int> estyleptr;
+
+// extern int *edgeptr;
+extern std::vector<int> edgeptr;
+
+extern std::vector<group_t> groups;
 
 static inline group_t *groupptr_by_id(int group)
 {
-    if (group >= 0 && group < num_groups)
+    if (group >= 0 && group < groups.size())
         return &groups[group];
+
+    warn("groupptr_by_id: group = %d, num_groups = %d, returning nullptr",
+         group, groups.size());
     return nullptr;
 }
-
-extern int num_polys, num_pstyles, num_estyles, num_bstyles;
 
 void P_edgestyle(const char *id, int width, int color, int style);
 void P_polystyle(const char *id, int color, int texture_id, int defedge_id,

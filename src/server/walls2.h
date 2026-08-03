@@ -1,7 +1,5 @@
 /*
- * XPilot, a multiplayer gravity war game.
- *
- * Copyright (C) 1991-2001 by
+ * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
  *      Ken Ronny Schouten
@@ -27,13 +25,22 @@
 
 #pragma once
 
+#include <vector>
+
+#include <cstdint>
+
 #include "click.h"
 #include "object.h"
 #include "player.h"
 #include "polygon.h"
 #include "move.h"
 
-void Move_point(const move_t *move, struct collans *answer);
+struct collans
+{
+    int line;
+    int point;
+    clvec_t moved;
+};
 
 void Groups_init(void);
 void Walls_init2(void);
@@ -48,3 +55,4 @@ int Polys_to_client(uint8_t **);
 void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt);
 void Object_crash2(object_t *obj, int crashtype, int mapobj_ind);
 void Ball_line_init2(void);
+void Move_point(const move_t *move, struct collans *answer);

@@ -21,35 +21,39 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "polygon.h"
+
+#include <vector>
+
 #include <cassert>
+#include <climits>
 #include <cstring>
 
 #include "commonmacros.h"
 #include "commonproto.h"
+#include "xperror.h"
 
 #include "cannon.h"
 #include "server.h"
 #include "map.h"
-#include "polygon.h"
 #include "target.h"
 #include "treasure.h"
 #include "wormhole.h"
 
 /* polygon map format related stuff */
-int num_edges, max_edges;
+std::vector<poly_t> pdata;
+std::vector<int> edgeptr;
+std::vector<int> estyleptr;
 
-int *edgeptr;
-int *estyleptr;
-static int ptscount = -1, ecount;
+static int ptscount = -1;
 
 struct polystyle pstyles[256];
 struct edgestyle estyles[256] =
     {{"internal", 0, 0, 0}}; /* Style 0 is always this special style */
 struct bmpstyle bstyles[256];
-poly_t *pdata;
 
-int num_pstyles, num_bstyles, num_estyles = 1;     /* "Internal" edgestyle */
-int max_bases, max_balls, max_polys, max_echanges; /* !@# make static after testing done */
+int num_pstyles, num_bstyles, num_estyles = 1; /* "Internal" edgestyle */
+int max_bases, max_balls;                      /* !@# make static after testing done */
 static int current_estyle, current_group, is_decor;
 
 static int Create_group(int type, int team, hitmask_t hitmask,
@@ -70,8 +74,9 @@ static int Create_group(int type, int team, hitmask_t hitmask,
         exit(1);
     }
 
-    current_group = num_groups;
-    STORE(group_t, groups, num_groups, max_groups, gp);
+    current_group = groups.size();
+    groups.push_back(gp);
+
     return current_group;
 }
 
@@ -138,16 +143,16 @@ static clpos_t P_cv;
 
 void P_start_polygon(clpos_t pos, int style)
 {
+    world_t *world = &World;
     poly_t t;
 
-    // TODO
-    // if (!World_contains_clpos(pos))
-    // {
-    //     warn("Polygon start point (%d, %d) is not inside the map"
-    //          "(0 <= x < %d, 0 <= y < %d)",
-    //          pos.cx, pos.cy, World.cwidth, World.cheight);
-    //     exit(1);
-    // }
+    if (!World_contains_clpos(world, pos))
+    {
+        warn("Polygon start point (%d, %d) is not inside the map"
+             "(0 <= x < %d, 0 <= y < %d)",
+             pos.cx, pos.cy, World.cwidth, World.cheight);
+        exit(1);
+    }
     if (style == -1)
     {
         warn("Currently you must give polygon style, no default");
@@ -158,18 +163,19 @@ void P_start_polygon(clpos_t pos, int style)
     P_cv = pos;
     t.pos = pos;
     t.group = current_group;
-    t.edges = num_edges;
+    t.edges = edgeptr.size();
     t.style = style;
     t.current_style = style;
     t.destroyed_style = style; /* may be changed */
-    t.estyles_start = ecount;
+    t.estyles_start = estyleptr.size();
     t.is_decor = is_decor;
 
     t.update_mask = 0;
     t.last_change = frame_loops;
 
     current_estyle = pstyles[style].defedge_id;
-    STORE(poly_t, pdata, num_polys, max_polys, t);
+
+    pdata.push_back(t);
 }
 
 void P_offset(clpos_t offset, int edgestyle)
@@ -200,8 +206,8 @@ void P_offset(clpos_t offset, int edgestyle)
 
     if (edgestyle != -1 && edgestyle != current_estyle)
     {
-        STORE(int, estyleptr, ecount, max_echanges, ptscount);
-        STORE(int, estyleptr, ecount, max_echanges, edgestyle);
+        estyleptr.push_back(ptscount);
+        estyleptr.push_back(edgestyle);
         current_estyle = edgestyle;
     }
 
@@ -211,8 +217,8 @@ void P_offset(clpos_t offset, int edgestyle)
     i = (MAX(ABS(offcx), ABS(offcy)) - 1) / POLYGON_MAX_OFFSET + 1;
     for (; i > 0; i--)
     {
-        STORE(int, edgeptr, num_edges, max_edges, offcx / i);
-        STORE(int, edgeptr, num_edges, max_edges, offcy / i);
+        edgeptr.push_back(offcx / i);
+        edgeptr.push_back(offcy / i);
         offcx -= offcx / i;
         offcy -= offcy / i;
         ptscount++;
@@ -244,7 +250,10 @@ void P_style(const char *state, int style)
     }
 
     if (!strcmp(state, "destroyed"))
-        pdata[num_polys - 1].destroyed_style = style;
+    {
+        int lastInd = pdata.size() - 1;
+        pdata[lastInd].destroyed_style = style;
+    }
     else
     {
         warn("<Style> does not support state \"%s\".", state);
@@ -254,18 +263,21 @@ void P_style(const char *state, int style)
 
 void P_end_polygon(void)
 {
+    int lastInd = pdata.size() - 1;
+
     if (ptscount < 3)
     {
         warn("Polygon with less than 3 edges?? (start %d, %d)",
-             pdata[num_polys - 1].pos.cx, pdata[num_polys - 1].pos.cy);
+             pdata[lastInd].pos.cx, pdata[lastInd].pos.cy);
         exit(1);
     }
 
     /* kps - add check that e.g. cannons have "destroyed" state <Style> ? */
 
-    pdata[num_polys - 1].num_points = ptscount;
-    pdata[num_polys - 1].num_echanges = ecount - pdata[num_polys - 1].estyles_start;
-    STORE(int, estyleptr, ecount, max_echanges, INT_MAX);
+    pdata[lastInd].num_points = ptscount;
+    int ecount = estyleptr.size();
+    pdata[lastInd].num_echanges = ecount - pdata[lastInd].estyles_start;
+    estyleptr.push_back(INT_MAX);
     ptscount = -1;
 }
 
@@ -418,6 +430,6 @@ int P_get_poly_id(const char *s)
 void P_set_hitmask(int group, hitmask_t hitmask)
 {
     assert(group >= 0);
-    assert(group < num_groups);
+    assert(group < groups.size());
     groups[group].hitmask = hitmask;
 }
