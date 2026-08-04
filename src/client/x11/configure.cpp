@@ -166,7 +166,7 @@ static void Create_config(void)
      */
     config_x = 0;
     config_y = RadarHeight + ButtonHeight + 2;
-    config_width = 256;
+    config_width = RadarWidth;
     config_height = top_height - config_y;
 
     /*

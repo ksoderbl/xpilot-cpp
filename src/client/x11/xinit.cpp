@@ -506,13 +506,13 @@ int Init_playing_windows(void)
 
     Scale_dashes();
 
-    draw_width = top_width - (256 + 2);
+    draw_width = top_width - (RadarWidth + 2);
     draw_height = top_height;
-    drawWindow = XCreateSimpleWindow(dpy, topWindow, 258, 0,
+    drawWindow = XCreateSimpleWindow(dpy, topWindow, RadarWidth + 2, 0,
                                      draw_width, draw_height,
                                      0, 0, colors[spaceColor].pixel); // BLACK
     radarWindow = XCreateSimpleWindow(dpy, topWindow, 0, 0,
-                                      256, RadarHeight, 0, 0,
+                                      RadarWidth, RadarHeight, 0, 0,
                                       colors[BLACK].pixel);
     radar_score_mapped = true;
 
@@ -691,7 +691,7 @@ void Resize(Window w, unsigned width, unsigned height)
 
     // Draw window does not include the top left radar or the scorelist/config area.
     if (radar_score_mapped)
-        draw_width = top_width - 258;
+        draw_width = top_width - (RadarWidth + 2);
     else
         draw_width = top_width;
     draw_height = top_height;

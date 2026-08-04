@@ -67,14 +67,14 @@ static void Copy_static_radar(void)
     {
         /* Draw static radar onto radar */
         XCopyArea(dpy, radarPixmap2, radarPixmap, gameGC,
-                  0, 0, 256, RadarHeight, 0, 0);
+                  0, 0, RadarWidth, RadarHeight, 0, 0);
     }
     else
     {
         /* Clear radar */
         XSetForeground(dpy, radarGC, colors[BLACK].pixel);
         XFillRectangle(dpy, radarPixmap,
-                       radarGC, 0, 0, 256, RadarHeight);
+                       radarGC, 0, 0, RadarWidth, RadarHeight);
     }
     XSetForeground(dpy, radarGC, colors[WHITE].pixel);
 }
@@ -90,9 +90,8 @@ static void Paint_checkpoint_radar(double xf, double yf)
         x = ((int)(x * BLOCK_SZ * xf + 0.5)) - slidingradar_x;
         y = (RadarHeight - (int)(y * BLOCK_SZ * yf + 0.5) + DSIZE - 1) - slidingradar_y;
         if (x <= 0)
-        {
-            x += 256;
-        }
+            x += RadarWidth;
+
         if (y <= 0)
             y += RadarHeight;
 
@@ -125,7 +124,7 @@ static void Paint_self_radar(double xf, double yf)
         x = (int)(selfPos.x * xf + 0.5) - slidingradar_x;
         y = RadarHeight - (int)(selfPos.y * yf + 0.5) - 1 - slidingradar_y;
         if (x <= 0)
-            x += 256;
+            x += RadarWidth;
         if (y <= 0)
             y += RadarHeight;
 
@@ -135,7 +134,7 @@ static void Paint_self_radar(double xf, double yf)
                   x, y, x1, y1);
         if (BIT(Setup->mode, WRAP_PLAY))
         {
-            xw = x1 - (x1 + 256) % 256;
+            xw = x1 - (x1 + RadarWidth) % RadarWidth;
             yw = y1 - (y1 + RadarHeight) % RadarHeight;
             if (xw != 0)
                 XDrawLine(dpy, radarPixmap, radarGC,
@@ -176,18 +175,17 @@ static void Paint_objects_radar(void)
         y = RadarHeight - radarObject.y - 1 - s / 2 - slidingradar_y;
 
         if (x <= 0)
-            x += 256;
+            x += RadarWidth;
         if (y <= 0)
             y += RadarHeight;
 
         XFillRectangle(dpy, radarPixmap, radarGC, x, y, s, s);
         if (BIT(Setup->mode, WRAP_PLAY))
         {
-            xw = (x < 0) ? -256 : (x + s >= 256) ? 256
-                                                 : 0;
-            yw = (y < 0)                  ? -RadarHeight
-                 : (y + s >= RadarHeight) ? RadarHeight
-                                          : 0;
+            xw = (x < 0) ? -RadarWidth : (x + s >= RadarWidth) ? RadarWidth
+                                                               : 0;
+            yw = (y < 0) ? -RadarHeight : (y + s >= RadarHeight) ? RadarHeight
+                                                                 : 0;
             if (xw != 0)
             {
                 XFillRectangle(dpy, radarPixmap, radarGC,
@@ -213,7 +211,7 @@ static void Paint_objects_radar(void)
 
 void Paint_radar(void)
 {
-    const double xf = 256.0 / (double)Setup->width,
+    const double xf = RadarWidth / (double)Setup->width,
                  yf = (double)RadarHeight / (double)Setup->height;
 
     if (radar_exposures == 0)
@@ -248,7 +246,7 @@ void Paint_sliding_radar(void)
             return;
 
         radarPixmap2 = XCreatePixmap(dpy, radarWindow,
-                                     256, RadarHeight,
+                                     RadarWidth, RadarHeight,
                                      dispDepth);
         radarPixmap = radarPixmap2;
         if (radar_exposures > 0)
@@ -281,9 +279,9 @@ static void Paint_radar_block(int xi, int yi, int color)
     }
     XSetForeground(dpy, radarGC, colors[color].pixel);
 
-    if (Setup->x >= 256)
+    if (Setup->x >= RadarWidth)
     {
-        xs = (double)(256 - 1) / (Setup->x - 1);
+        xs = (double)(RadarWidth - 1) / (Setup->x - 1);
         ys = (double)(RadarHeight - 1) / (Setup->y - 1);
         xp = (int)(xi * xs + 0.5);
         yp = RadarHeight - 1 - (int)(yi * ys + 0.5);
@@ -291,7 +289,7 @@ static void Paint_radar_block(int xi, int yi, int color)
     }
     else
     {
-        xs = (double)(Setup->x - 1) / (256 - 1);
+        xs = (double)(Setup->x - 1) / (RadarWidth - 1);
         ys = (double)(Setup->y - 1) / (RadarHeight - 1);
         /*
          * Calculate the min and max points on the radar that would show
@@ -342,7 +340,7 @@ void Paint_world_radar_old(void)
     {
         /* Clear radar */
         XSetForeground(dpy, radarGC, colors[BLACK].pixel);
-        XFillRectangle(dpy, radarPixmap2, radarGC, 0, 0, 256, RadarHeight);
+        XFillRectangle(dpy, radarPixmap2, radarGC, 0, 0, RadarWidth, RadarHeight);
     }
     else
         XClearWindow(dpy, radarWindow);
@@ -411,9 +409,9 @@ void Paint_world_radar_old(void)
      * Another (and probably better) way to do this would be use
      * different segments and points arrays for each visible color.
      */
-    if (Setup->x >= 256)
+    if (Setup->x >= RadarWidth)
     {
-        xs = (double)(256 - 1) / (Setup->x - 1);
+        xs = (double)(RadarWidth - 1) / (Setup->x - 1);
         ys = (double)(RadarHeight - 1) / (Setup->y - 1);
         currColor = -1;
         for (xi = 0; xi < Setup->x; xi++)
@@ -515,10 +513,10 @@ void Paint_world_radar_old(void)
     }
     else
     {
-        xs = (double)(Setup->x - 1) / (256 - 1);
+        xs = (double)(Setup->x - 1) / (RadarWidth - 1);
         ys = (double)(Setup->y - 1) / (RadarHeight - 1);
         currColor = -1;
-        for (xi = 0; xi < 256; xi++)
+        for (xi = 0; xi < RadarWidth; xi++)
         {
             xm = (int)(xi * xs + 0.5);
             xmoff = xm * Setup->y;
@@ -670,7 +668,7 @@ static void Paint_world_radar_new(void)
     {
         /* Clear radar */
         XSetForeground(dpy, radarGC, colors[BLACK].pixel);
-        XFillRectangle(dpy, radarPixmap2, radarGC, 0, 0, 256, RadarHeight);
+        XFillRectangle(dpy, radarPixmap2, radarGC, 0, 0, RadarWidth, RadarHeight);
     }
     else
         XClearWindow(dpy, radarWindow);
@@ -697,7 +695,7 @@ static void Paint_world_radar_new(void)
                 {
                     x += polygon.points[j].x;
                     y += polygon.points[j].y;
-                    poly[j].x = (x * 256) / Setup->width;
+                    poly[j].x = (x * RadarWidth) / Setup->width;
                     poly[j].y = (int)RadarHeight - ((y * (int)RadarHeight) / Setup->height);
                 }
 

@@ -236,8 +236,9 @@ extern int roundDelay;
 extern int roundDelayMax;
 
 extern bool UpdateRadar;
-extern unsigned RadarWidth;
-extern unsigned RadarHeight;
+constexpr int ServerRadarWidth = 256; /* radar width at the server */
+extern int RadarWidth;
+extern int RadarHeight;
 extern int backgroundPointDist; /* spacing of navigation points */
 extern int backgroundPointSize; /* size of navigation points */
 extern int sparkSize;           /* size of sparks and debris */

@@ -230,7 +230,7 @@ void Paint_frame(void)
         if (!instruments.slidingRadar || BIT(Setup->mode, WRAP_PLAY) == 0)
         {
             XCopyArea(dpy, radarPixmap, radarWindow, gameGC,
-                      0, 0, 256, RadarHeight, 0, 0);
+                      0, 0, RadarWidth, RadarHeight, 0, 0);
         }
         else
         {
@@ -239,20 +239,20 @@ void Paint_frame(void)
             int w, h;
             // int w1, h1, w2, h2;
 
-            xp = (double)(selfPos.x * 256) / Setup->width;
+            xp = (double)(selfPos.x * RadarWidth) / Setup->width;
             yp = (double)(selfPos.y * RadarHeight) / Setup->height;
-            xo = (double)256 / 2;
+            xo = (double)RadarWidth / 2;
             yo = (double)RadarHeight / 2;
 
             assert(xp >= 0.0);
-            assert(xp < 256.0);
+            assert(xp < RadarWidth);
             assert(yp >= 0.0);
             assert(yp < RadarHeight);
 
             if (xo <= xp)
                 x = (int)(xp - xo + 0.5);
             else
-                x = (int)(256 + xp - xo + 0.5);
+                x = (int)(RadarWidth + xp - xo + 0.5);
 
             if (yo <= yp)
                 y = (int)(yp - yo + 0.5);
@@ -260,7 +260,7 @@ void Paint_frame(void)
                 y = (int)(RadarHeight + yp - yo + 0.5);
 
             y = RadarHeight - y - 1;
-            w = 256 - x;
+            w = RadarWidth - x;
             h = RadarHeight - y;
 
             XCopyArea(dpy, radarPixmap, radarWindow, gameGC, 0, 0, x, y, w, h);
