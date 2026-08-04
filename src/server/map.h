@@ -529,76 +529,76 @@ static inline int Num_checks()
 }
 
 // by_index functions
-static asteroid_concentrator_t *AsteroidConc_by_index(int i)
+static inline asteroid_concentrator_t *AsteroidConc_by_index(int i)
 {
     return &World.asteroidConcs[i];
 }
 
-static base_t *Base_by_index(int i)
+static inline base_t *Base_by_index(int i)
 {
     return &World.bases[i];
 }
 
-static cannon_t *Cannon_by_index(int i)
+static inline cannon_t *Cannon_by_index(int i)
 {
     return &World.cannons[i];
 }
 
-static ecm_t *Ecm_by_index(int i)
+static inline ecm_t *Ecm_by_index(int i)
 {
     return &World.ecms[i];
 }
 
-static friction_area_t *FrictionArea_by_index(int i)
+static inline friction_area_t *FrictionArea_by_index(int i)
 {
     return &World.frictionAreas[i];
 }
 
-static fuel_t *Fuel_by_index(int i)
+static inline fuel_t *Fuel_by_index(int i)
 {
     return &World.fuels[i];
 }
 
-static grav_t *Grav_by_index(int i)
+static inline grav_t *Grav_by_index(int i)
 {
     return &World.gravs[i];
 }
 
-static item_concentrator_t *ItemConc_by_index(int i)
+static inline item_concentrator_t *ItemConc_by_index(int i)
 {
     return &World.itemConcs[i];
 }
 
-static target_t *Target_by_index(int i)
+static inline target_t *Target_by_index(int i)
 {
     return &World.targets[i];
 }
 
-static treasure_t *Treasure_by_index(int i)
+static inline treasure_t *Treasure_by_index(int i)
 {
     return &World.treasures[i];
 }
 
-// static wormhole_t *Wormhole_by_index(int i)
+// static inline  wormhole_t *Wormhole_by_index(int i)
 // {
 //     return &World.wormholes[i];
 // }
 
-static transporter_t *Transporter_by_index(int i)
+static inline transporter_t *Transporter_by_index(int i)
 {
     return &World.transporters[i];
 }
 
 // #define Wormhole_by_index(i) ((wormhole_t *)(&World.wormholes[i]))
 
-static wormhole_t *Wormhole_by_index(int i)
+static inline wormhole_t *Wormhole_by_index(int i)
 {
     if (i < 0 || i >= Num_wormholes())
         return nullptr;
     return ((wormhole_t *)(&World.wormholes[i]));
 }
 
-static check_t *Check_by_index(int i)
+static inline check_t *Check_by_index(int i)
 {
     return &World.checks[i];
 }

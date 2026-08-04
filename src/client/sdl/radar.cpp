@@ -209,7 +209,7 @@ static void Compute_bounds_radar(ipos_t *min, ipos_t *max, const irec_t *b)
  */
 static void Radar_paint_world_polygons(GLWidget *radar, SDL_Surface *s)
 {
-    int i, j, xoff, yoff;
+    int j, xoff, yoff;
     ipos_t min, max;
     Sint16 vx[MAX_VERTICES], vy[MAX_VERTICES];
     color_t color;

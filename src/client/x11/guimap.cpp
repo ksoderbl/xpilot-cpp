@@ -480,7 +480,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
     else
     {
         const int BORDER = 4; /* in pixels */
-        int id, team, size;
+        int size;
         other_t *other;
         char s[3];
 

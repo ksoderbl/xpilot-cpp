@@ -100,7 +100,7 @@
 /*
  * Used where we wish to know if a player is simply on the same team.
  */
-// #define Players_are_teammates(pl_i, pl_j) \
+// #define Players_are_teammates(pl_i, pl_j)
 //         (Team_play(world) && (pl_i->team == pl_j->team) && (pl_i->team != TEAM_NOT_SET))
 
 /*
@@ -112,7 +112,7 @@
 /*
  * Used where we wish to know if two players are members of the same alliance.
  */
-// #define Players_are_allies(pl_i, pl_j) \
+// #define Players_are_allies(pl_i, pl_j)
 //         ((pl_i->alliance != ALLIANCE_NOT_SET) && (pl_j->alliance == pl_i->alliance))
 
 /*
@@ -196,10 +196,6 @@ constexpr double ED_LASER_HIT = -100.0;
 #define TANK_CAP(n) (!(n) ? MAX_PLAYER_FUEL : (MAX_PLAYER_FUEL / 3))
 #define TANK_FUEL(n) ((TANK_CAP(n) * (5 + (randomMT() & 3))) / 32)
 #define TANK_REFILL_LIMIT (MIN_PLAYER_FUEL / 8)
-
-// #define TANK_CAP_TIMES_256(n) (!(n) ? (MAX_PLAYER_FUEL * 256) : (MAX_PLAYER_FUEL * 256 / 3))
-// #define TANK_FUEL_TIMES_256(n) ((TANK_CAP_TIMES_256(n) * (5 + (randomMT() & 3))) / 32)
-// #define TANK_REFILL_LIMIT_TIMES_256 (MIN_PLAYER_FUEL * 256 / 8)
 
 #define TANK_THRUST_FACT 0.7
 #define TANK_NOTHRUST_TIME (HEAT_CLOSE_TIMEOUT / 2 + 2)

@@ -496,7 +496,7 @@ void Laser_pulse_collision(void)
     double midx, midy;
     player_t *pl;
     pulse_t *pulse;
-    object_t *obj = nullptr, *ast = nullptr;
+    object_t *obj = nullptr;
     std::vector<object_t *> obj_list;
 
     /*

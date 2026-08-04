@@ -716,9 +716,6 @@ bool Grok_map(void)
         Xpmap_tags_to_internal_data2();
         Xpmap_find_map_object_teams2();
 
-        int i, x, y, c;
-        char *s;
-
         printf("grok map: init map\n");
         Init_map();
 
@@ -762,9 +759,6 @@ bool Grok_map(void)
 
         // printf("grok map: alloc map\n");
         // Xpmap_world_alloc();
-
-        x = -1;
-        y = World.y - 1;
 
         printf("grok map: reading mapdata\n");
 

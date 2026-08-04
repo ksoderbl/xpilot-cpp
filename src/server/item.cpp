@@ -966,7 +966,6 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
     int i, j, ecm_ind;
     double range, perim, damage;
     player_t *pl = Player_by_id(id), *p;
-    ecm_t *ecm;
     ecm_t t;
 
     if (Num_ecms() >= MAX_TOTAL_ECMS)

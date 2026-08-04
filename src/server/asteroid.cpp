@@ -103,7 +103,6 @@ void Break_asteroid(wireobject_t *asteroid)
     double speed, speed1, speed2, radius;
     int dir, dir1, dir2, split_dir;
     // int x1, y1, x2, y2;
-    clpos_t pos1, pos2;
 
     if (asteroid->wire_size == 1)
     {
@@ -190,7 +189,6 @@ void Break_asteroid(wireobject_t *asteroid)
     {
         int nitems = (int)(rfrac() * options.asteroidMaxItems) + 1;
         int i;
-        int vx, vy;
         int item, item_dir, num_per_pack;
         double item_speed;
         long status;

@@ -1137,8 +1137,8 @@ static void Robot_suibot_play(player_t *pl)
     int direction;
     double distance, ship_dist, enemy_dist, speed, x_speed, y_speed;
     int item_dist, mine_dist, item_i, mine_i;
-    int j, ship_i, item_imp, enemy_i, shoot_time;
-    bool harvest_checked, evade_checked, navigate_checked;
+    int j, ship_i, item_imp;
+    bool harvest_checked, evade_checked;
     robot_default_data_t *my_data = Robot_suibot_get_data(pl);
 
     double ship_dist_closest;

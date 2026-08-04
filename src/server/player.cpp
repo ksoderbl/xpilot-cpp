@@ -1808,8 +1808,8 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
 
     uint32_t s = pl->obj_status;
 
-    // warn("before: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
-    //      pl->name, pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
+    warn("before: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
+         pl->name, pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
 
     pl->obj_status &= ~(LEGACY_KILL_BITS);
 
@@ -1828,8 +1828,8 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     //  WARPING |
     //  WARPED);
 
-    // warn("after : player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
-    //      pl->name, pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
+    warn("after : player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
+         pl->name, pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
 
     pl->deaths++;
 
@@ -1924,8 +1924,8 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     //     pl->pl_life++;
     // }
 
-    // warn("after2: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
-    //      pl->name, pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
+    warn("after2: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
+         pl->name, pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
 
     if (add_rank_death)
     {

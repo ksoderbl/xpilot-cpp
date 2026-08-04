@@ -868,7 +868,6 @@ void Cannon_set_hitmask(int group, cannon_t *cannon)
 void World_restore_cannon(world_t *world, cannon_t *cannon)
 {
     blkpos_t blk = Clpos_to_blkpos(cannon->pos);
-    int i;
 
     World_set_block(world, blk, CANNON);
 
@@ -894,7 +893,6 @@ void World_restore_cannon(world_t *world, cannon_t *cannon)
 void World_remove_cannon(world_t *world, cannon_t *cannon)
 {
     blkpos_t blk = Clpos_to_blkpos(cannon->pos);
-    int i;
 
     // cannon->dead_ticks = options.cannonDeadTicks;
     cannon->conn_mask = 0;

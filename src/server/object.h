@@ -464,9 +464,9 @@ static inline void Object_position_set_clvec(object_t *obj, clvec_t vec)
     Object_position_set_clpos(obj, pos);
 }
 
-// #define SHOT_MULT(o)                                                           \
-//     ((BIT((o)->mods.nuclear, MODS_NUCLEAR) && BIT((o)->mods.warhead, CLUSTER)) \
-//          ? options.nukeClusterDamage                                           \
+// #define SHOT_MULT(o)
+//     ((BIT((o)->mods.nuclear, MODS_NUCLEAR) && BIT((o)->mods.warhead, CLUSTER))
+//          ? options.nukeClusterDamage
 //          : 1.0)
 
 static inline double SHOT_MULT(object_t *obj)

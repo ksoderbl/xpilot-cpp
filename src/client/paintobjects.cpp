@@ -195,11 +195,9 @@ static inline int Debris_color(int color)
     return ((num_spark_colors > 4) ? ((((color & 1) << 2) | (color >> 1))) : (color));
 }
 
-static void Paint_debris(int x_areas, int y_areas, int areas, int max_)
+static void Paint_debris(int x_areas, int y_areas, int areas, int max_i)
 {
-    int color, i, j, x, y;
-
-    for (int i = 0; i < max_; i++)
+    for (int i = 0; i < max_i; i++)
     {
         auto &debrisList = clMap.debrisTypes[i];
 
@@ -276,7 +274,7 @@ static void Paint_asteroids(void)
 
 static void Paint_wormholes(void)
 {
-    int i, x, y;
+    int x, y;
 
     if (clMap.wormholes.size() > 0)
     {
@@ -319,7 +317,7 @@ static void Paint_missiles(void)
 
 static void Paint_lasers(void)
 {
-    int color, i, x1, y1, len, dir;
+    int color, x1, y1, len, dir;
 
     if (clMap.lasers.size() > 0)
     {
@@ -386,7 +384,7 @@ static void Paint_teamshots(int i, int x_areas, int y_areas, int areas)
 void Paint_shots(void)
 {
     int i, t_;
-    int x_areas, y_areas, areas, max_;
+    int x_areas, y_areas, areas, max_i;
 
     Paint_items();
     Paint_balls();
@@ -395,20 +393,20 @@ void Paint_shots(void)
     x_areas = (active_view_width + 255) >> 8;
     y_areas = (active_view_height + 255) >> 8;
     areas = x_areas * y_areas;
-    max_ = areas * (num_spark_colors >= 3 ? num_spark_colors : 4);
+    max_i = areas * (num_spark_colors >= 3 ? num_spark_colors : 4);
 
     // warn("Paint_shots: x_areas: %d", x_areas);
     // warn("Paint_shots: y_areas: %d", y_areas);
     // warn("Paint_shots: areas_: %d", areas);
-    // warn("Paint_shots: max_: %d", max_);
+    // warn("Paint_shots: max_i: %d", max_i);
 
-    Paint_debris(x_areas, y_areas, areas, max_);
+    Paint_debris(x_areas, y_areas, areas, max_i);
 
     Paint_wreckages();
     Paint_asteroids();
     Paint_wormholes();
 
-    for (i = 0; i < max_; i++)
+    for (i = 0; i < max_i; i++)
     {
         Paint_fastshots(i, x_areas, y_areas, areas);
         Paint_teamshots(i, x_areas, y_areas, areas);

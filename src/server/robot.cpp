@@ -607,7 +607,7 @@ static void Robot_talks(enum robot_talk_t says_what,
     static int next_msg = -1;
     const char **msgsp;
     int two, i, n;
-    char msg[MSG_LEN];
+    // char msg[MSG_LEN];
 
     if (options.robotsTalk != true && says_what != ROBOT_TALK_ENTER)
         return;

@@ -864,6 +864,7 @@ static int init_polymap(void)
         fs.bounds.y = cy - BLOCK_SZ / 2;
         fs.bounds.w = BLOCK_SZ;
         fs.bounds.h = BLOCK_SZ;
+        clMap.fuels.push_back(fs);
     }
     num_checks = *ptr++ & 0xff;
     if (num_checks != 0)

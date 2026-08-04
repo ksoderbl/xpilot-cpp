@@ -939,8 +939,7 @@ static void Xpmap_place_block(world_t *world, blkpos_t blk, int type)
 void Xpmap_tags_to_internal_data(void)
 {
     world_t *world = &World;
-    int i, x, y, c;
-    char *s;
+    int i, x, y;
 
     // TODO
     // error("WARNING: map has no bases!");
