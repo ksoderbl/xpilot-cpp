@@ -2098,7 +2098,7 @@ int Receive_radar(void)
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c", &ch, &x, &y, &size)) <= 0)
         return n;
 
-    x = (int)((double)(x * 256) / Setup->width + 0.5);
+    x = (int)((double)(x * RadarWidth) / Setup->width + 0.5);
     y = (int)((double)(y * RadarHeight) / Setup->height + 0.5);
 
     if ((n = Handle_radar(x, y, size)) == -1)
