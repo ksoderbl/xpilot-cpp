@@ -154,7 +154,7 @@ int FTinit(font_data *font, const char *fontname, int ptsize)
 {
     int i;
     SDL_Color white = {0xFF, 0xFF, 0xFF, 0x00};
-    SDL_Color black = {0x00, 0x00, 0x00, 0};
+    // SDL_Color black = {0x00, 0x00, 0x00, 0};
     SDL_Color *forecol;
     // SDL_Color *backcol;
     GLenum gl_error;
@@ -285,7 +285,7 @@ fontbounds nprintsize(font_data *ft_font, int length, const char *fmt, ...)
     int i = 0, j, textlength;
     float len;
     fontbounds returnval;
-    int start, end, toklen;
+    int start, end;
     char text[BUFSIZE]; /* Holds Our String */
     va_list ap;
 
@@ -314,11 +314,9 @@ fontbounds nprintsize(font_data *ft_font, int length, const char *fmt, ...)
 
         for (end = start; end < textlength; ++end)
             if (text[end] == '\n')
-            {
                 break;
-            }
 
-        toklen = end - start;
+        // int toklen = end - start;
 
         len = 0.0;
         for (j = start; j <= end - 1; ++j)

@@ -258,13 +258,13 @@ void xevent_keyboard(int queued)
                 Key_event(&event);
                 break;
 
-                /* Back in play */
+            /* Back in play */
             case FocusIn:
                 gotFocus = true;
                 XAutoRepeatOff(kdpy);
                 break;
 
-                /* Probably not playing now */
+            /* Probably not playing now */
             case FocusOut:
             case UnmapNotify:
                 gotFocus = false;

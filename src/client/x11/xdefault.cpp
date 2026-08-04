@@ -65,7 +65,6 @@
 #include "audio.h"
 #include "portability.h"
 #include "talk.h"
-#include "xdefault.h"
 #include "checknames.h"
 #include "record.h"
 

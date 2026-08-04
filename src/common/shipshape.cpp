@@ -107,7 +107,6 @@ clpos_t *Shape_get_points(shape_t *s, int dir)
 void Rotate_point(clpos_t pt[ANGLE_RESOLUTION])
 {
     int i;
-    double cx, cy;
 
     for (i = 1; i < ANGLE_RESOLUTION; i++)
     {
@@ -274,7 +273,7 @@ static bool Grid_point_is_outside_ship(grid_t *grid_p, ipos_t pt)
 static int shape2wire(char *ship_shape_str, shipshape_t *ship)
 {
     int i, j, x, y, dx, dy, max, shape_version = 0;
-    ipos_t pt[MAX_SHIP_PTS], in, old_in, engine, m_gun;
+    ipos_t pt[MAX_SHIP_PTS], in, engine, m_gun;
     ipos_t l_light[MAX_LIGHT_PTS], r_light[MAX_LIGHT_PTS];
     ipos_t l_gun[MAX_GUN_PTS], r_gun[MAX_GUN_PTS];
     ipos_t l_rgun[MAX_GUN_PTS], r_rgun[MAX_GUN_PTS], m_rack[MAX_RACK_PTS];

@@ -25,9 +25,12 @@
 
 #pragma once
 
+#include <cstdint>
+
 #define CAP_LETTER(c) ((c) = ((c) >= 'a' && (c) <= 'z') ? (c) - 'a' + 'A' : (c))
 
-#define SERVER_PORT 15345 /* Port which server listens to. */
+// Port which server listens to.
+constexpr uint16_t SERVER_PORT = 15345;
 
 /*
  * Magic contact word.
@@ -108,83 +111,56 @@
  * 4.F.1.4: balls use polygon styles
  * 4.F.1.5: Possibility to change polygon styles.
  */
-#define MAGIC_WORD 0xF4ED
-#define POLYGON_VERSION 0x4F15
-#define OLD_VERSION 0x4501
-// #ifdef SERVER
-// #define MAGIC (is_polygon_map                       \
-//                    ? VERSION2MAGIC(POLYGON_VERSION) \
-//                    : VERSION2MAGIC(OLD_VERSION))
-// #else
-// #define MAGIC (VERSION2MAGIC(protocolVersion))
-// #endif
+
+constexpr uint32_t MAGIC_WORD = 0xF4ED;
+constexpr uint32_t POLYGON_VERSION = 0x4F15;
+constexpr uint32_t OLD_VERSION = 0x4501;
 
 #define MAGIC2VERSION(M) (((M) >> 16) & 0xFFFF)
 #define VERSION2MAGIC(V) ((((V) & 0xFFFF) << 16) | MAGIC_WORD)
-// #define MY_VERSION MAGIC2VERSION(MAGIC)
 
-// /*
-//  * Which client versions can join this server.
-//  */
-// #ifdef SERVER
-// #define MIN_CLIENT_VERSION 0x4203
-// #define MAX_CLIENT_VERSION MY_VERSION
-// #endif
+//  We want to keep support for servers using the old map format in the client,
+//  but make incompatible changes while developing the new format. Therefore
+//  there is a separate "old" range of allowed servers.
+constexpr uint32_t MIN_OLD_SERVER_VERSION = 0x4203;
+constexpr uint32_t MAX_OLD_SERVER_VERSION = 0x4501;
+// Which old-style (non-polygon) protocol version we support.
+constexpr uint32_t COMPATIBILITY_MAGIC = 0x4501F4ED;
 
-// /*
-//  * Which server versions can this client join.
-//  */
-// #define MIN_SERVER_VERSION 0x4F09
-// #define MAX_SERVER_VERSION MY_VERSION
+constexpr int MAX_STR_LEN = 4096;
+constexpr int MAX_DISP_LEN = 80;
+constexpr int MAX_NAME_LEN = 16;
+constexpr int MAX_HOST_LEN = 64;
 
-/*
- * We want to keep support for servers using the old map format in the client,
- * but make incompatible changes while developing the new format. Therefore
- * there is a separate "old" range of allowed servers.
- */
-#define MIN_OLD_SERVER_VERSION 0x4203
-#define MAX_OLD_SERVER_VERSION 0x4501
-/* Which old-style (non-polygon) protocol version we support. */
-#define COMPATIBILITY_MAGIC 0x4501F4ED
+// Different contact pack types.
+constexpr int8_t ENTER_GAME_pack = 0x00;
+constexpr int8_t ENTER_QUEUE_pack = 0x01;
+constexpr int8_t REPLY_pack = 0x10;
+constexpr int8_t REPORT_STATUS_pack = 0x21;
+constexpr int8_t OPTION_LIST_pack = 0x28;
+// constexpr int8_t CORE_pack = 0x30;
+constexpr int8_t CONTACT_pack = 0x31;
+// The owner-only commands have a common bit high.
+constexpr int8_t PRIVILEGE_PACK_MASK = 0x40;
+constexpr int8_t LOCK_GAME_pack = 0x62;
+constexpr int8_t MESSAGE_pack = 0x63;
+constexpr int8_t SHUTDOWN_pack = 0x64;
+constexpr int8_t KICK_PLAYER_pack = 0x65;
+// constexpr int8_t MAX_ROBOT_pack = 0x66;
+constexpr int8_t OPTION_TUNE_pack = 0x67;
+constexpr int8_t CREDENTIALS_pack = 0x69;
 
-#define MAX_STR_LEN 4096
-#define MAX_DISP_LEN 80
-#define MAX_NAME_LEN 16
-#define MAX_HOST_LEN 64
-
-/*
- * Different contact pack types.
- */
-#define ENTER_GAME_pack 0x00
-#define ENTER_QUEUE_pack 0x01
-#define REPLY_pack 0x10
-#define REPORT_STATUS_pack 0x21
-#define OPTION_LIST_pack 0x28
-/* #define CORE_pack 0x30*/
-#define CONTACT_pack 0x31
-/* The owner-only commands have a common bit high. */
-#define PRIVILEGE_PACK_MASK 0x40
-#define LOCK_GAME_pack 0x62
-#define MESSAGE_pack 0x63
-#define SHUTDOWN_pack 0x64
-#define KICK_PLAYER_pack 0x65
-/* #define MAX_ROBOT_pack 0x66*/
-#define OPTION_TUNE_pack 0x67
-#define CREDENTIALS_pack 0x69
-
-/*
- * Possible error codes returned.
- */
-#define SUCCESS 0x00        /* Operation successful */
-#define E_NOT_OWNER 0x01    /* Permission denied, not owner */
-#define E_GAME_FULL 0x02    /* Game is full, play denied */
-#define E_TEAM_FULL 0x03    /* Team is full, play denied */
-#define E_TEAM_NOT_SET 0x04 /* Need to specify a team */
-#define E_GAME_LOCKED 0x05  /* Game is locked, entry denied */
-#define E_NOT_FOUND 0x07    /* Player was not found */
-#define E_IN_USE 0x08       /* Name is already in use */
-#define E_SOCKET 0x09       /* Can't setup socket */
-#define E_INVAL 0x0A        /* Invalid input parameters */
-#define E_VERSION 0x0C      /* Incompatible version */
-#define E_NOENT 0x0D        /* No such variable */
-#define E_UNDEFINED 0x0E    /* Operation undefined */
+// Possible error codes returned.
+constexpr int8_t SUCCESS = 0x00;        // Operation successful
+constexpr int8_t E_NOT_OWNER = 0x01;    // Permission denied, not owner
+constexpr int8_t E_GAME_FULL = 0x02;    // Game is full, play denied
+constexpr int8_t E_TEAM_FULL = 0x03;    // Team is full, play denied
+constexpr int8_t E_TEAM_NOT_SET = 0x04; // Need to specify a team
+constexpr int8_t E_GAME_LOCKED = 0x05;  // Game is locked, entry denied
+constexpr int8_t E_NOT_FOUND = 0x07;    // Player was not found
+constexpr int8_t E_IN_USE = 0x08;       // Name is already in use
+constexpr int8_t E_SOCKET = 0x09;       // Can't setup socket
+constexpr int8_t E_INVAL = 0x0A;        // Invalid input parameters
+constexpr int8_t E_VERSION = 0x0C;      // Incompatible version
+constexpr int8_t E_NOENT = 0x0D;        // No such variable
+constexpr int8_t E_UNDEFINED = 0x0E;    // Operation undefined

@@ -6,6 +6,8 @@
  *      Bert Gijsbers
  *      Dick Balaska
  *
+ * Copyright (C) 2003 Kristian Söderblom
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -234,8 +236,8 @@ void Paint_frame(void)
         {
             int x, y;
             double xp, yp, xo, yo;
-            unsigned w, h;
-            unsigned w1, h1, w2, h2;
+            int w, h;
+            // int w1, h1, w2, h2;
 
             xp = (double)(selfPos.x * 256) / Setup->width;
             yp = (double)(selfPos.y * RadarHeight) / Setup->height;
@@ -248,33 +250,23 @@ void Paint_frame(void)
             assert(yp < RadarHeight);
 
             if (xo <= xp)
-            {
                 x = (int)(xp - xo + 0.5);
-            }
             else
-            {
                 x = (int)(256 + xp - xo + 0.5);
-            }
+
             if (yo <= yp)
-            {
                 y = (int)(yp - yo + 0.5);
-            }
             else
-            {
                 y = (int)(RadarHeight + yp - yo + 0.5);
-            }
+
             y = RadarHeight - y - 1;
             w = 256 - x;
             h = RadarHeight - y;
 
-            XCopyArea(dpy, radarPixmap, radarWindow, gameGC,
-                      0, 0, x, y, w, h);
-            XCopyArea(dpy, radarPixmap, radarWindow, gameGC,
-                      x, 0, w, y, 0, h);
-            XCopyArea(dpy, radarPixmap, radarWindow, gameGC,
-                      0, y, x, h, w, 0);
-            XCopyArea(dpy, radarPixmap, radarWindow, gameGC,
-                      x, y, w, h, 0, 0);
+            XCopyArea(dpy, radarPixmap, radarWindow, gameGC, 0, 0, x, y, w, h);
+            XCopyArea(dpy, radarPixmap, radarWindow, gameGC, x, 0, w, y, 0, h);
+            XCopyArea(dpy, radarPixmap, radarWindow, gameGC, 0, y, x, h, w, 0);
+            XCopyArea(dpy, radarPixmap, radarWindow, gameGC, x, y, w, h, 0, 0);
         }
     }
     else if (radar_exposures > 2)
@@ -288,8 +280,7 @@ void Paint_frame(void)
         // BUGFIX: This old code was buggy, because sometimes (with scalefactor < 1 ?) ext_view_width and ext_view_height are
         // smaller than the draw window, e.g. resulting in the rightmost and bottom part of the draw window not being drawn.
         // XCopyArea(dpy, drawPixmap, drawWindow, gameGC, 0, 0, ext_view_width, ext_view_height, 0, 0);
-        XCopyArea(dpy, drawPixmap, drawWindow, gameGC,
-                  0, 0, draw_width, draw_height, 0, 0);
+        XCopyArea(dpy, drawPixmap, drawWindow, gameGC, 0, 0, draw_width, draw_height, 0, 0);
     }
 
     dbuff_switch(dbuf_state);
@@ -536,10 +527,7 @@ struct team_score
 
 static void Paint_clock(bool redraw)
 {
-    int second,
-        minute,
-        hour,
-        border = 3;
+    int minute, hour, border = 3;
     struct tm *m;
     char buf[16];
     static unsigned width;
@@ -562,7 +550,7 @@ static void Paint_clock(bool redraw)
         return;
 
     m = localtime(&currentTime);
-    second = m->tm_sec;
+    // second = m->tm_sec;
     minute = m->tm_min;
     hour = m->tm_hour;
     /*warn("drawing clock at %02d:%02d:%02d", hour, minute, second);*/

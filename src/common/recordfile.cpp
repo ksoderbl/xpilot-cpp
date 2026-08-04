@@ -119,8 +119,6 @@ static void debugPrintHeader(XPRHeader &hdr)
 
 void RWriteHeader(XPRHeader &hdr, FILE *fp)
 {
-    int i;
-
     rewind(fp);
 
     // First write out magic 4 letter word
