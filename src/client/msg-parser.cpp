@@ -334,7 +334,6 @@ void Msg_scan_death(int id)
 {
     // warn("Msg_scan_death: id: %d", id);
 
-    int i;
     other_t *other;
 
     if (version >= 0x4F12)

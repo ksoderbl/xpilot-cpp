@@ -51,7 +51,7 @@ char *realTexturePath = nullptr; /* Real texture lookup path */
  *   return -1 on error.
  */
 
-int Picture_init(xp_picture_t *picture, const char *filename, int count)
+int Picture_init(xp_picture_t *picture, std::string filename, int count)
 {
     picture->count = count;
     picture->data = XMALLOC(RGB_COLOR *, ABS(count));
@@ -82,20 +82,20 @@ int Picture_init(xp_picture_t *picture, const char *filename, int count)
 /*
  * Find full path for a picture filename.
  */
-static int Picture_find_path(const char *filename, char *path,
+static int Picture_find_path(std::string filename, char *path,
                              size_t path_size)
 {
     char *dir, *colon;
     size_t len;
 
-    if (!filename || !*filename)
+    if (filename.empty())
         return false;
 
     /*
      * If filename doesn't contain a slash
      * then we also try the realTexturePath, if it exists.
      */
-    if (!strchr(filename, PATHNAME_SEP) && realTexturePath != nullptr)
+    if (!strchr(filename.c_str(), PATHNAME_SEP) && realTexturePath != nullptr)
     {
         for (dir = realTexturePath; *dir; dir = colon)
         {
@@ -109,12 +109,12 @@ static int Picture_find_path(const char *filename, char *path,
                 len = colon - dir;
                 colon++;
             }
-            if (len > 0 && len + strlen(filename) + 1 < path_size)
+            if (len > 0 && len + filename.length() + 1 < path_size)
             {
                 memcpy(path, dir, len);
                 if (path[len - 1] != PATHNAME_SEP)
                     path[len++] = PATHNAME_SEP;
-                strlcpy(&path[len], filename, path_size - len);
+                strlcpy(&path[len], filename.c_str(), path_size - len);
                 /* kps - #ifndef R_OK #define R_OK 4 #endif */
                 if (access(path, R_OK) == 0)
                     return true;
@@ -186,7 +186,7 @@ static int Picture_get_decimal(FILE *f, int c, int *dec)
  * return 0 on success.
  * return -1 on error.
  */
-int Picture_load(xp_picture_t *picture, const char *filename)
+int Picture_load(xp_picture_t *picture, std::string filename)
 {
     FILE *f;
     int c, c1, c2;
@@ -198,7 +198,7 @@ int Picture_load(xp_picture_t *picture, const char *filename)
 
     if (!Picture_find_path(filename, path, sizeof(path)))
     {
-        error("Cannot find picture file \"%s\"", filename);
+        error("Cannot find picture file \"%s\"", filename.c_str());
         return -1;
     }
 

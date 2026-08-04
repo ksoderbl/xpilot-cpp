@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "shipshape.h"
 #include "item.h"
 #include "connectparam.h"
@@ -330,7 +332,7 @@ extern int protocolVersion;
  * somewhere
  */
 const char *Program_name(void);
-int Bitmap_add(const char *filename, int count, bool scalable);
+int Bitmap_add(std::string filename, int count, bool scalable);
 
 void Pointer_control_newbie_message(void);
 

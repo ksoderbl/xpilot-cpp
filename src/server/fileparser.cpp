@@ -731,7 +731,7 @@ bool parseDefaultsFile(const char *filename)
     result = parseOpenFile(ifile, OPT_DEFAULTS);
     closeDefaultsFile(ifile);
 
-    return true;
+    return result;
 }
 
 /*
@@ -748,7 +748,7 @@ bool parsePasswordFile(const char *filename)
     result = parseOpenFile(ifile, OPT_PASSWORD);
     closeDefaultsFile(ifile);
 
-    return true;
+    return result;
 }
 
 /*

@@ -956,7 +956,7 @@ bool Cannon_hitfunc(group_t *gp, const move_t *move)
 
 void Cannon_set_option(cannon_t *cannon, const char *name, const char *value)
 {
-    Item_t item;
+    // Item_t item;
     const char *origname = name;
 
     // /* Remove possible cannon prefix from option name. */

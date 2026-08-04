@@ -740,7 +740,7 @@ setup_t *Xpmap_init_setup(void)
  */
 void Xpmap_grok_map_data(void)
 {
-    int i, x, y, c;
+    int x, y, c;
     char *s;
 
     x = -1;
@@ -749,7 +749,6 @@ void Xpmap_grok_map_data(void)
     s = options.mapData;
     while (y >= 0)
     {
-
         x++;
 
         if (options.extraBorder && (x == 0 || x == World.x - 1 || y == 0 || y == World.y - 1))

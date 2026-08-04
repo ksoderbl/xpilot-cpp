@@ -135,10 +135,7 @@ int Robot_suibot_setup(robot_type_t *type_ptr)
 /*
  * Private functions.
  */
-static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i);
 static bool Detect_ship(player_t *pl, player_t *ship);
-static int Rank_item_value(player_t *pl, enum Item itemtype);
-static bool Ball_handler(player_t *pl);
 static void Robot_move_randomly(player_t *pl);
 
 /*
@@ -622,7 +619,7 @@ bool Robot_evade_shot(player_t *pl)
     return true;
 }
 
-void Robot_move_randomly(player_t *pl)
+static void Robot_move_randomly(player_t *pl)
 {
     double direction;
 
@@ -1021,113 +1018,6 @@ static bool Detect_ship(player_t *pl, player_t *ship)
 
     /* the sky seems clear.. */
     return false;
-}
-
-/*
- * Determine how important an item is to a given player.
- * Return one of the following 3 values:
- */
-#define ROBOT_MUST_HAVE_ITEM 2 /* must have */
-#define ROBOT_HANDY_ITEM 1     /* handy */
-#define ROBOT_IGNORE_ITEM 0    /* ignore */
-/*
- */
-static int Rank_item_value(player_t *pl, enum Item itemtype)
-{
-    robot_default_data_t *my_data = Robot_suibot_get_data(pl);
-
-    if (itemtype == ITEM_AUTOPILOT)
-        return ROBOT_IGNORE_ITEM; /* never useful for robots */
-    if (pl->item[itemtype] >= World.items[itemtype].limit)
-        return ROBOT_IGNORE_ITEM; /* already full */
-    if ((IsDefensiveItem(itemtype) && CountDefensiveItems(pl) >= options.maxDefensiveItems) || (IsOffensiveItem(itemtype) && CountOffensiveItems(pl) >= options.maxOffensiveItems))
-        return ROBOT_IGNORE_ITEM;
-    if (itemtype == ITEM_FUEL)
-    {
-        if (pl->fuel.sum >= pl->fuel.max * 0.90)
-            return ROBOT_IGNORE_ITEM; /* already (almost) full */
-        else if ((pl->fuel.sum < (BIT(World.rules->mode, TIMING))
-                      ? my_data->fuel_l1
-                      : my_data->fuel_l2))
-            return ROBOT_MUST_HAVE_ITEM; /* ahh fuel at last */
-        else
-            return ROBOT_HANDY_ITEM;
-    }
-    if (BIT(World.rules->mode, TIMING))
-    {
-        switch (itemtype)
-        {
-        case ITEM_FUEL:             /* less refuel stops */
-        case ITEM_REARSHOT:         /* shoot competitors behind you */
-        case ITEM_AFTERBURNER:      /* the more speed the better */
-        case ITEM_TRANSPORTER:      /* steal fuel when you overtake someone */
-        case ITEM_MINE:             /* blows others off the track */
-        case ITEM_ECM:              /* blinded players smash into walls */
-        case ITEM_EMERGENCY_THRUST: /* makes you go really fast */
-        case ITEM_EMERGENCY_SHIELD: /* could be useful when ramming */
-            return ROBOT_MUST_HAVE_ITEM;
-        case ITEM_WIDEANGLE:    /* not important in racemode */
-        case ITEM_CLOAK:        /* not important in racemode */
-        case ITEM_SENSOR:       /* who cares about seeing others? */
-        case ITEM_TANK:         /* makes you heavier */
-        case ITEM_MISSILE:      /* likely to hit self */
-        case ITEM_LASER:        /* cost too much fuel */
-        case ITEM_TRACTOR_BEAM: /* pushes/pulls owner off the track too */
-        case ITEM_AUTOPILOT:    /* probably not useful */
-        case ITEM_DEFLECTOR:    /* cost too much fuel */
-        case ITEM_HYPERJUMP:    /* likely to end up in wrong place */
-        case ITEM_PHASING:      /* robots don't know how to use them yet */
-        case ITEM_MIRROR:       /* not important in racemode */
-        case ITEM_ARMOR:        /* makes you heavier */
-            return ROBOT_IGNORE_ITEM;
-        default: /* unknown */
-            warn("Rank_item_value: unknown item %ld.", itemtype);
-            return ROBOT_IGNORE_ITEM;
-        }
-    }
-    else
-    {
-        switch (itemtype)
-        {
-        case ITEM_EMERGENCY_SHIELD:
-        case ITEM_DEFLECTOR:
-        case ITEM_ARMOR:
-            if (BIT(pl->have, HAS_SHIELD))
-                return ROBOT_HANDY_ITEM;
-            else
-                return ROBOT_MUST_HAVE_ITEM;
-
-        case ITEM_REARSHOT:
-        case ITEM_WIDEANGLE:
-            if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.allowPlayerKilling)
-                return ROBOT_HANDY_ITEM;
-            else
-                return ROBOT_MUST_HAVE_ITEM;
-
-        case ITEM_MISSILE:
-            if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.allowPlayerKilling)
-                return ROBOT_IGNORE_ITEM;
-            else
-                return ROBOT_MUST_HAVE_ITEM;
-
-        case ITEM_MINE:
-        case ITEM_CLOAK:
-            return ROBOT_MUST_HAVE_ITEM;
-
-        case ITEM_LASER:
-            if (options.allowPlayerKilling)
-                return ROBOT_MUST_HAVE_ITEM;
-            else
-                return ROBOT_HANDY_ITEM;
-
-        case ITEM_PHASING: /* robots don't know how to use them yet */
-            return ROBOT_IGNORE_ITEM;
-
-        default:
-            break;
-        }
-    }
-    return ROBOT_HANDY_ITEM;
 }
 
 static void Robot_suibot_play(player_t *pl)

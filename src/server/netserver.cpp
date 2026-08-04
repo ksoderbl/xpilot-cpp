@@ -2671,7 +2671,7 @@ static void Handle_talk(connection_t *connp, char *str)
     int i, sent, team;
     unsigned int len;
     char *cp, msg[MSG_LEN * 2];
-    const char *sender = " [*Server reply*]";
+    // const char *sender = " [*Server reply*]";
 
     pl->flooding += FPS / 3;
 

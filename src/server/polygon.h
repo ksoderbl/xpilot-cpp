@@ -126,7 +126,7 @@ extern std::vector<group_t> groups;
 
 static inline group_t *groupptr_by_id(int group)
 {
-    if (group >= 0 && group < groups.size())
+    if (group >= 0 && group < (int)groups.size())
         return &groups[group];
 
     warn("groupptr_by_id: group = %d, num_groups = %d, returning nullptr",

@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include <string>
+
 extern char *texturePath;     /* Path list of texture directories */
 extern char *realTexturePath; /* Real texture lookup path */
 
@@ -67,8 +69,8 @@ typedef struct
     bbox_t *bbox;
 } xp_picture_t;
 
-int Picture_init(xp_picture_t *picture, const char *filename, int count);
-int Picture_load(xp_picture_t *picture, const char *path);
+int Picture_init(xp_picture_t *picture, std::string filename, int count);
+int Picture_load(xp_picture_t *picture, std::string path);
 int Picture_rotate(xp_picture_t *picture);
 
 void Picture_set_pixel(xp_picture_t *picture, int image, int x, int y,

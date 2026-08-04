@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "gfx2d.h"
@@ -107,7 +108,7 @@ typedef struct
  */
 typedef struct
 {
-    const char *filename;   /* the file containing the image */
+    std::string filename;   /* the file containing the image */
     int count;              /* amount of images (see above) */
     int state;              /* the state of the image (BMS_*) */
     unsigned width, height; /* the (scaled) dimensions */

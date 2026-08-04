@@ -952,7 +952,6 @@ char *StrToNum(const char *string, int len, int type)
 
     if (type == FLOAT || type == INT)
     {
-
         if ((string[0] == '-') || ((string[0] >= '0') && (string[0] <= '9')))
             sprintf(returnval, "%s%c", returnval, string[0]);
     }
@@ -962,7 +961,6 @@ char *StrToNum(const char *string, int len, int type)
     string++;
     while ((string[0] != '\0') && (strlen(returnval) <= (len - 1)))
     {
-
         if (type == FLOAT || type == POSFLOAT)
         {
             /*         if ( ((string[0] >= '0') && (string[0] <= '9')) || (string[0] == '.'))*/

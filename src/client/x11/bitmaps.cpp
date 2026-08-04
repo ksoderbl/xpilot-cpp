@@ -134,11 +134,11 @@ void Bitmaps_cleanup(void)
  * Adds a new bitmap needed by the current map into global pixmaps.
  * Returns the index of the newly added bitmap in the array.
  */
-int Bitmap_add(const char *filename, int count, bool scalable)
+int Bitmap_add(std::string filename, int count, bool scalable)
 {
     xp_pixmap_t pixmap;
 
-    pixmap.filename = xp_strdup(filename);
+    pixmap.filename = filename;
     pixmap.count = count;
     pixmap.scalable = scalable;
     pixmap.state = BMS_UNINITIALIZED;

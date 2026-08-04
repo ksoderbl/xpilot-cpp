@@ -96,8 +96,8 @@
 int ButtonHeight;
 Atom ProtocolAtom, KillAtom;
 bool quitting = false;
-unsigned top_width, top_height;
-unsigned players_width, players_height;
+int top_width, top_height;
+int players_width, players_height;
 bool radar_score_mapped;
 Cursor pointerControlCursor;
 bool ignoreWindowManager;

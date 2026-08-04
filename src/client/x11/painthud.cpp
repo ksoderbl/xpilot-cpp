@@ -461,7 +461,6 @@ void Paint_hudradar(void)
 /* from xpilot ng version 4.7.1, slightly modified */
 static void Paint_hudradar(double hrscale, double xlimit, double ylimit, int sz)
 {
-    int i, x, y, size;
     int hrw = (int)(hrscale * 256);
     int hrh = (int)(hrscale * RadarHeight);
     double xf = (double)hrw / (double)Setup->width;
@@ -470,9 +469,9 @@ static void Paint_hudradar(double hrscale, double xlimit, double ylimit, int sz)
 
     for (const auto &radarObject : clMap.radarObjects)
     {
-        x = (int)(radarObject.x * hrscale - (world.x + ext_view_width / 2) * xf);
-        y = (int)(radarObject.y * hrscale - (world.y + ext_view_height / 2) * yf);
-        size = radarObject.size;
+        int x = (int)(radarObject.x * hrscale - (world.x + ext_view_width / 2) * xf);
+        int y = (int)(radarObject.y * hrscale - (world.y + ext_view_height / 2) * yf);
+        int size = radarObject.size;
 
         if ((size & 0x80) == 0)
             enemy = true;

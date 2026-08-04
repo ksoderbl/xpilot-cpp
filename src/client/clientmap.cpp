@@ -89,7 +89,7 @@ double Fuel_by_pos(int x, int y)
 
 int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage)
 {
-    if (ind < 0 || ind >= clMap.targets.size())
+    if (ind < 0 || ind >= (int)clMap.targets.size())
         return -1;
     target_t &target = clMap.targets[ind];
     *xp = target.pos / Setup->y;
@@ -125,7 +125,7 @@ int Target_alive(int x, int y, double *damage)
 
 int Handle_fuel(int ind, double fuel)
 {
-    if (ind < 0 || ind >= clMap.fuels.size())
+    if (ind < 0 || ind >= (int)clMap.fuels.size())
     {
         warn("Bad fuelstation index (%d)", ind);
         return -1;
@@ -167,7 +167,7 @@ int Cannon_dead_time_by_pos(int x, int y, int *dot)
 
 int Handle_cannon(int ind, int dead_time)
 {
-    if (ind < 0 || ind >= clMap.cannons.size())
+    if (ind < 0 || ind >= (int)clMap.cannons.size())
     {
         warn("Bad cannon index (%d)", ind);
         return 0;
@@ -178,7 +178,7 @@ int Handle_cannon(int ind, int dead_time)
 
 int Handle_target(int ind, int dead_time, double damage)
 {
-    if (ind < 0 || ind >= clMap.targets.size())
+    if (ind < 0 || ind >= (int)clMap.targets.size())
     {
         warn("Bad target index (%d)", ind);
         return 0;
@@ -718,7 +718,9 @@ static void parse_styles(char **callptr)
         strlcpy(fname, ptr, 30);
         ptr += strlen(fname) + 1;
         flags = *ptr++ & 0xff;
-        Bitmap_add(fname, 1, flags);
+
+        std::string str = std::string(fname);
+        Bitmap_add(str, 1, flags);
     }
     *callptr = ptr;
 }
@@ -1008,8 +1010,6 @@ int Map_cleanup(void)
 
 homebase_t *Homebase_by_id(int id)
 {
-    int i;
-
     if (id != -1)
     {
         for (homebase_t &base : clMap.bases)

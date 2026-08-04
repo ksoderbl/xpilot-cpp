@@ -453,7 +453,7 @@ void Paint_score_table(void)
         *team_order[MAX_TEAMS];
     other_t *other,
         **order;
-    int i, j, entrynum = 0;
+    int entrynum = 0;
 
     if (!scoresChanged || !players_exposed)
         return;
@@ -479,11 +479,10 @@ void Paint_score_table(void)
     Paint_score_start();
     if (!(BIT(Setup->mode, TEAM_PLAY | TIMING) == TEAM_PLAY))
     {
-
-        for (i = 0; i < num_others; i++)
+        for (int i = 0; i < num_others; i++)
         {
             other = order[i];
-            j = other - Others;
+            int j = other - Others;
             Paint_score_entry(i, other, false);
         }
     }
@@ -493,7 +492,7 @@ void Paint_score_table(void)
 
         /* add an empty line */
         entrynum++;
-        for (i = 0; i < MAX_TEAMS; i++)
+        for (int i = 0; i < MAX_TEAMS; i++)
             entrynum = Team_score_table(entrynum, i, team[i], order);
         /* paint pausers */
         entrynum = Team_score_table(entrynum, TEAM_PAUSEHACK, pausers, order);

@@ -932,12 +932,11 @@ static void Robotdef_do_tractor_beam(player_t *pl)
 static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
 {
     world_t *world = &World;
-    player_t *ship;
     int item_dir;
     int travel_dir;
     int delta_dir;
     long dx, dy;
-    double dist, item_dist, idir;
+    double dist, item_dist;
     bool clear_path, slowing;
     robot_default_data_t *my_data = Robot_default_get_data(pl);
 

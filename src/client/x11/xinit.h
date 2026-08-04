@@ -49,8 +49,8 @@ extern unsigned dispDepth;
 extern bool texturedObjects;
 extern bool fullColor;
 extern int button_form;
-extern unsigned top_width, top_height;
-extern unsigned players_width, players_height;
+extern int top_width, top_height;
+extern int players_width, players_height;
 extern bool ignoreWindowManager;
 extern bool quitting;
 

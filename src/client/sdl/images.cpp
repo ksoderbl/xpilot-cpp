@@ -54,7 +54,7 @@ static int Image_init(image_t *img)
         return -1;
 
     if (Picture_init(&pic,
-                     img->filename.c_str(),
+                     img->filename,
                      img->num_frames * (img->rotate ? 1 : -1)) == -1)
     {
         img->state = IMG_STATE_ERROR;
@@ -109,16 +109,16 @@ static int Image_init(image_t *img)
     return 0;
 }
 
-static void Image_free(image_t *img)
+static void Image_free(image_t &img)
 {
-    if (img->state == IMG_STATE_READY)
+    if (img.state == IMG_STATE_READY)
     {
-        glDeleteTextures(1, &img->name);
+        glDeleteTextures(1, &img.name);
         /* this causes a Segmentation Fault for some reason
         free(img->data);
         */
     }
-    img->state = IMG_STATE_UNINITIALIZED;
+    img.state = IMG_STATE_UNINITIALIZED;
 }
 
 image_t *Image_get(int ind)
@@ -269,68 +269,64 @@ void Image_paint_rotated(int ind, int x, int y, int dir, int color)
 
 int Images_init(void)
 {
-#define DEF_IMG(name, count) Bitmap_add(name, count, false);
-
-    DEF_IMG("holder1.ppm", 1);
-    DEF_IMG("holder2.ppm", 1);
-    DEF_IMG("ball_gray.ppm", 1);
-    DEF_IMG("ship_friend.ppm", 1); /* 128 fails in some OpenGL drivers */
-    DEF_IMG("ship_friend.ppm", 1); /* I guess texture gets too wide (4096) */
-    DEF_IMG("ship_enemy.ppm", 1);
-    DEF_IMG("bullet.ppm", -16);
-    DEF_IMG("bullet_blue.ppm", -16);
-    DEF_IMG("base_down.ppm", 1);
-    DEF_IMG("base_left.ppm", 1);
-    DEF_IMG("base_up.ppm", 1);
-    DEF_IMG("base_right.ppm", 1);
-    DEF_IMG("fuelcell.ppm", 1);
-    DEF_IMG("fuel2.ppm", -16);
-    DEF_IMG("allitems.ppm", -30);
-    DEF_IMG("cannon_down.ppm", 1);
-    DEF_IMG("cannon_left.ppm", 1);
-    DEF_IMG("cannon_up.ppm", 1);
-    DEF_IMG("cannon_right.ppm", 1);
-    DEF_IMG("sparks.ppm", -8);
-    DEF_IMG("paused.ppm", -2);
-    DEF_IMG("refuel.ppm", -4);
-    DEF_IMG("wormhole.ppm", 1);
-    DEF_IMG("mine_team.ppm", 1);
-    DEF_IMG("mine_other.ppm", 1);
-    DEF_IMG("concentrator.ppm", 1);
-    DEF_IMG("plus.ppm", 1);
-    DEF_IMG("minus.ppm", 1);
-    DEF_IMG("checkpoint.ppm", -2);
-    DEF_IMG("meter.ppm", -2);
-    DEF_IMG("asteroidconcentrator.ppm", 1);
-    DEF_IMG("shield.ppm", 1);
-    DEF_IMG("acwise_grav.ppm", -6);
-    DEF_IMG("cwise_grav.ppm", -6);
-    DEF_IMG("missile.ppm", 1);
-    DEF_IMG("asteroid.ppm", 1);
-    DEF_IMG("target.ppm", 1);
-    DEF_IMG("huditems.ppm", -30);
+    Bitmap_add("holder1.ppm", 1, false);
+    Bitmap_add("holder2.ppm", 1, false);
+    Bitmap_add("ball_gray.ppm", 1, false);
+    Bitmap_add("ship_friend.ppm", 1, false); /* 128 fails in some OpenGL drivers */
+    Bitmap_add("ship_friend.ppm", 1, false); /* I guess texture gets too wide (4096) */
+    Bitmap_add("ship_enemy.ppm", 1, false);
+    Bitmap_add("bullet.ppm", -16, false);
+    Bitmap_add("bullet_blue.ppm", -16, false);
+    Bitmap_add("base_down.ppm", 1, false);
+    Bitmap_add("base_left.ppm", 1, false);
+    Bitmap_add("base_up.ppm", 1, false);
+    Bitmap_add("base_right.ppm", 1, false);
+    Bitmap_add("fuelcell.ppm", 1, false);
+    Bitmap_add("fuel2.ppm", -16, false);
+    Bitmap_add("allitems.ppm", -30, false);
+    Bitmap_add("cannon_down.ppm", 1, false);
+    Bitmap_add("cannon_left.ppm", 1, false);
+    Bitmap_add("cannon_up.ppm", 1, false);
+    Bitmap_add("cannon_right.ppm", 1, false);
+    Bitmap_add("sparks.ppm", -8, false);
+    Bitmap_add("paused.ppm", -2, false);
+    Bitmap_add("refuel.ppm", -4, false);
+    Bitmap_add("wormhole.ppm", 1, false);
+    Bitmap_add("mine_team.ppm", 1, false);
+    Bitmap_add("mine_other.ppm", 1, false);
+    Bitmap_add("concentrator.ppm", 1, false);
+    Bitmap_add("plus.ppm", 1, false);
+    Bitmap_add("minus.ppm", 1, false);
+    Bitmap_add("checkpoint.ppm", -2, false);
+    Bitmap_add("meter.ppm", -2, false);
+    Bitmap_add("asteroidconcentrator.ppm", 1, false);
+    Bitmap_add("shield.ppm", 1, false);
+    Bitmap_add("acwise_grav.ppm", -6, false);
+    Bitmap_add("cwise_grav.ppm", -6, false);
+    Bitmap_add("missile.ppm", 1, false);
+    Bitmap_add("asteroid.ppm", 1, false);
+    Bitmap_add("target.ppm", 1, false);
+    Bitmap_add("huditems.ppm", -30, false);
 
     first_texture = imagesVector.size();
 
-#undef DEF_IMG
+#undef Bitmap_add
     return 0;
 }
 
 void Images_cleanup(void)
 {
-    int i;
-
-    for (i = 0; i < imagesVector.size(); i++)
-        Image_free(&imagesVector[i]);
+    for (auto &image : imagesVector)
+        Image_free(image);
 
     imagesVector.clear();
 }
 
-int Bitmap_add(const char *filename, int count, bool scalable)
+int Bitmap_add(std::string filename, int count, bool scalable)
 {
     image_t img;
 
-    img.filename = xp_strdup(filename);
+    img.filename = filename;
     img.num_frames = ABS(count);
     img.rotate = count > 1;
     img.state = IMG_STATE_UNINITIALIZED;

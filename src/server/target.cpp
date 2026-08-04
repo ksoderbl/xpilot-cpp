@@ -273,7 +273,7 @@ void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
 void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
 {
     world_t *world = &World;
-    int j, sc, por, bx, by;
+    int j, sc, por;
     int win_score = 0,
         lose_score = 0;
     int win_team_members = 0,

@@ -1203,7 +1203,7 @@ void Compute_game_status(void)
 {
     world_t *world = &World;
     int i;
-    player_t *pl;
+    // player_t *pl;
     char msg[MSG_LEN];
 
     if (roundtime > 0)
@@ -1483,7 +1483,7 @@ void Delete_player(player_t *pl)
 {
     int ind = GetInd(pl->id), i, j, id = pl->id;
     object_t *obj;
-    team_t *teamp = Team_by_index(pl->team);
+    // team_t *teamp = Team_by_index(pl->team);
 
     /* call before important player structures are destroyed */
     Leave_alliance(pl);

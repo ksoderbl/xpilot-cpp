@@ -98,18 +98,8 @@ long frame_loops_slow = 1;
 double frame_time = 0;
 static long last_frame_shuffle;
 
-// static shuffle_t *object_shuffle_ptr;
-// static int num_object_shuffle;
-// static int max_object_shuffle;
 static std::vector<shuffle_t> objectShuffleVector;
-
-// static shuffle_t *player_shuffle_ptr;
-// static int num_player_shuffle;
-// static int max_player_shuffle;
 static std::vector<shuffle_t> playerShuffleVector;
-
-// static radar_t *radar_ptr;
-// static int num_radar, max_radar;
 static std::vector<radar_t> radarVector;
 
 static click_visibility_t cv;
@@ -128,38 +118,6 @@ static unsigned debris_num[DEBRIS_TYPES],
 static debris_t *fastshot_ptr[DEBRIS_TYPES * 2];
 static unsigned fastshot_num[DEBRIS_TYPES * 2],
     fastshot_max[DEBRIS_TYPES * 2];
-
-/*
- * Macro to make room in a given dynamic array for new elements.
- * P is the pointer to the array memory.
- * N is the current number of elements in the array.
- * M is the current size of the array.
- * T is the type of the elements.
- * E is the number of new elements to store in the array.
- * The goal is to keep the number of malloc/realloc calls low
- * while not wasting too much memory because of over-allocation.
- */
-// #define EXPAND(P, N, M, T, E)                     \
-//     if ((N) + (E) > (M))                          \
-//     {                                             \
-//         if ((M) <= 0)                             \
-//         {                                         \
-//             M = (E) + 2;                          \
-//             P = (T *)malloc((M) * sizeof(T));     \
-//             N = 0;                                \
-//         }                                         \
-//         else                                      \
-//         {                                         \
-//             M = ((M) << 1) + (E);                 \
-//             P = (T *)realloc(P, (M) * sizeof(T)); \
-//         }                                         \
-//         if (P == nullptr)                         \
-//         {                                         \
-//             error("No memory");                   \
-//             N = M = 0;                            \
-//             return; /* ! */                       \
-//         }                                         \
-//     }
 
 /*
  * Note - I've changed the block_inview calls to clpos_inview calls,

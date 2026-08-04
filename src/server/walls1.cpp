@@ -1710,16 +1710,9 @@ void Move_segment1(move_state_t *ms)
 
 static void Cannon_dies1(move_state_t *ms)
 {
-    warn("walls: cannon dies!");
-
     world_t *world = &World;
     cannon_t *cannon = ms->cannon_ptr;
-    int cx = cannon->pos.cx;
-    int cy = cannon->pos.cy;
-    int killer = -1;
     player_t *pl = nullptr;
-    player_t *kp = nullptr;
-    vector_t zero_vel = {0.0, 0.0};
 
     cannon->dead_ticks = options.cannonDeadTime;
     cannon->conn_mask = 0;
@@ -1728,11 +1721,9 @@ static void Cannon_dies1(move_state_t *ms)
     if (!ms->mip->pl)
     {
         if (ms->mip->obj->id != NO_ID)
-        {
             pl = Player_by_id(ms->mip->obj->id);
-        }
     }
-    else if (BIT(ms->mip->pl->used, HAS_SHIELD | HAS_EMERGENCY_SHIELD) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+    else if (Player_uses_emergency_shield(ms->mip->pl))
     {
         pl = ms->mip->pl;
         // kp = Player_by_id(pl->id);
@@ -1743,9 +1734,7 @@ static void Cannon_dies1(move_state_t *ms)
         {
             if (Get_Score(pl) <= options.cannonMaxScore &&
                 !(Team_play(world) && pl->team == cannon->team))
-            {
                 Score(pl, options.cannonPoints, cannon->pos, "");
-            }
         }
     }
 }
