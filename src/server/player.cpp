@@ -1783,7 +1783,6 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
 {
     // warn("Player_death_reset: player: %s", pl->name);
 
-    long minfuel_times_256;
     int i;
 
     if (Player_is_tank(pl))
@@ -1885,11 +1884,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     pl->stunned = 0;
     pl->lock.distance = 0;
 
-    // Weird old code, that you lose 10% of fuel when you die.
-    pl->fuel.sum = (long)(pl->fuel.sum * 0.90); /* Loose 10% of fuel */
-    minfuel_times_256 = (World.items[ITEM_FUEL].initial * FUEL_SCALE_FACT);
-    minfuel_times_256 += (int)(rfrac() * (1 + minfuel_times_256) * 0.2);
-    pl->fuel.sum = MAX(pl->fuel.sum, minfuel_times_256 / 256.0);
+    pl->fuel.sum = World.items[ITEM_FUEL].initial;
     Player_init_fuel(pl, pl->fuel.sum);
 
     // Player is not paused, that was checked earlier.

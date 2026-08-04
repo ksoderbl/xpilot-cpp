@@ -1847,7 +1847,7 @@ static void Paint_hudradar(double hrscale, double xlimit, double ylimit, int sz)
 {
     Uint32 c;
     int x, y, shape, size;
-    int hrw = (int)(hrscale * 256);
+    int hrw = (int)(hrscale * RadarWidth);
     int hrh = (int)(hrscale * RadarHeight);
     double xf = (double)hrw / (double)Setup->width;
     double yf = (double)hrh / (double)Setup->height;
@@ -2047,7 +2047,7 @@ void Paint_HUD(void)
 
     if (hudRadarEnemyColorRGBA || hudRadarOtherColorRGBA || hudRadarObjectColorRGBA)
     {
-        hudRadarMapScale = (double)Setup->width / (double)256;
+        hudRadarMapScale = (double)Setup->width / (double)RadarWidth;
         Paint_hudradar(
             hudRadarScale,
             (int)(hudRadarLimit * (ext_view_width / 2) * hudRadarScale / hudRadarMapScale),

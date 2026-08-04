@@ -517,12 +517,15 @@ int Init_playing_windows(void)
     radar_score_mapped = true;
 
     /* Create buttons */
-#define BUTTON_WIDTH 84
+    // BUTTON_WIDTH was defined as 84 when RadarWidth was 256.
+    int BUTTON_WIDTH = (RadarWidth / 3) - 1;
+    warn("BUTTON_WIDTH = %d", BUTTON_WIDTH);
+
     ButtonHeight = buttonFont->ascent + buttonFont->descent + 2 * BTN_BORDER;
 
     button_form = Widget_create_form(0, topWindow,
                                      0, (int)RadarHeight,
-                                     256, ButtonHeight + 2,
+                                     RadarWidth, ButtonHeight + 2,
                                      0);
     Widget_create_activate(button_form,
                            0 + 0 * BUTTON_WIDTH, 0,
@@ -576,8 +579,8 @@ int Init_playing_windows(void)
     {
 
     case PIXMAP_COPY:
-        radarPixmap = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
-        radarPixmap2 = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
+        radarPixmap = XCreatePixmap(dpy, radarWindow, RadarWidth, RadarHeight, dispDepth);
+        radarPixmap2 = XCreatePixmap(dpy, radarWindow, RadarWidth, RadarHeight, dispDepth);
         drawPixmap = XCreatePixmap(dpy, drawWindow, draw_width, draw_height,
                                    dispDepth);
         break;

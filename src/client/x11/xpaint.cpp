@@ -327,17 +327,26 @@ static void Paint_score_background(void)
 
         Bitmap_paint(playersWindow, BM_SCORE_BG, 0, 0, 0);
         if (players_height > bgh + lh)
-            XFillRectangle(dpy, playersWindow, scoreListGC,
-                           0, (int)bgh,
-                           players_width, players_height - (bgh + lh));
+            XFillRectangle(dpy,
+                           playersWindow,
+                           scoreListGC,
+                           0,
+                           bgh,
+                           players_width,
+                           players_height - (bgh + lh));
         Bitmap_paint(playersWindow, BM_LOGO, 0, (int)(players_height - lh), 0);
         XFlush(dpy);
     }
     else
     {
         XSetForeground(dpy, scoreListGC, colors[windowColor].pixel);
-        XFillRectangle(dpy, playersWindow, scoreListGC,
-                       0, 0, players_width, players_height);
+        XFillRectangle(dpy,
+                       playersWindow,
+                       scoreListGC,
+                       0,
+                       0,
+                       players_width,
+                       players_height);
         XFlush(dpy);
     }
 }
@@ -538,9 +547,13 @@ static void Paint_clock(bool redraw)
         if (width != 0)
         {
             XSetForeground(dpy, scoreListGC, colors[windowColor].pixel);
-            XFillRectangle(dpy, playersWindow, scoreListGC,
-                           256 - (int)(width + 2 * border), 0,
-                           width + 2 * border, height);
+            XFillRectangle(dpy,
+                           playersWindow,
+                           scoreListGC,
+                           RadarWidth - (int)(width + 2 * border),
+                           0,
+                           width + 2 * border,
+                           height);
             width = 0;
         }
         return;
@@ -570,11 +583,15 @@ static void Paint_clock(bool redraw)
     }
     width = XTextWidth(scoreListFont, buf, (int)strlen(buf));
     XSetForeground(dpy, scoreListGC, colors[windowColor].pixel);
-    XFillRectangle(dpy, playersWindow, scoreListGC,
-                   256 - (int)(width + 2 * border), 0,
-                   width + 2 * border, height);
+    XFillRectangle(dpy,
+                   playersWindow,
+                   scoreListGC,
+                   RadarWidth - (int)(width + 2 * border),
+                   0,
+                   width + 2 * border,
+                   height);
     ShadowDrawString(dpy, playersWindow, scoreListGC,
-                     256 - (int)(width + border),
+                     RadarWidth - (int)(width + border),
                      scoreListFont->ascent + 4,
                      buf,
                      colors[clockColor].pixel,
