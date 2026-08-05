@@ -40,6 +40,8 @@
 #include "commonproto.h"
 
 #include "cannon.h"
+#include "cell.h"
+#include "cmdline.h"
 #include "contact.h"
 #include "frame.h"
 #include "metaserver.h"

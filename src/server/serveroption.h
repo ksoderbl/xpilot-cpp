@@ -69,13 +69,21 @@ typedef struct options
     // Max shots pr. player
     int maxPlayerShots;
 
+    double pulseSpeed;
+    double pulseLength;
+    double pulseLife;
+
     // Shots affected by gravity
     bool shotsGravity;
 
     // Frames per autorepeat fire (0=off)
     int fireRepeatRate;
 
+    bool shotHitFuelDrainUsesKineticEnergy;
+
     bool treasureCollisionKills;
+
+    double laserRepeatRate;
 
     bool Log;
 
@@ -135,6 +143,8 @@ typedef struct options
 
     // Do balls bounce off walls?
     bool ballsWallBounce;
+
+    bool ballCollisionDetaches;
 
     // Do balls participate in colls.?
     bool ballCollisions;

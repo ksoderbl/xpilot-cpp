@@ -23,11 +23,13 @@
 
 #pragma once
 
-#include "player.h"
+#include "click.h"
 
-void Fire_laser(player_t *pl);
-void Fire_general_laser(int id, int team, clpos_t pos,
-                        int dir, modifiers_t mods);
-void Laser_pulse_hits_player2(player_t *pl, pulseobject_t *pulse);
+#include "object.h"
 
-void Laser_pulse_collision(void);
+void Free_cells(void);
+void Alloc_cells(void);
+void Cell_init_object(object_t *obj);
+void Cell_add_object(object_t *obj);
+void Cell_remove_object(object_t *obj);
+void Cell_get_objects(clpos_t pos, int r, int max, object_t ***list, int *count);

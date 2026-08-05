@@ -36,6 +36,7 @@
 #include "server.h"
 
 #include "cannon.h"
+#include "cell.h"
 #include "frame.h"
 #include "ship.h"
 

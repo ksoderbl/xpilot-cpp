@@ -32,6 +32,7 @@ void Recoil(object_t *ship, object_t *shot);
 void Record_shove(player_t *pl, player_t *pusher, long time);
 void Delta_mv(object_t *ship, object_t *obj);
 void Delta_mv_elastic(object_t *obj1, object_t *obj2);
+void Delta_mv_partly_elastic(object_t *obj1, object_t *obj2, double elastic);
 void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist);
 void Item_damage(player_t *pl, double prob);
 void Tank_handle_detach(player_t *pl);

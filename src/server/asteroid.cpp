@@ -45,6 +45,7 @@
 #include "xpconfig.h"
 
 #include "asteroid.h"
+#include "cell.h"
 #include "map.h"
 #include "object.h"
 #include "saudio.h"

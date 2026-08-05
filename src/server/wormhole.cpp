@@ -25,6 +25,7 @@
 
 #include "xperror.h"
 
+#include "cell.h"
 #include "server.h"
 #include "ship.h"
 

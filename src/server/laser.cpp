@@ -32,6 +32,7 @@
 
 #include "click.h"
 
+#include "cell.h"
 #include "frame.h"
 #include "server.h"
 #include "ship.h"
@@ -50,6 +51,8 @@
 #include "robot.h"
 #include "cannon.h"
 #include "walls.h"
+
+#include "update.h"
 
 void Fire_laser(player_t *pl)
 {
@@ -716,4 +719,104 @@ void Laser_pulse_collision(void)
     obj->type = OBJ_DEBRIS;
     obj->obj_life = 0.0;
     Cell_add_object(obj);
+}
+
+/*
+ * Do what needs to be done when a laser pulse
+ * actually hits a player.
+ */
+void Laser_pulse_hits_player2(player_t *pl, pulseobject_t *pulse)
+{
+    world_t *world = &World;
+    player_t *kp = Player_by_id(pulse->id);
+    cannon_t *cannon = nullptr;
+
+    if (kp == nullptr)
+        /* Perhaps it was a cannon pulse? */
+        cannon = Cannon_by_id(pulse->id);
+
+    pl->forceVisible += 1;
+    if (Player_has_mirror(pl) && (rfrac() * (2 * pl->item[ITEM_MIRROR])) >= 1)
+    {
+        pulse->pulse_dir = (int)(World_wrap_cfindDir(
+                                     world,
+                                     pl->pos.cx - pulse->pos.cx,
+                                     pl->pos.cy - pulse->pos.cy) *
+                                     2 -
+                                 ANGLE_RESOLUTION / 2 - pulse->pulse_dir);
+        pulse->pulse_dir = MOD2(pulse->pulse_dir, ANGLE_RESOLUTION);
+
+        pulse->vel.x = options.pulseSpeed * tcos(pulse->pulse_dir);
+        pulse->vel.y = options.pulseSpeed * tsin(pulse->pulse_dir);
+
+        pulse->obj_life += pl->item[ITEM_MIRROR];
+        pulse->pulse_len = 0 /*PULSE_LENGTH*/;
+        pulse->pulse_refl = true;
+        return;
+    }
+
+    sound_play_sensors(pl->pos, PLAYER_EAT_LASER_SOUND);
+    if (Player_uses_emergency_shield(pl))
+        return;
+    assert(pulse->type == OBJ_PULSE);
+
+    /* kps - do we need some hack so that the laser pulse is
+     * not removed in the same frame that its life ends ?? */
+    pulse->obj_life = 0.0;
+    if ((Mods_get(pulse->mods, ModsLaser) & MODS_LASER_STUN) || (options.laserIsStunGun && options.allowLaserModifiers == false))
+    {
+        if (BIT(pl->used, HAS_SHIELD | HAS_LASER | HAS_SHOT) || Player_is_thrusting(pl))
+        {
+            if (kp)
+                Set_message_f("%s got paralysed by %s's stun laser.%s",
+                              pl->name, kp->name,
+                              pl->id == kp->id ? " How strange!" : "");
+            else
+                Set_message_f("%s got paralysed by a stun laser.", pl->name);
+
+            CLR_BIT(pl->used,
+                    HAS_SHIELD | HAS_LASER | OBJ_SHOT);
+            Thrust(pl, false);
+            pl->stunned += 5;
+        }
+    }
+    else if (Mods_get(pulse->mods, ModsLaser) & MODS_LASER_BLIND)
+    {
+        pl->damaged += (12 + 6);
+        pl->forceVisible += (12 + 6);
+        if (kp)
+            Record_shove(pl, kp, frame_loops + 12 + 6);
+    }
+    else
+    {
+        Player_add_fuel(pl, ED_LASER_HIT);
+        if (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl))
+        {
+            Player_set_state(pl, PL_STATE_KILLED);
+            Handle_Scoring(SCORE_LASER, kp, pl, cannon, nullptr);
+            if (kp)
+            {
+                Set_message_f("%s got roasted alive by %s's laser.%s",
+                              pl->name, kp->name,
+                              pl->id == kp->id ? " How strange!" : "");
+            }
+            else if (cannon != nullptr)
+            {
+                Set_message_f("%s got roasted alive by cannonfire.", pl->name);
+            }
+            else
+            {
+                assert(pulse->id == NO_ID);
+                Set_message_f("%s got roasted alive.", pl->name);
+            }
+
+            sound_play_sensors(pl->pos, PLAYER_ROASTED_SOUND);
+            if (kp && kp->id != pl->id)
+            {
+                Robot_war(pl, kp);
+            }
+        }
+        if (!BIT(pl->used, HAS_SHIELD) && Player_has_armor(pl))
+            Player_hit_armor(pl);
+    }
 }

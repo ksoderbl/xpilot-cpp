@@ -30,19 +30,19 @@
 #include <cmath>
 #include <climits>
 
+#include "xpconfig.h"
+
 #include "const.h"
 #include "commonproto.h"
+#include "xperror.h"
 
 #include "alliance.h"
 #include "score.h"
 #include "server.h"
 #include "update.h"
-
-#include "xpconfig.h"
 #include "serverconst.h"
-
+#include "cell.h"
 #include "saudio.h"
-#include "xperror.h"
 #include "object.h"
 #include "netserver.h"
 
@@ -183,6 +183,57 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
     obj1->vel.y = (m1 - m2) / ms * v1y + 2 * m2 / ms * v2y;
     obj2->vel.x = 2 * m1 / ms * v1x + (m2 - m1) / ms * v2x;
     obj2->vel.y = 2 * m1 / ms * v1y + (m2 - m1) / ms * v2y;
+    if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
+    {
+        player_t *pl = (player_t *)obj1;
+        player_t *pusher = Player_by_id(obj2->id);
+        if (pusher != pl)
+            Record_shove(pl, pusher, frame_loops);
+    }
+}
+
+void Delta_mv_partly_elastic(object_t *obj1, object_t *obj2, double elastic)
+{
+    world_t *world = &World;
+    double m1 = (double)obj1->mass,
+           m2 = (double)obj2->mass,
+           ms = m1 + m2;
+    double v1x = obj1->vel.x,
+           v1y = obj1->vel.y,
+           v2x = obj2->vel.x,
+           v2y = obj2->vel.y;
+    double vx, vy;
+    double vxd, vyd, xd, yd;
+    if (elastic < 0)
+        return;
+
+    vxd = v1x - v2x;
+    vyd = v1y - v2y;
+    xd = WORLD_WRAP_DCX(world, obj2->pos.cx - obj1->pos.cx);
+    yd = WORLD_WRAP_DCY(world, obj2->pos.cy - obj1->pos.cy);
+
+    /* KHS objects  going away from each other, dont do anything */
+    if ((vxd * xd + vyd * yd) < 0)
+    {
+        /* this sometimes has false positives for fast moves */
+        /* because the objects have already passed each other */
+        /* so lets check with positions from  1 frame back */
+
+        xd = WORLD_WRAP_DCX(world, obj2->prevpos.cx - obj1->prevpos.cx);
+        yd = WORLD_WRAP_DCY(world, obj2->prevpos.cy - obj1->prevpos.cy);
+
+        if ((vxd * xd + vyd * yd) < 0)
+            return;
+    }
+
+    vx = (v1x * m1 + v2x * m2) / ms;
+    vy = (v1y * m1 + v2y * m2) / ms;
+
+    obj1->vel.x = ((m1 - m2) / ms * v1x + 2 * m2 / ms * v2x) * elastic + vx * (1 - elastic);
+    obj1->vel.y = ((m1 - m2) / ms * v1y + 2 * m2 / ms * v2y) * elastic + vy * (1 - elastic);
+    obj2->vel.x = (2 * m1 / ms * v1x + (m2 - m1) / ms * v2x) * elastic + vx * (1 - elastic);
+    obj2->vel.y = (2 * m1 / ms * v1y + (m2 - m1) / ms * v2y) * elastic + vy * (1 - elastic);
+
     if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)obj1;

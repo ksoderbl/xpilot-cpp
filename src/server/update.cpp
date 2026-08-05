@@ -1177,7 +1177,10 @@ void Update_objects(void)
     /*
      * Checking for collision, updating score etc. (see collision.c)
      */
-    Check_collision();
+    if (is_polygon_map)
+        Check_collision2();
+    else
+        Check_collision1();
 
     /*
      * Update tanks, Kill players that ought to be killed.

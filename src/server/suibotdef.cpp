@@ -38,6 +38,7 @@
 #include "commonproto.h"
 
 #include "alliance.h"
+#include "cell.h"
 #include "frame.h"
 #include "ship.h"
 #include "update.h"

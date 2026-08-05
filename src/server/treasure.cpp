@@ -27,13 +27,14 @@
 #include <climits>
 #include <cmath>
 
+#include "xpconfig.h"
 #include "commonproto.h"
 #include "xperror.h"
 
+#include "cell.h"
 #include "frame.h"
 #include "server.h"
 
-#include "xpconfig.h"
 #include "serverconst.h"
 
 #include "saudio.h"

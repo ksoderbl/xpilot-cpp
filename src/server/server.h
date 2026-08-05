@@ -114,23 +114,14 @@ extern double timeStep;
 #define APPNAME "xpilot-cpp-server"
 
 /*
- * Prototypes for cell.c
+ * Prototypes for collision1.cpp
  */
-void Free_cells(void);
-void Alloc_cells(void);
-void Cell_init_object(object_t *obj);
-void Cell_add_object(object_t *obj);
-void Cell_remove_object(object_t *obj);
-void Cell_get_objects(clpos_t pos, int r, int max, object_t ***list, int *count);
+void Check_collision1(void);
 
 /*
- * Prototypes for collision.c
+ * Prototypes for collision2.cpp
  */
-void Check_collision(void);
-int IsOffensiveItem(enum Item i);
-int IsDefensiveItem(enum Item i);
-int CountOffensiveItems(player_t *pl);
-int CountDefensiveItems(player_t *pl);
+void Check_collision2(void);
 
 /*
  * Prototypes for id.c
@@ -205,16 +196,6 @@ void Xpmap_find_map_object_teams2(void);
  */
 bool isXp2MapFile(FILE *ifile);
 bool parseXp2MapFile(char *fname, optOrigin opt_origin);
-
-/*
- * Prototypes for cmdline.c
- */
-void tuner_none(void);
-void tuner_dummy(void);
-void Check_playerlimit(void);
-void Timing_setup(void);
-bool Init_options(void);
-void Free_options(void);
 
 /*
  * Prototypes for server.cpp

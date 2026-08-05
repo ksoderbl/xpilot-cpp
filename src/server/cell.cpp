@@ -21,6 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "cell.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
@@ -29,13 +31,12 @@
 #include <cassert>
 
 #include "commonmacros.h"
-
-#include "server.h"
-
-#include "xpconfig.h"
-#include "serverconst.h"
 #include "xperror.h"
+#include "xpconfig.h"
+
 #include "object.h"
+#include "server.h"
+#include "serverconst.h"
 
 /* we only search for objects which are at most 28 blocks away. */
 #define MAX_CELL_DIST 28

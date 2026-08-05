@@ -34,6 +34,7 @@
 #include "commonmacros.h"
 #include "commonproto.h"
 
+#include "cell.h"
 #include "server.h"
 #include "ship.h"
 #include "update.h"
@@ -55,6 +56,7 @@
 #include "object.h"
 #include "walls.h"
 #include "wormhole.h"
+#include "serveritem.h"
 
 #define ROB_LOOK_AH 2
 
@@ -1325,7 +1327,8 @@ static int Rank_item_value(player_t *pl, enum Item itemtype)
         return ROBOT_IGNORE_ITEM; /* never useful for robots */
     if (pl->item[itemtype] >= World.items[itemtype].limit)
         return ROBOT_IGNORE_ITEM; /* already full */
-    if ((IsDefensiveItem(itemtype) && CountDefensiveItems(pl) >= options.maxDefensiveItems) || (IsOffensiveItem(itemtype) && CountOffensiveItems(pl) >= options.maxOffensiveItems))
+    if ((IsDefensiveItem(itemtype) && CountDefensiveItems(pl) >= options.maxDefensiveItems) ||
+        (IsOffensiveItem(itemtype) && CountOffensiveItems(pl) >= options.maxOffensiveItems))
         return ROBOT_IGNORE_ITEM;
     if (itemtype == ITEM_FUEL)
     {

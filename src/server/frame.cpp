@@ -40,6 +40,7 @@
 #include "const.h"
 #include "commonproto.h"
 
+#include "cell.h"
 #include "modifiers.h"
 #include "ship.h"
 #include "server.h"

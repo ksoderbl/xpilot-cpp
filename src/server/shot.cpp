@@ -31,6 +31,7 @@
 #include "commonproto.h"
 #include "const.h"
 
+#include "cell.h"
 #include "frame.h"
 #include "server.h"
 #include "ship.h"

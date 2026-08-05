@@ -29,15 +29,14 @@
 #include <cstdlib>
 
 #include "commonmacros.h"
-
-#include "server.h"
-
 #include "xpconfig.h"
+#include "xperror.h"
 #include "types.h"
 #include "serverconst.h"
-
-#include "xperror.h"
 #include "portability.h"
+
+#include "cell.h"
+#include "server.h"
 
 /*
  * Global variables

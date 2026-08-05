@@ -30,6 +30,7 @@
 #include <climits>
 #include <cassert>
 
+#include "cell.h"
 #include "frame.h"
 #include "laser.h"
 #include "race.h"
@@ -44,7 +45,7 @@
 #include "map.h"
 #include "score.h"
 #include "saudio.h"
-#include "item.h"
+#include "serveritem.h"
 #include "netserver.h"
 #include "serverpack.h"
 #include "xperror.h"
@@ -255,7 +256,7 @@ static void Player_collides_with_debris(player_t *pl, object_t *obj);
 static void Player_collides_with_asteroid(player_t *pl, wireobject_t *obj);
 static void Player_collides_with_killing_shot(player_t *pl, object_t *obj);
 
-void Check_collision(void)
+void Check_collision1(void)
 {
     BallCollision();
     MineCollision();
@@ -538,59 +539,6 @@ static void PlayerCollision(void)
         PlayerObjectCollision(pl);
         PlayerCheckpointCollision(pl);
     }
-}
-
-int IsOffensiveItem(enum Item i)
-{
-    if (BIT(1 << i,
-            ITEM_BIT_WIDEANGLE |
-                ITEM_BIT_REARSHOT |
-                ITEM_BIT_MINE |
-                ITEM_BIT_MISSILE |
-                ITEM_BIT_LASER))
-        return true;
-    return false;
-}
-
-int IsDefensiveItem(enum Item i)
-{
-    if (BIT(1 << i,
-            ITEM_BIT_CLOAK |
-                ITEM_BIT_ECM |
-                ITEM_BIT_TRANSPORTER |
-                ITEM_BIT_TRACTOR_BEAM |
-                ITEM_BIT_EMERGENCY_SHIELD |
-                ITEM_BIT_MIRROR |
-                ITEM_BIT_DEFLECTOR |
-                ITEM_BIT_HYPERJUMP |
-                ITEM_BIT_PHASING |
-                ITEM_BIT_TANK |
-                ITEM_BIT_ARMOR))
-        return true;
-    return false;
-}
-
-int CountOffensiveItems(player_t *pl)
-{
-    return (pl->item[ITEM_WIDEANGLE] + pl->item[ITEM_REARSHOT] +
-            pl->item[ITEM_MINE] + pl->item[ITEM_MISSILE] +
-            pl->item[ITEM_LASER]);
-}
-
-int CountDefensiveItems(player_t *pl)
-{
-    int count;
-
-    count = pl->item[ITEM_CLOAK] + pl->item[ITEM_ECM] + pl->item[ITEM_ARMOR] +
-            pl->item[ITEM_TRANSPORTER] + pl->item[ITEM_TRACTOR_BEAM] +
-            pl->item[ITEM_EMERGENCY_SHIELD] + pl->fuel.num_tanks +
-            pl->item[ITEM_DEFLECTOR] + pl->item[ITEM_HYPERJUMP] +
-            pl->item[ITEM_PHASING] + pl->item[ITEM_MIRROR];
-    if (pl->emergency_shield_left > 0)
-        count++;
-    if (pl->phasing_left > 0)
-        count++;
-    return count;
 }
 
 static inline double collision_cost(double mass, double speed)

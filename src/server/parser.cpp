@@ -28,10 +28,6 @@
 #include <cerrno>
 
 #include "commonproto.h"
-
-#include "fileparser.h"
-#include "server.h"
-
 #include "version.h"
 #include "xpconfig.h"
 #include "serverconst.h"
@@ -39,6 +35,10 @@
 #include "xperror.h"
 #include "portability.h"
 #include "checknames.h"
+
+#include "cmdline.h"
+#include "fileparser.h"
+#include "server.h"
 
 /*
  * Print the option list in "-help" format.

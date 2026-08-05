@@ -29,18 +29,18 @@
 #include <cmath>
 #include <climits>
 
+#include "xpconfig.h"
+
+#include "bit.h"
 #include "commonproto.h"
 #include "const.h"
 #include "xperror.h"
 
+#include "cell.h"
 #include "score.h"
 #include "server.h"
 #include "ship.h"
-
-#include "xpconfig.h"
 #include "serverconst.h"
-
-#include "bit.h"
 #include "object.h"
 #include "cannon.h"
 #include "saudio.h"
