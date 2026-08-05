@@ -169,7 +169,6 @@ int Key_init(void)
 
 int Key_update(void)
 {
-    // warn("Key_update");
     return Send_keyboard(keyv);
 }
 
@@ -182,7 +181,6 @@ static bool Key_check_talk_macro(keys_t key)
 
 static bool Key_press_id_mode(void)
 {
-    // warn("Key_press_id_mode");
     showUserName = showUserName ? false : true;
     scoresChanged = true;
     return false; /* server doesn't need to know */
@@ -216,14 +214,12 @@ static bool Key_press_shield(keys_t key)
 
 static bool Key_press_fuel(void)
 {
-    // warn("Key_press_fuel");
     fuelTime = FUEL_NOTIFY_TIME;
     return false;
 }
 
 static bool Key_press_swap_settings(void)
 {
-    // warn("Key_press_swap_settings");
     double tmp;
 #define SWAP(a, b) (tmp = (a), (a) = (b), (b) = tmp)
 
@@ -238,7 +234,6 @@ static bool Key_press_swap_settings(void)
 
 static bool Key_press_swap_scalefactor(void)
 {
-    // warn("Key_press_swap_scalefactor");
     double a = clData.altScaleFactor;
 
     Set_altScaleFactor(nullptr, clData.scaleFactor);
@@ -249,7 +244,6 @@ static bool Key_press_swap_scalefactor(void)
 
 static bool Key_press_increase_power(void)
 {
-    // warn("Key_press_increase_power");
     power = power * 1.10;
     power = MIN(power, MAX_PLAYER_POWER);
     Send_power(power);
@@ -261,7 +255,6 @@ static bool Key_press_increase_power(void)
 
 static bool Key_press_decrease_power(void)
 {
-    // warn("Key_press_decrease_power");
     power = power / 1.10;
     power = MAX(power, MIN_PLAYER_POWER);
     Send_power(power);
@@ -273,7 +266,6 @@ static bool Key_press_decrease_power(void)
 
 static bool Key_press_increase_turnspeed(void)
 {
-    // warn("Key_press_increase_turnspeed");
     turnspeed = turnspeed * 1.05;
     turnspeed = MIN(turnspeed, MAX_PLAYER_TURNSPEED);
     Send_turnspeed(turnspeed);
@@ -285,7 +277,6 @@ static bool Key_press_increase_turnspeed(void)
 
 static bool Key_press_decrease_turnspeed(void)
 {
-    // warn("Key_press_decrease_turnspeed");
     turnspeed = turnspeed / 1.05;
     turnspeed = MAX(turnspeed, MIN_PLAYER_TURNSPEED);
     Send_turnspeed(turnspeed);
@@ -297,7 +288,6 @@ static bool Key_press_decrease_turnspeed(void)
 
 static bool Key_press_talk(void)
 {
-    // warn("Key_press_talk");
     int i;
 
     /*
@@ -314,49 +304,42 @@ static bool Key_press_talk(void)
 
 static bool Key_press_show_items(void)
 {
-    // warn("Key_press_show_items");
     instruments.showItems = !instruments.showItems;
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_show_messages(void)
 {
-    // warn("Key_press_show_messages");
     instruments.showMessages = !instruments.showMessages;
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_pointer_control(void)
 {
-    // warn("Key_press_pointer_control");
     Pointer_control_set_state(!clData.pointerControl);
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_toggle_fullscreen(void)
 {
-    // warn("Key_press_toggle_fullscreen");
     Toggle_fullscreen();
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_toggle_radar_score(void)
 {
-    // warn("Key_press_toggle_radar_score");
     Toggle_radar_and_scorelist();
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_toggle_record(void)
 {
-    // warn("Key_press_toggle_record");
     Record_toggle();
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_toggle_sound(void)
 {
-    // warn("Key_press_toggle_sound");
 #ifdef SOUND
     sound = !sound;
 #endif
@@ -365,14 +348,12 @@ static bool Key_press_toggle_sound(void)
 
 static bool Key_press_msgs_stdout(void)
 {
-    // warn("Key_press_msgs_stdout");
     Print_messages_to_stdout();
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_select_lose_item(void)
 {
-    // warn("Key_press_select_lose_item");
     if (lose_item_active == 1)
         lose_item_active = 2;
     else
@@ -382,7 +363,6 @@ static bool Key_press_select_lose_item(void)
 
 static bool Key_press_yes(void)
 {
-    // warn("Key_press_yes");
     /* Handled in other code */
     assert(!clData.quitMode);
 
@@ -391,13 +371,11 @@ static bool Key_press_yes(void)
 
 static bool Key_press_no(void)
 {
-    // warn("Key_press_no");
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_exit(void)
 {
-    // warn("Key_press_exit");
     int i;
 
     /* exit pointer control if exit key pressed in pointer control mode */

@@ -51,19 +51,11 @@ typedef struct
 {
     bool blockProtocol;
     bool clientRanker;
-    bool clock;
     bool clockAMPM;
     bool filledDecor;
     bool filledWorld;
-    bool fuelGauge;
-    bool fuelMeter;
     bool outlineDecor;
     bool outlineWorld;
-    bool packetDropMeter;
-    bool packetLagMeter;
-    bool packetLossMeter;
-    bool packetSizeMeter;
-    bool powerMeter;
     bool showDecor;
     bool showItems;
     bool showLivesByShip;
@@ -74,7 +66,6 @@ typedef struct
     bool slidingRadar;
     bool texturedDecor;
     bool texturedWalls;
-    bool turnSpeedMeter;
 } instruments_t;
 
 typedef struct

@@ -116,19 +116,11 @@ void Initialize_global_variables(void)
 {
     instruments.blockProtocol = false;
     instruments.clientRanker = false;
-    instruments.clock = false;
     instruments.clockAMPM = false;
     instruments.filledDecor = false;
     instruments.filledWorld = false;
-    instruments.fuelGauge = false;
-    instruments.fuelMeter = false;
     instruments.outlineDecor = false;
     instruments.outlineWorld = false;
-    instruments.packetDropMeter = false;
-    instruments.packetLagMeter = false;
-    instruments.packetLossMeter = false;
-    instruments.packetSizeMeter = false;
-    instruments.powerMeter = false;
     instruments.showDecor = false;
     instruments.showItems = false;
     instruments.showLivesByShip = false;
@@ -139,7 +131,6 @@ void Initialize_global_variables(void)
     instruments.slidingRadar = true;
     instruments.texturedDecor = false;
     instruments.texturedWalls = false;
-    instruments.turnSpeedMeter = false;
 }
 
 #ifdef DEVELOPMENT
