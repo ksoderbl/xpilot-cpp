@@ -241,7 +241,7 @@ static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
     if (size < 1 || size > ASTEROID_MAX_SIZE)
         return;
 
-    if (Wrap_play(world->rules))
+    if (Wrap_play(world))
         pos = World_wrap_clpos(world, pos);
 
     if (!World_contains_clpos(world, pos))
@@ -355,7 +355,7 @@ static void Place_asteroid(void)
             pos.cx = (int)(con->pos.cx + dist * tcos(dir) * PIXEL_CLICKS);
             pos.cy = (int)(con->pos.cy + dist * tsin(dir) * PIXEL_CLICKS);
 
-            if (Wrap_play(world->rules))
+            if (Wrap_play(world))
                 pos = World_wrap_clpos(world, pos);
 
             if (!World_contains_clpos(world, pos))

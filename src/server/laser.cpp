@@ -537,7 +537,7 @@ void Laser_pulse_collision(void)
         pulse->pos.cx += tcos(pulse->dir) * PULSE_SPEED * CLICK;
         pulse->pos.cy += tsin(pulse->dir) * PULSE_SPEED * CLICK;
 
-        if (Wrap_play(world->rules))
+        if (Wrap_play(world))
         {
             pulse->pos = World_wrap_clpos(world, pulse->pos);
 
@@ -647,7 +647,7 @@ void Laser_pulse_collision(void)
             Move_object(obj);
             if (obj->obj_life == 0)
                 break;
-            if (Wrap_play(world->rules))
+            if (Wrap_play(world))
             {
                 if (x < 0)
                 {

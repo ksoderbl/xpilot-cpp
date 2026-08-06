@@ -438,7 +438,7 @@ static inline int WORLD_WRAP_YCLICK(world_t *world, int cy)
  * half the map size then it is wrapped.
  */
 #define WORLD_WRAP_DCX(world, dcx)              \
-    (Wrap_play(world->rules)                    \
+    (Wrap_play(world)                           \
          ? ((dcx) < -(world->cwidth >> 1)       \
                 ? (dcx) + world->cwidth         \
                 : ((dcx) > (world->cwidth >> 1) \
@@ -447,7 +447,7 @@ static inline int WORLD_WRAP_YCLICK(world_t *world, int cy)
          : (dcx))
 
 #define WORLD_WRAP_DCY(world, dcy)               \
-    (Wrap_play(world->rules)                     \
+    (Wrap_play(world)                            \
          ? ((dcy) < -(world->cheight >> 1)       \
                 ? (dcy) + world->cheight         \
                 : ((dcy) > (world->cheight >> 1) \
@@ -614,7 +614,18 @@ static inline team_t *Team_by_index(int ind)
     return nullptr;
 }
 
+// Rules
+static inline bool Limited_lives(world_t *world)
+{
+    return BIT(world->rules.mode, LIMITED_LIVES);
+}
+
 static inline bool Team_play(world_t *world)
 {
     return BIT(world->rules.mode, TEAM_PLAY);
+}
+
+static inline bool Wrap_play(world_t *world)
+{
+    return BIT(world->rules.mode, WRAP_PLAY);
 }

@@ -874,7 +874,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         if (pulse->len <= 0)
             continue;
         pos = pulse->pos;
-        if (Wrap_play(world->rules))
+        if (Wrap_play(world))
             pos = World_wrap_clpos(world, pos);
 
         if (clpos_inview(cv, pos))
@@ -883,7 +883,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         {
             pos.cx += tcos(pulse->dir) * pulse->len * CLICK;
             pos.cy += tsin(pulse->dir) * pulse->len * CLICK;
-            if (Wrap_play(world->rules))
+            if (Wrap_play(world))
                 pos = World_wrap_clpos(world, pos);
             if (clpos_inview(cv, pos))
                 dir = MOD2(pulse->dir + ANGLE_RESOLUTION / 2, ANGLE_RESOLUTION);
@@ -1187,7 +1187,7 @@ static void Frame_parameters(connection_t *conn, player_t *pl)
     cv.unrealWorld.cx = pl->pos.cx - view_cwidth / 2; /* Scroll */
     cv.unrealWorld.cy = pl->pos.cy - view_cheight / 2;
     cv.realWorld = cv.unrealWorld;
-    if (Wrap_play(world->rules))
+    if (Wrap_play(world))
     {
         if (cv.unrealWorld.cx < 0 && cv.unrealWorld.cx + view_cwidth < World.cwidth)
             cv.unrealWorld.cx += World.cwidth;

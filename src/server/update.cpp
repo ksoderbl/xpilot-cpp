@@ -920,7 +920,7 @@ static void Update_players(void)
                 // warn("Player %s recovered!", pl->name);
                 /* Player has recovered (unless he is already dead). */
                 pl->recovery_count = 0;
-                if (Limited_lives(world->rules))
+                if (Limited_lives(world))
                 {
                     if (!Player_is_dead(pl))
                         Player_set_state(pl, PL_STATE_ALIVE);

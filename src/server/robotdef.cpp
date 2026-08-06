@@ -475,7 +475,7 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
             dx = (long)((px[i] + dist * tcos(travel_dir)) / BLOCK_SZ);
             dy = (long)((py[i] + dist * tsin(travel_dir)) / BLOCK_SZ);
 
-            if (Wrap_play(world->rules))
+            if (Wrap_play(world))
             {
                 if (dx < 0)
                     dx += World.x;
@@ -586,7 +586,7 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
             dx = (long)((px[0] + dist * tcos(aux_dir)) / BLOCK_SZ);
             dy = (long)((py[0] + dist * tsin(aux_dir)) / BLOCK_SZ);
 
-            if (Wrap_play(world->rules))
+            if (Wrap_play(world))
             {
                 if (dx < 0)
                     dx += World.x;
@@ -629,7 +629,7 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
             dx = (long)((px[0] + dist * tcos(aux_dir)) / BLOCK_SZ);
             dy = (long)((py[0] + dist * tsin(aux_dir)) / BLOCK_SZ);
 
-            if (Wrap_play(world->rules))
+            if (Wrap_play(world))
             {
                 if (dx < 0)
                     dx += World.x;

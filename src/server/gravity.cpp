@@ -129,7 +129,7 @@ static void Compute_local_gravity(void)
     max_xi = World.x - 1;
     min_yi = 0;
     max_yi = World.y - 1;
-    if (Wrap_play(world->rules))
+    if (Wrap_play(world))
     {
         min_xi -= MIN(GRAV_RANGE, World.x);
         max_xi += MIN(GRAV_RANGE, World.x);

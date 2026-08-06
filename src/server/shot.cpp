@@ -132,7 +132,7 @@ void Place_general_mine(int id, int team, int status,
     if (NumObjs + Mods_get(mods, ModsMini) >= MAX_TOTAL_SHOTS)
         return;
 
-    if (Wrap_play(world->rules))
+    if (Wrap_play(world))
         pos = World_wrap_clpos(world, pos);
 
     if (!World_contains_clpos(world, pos))
@@ -1727,7 +1727,7 @@ void Update_missile(missileobject_t *missile)
         {
             xi = (int)((x += vx) / BLOCK_SZ);
             yi = (int)((y += vy) / BLOCK_SZ);
-            if (Wrap_play(world->rules))
+            if (Wrap_play(world))
             {
                 if (xi < 0)
                     xi += World.x;
