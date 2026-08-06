@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "clientoption.h"
@@ -37,6 +38,6 @@ typedef struct xpilotrc_line
     const char *comment;
 } xpilotrc_line_t;
 
-extern void Xpilotrc_get_filename(char *path, size_t size);
+extern std::string Xpilotrc_get_filename(void);
 extern int Xpilotrc_read(const char *path);
 extern int Xpilotrc_write(const char *path);

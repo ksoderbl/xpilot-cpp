@@ -568,14 +568,13 @@ static void Config_save_failed(const char *reason, const char **strptr)
 static int Config_save(int widget_desc, void *button_str, const char **strptr)
 {
     int retval;
-    char path[PATH_MAX + 1];
 
     *strptr = "Saving...";
     Widget_draw(widget_desc);
     XFlush(dpy);
 
-    Xpilotrc_get_filename(path, sizeof(path));
-    retval = Xpilotrc_write(path);
+    std::string path = Xpilotrc_get_filename();
+    retval = Xpilotrc_write(path.c_str());
 
     if (retval == -1)
     {

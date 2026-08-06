@@ -3932,10 +3932,8 @@ static void ConfMenuWidget_Quit(void *data)
 
 static void ConfMenuWidget_Save(void *data)
 {
-    char path[PATH_MAX + 1];
-
-    Xpilotrc_get_filename(path, sizeof(path));
-    Xpilotrc_write(path);
+    std::string path = Xpilotrc_get_filename();
+    Xpilotrc_write(path.c_str());
 }
 
 typedef struct

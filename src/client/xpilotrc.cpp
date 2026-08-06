@@ -375,20 +375,20 @@ int Xpilotrc_write(const char *path)
     return 0;
 }
 
-void Xpilotrc_get_filename(char *path, size_t size)
+std::string Xpilotrc_get_filename(void)
 {
     const char *home = getenv("HOME");
-    const char *defaultFile = ".xpilotrc";
     const char *optionalFile = getenv("XPILOTRC");
 
     if (optionalFile != nullptr)
-        strlcpy(path, optionalFile, size);
+        return std::string(optionalFile);
     else if (home != nullptr)
     {
-        strlcpy(path, home, size);
-        strlcat(path, "/", size);
-        strlcat(path, defaultFile, size);
+        std::string defaultFileStr = ".xpilotrc";
+        std::string homeStr = std::string(home);
+        std::string path = homeStr + "/" + defaultFileStr;
+        return path;
     }
     else
-        strlcpy(path, "", size);
+        return std::string("");
 }
