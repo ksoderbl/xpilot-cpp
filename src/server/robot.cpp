@@ -950,7 +950,7 @@ static bool Robot_check_leave(player_t *pl)
         return false;
 
     if (pl->pl_life > 0 &&
-        !BIT(world->rules.mode, LIMITED_LIVES) &&
+        !Limited_lives(world->rules) &&
         (BIT(pl->obj_status, LEGACY_PLAYING) || pl->dirty_legacy_count_hack <= 0))
     {
         if (options.robotLeaveLife > 0 && pl->pl_life >= options.robotLeaveLife)

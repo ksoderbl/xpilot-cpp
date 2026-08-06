@@ -107,7 +107,7 @@ static void Init_cell_dist(void)
 
     Free_cell_dist();
 
-    if (BIT(world->rules.mode, WRAP_PLAY))
+    if (Wrap_play(world->rules))
     {
         cell_max_right = MIN(MAX_CELL_DIST, (World.x / 2));
         cell_max_left = MIN(MAX_CELL_DIST, ((World.x - 1) / 2));
@@ -258,7 +258,7 @@ void Cell_get_objects(clpos_t pos,
 {
     world_t *world = &World;
     static object_t *ObjectList[MAX_TOTAL_SHOTS + 1];
-    int i, count, x, y, xw, yw, wrap;
+    int i, count, x, y, xw, yw;
     object_t *obj;
     cell_node_t *cell_node_ptr, *next;
     double dist;
@@ -267,7 +267,7 @@ void Cell_get_objects(clpos_t pos,
     x = bpos.bx;
     y = bpos.by;
 
-    wrap = (BIT(world->rules.mode, WRAP_PLAY) != 0);
+    bool wrap = Wrap_play(world->rules);
     dist = (double)(range * SQRT2);
     count = 0;
     for (i = 0; i < (int)cell_dist_size && count < max_obj_count; i++)

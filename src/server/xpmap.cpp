@@ -1474,7 +1474,7 @@ void Xpmap_find_base_direction(void)
         y = CLICK_TO_BLOCK(base->pos.cy);
 
         /* First check upwards attractor */
-        if (y == World.y - 1 && World.block[x][0] == BASE_ATTRACTOR && BIT(world->rules.mode, WRAP_PLAY))
+        if (y == World.y - 1 && World.block[x][0] == BASE_ATTRACTOR && Wrap_play(world->rules))
         {
             if (att == -1 || dir == DIR_UP)
                 att = DIR_UP;
@@ -1486,7 +1486,7 @@ void Xpmap_find_base_direction(void)
         }
 
         /* then downwards */
-        if (y == 0 && World.block[x][World.y - 1] == BASE_ATTRACTOR && BIT(world->rules.mode, WRAP_PLAY))
+        if (y == 0 && World.block[x][World.y - 1] == BASE_ATTRACTOR && Wrap_play(world->rules))
         {
             if (att == -1 || dir == DIR_DOWN)
                 att = DIR_DOWN;
@@ -1498,7 +1498,7 @@ void Xpmap_find_base_direction(void)
         }
 
         /* then rightwards */
-        if (x == World.x - 1 && World.block[0][y] == BASE_ATTRACTOR && BIT(world->rules.mode, WRAP_PLAY))
+        if (x == World.x - 1 && World.block[0][y] == BASE_ATTRACTOR && Wrap_play(world->rules))
         {
             if (att == -1 || dir == DIR_RIGHT)
                 att = DIR_RIGHT;
@@ -1510,7 +1510,7 @@ void Xpmap_find_base_direction(void)
         }
 
         /* then leftwards */
-        if (x == 0 && World.block[World.x - 1][y] == BASE_ATTRACTOR && BIT(world->rules.mode, WRAP_PLAY))
+        if (x == 0 && World.block[World.x - 1][y] == BASE_ATTRACTOR && Wrap_play(world->rules))
         {
             if (att == -1 || dir == DIR_LEFT)
                 att = DIR_LEFT;

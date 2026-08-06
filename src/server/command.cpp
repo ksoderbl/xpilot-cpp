@@ -176,7 +176,7 @@ void Set_swapper_state(player_t *pl)
     if (BIT(pl->have, HAS_BALL))
         Detach_ball(pl, nullptr);
 
-    if (BIT(world->rules.mode, LIMITED_LIVES))
+    if (Limited_lives(world->rules))
     {
         int i;
 

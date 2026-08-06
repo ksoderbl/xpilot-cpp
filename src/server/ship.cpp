@@ -590,7 +590,7 @@ void Make_debris(clpos_t pos,
     int i, life;
     modifiers_t mods;
 
-    if (BIT(world->rules.mode, WRAP_PLAY))
+    if (Wrap_play(world->rules))
         pos = World_wrap_clpos(world, pos);
 
     if (!World_contains_clpos(world, pos))
@@ -688,7 +688,7 @@ void Make_wreckage(clpos_t pos,
 
     if (!options.useWreckage)
         return;
-    if (BIT(world->rules.mode, WRAP_PLAY))
+    if (Wrap_play(world->rules))
         pos = World_wrap_clpos(world, pos);
 
     if (!World_contains_clpos(world, pos))

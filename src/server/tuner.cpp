@@ -135,7 +135,7 @@ void tuner_worldlives(void)
 
     Set_world_rules();
 
-    if (BIT(world->rules.mode, LIMITED_LIVES))
+    if (Limited_lives(world->rules))
     {
         Reset_all_players();
         if (options.gameDuration == -1)

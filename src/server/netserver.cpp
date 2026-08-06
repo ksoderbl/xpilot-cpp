@@ -1306,7 +1306,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
             Race_game_over();
         else if (Team_play(world))
             Team_game_over(-1, "");
-        else if (BIT(world->rules.mode, LIMITED_LIVES))
+        else if (Limited_lives(world->rules))
             Individual_game_over(-1);
     }
 

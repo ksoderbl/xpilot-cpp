@@ -33,7 +33,7 @@
  * Note that the correction needed shouldn't ever be bigger than one mapsize.
  */
 #define WRAP_XPIXEL(world, x_)              \
-    (BIT(world->rules.mode, WRAP_PLAY)      \
+    (Wrap_play(world->rules)                \
          ? ((x_) < 0                        \
                 ? (x_) + World.width        \
                 : ((x_) >= World.width      \
@@ -42,7 +42,7 @@
          : (x_))
 
 #define WRAP_YPIXEL(world, y_)               \
-    (BIT(world->rules.mode, WRAP_PLAY)       \
+    (Wrap_play(world->rules)                 \
          ? ((y_) < 0                         \
                 ? (y_) + World.height        \
                 : ((y_) >= World.height      \
@@ -55,7 +55,7 @@
  * Note that the correction needed shouldn't ever be bigger than one mapsize.
  */
 #define WRAP_XBLOCK(world, x_)          \
-    (BIT(world->rules.mode, WRAP_PLAY)  \
+    (Wrap_play(world->rules)            \
          ? ((x_) < 0                    \
                 ? (x_) + World.x        \
                 : ((x_) >= World.x      \
@@ -64,7 +64,7 @@
          : (x_))
 
 #define WRAP_YBLOCK(world, y_)          \
-    (BIT(world->rules.mode, WRAP_PLAY)  \
+    (Wrap_play(world->rules)            \
          ? ((y_) < 0                    \
                 ? (y_) + World.y        \
                 : ((y_) >= World.y      \
@@ -78,7 +78,7 @@
  * half the map size then it is wrapped.
  */
 #define WORLD_WRAP_DX(world, dx)              \
-    (BIT(world->rules.mode, WRAP_PLAY)        \
+    (Wrap_play(world->rules)                  \
          ? ((dx) < -(world->width >> 1)       \
                 ? (dx) + world->width         \
                 : ((dx) > (world->width >> 1) \
@@ -87,7 +87,7 @@
          : (dx))
 
 #define WORLD_WRAP_DY(world, dy)               \
-    (BIT(world->rules.mode, WRAP_PLAY)         \
+    (Wrap_play(world->rules)                   \
          ? ((dy) < -(world->height >> 1)       \
                 ? (dy) + world->height         \
                 : ((dy) > (world->height >> 1) \

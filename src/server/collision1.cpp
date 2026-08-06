@@ -82,7 +82,7 @@ static int in_range_acd(
     /*
      * Get the wrapped coordinates straight 
      */
-    if (BIT(world->rules.mode, WRAP_PLAY)) {
+    if (Wrap_play(world->rules)) {
         if (ABS(p2x - p1x) > World.width / 2) {
             if (p1x < p2x)
                 p1x += World.width;
@@ -165,7 +165,7 @@ static int in_range_acd(
     /*
      * Get the wrapped coordinates straight
      */
-    if (BIT(world->rules.mode, WRAP_PLAY))
+    if (Wrap_play(world->rules))
     {
         if ((mpx = (ABS(p2x - p1x) > World.width / 2)))
         {

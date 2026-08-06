@@ -438,7 +438,7 @@ static inline int WORLD_WRAP_YCLICK(world_t *world, int cy)
  * half the map size then it is wrapped.
  */
 #define WORLD_WRAP_DCX(world, dcx)              \
-    (BIT(world->rules.mode, WRAP_PLAY)          \
+    (Wrap_play(world->rules)                    \
          ? ((dcx) < -(world->cwidth >> 1)       \
                 ? (dcx) + world->cwidth         \
                 : ((dcx) > (world->cwidth >> 1) \
@@ -447,7 +447,7 @@ static inline int WORLD_WRAP_YCLICK(world_t *world, int cy)
          : (dcx))
 
 #define WORLD_WRAP_DCY(world, dcy)               \
-    (BIT(world->rules.mode, WRAP_PLAY)           \
+    (Wrap_play(world->rules)                     \
          ? ((dcy) < -(world->cheight >> 1)       \
                 ? (dcy) + world->cheight         \
                 : ((dcy) > (world->cheight >> 1) \

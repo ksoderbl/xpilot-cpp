@@ -584,7 +584,7 @@ void Pause_player(player_t *pl, bool on)
 
             CLR_BIT(pl->obj_status, LEGACY_PAUSE);
             updateScores = true;
-            if (BIT(world->rules.mode, LIMITED_LIVES))
+            if (Limited_lives(world->rules))
             {
                 for (i = 0; i < NumPlayers; i++)
                 {
@@ -614,7 +614,7 @@ void Pause_player(player_t *pl, bool on)
                 Go_home(pl);
                 // SET_BIT(pl->obj_status, PLAYING);
                 Player_set_state(pl, PL_STATE_ALIVE);
-                if (BIT(world->rules.mode, LIMITED_LIVES))
+                if (Limited_lives(world->rules))
                     pl->pl_life = world->rules.lives;
             }
             if (BIT(world->rules.mode, TIMING))

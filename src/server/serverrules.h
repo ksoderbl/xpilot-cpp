@@ -56,6 +56,11 @@ typedef struct
     long mode;
 } rules_t;
 
+static inline bool Limited_lives(rules_t &rules)
+{
+    return BIT(rules.mode, LIMITED_LIVES);
+}
+
 static inline bool Wrap_play(rules_t &rules)
 {
     return BIT(rules.mode, WRAP_PLAY);

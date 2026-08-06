@@ -590,7 +590,7 @@ int Init_player(int ind, shipshape_t *ship, int type)
      * If limited lives and if nobody has lost a life yet, you may enter
      * now, otherwise you will have to wait 'til everyone gets GAME OVER.
      */
-    if (BIT(world->rules.mode, LIMITED_LIVES))
+    if (Limited_lives(world->rules))
     {
         for (i = 0; i < NumPlayers; i++)
         {
@@ -1828,7 +1828,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
 
     pl->deaths++;
 
-    if (BIT(world->rules.mode, LIMITED_LIVES))
+    if (Limited_lives(world->rules))
     {
         bool waiting = Player_is_waiting(pl);
 
@@ -1887,7 +1887,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
 
     // pl->deaths++;
 
-    // if (BIT(world->rules.mode, LIMITED_LIVES))
+    // if (Limited_lives(world->rules))
     // {
     //     pl->pl_life--;
     //     Player_set_life(pl, pl->pl_life - 1);
