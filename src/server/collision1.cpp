@@ -82,7 +82,7 @@ static int in_range_acd(
     /*
      * Get the wrapped coordinates straight 
      */
-    if (BIT(World.rules->mode, WRAP_PLAY)) {
+    if (BIT(World.rules.mode, WRAP_PLAY)) {
         if (ABS(p2x - p1x) > World.width / 2) {
             if (p1x < p2x)
                 p1x += World.width;
@@ -164,7 +164,7 @@ static int in_range_acd(
     /*
      * Get the wrapped coordinates straight
      */
-    if (BIT(World.rules->mode, WRAP_PLAY))
+    if (BIT(World.rules.mode, WRAP_PLAY))
     {
         if ((mpx = (ABS(p2x - p1x) > World.width / 2)))
         {
@@ -292,7 +292,7 @@ static void PlayerCollision(void)
             continue;
 
         /* Player - player */
-        if (BIT(World.rules->mode, CRASH_WITH_PLAYER | BOUNCE_WITH_PLAYER))
+        if (BIT(World.rules.mode, CRASH_WITH_PLAYER | BOUNCE_WITH_PLAYER))
         {
             for (j = i + 1; j < NumPlayers; j++)
             {
@@ -329,7 +329,7 @@ static void PlayerCollision(void)
                 if (Team_immune(pl->id, pl_j->id) || PSEUDO_TEAM(pl, pl_j))
                     continue;
                 sound_play_sensors(pl->pos, PLAYER_HIT_PLAYER_SOUND);
-                if (BIT(World.rules->mode, BOUNCE_WITH_PLAYER))
+                if (BIT(World.rules.mode, BOUNCE_WITH_PLAYER))
                 {
                     if (!Player_uses_emergency_shield(pl))
                     {
@@ -346,7 +346,7 @@ static void PlayerCollision(void)
                     Obj_repel((object_t *)pl, (object_t *)pl_j,
                               2 * SHIP_SZ);
                 }
-                if (!BIT(World.rules->mode, CRASH_WITH_PLAYER))
+                if (!BIT(World.rules.mode, CRASH_WITH_PLAYER))
                     continue;
 
                 if (pl->fuel.sum <= 0.0 || (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl)))
@@ -1468,7 +1468,7 @@ static void BallCollision(void)
             continue;
 
         /* Ball - checkpoint */
-        if (BIT(World.rules->mode, TIMING) && options.ballrace && ball->ball_owner != NO_ID)
+        if (BIT(World.rules.mode, TIMING) && options.ballrace && ball->ball_owner != NO_ID)
         {
             player_t *owner = Player_by_id(ball->ball_owner);
 

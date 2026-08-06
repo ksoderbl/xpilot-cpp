@@ -583,7 +583,7 @@ void Pause_player(player_t *pl, bool on)
 
             CLR_BIT(pl->obj_status, LEGACY_PAUSE);
             updateScores = true;
-            if (BIT(World.rules->mode, LIMITED_LIVES))
+            if (BIT(World.rules.mode, LIMITED_LIVES))
             {
                 for (i = 0; i < NumPlayers; i++)
                 {
@@ -593,7 +593,7 @@ void Pause_player(player_t *pl, bool on)
                      * then it's too late to join. */
                     if (pl_i->id == pl->id)
                         continue;
-                    if (pl_i->pl_life < World.rules->lives && !Players_are_teammates(pl, pl_i))
+                    if (pl_i->pl_life < World.rules.lives && !Players_are_teammates(pl, pl_i))
                     {
                         toolate = true;
                         break;
@@ -613,10 +613,10 @@ void Pause_player(player_t *pl, bool on)
                 Go_home(pl);
                 // SET_BIT(pl->obj_status, PLAYING);
                 Player_set_state(pl, PL_STATE_ALIVE);
-                if (BIT(World.rules->mode, LIMITED_LIVES))
-                    pl->pl_life = World.rules->lives;
+                if (BIT(World.rules.mode, LIMITED_LIVES))
+                    pl->pl_life = World.rules.lives;
             }
-            if (BIT(World.rules->mode, TIMING))
+            if (BIT(World.rules.mode, TIMING))
                 Player_reset_timing(pl);
         }
     }

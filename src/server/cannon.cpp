@@ -560,9 +560,9 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
     switch (weapon)
     {
     case CW_MINE:
-        if (BIT(World.rules->mode, ALLOW_CLUSTERS) && (rfrac() < 0.25))
+        if (BIT(World.rules.mode, ALLOW_CLUSTERS) && (rfrac() < 0.25))
             Mods_set(&mods, ModsCluster, 1);
-        if (BIT(World.rules->mode, ALLOW_MODIFIERS))
+        if (BIT(World.rules.mode, ALLOW_MODIFIERS))
         {
             if (rfrac() >= 0.2)
                 Mods_set(&mods, ModsImplosion, 1);
@@ -582,7 +582,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
         else
         { /* throw mine at player */
             vector_t vel;
-            if (BIT(World.rules->mode, ALLOW_MODIFIERS))
+            if (BIT(World.rules.mode, ALLOW_MODIFIERS))
             {
                 // mods.mini = (int)(rfrac() * MODS_MINI_MAX) + 1;
                 Mods_set(&mods, ModsMini,
@@ -601,9 +601,9 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
         c->item[ITEM_MINE]--;
         break;
     case CW_MISSILE:
-        if (BIT(World.rules->mode, ALLOW_CLUSTERS) && (rfrac() < 0.333))
+        if (BIT(World.rules.mode, ALLOW_CLUSTERS) && (rfrac() < 0.333))
             Mods_set(&mods, ModsCluster, 1);
-        if (BIT(World.rules->mode, ALLOW_MODIFIERS))
+        if (BIT(World.rules.mode, ALLOW_MODIFIERS))
         {
             if (rfrac() >= 0.25)
                 Mods_set(&mods, ModsImplosion, 1);
@@ -653,7 +653,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
     case CW_LASER:
         /* stun and blinding lasers are very dangerous,
            so we don't use them often */
-        if (BIT(World.rules->mode, ALLOW_LASER_MODIFIERS) && (rfrac() * (8 - smartness)) >= 1)
+        if (BIT(World.rules.mode, ALLOW_LASER_MODIFIERS) && (rfrac() * (8 - smartness)) >= 1)
             Mods_set(&mods, ModsLaser, (int)(rfrac() * (MODS_LASER_MAX + 1)));
         Fire_general_laser(NO_ID, c->team, c->pos, dir, mods);
         sound_play_sensors(c->pos, FIRE_LASER_SOUND);

@@ -279,8 +279,8 @@ static int Init_setup(void)
     free(mapdata);
     Setup->setup_size = ((char *)&Setup->map_data[0] - (char *)Setup) + size;
     Setup->map_data_len = size;
-    Setup->lives = World.rules->lives;
-    Setup->mode = World.rules->mode;
+    Setup->lives = World.rules.lives;
+    Setup->mode = World.rules.mode;
     Setup->width = World.width;
     Setup->height = World.height;
     strlcpy(Setup->name, World.name, sizeof(Setup->name));
@@ -1287,11 +1287,11 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
 
     if (options.resetOnHuman > 0 && ((NumPlayers - NumPseudoPlayers - NumRobots) <= options.resetOnHuman))
     {
-        if (BIT(World.rules->mode, TIMING))
+        if (BIT(World.rules.mode, TIMING))
             Race_game_over();
         else if (Team_play(world))
             Team_game_over(-1, "");
-        else if (BIT(World.rules->mode, LIMITED_LIVES))
+        else if (BIT(World.rules.mode, LIMITED_LIVES))
             Individual_game_over(-1);
     }
 
@@ -1303,7 +1303,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
             roundtime = -1;
 
         Set_message_f("Player entered. Delaying 0 seconds until next %s.",
-                      (BIT(World.rules->mode, TIMING) ? "race" : "round"));
+                      (BIT(World.rules.mode, TIMING) ? "race" : "round"));
     }
 
     return 0;

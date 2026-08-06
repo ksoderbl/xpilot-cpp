@@ -1051,7 +1051,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
             smart->smart_count = CONFUSED_TIME;
             if (pl &&
                 BIT(pl->lock.tagged, LOCK_PLAYER) &&
-                (pl->lock.distance <= pl->sensor_range || !BIT(World.rules->mode, LIMITED_VISIBILITY)) &&
+                (pl->lock.distance <= pl->sensor_range || !BIT(World.rules.mode, LIMITED_VISIBILITY)) &&
                 pl->visibility[GetInd(pl->lock.pl_id)].canSee)
                 smart->new_info = pl->lock.pl_id;
             else
@@ -1231,7 +1231,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
             }
             else
             {
-                if (BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance < pl->sensor_range || !BIT(World.rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd(pl->lock.pl_id)].canSee && pl->lock.pl_id != p->id
+                if (BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance < pl->sensor_range || !BIT(World.rules.mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd(pl->lock.pl_id)].canSee && pl->lock.pl_id != p->id
                     /*&& !TEAM_IMMUNE(ind, GetInd(pl->lock.pl_id))*/)
                 {
 

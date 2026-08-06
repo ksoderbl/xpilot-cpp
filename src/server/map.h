@@ -297,7 +297,8 @@ struct world
     double hypotenuse;   /* Diagonal length in pixels (optimization) */
     int cwidth, cheight; /* Size of world in clicks */
 
-    rules_t *rules;
+    rules_t rules;
+
     char name[MAX_CHARS];
     char author[MAX_CHARS];
     char dataURL[MAX_CHARS];
@@ -437,7 +438,7 @@ static inline int WORLD_WRAP_YCLICK(world_t *world, int cy)
  * half the map size then it is wrapped.
  */
 #define WORLD_WRAP_DCX(world, dcx)              \
-    (BIT(world->rules->mode, WRAP_PLAY)         \
+    (BIT(world->rules.mode, WRAP_PLAY)          \
          ? ((dcx) < -(world->cwidth >> 1)       \
                 ? (dcx) + world->cwidth         \
                 : ((dcx) > (world->cwidth >> 1) \
@@ -446,7 +447,7 @@ static inline int WORLD_WRAP_YCLICK(world_t *world, int cy)
          : (dcx))
 
 #define WORLD_WRAP_DCY(world, dcy)               \
-    (BIT(world->rules->mode, WRAP_PLAY)          \
+    (BIT(world->rules.mode, WRAP_PLAY)           \
          ? ((dcy) < -(world->cheight >> 1)       \
                 ? (dcy) + world->cheight         \
                 : ((dcy) > (world->cheight >> 1) \
@@ -615,5 +616,5 @@ static inline team_t *Team_by_index(int ind)
 
 static inline bool Team_play(world_t *world)
 {
-    return BIT(world->rules->mode, TEAM_PLAY);
+    return BIT(world->rules.mode, TEAM_PLAY);
 }

@@ -722,8 +722,8 @@ setup_t *Xpmap_init_setup(void)
     setup->setup_size = ((char *)&setup->map_data[0] - (char *)setup) + size;
     setup->map_data_len = size;
     setup->map_order = type;
-    setup->lives = World.rules->lives;
-    setup->mode = World.rules->mode;
+    setup->lives = World.rules.lives;
+    setup->mode = World.rules.mode;
     setup->x = World.x;
     setup->y = World.y;
     strlcpy(setup->name, World.name, sizeof(setup->name));
@@ -894,7 +894,7 @@ static void Xpmap_place_target(world_t *world, blkpos_t blk)
 
 static void Xpmap_place_check(world_t *world, blkpos_t blk, int ind)
 {
-    if (!BIT(World.rules->mode, TIMING))
+    if (!BIT(World.rules.mode, TIMING))
     {
         World_set_block(world, blk, SPACE);
         return;
@@ -1237,7 +1237,7 @@ void Xpmap_tags_to_internal_data(void)
                 case XPMAP_CHECK_23:
                 case XPMAP_CHECK_24:
                 case XPMAP_CHECK_25:
-                    // if (BIT(World.rules->mode, TIMING))
+                    // if (BIT(World.rules.mode, TIMING))
                     // {
                     //     World.checks[c - 'A'].x = x;
                     //     World.checks[c - 'A'].y = y;
@@ -1311,11 +1311,11 @@ void Xpmap_tags_to_internal_data(void)
             }
         }
 
-        if (BIT(World.rules->mode, TIMING) && Num_checks() == 0)
+        if (BIT(World.rules.mode, TIMING) && Num_checks() == 0)
         {
             printf("No checkpoints found while race mode (timing) was set.\n");
             printf("Turning off race mode.\n");
-            CLR_BIT(World.rules->mode, TIMING);
+            CLR_BIT(World.rules.mode, TIMING);
         }
 
         printf("grok map: teamplay hacks\n");
@@ -1473,7 +1473,7 @@ void Xpmap_find_base_direction(void)
         y = CLICK_TO_BLOCK(base->pos.cy);
 
         /* First check upwards attractor */
-        if (y == World.y - 1 && World.block[x][0] == BASE_ATTRACTOR && BIT(World.rules->mode, WRAP_PLAY))
+        if (y == World.y - 1 && World.block[x][0] == BASE_ATTRACTOR && BIT(World.rules.mode, WRAP_PLAY))
         {
             if (att == -1 || dir == DIR_UP)
                 att = DIR_UP;
@@ -1485,7 +1485,7 @@ void Xpmap_find_base_direction(void)
         }
 
         /* then downwards */
-        if (y == 0 && World.block[x][World.y - 1] == BASE_ATTRACTOR && BIT(World.rules->mode, WRAP_PLAY))
+        if (y == 0 && World.block[x][World.y - 1] == BASE_ATTRACTOR && BIT(World.rules.mode, WRAP_PLAY))
         {
             if (att == -1 || dir == DIR_DOWN)
                 att = DIR_DOWN;
@@ -1497,7 +1497,7 @@ void Xpmap_find_base_direction(void)
         }
 
         /* then rightwards */
-        if (x == World.x - 1 && World.block[0][y] == BASE_ATTRACTOR && BIT(World.rules->mode, WRAP_PLAY))
+        if (x == World.x - 1 && World.block[0][y] == BASE_ATTRACTOR && BIT(World.rules.mode, WRAP_PLAY))
         {
             if (att == -1 || dir == DIR_RIGHT)
                 att = DIR_RIGHT;
@@ -1509,7 +1509,7 @@ void Xpmap_find_base_direction(void)
         }
 
         /* then leftwards */
-        if (x == 0 && World.block[World.x - 1][y] == BASE_ATTRACTOR && BIT(World.rules->mode, WRAP_PLAY))
+        if (x == 0 && World.block[World.x - 1][y] == BASE_ATTRACTOR && BIT(World.rules.mode, WRAP_PLAY))
         {
             if (att == -1 || dir == DIR_LEFT)
                 att = DIR_LEFT;

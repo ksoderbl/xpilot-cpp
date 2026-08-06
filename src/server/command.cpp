@@ -174,7 +174,7 @@ void Set_swapper_state(player_t *pl)
     if (BIT(pl->have, HAS_BALL))
         Detach_ball(pl, nullptr);
 
-    if (BIT(World.rules->mode, LIMITED_LIVES))
+    if (BIT(World.rules.mode, LIMITED_LIVES))
     {
         int i;
 
@@ -538,7 +538,7 @@ static int Cmd_ally(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     };
     int i, cmd;
 
-    if (!BIT(World.rules->mode, ALLIANCES))
+    if (!BIT(World.rules.mode, ALLIANCES))
     {
         strlcpy(msg, "Alliances are not allowed.", size);
         result = CMD_RESULT_ERROR;
