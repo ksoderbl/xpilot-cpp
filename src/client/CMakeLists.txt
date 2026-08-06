@@ -25,7 +25,7 @@ target_link_libraries(xpclient
 )
 
 if(XPILOT_BUILD_X11_CLIENT)
- add_subdirectory(x11)
+    add_subdirectory(x11)
 endif()
 
 if(XPILOT_BUILD_SDL_CLIENT)

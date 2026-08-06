@@ -36,8 +36,6 @@
 #include "messages.h"
 #include "paint.h"
 
-#include "keydefs.h"
-
 #include "xpconfig.h"
 #include "const.h"
 #include "xinit.h"

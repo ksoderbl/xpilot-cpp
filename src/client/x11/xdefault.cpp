@@ -49,7 +49,6 @@
 #include "paint.h"
 
 #include "bitmaps.h"
-#include "keydefs.h"
 
 #include "version.h"
 #include "xpconfig.h"

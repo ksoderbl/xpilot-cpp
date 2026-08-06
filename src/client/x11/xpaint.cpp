@@ -44,8 +44,6 @@
 #include "paint.h"
 #include "paintdata.h"
 
-#include "keydefs.h"
-
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"
@@ -96,8 +94,6 @@ Window keys_close_b;  /* Help window's close button */
 
 Window talkWindow;
 bool gotFocus;
-
-keydefs_t *keyDefs = nullptr;
 
 int spaceColor = BLACK;        /* Space (background) color index */
 static int clockColor;         /* Clock color index */

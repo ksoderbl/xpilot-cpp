@@ -51,8 +51,6 @@
 #include "paint.h"
 #include "xpilotrc.h"
 
-#include "keydefs.h"
-
 #include "xpconfig.h"
 #include "xpaint.h"
 #include "xinit.h"
