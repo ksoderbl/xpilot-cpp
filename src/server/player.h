@@ -176,8 +176,6 @@ typedef struct
     double oldturnvel;                     /* Last velocity of turn (right) */
     double turnacc;                        /* Current acceleration of turn */
     int score;                             /* Current score of player */
-    int prev_score;                        /* Last score that has been updated */
-    int prev_life;                         /* Last life that has been updated */
     bool update_score;                     /* score table info needs to be sent */
     shipshape_t *ship;                     /* wire model of ship shape */
     double power;                          /* Force of thrust */
@@ -235,14 +233,12 @@ typedef struct
 
     short dir;            /* Direction of acceleration */
     char mychar;          /* Special char for player */
-    char prev_mychar;     /* Special char for player */
     char name[MAX_CHARS]; /* Nick-name of player */
     // char username[MAX_CHARS]; /* Real name of player */
     std::string username;     /* User name of player */
     char hostname[MAX_CHARS]; /* Hostname of client player uses */
     uint16_t pseudo_team;     /* Which team for detaching tanks */
     int alliance;             /* Member of which alliance? */
-    int prev_alliance;        /* prev. alliance for score */
     int invite;               /* Invitation for alliance */
     ballobject_t *ball;
 

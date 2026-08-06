@@ -575,9 +575,7 @@ int Init_player(int ind, shipshape_t *ship, int type)
         pl->pseudo_team = pseudo_team_no++;
     }
     pl->mychar = ' ';
-    pl->prev_mychar = pl->mychar;
     pl->pl_life = World.rules.lives;
-    pl->prev_life = pl->pl_life;
     pl->ball = nullptr;
 
     pl->player_fps = FPS;
@@ -607,7 +605,6 @@ int Init_player(int ind, shipshape_t *ship, int type)
             // pl->mychar = 'W';
             // pl->prev_life = pl->pl_life = 0;
             // SET_BIT(pl->obj_status, GAME_OVER);
-            pl->prev_life = 0; // TODO, what is this?
             Player_set_state(pl, PL_STATE_WAITING);
         }
         // else
@@ -617,7 +614,6 @@ int Init_player(int ind, shipshape_t *ship, int type)
     pl->team = TEAM_NOT_SET;
 
     pl->alliance = ALLIANCE_NOT_SET;
-    pl->prev_alliance = ALLIANCE_NOT_SET;
     pl->invite = NO_ID;
 
     pl->lock.tagged = LOCK_NONE;
@@ -646,6 +642,8 @@ int Init_player(int ind, shipshape_t *ship, int type)
     pl->frame_last_busy = frame_loops;
 
     pl->isoperator = 0;
+
+    pl->update_score = true;
 
     return pl->id;
 }
@@ -699,36 +697,29 @@ void Free_players(void)
 
 void Update_score_table(void)
 {
-    int i, j, check;
-    player_t *pl;
+    int check;
 
-    for (j = 0; j < NumPlayers; j++)
+    for (int j = 0; j < NumPlayers; j++)
     {
-        pl = Player_by_index(j);
-        if (Get_Score(pl) != pl->prev_score ||
-            pl->pl_life != pl->prev_life ||
-            pl->mychar != pl->prev_mychar ||
-            pl->alliance != pl->prev_alliance)
-        {
-            pl->prev_score = Get_Score(pl);
-            pl->prev_life = pl->pl_life;
-            pl->prev_mychar = pl->mychar;
-            pl->prev_alliance = pl->alliance;
+        player_t *pl = Player_by_index(j);
 
-            for (i = 0; i < NumPlayers; i++)
+        if (pl->update_score)
+        {
+            pl->update_score = false;
+
+            for (int i = 0; i < NumPlayers; i++)
             {
                 player_t *pl_i = Player_by_index(i);
 
                 if (pl_i->conn != nullptr)
-                {
                     Send_score(pl_i->conn, pl->id, Get_Score(pl), pl->pl_life,
                                pl->mychar, pl->alliance);
-                }
             }
         }
         if (BIT(World.rules.mode, TIMING))
         {
-            if (pl->check != pl->prev_check || pl->round != pl->prev_round)
+            if (pl->check != pl->prev_check ||
+                pl->round != pl->prev_round)
             {
                 pl->prev_check = pl->check;
                 pl->prev_round = pl->round;
@@ -737,7 +728,7 @@ void Update_score_table(void)
                         : (pl->check == 0)
                             ? (Num_checks() - 1)
                             : (pl->check - 1);
-                for (i = 0; i < NumPlayers; i++)
+                for (int i = 0; i < NumPlayers; i++)
                 {
                     player_t *pl_i = Player_by_index(i);
 
