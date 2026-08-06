@@ -408,7 +408,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
         lock_id = pl->lock.pl_id;
         lock_ind = GetInd(lock_id);
 
-        if ((!BIT(World.rules.mode, LIMITED_VISIBILITY) || pl->lock.distance <= pl->sensor_range)
+        if ((!BIT(world->rules.mode, LIMITED_VISIBILITY) || pl->lock.distance <= pl->sensor_range)
 #ifndef SHOW_CLOAKERS_RANGE
             && (pl->visibility[lock_ind].canSee ||
                 Player_owns_tank(pl, lock_pl) ||
@@ -874,7 +874,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         if (pulse->len <= 0)
             continue;
         pos = pulse->pos;
-        if (BIT(World.rules.mode, WRAP_PLAY))
+        if (BIT(world->rules.mode, WRAP_PLAY))
             pos = World_wrap_clpos(world, pos);
 
         if (clpos_inview(cv, pos))
@@ -883,7 +883,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         {
             pos.cx += tcos(pulse->dir) * pulse->len * CLICK;
             pos.cy += tsin(pulse->dir) * pulse->len * CLICK;
-            if (BIT(World.rules.mode, WRAP_PLAY))
+            if (BIT(world->rules.mode, WRAP_PLAY))
                 pos = World_wrap_clpos(world, pos);
             if (clpos_inview(cv, pos))
                 dir = MOD2(pulse->dir + ANGLE_RESOLUTION / 2, ANGLE_RESOLUTION);
@@ -1140,7 +1140,7 @@ static void Frame_radar(connection_t *conn, player_t *pl)
                 || (!Players_are_teammates(pl_i, pl) && !Players_are_allies(pl, pl_i) && !Player_owns_tank(pl, pl_i) && (!options.playersOnRadar || !pl->visibility[i].canSee)))
                 continue;
             pos = pl_i->pos;
-            if (BIT(World.rules.mode, LIMITED_VISIBILITY) &&
+            if (BIT(world->rules.mode, LIMITED_VISIBILITY) &&
                 World_wrap_length(
                     world,
                     pl->pos.cx - pos.cx,
@@ -1174,6 +1174,7 @@ static void Frame_lose_item_state(player_t *pl)
 
 static void Frame_parameters(connection_t *conn, player_t *pl)
 {
+    world_t *world = &World;
     Get_display_parameters(conn, &view_width, &view_height,
                            &debris_colors, &spark_rand);
     debris_x_areas = (view_width + 255) >> 8;
@@ -1186,7 +1187,7 @@ static void Frame_parameters(connection_t *conn, player_t *pl)
     cv.unrealWorld.cx = pl->pos.cx - view_cwidth / 2; /* Scroll */
     cv.unrealWorld.cy = pl->pos.cy - view_cheight / 2;
     cv.realWorld = cv.unrealWorld;
-    if (BIT(World.rules.mode, WRAP_PLAY))
+    if (BIT(world->rules.mode, WRAP_PLAY))
     {
         if (cv.unrealWorld.cx < 0 && cv.unrealWorld.cx + view_cwidth < World.cwidth)
             cv.unrealWorld.cx += World.cwidth;

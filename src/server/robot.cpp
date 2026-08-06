@@ -775,7 +775,7 @@ static void Robot_create(void)
         else
             roundtime = -1;
         Set_message_f("Player entered. Delaying 0 seconds until next %s.",
-                      (BIT(World.rules.mode, TIMING) ? "race" : "round"));
+                      (BIT(world->rules.mode, TIMING) ? "race" : "round"));
     }
 
     updateScores = true;
@@ -943,13 +943,14 @@ static void Robot_play(player_t *pl)
  */
 static bool Robot_check_leave(player_t *pl)
 {
+    world_t *world = &World;
     bool leave = false;
 
     if (!options.robotsLeave)
         return false;
 
     if (pl->pl_life > 0 &&
-        !BIT(World.rules.mode, LIMITED_LIVES) &&
+        !BIT(world->rules.mode, LIMITED_LIVES) &&
         (BIT(pl->obj_status, LEGACY_PLAYING) || pl->dirty_legacy_count_hack <= 0))
     {
         if (options.robotLeaveLife > 0 && pl->pl_life >= options.robotLeaveLife)

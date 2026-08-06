@@ -116,6 +116,7 @@ static void Compute_grav_tab(vector_t grav_tab[GRAV_RANGE + 1][GRAV_RANGE + 1])
 
 static void Compute_local_gravity(void)
 {
+    world_t *world = &World;
     int xi, yi, i, gx, gy, ax, ay, dx, dy, gtype;
     int first_xi, last_xi, first_yi, last_yi, mod_xi, mod_yi;
     int min_xi, max_xi, min_yi, max_yi;
@@ -128,7 +129,7 @@ static void Compute_local_gravity(void)
     max_xi = World.x - 1;
     min_yi = 0;
     max_yi = World.y - 1;
-    if (BIT(World.rules.mode, WRAP_PLAY))
+    if (BIT(world->rules.mode, WRAP_PLAY))
     {
         min_xi -= MIN(GRAV_RANGE, World.x);
         max_xi += MIN(GRAV_RANGE, World.x);

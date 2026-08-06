@@ -266,7 +266,7 @@ void Meta_update(bool change)
              META_VERSION, World.name, World.x, World.y, World.author,
              Num_bases(), FPS, options.contactPort,
              game_mode, World.NumTeamBases, freebases,
-             BIT(World.rules.mode, TIMING) ? 1 : 0,
+             BIT(world->rules.mode, TIMING) ? 1 : 0,
              (long)(time(nullptr) - serverStartTime),
              queue_length, options.sound ? "yes" : "no");
 

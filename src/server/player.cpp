@@ -91,6 +91,7 @@ int GetInd(int id)
 
 void Pick_startpos(player_t *pl)
 {
+    world_t *world = &World;
     int ind = GetInd(pl->id), i, num_free, pick = 0, seen = 0, order, min_order = INT_MAX;
     static int prev_num_bases = 0;
     static char *free_bases = nullptr;
@@ -141,7 +142,7 @@ void Pick_startpos(player_t *pl)
         }
     }
 
-    if (BIT(World.rules.mode, TIMING))
+    if (BIT(world->rules.mode, TIMING))
     { /* pick first free base */
         for (i = 0; i < Num_bases(); i++)
         {
@@ -173,7 +174,7 @@ void Pick_startpos(player_t *pl)
     }
     else
     {
-        // pl->home_base_ind = BIT(World.rules.mode, TIMING) ? World.baseorder[i].base_idx : i;
+        // pl->home_base_ind = BIT(world->rules.mode, TIMING) ? World.baseorder[i].base_idx : i;
         pl->home_base = Base_by_index(i);
         if (ind < NumPlayers)
         {
@@ -192,6 +193,7 @@ void Pick_startpos(player_t *pl)
 
 void Go_home(player_t *pl)
 {
+    world_t *world = &World;
     int ind = GetInd(pl->id), i, dir, check;
 
     warn("===> Go_home: player %s, ind = %d, pl->ind = %d", pl->name, ind, pl->ind);
@@ -215,7 +217,7 @@ void Go_home(player_t *pl)
         return;
     }
 
-    if (BIT(World.rules.mode, TIMING) && pl->round && !(Player_is_waiting(pl) || Player_is_dead(pl)))
+    if (BIT(world->rules.mode, TIMING) && pl->round && !(Player_is_waiting(pl) || Player_is_dead(pl)))
     {
         if (pl->check)
             check = pl->check - 1;
@@ -498,6 +500,7 @@ void Player_init_items(player_t *pl)
 
 int Init_player(int ind, shipshape_t *ship, int type)
 {
+    world_t *world = &World;
     player_t *pl = Player_by_index(ind);
     visibility_t *v = pl->visibility;
     int i;
@@ -575,7 +578,7 @@ int Init_player(int ind, shipshape_t *ship, int type)
         pl->pseudo_team = pseudo_team_no++;
     }
     pl->mychar = ' ';
-    pl->pl_life = World.rules.lives;
+    pl->pl_life = world->rules.lives;
     pl->ball = nullptr;
 
     pl->player_fps = FPS;
@@ -587,14 +590,14 @@ int Init_player(int ind, shipshape_t *ship, int type)
      * If limited lives and if nobody has lost a life yet, you may enter
      * now, otherwise you will have to wait 'til everyone gets GAME OVER.
      */
-    if (BIT(World.rules.mode, LIMITED_LIVES))
+    if (BIT(world->rules.mode, LIMITED_LIVES))
     {
         for (i = 0; i < NumPlayers; i++)
         {
             player_t *pl_i = Player_by_index(i);
             /* If a non-team member has lost a life,
              * then it's too late to join. */
-            if (pl_i->pl_life < World.rules.lives && !Players_are_teammates(pl, pl_i))
+            if (pl_i->pl_life < world->rules.lives && !Players_are_teammates(pl, pl_i))
             {
                 too_late = true;
                 break;
@@ -697,6 +700,7 @@ void Free_players(void)
 
 void Update_score_table(void)
 {
+    world_t *world = &World;
     int check;
 
     for (int j = 0; j < NumPlayers; j++)
@@ -716,7 +720,7 @@ void Update_score_table(void)
                                pl->mychar, pl->alliance);
             }
         }
-        if (BIT(World.rules.mode, TIMING))
+        if (BIT(world->rules.mode, TIMING))
         {
             if (pl->check != pl->prev_check ||
                 pl->round != pl->prev_round)
@@ -783,8 +787,8 @@ void Reset_all_players(void)
         {
             pl->mychar = ' ';
             pl->frame_last_busy = frame_loops;
-            pl->pl_life = World.rules.lives;
-            if (BIT(World.rules.mode, TIMING))
+            pl->pl_life = world->rules.lives;
+            if (BIT(world->rules.mode, TIMING))
             {
                 pl->dirty_legacy_count_hack = RECOVERY_DELAY;
             }
@@ -1200,7 +1204,7 @@ void Compute_game_status(void)
     if (roundtime > 0)
         roundtime--;
 
-    if (BIT(World.rules.mode, TIMING))
+    if (BIT(world->rules.mode, TIMING))
         Race_compute_game_status();
     else if (Team_play(world))
     {
@@ -1772,6 +1776,7 @@ static std::string bitsToStr(uint32_t s)
 
 void Player_death_reset(player_t *pl, bool add_rank_death)
 {
+    world_t *world = &World;
     // warn("Player_death_reset: player: %s", pl->name);
 
     int i;
@@ -1823,7 +1828,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
 
     pl->deaths++;
 
-    if (BIT(World.rules.mode, LIMITED_LIVES))
+    if (BIT(world->rules.mode, LIMITED_LIVES))
     {
         bool waiting = Player_is_waiting(pl);
 
@@ -1834,7 +1839,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
         {
             if (Player_is_robot(pl))
             {
-                if (!BIT(World.rules.mode, TIMING | TEAM_PLAY) ||
+                if (!BIT(world->rules.mode, TIMING | TEAM_PLAY) ||
                     (options.robotsLeave && Get_Score(pl) < options.robotLeaveScore))
                 {
                     Robot_delete(pl, false);
@@ -1882,7 +1887,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
 
     // pl->deaths++;
 
-    // if (BIT(World.rules.mode, LIMITED_LIVES))
+    // if (BIT(world->rules.mode, LIMITED_LIVES))
     // {
     //     pl->pl_life--;
     //     Player_set_life(pl, pl->pl_life - 1);
@@ -1891,7 +1896,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     //     {
     //         if (Player_is_robot(pl))
     //         {
-    //             if (!BIT(World.rules.mode, TIMING | TEAM_PLAY) ||
+    //             if (!BIT(world->rules.mode, TIMING | TEAM_PLAY) ||
     //                 (options.robotsLeave && Get_Score(pl) < options.robotLeaveScore))
     //             {
     //                 Robot_delete(pl, false);

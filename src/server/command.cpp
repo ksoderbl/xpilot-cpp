@@ -171,10 +171,12 @@ void Send_info_about_player(player_t *pl)
 
 void Set_swapper_state(player_t *pl)
 {
+    world_t *world = &World;
+
     if (BIT(pl->have, HAS_BALL))
         Detach_ball(pl, nullptr);
 
-    if (BIT(World.rules.mode, LIMITED_LIVES))
+    if (BIT(world->rules.mode, LIMITED_LIVES))
     {
         int i;
 
@@ -513,6 +515,7 @@ static int Cmd_advance(char *arg, player_t *pl, bool oper,
 
 static int Cmd_ally(char *arg, player_t *pl, bool oper, char *msg, size_t size)
 {
+    world_t *world = &World;
     char *command;
     int result = CMD_RESULT_SUCCESS;
     static const char usage[] =
@@ -538,7 +541,7 @@ static int Cmd_ally(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     };
     int i, cmd;
 
-    if (!BIT(World.rules.mode, ALLIANCES))
+    if (!BIT(world->rules.mode, ALLIANCES))
     {
         strlcpy(msg, "Alliances are not allowed.", size);
         result = CMD_RESULT_ERROR;

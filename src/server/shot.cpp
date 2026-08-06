@@ -132,7 +132,7 @@ void Place_general_mine(int id, int team, int status,
     if (NumObjs + Mods_get(mods, ModsMini) >= MAX_TOTAL_SHOTS)
         return;
 
-    if (BIT(World.rules.mode, WRAP_PLAY))
+    if (BIT(world->rules.mode, WRAP_PLAY))
         pos = World_wrap_clpos(world, pos);
 
     if (!World_contains_clpos(world, pos))
@@ -635,7 +635,7 @@ void Fire_general_shot(int id, int team, bool cannon,
                 lock = target_id;
             else
             {
-                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(World.rules.mode, LIMITED_VISIBILITY)))
+                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(world->rules.mode, LIMITED_VISIBILITY)))
                 {
                     lock = NO_ID;
                 }
@@ -655,7 +655,7 @@ void Fire_general_shot(int id, int team, bool cannon,
                 lock = target_id;
             else
             {
-                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(World.rules.mode, LIMITED_VISIBILITY)) || !pl->visibility[GetInd(pl->lock.pl_id)].canSee)
+                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(world->rules.mode, LIMITED_VISIBILITY)) || !pl->visibility[GetInd(pl->lock.pl_id)].canSee)
                     return;
                 lock = pl->lock.pl_id;
             }
@@ -1139,6 +1139,7 @@ void Fire_normal_shots(player_t *pl)
 /* Removes shot from array */
 void Delete_shot(int ind)
 {
+    world_t *world = &World;
     object_t *shot = Obj[ind]; /* Used when swapping places */
     ballobject_t *ball;
     itemobject_t *item;
@@ -1375,16 +1376,16 @@ void Delete_shot(int ind)
     if (addMine || addHeat)
     {
         Mods_clear(&mods);
-        if (BIT(World.rules.mode, ALLOW_CLUSTERS) && (rfrac() <= 0.333))
+        if (BIT(world->rules.mode, ALLOW_CLUSTERS) && (rfrac() <= 0.333))
             Mods_set(&mods, ModsCluster, 1);
 
-        if (BIT(World.rules.mode, ALLOW_MODIFIERS) && (rfrac() <= 0.333))
+        if (BIT(world->rules.mode, ALLOW_MODIFIERS) && (rfrac() <= 0.333))
             Mods_set(&mods, ModsImplosion, 1);
 
-        if (BIT(World.rules.mode, ALLOW_MODIFIERS))
+        if (BIT(world->rules.mode, ALLOW_MODIFIERS))
             Mods_set(&mods, ModsVelocity, (int)(rfrac() * (MODS_VELOCITY_MAX + 1)));
 
-        if (BIT(World.rules.mode, ALLOW_MODIFIERS))
+        if (BIT(world->rules.mode, ALLOW_MODIFIERS))
             Mods_set(&mods, ModsPower, (int)(rfrac() * (MODS_POWER_MAX + 1)));
 
         if (addMine)
@@ -1726,7 +1727,7 @@ void Update_missile(missileobject_t *missile)
         {
             xi = (int)((x += vx) / BLOCK_SZ);
             yi = (int)((y += vy) / BLOCK_SZ);
-            if (BIT(World.rules.mode, WRAP_PLAY))
+            if (BIT(world->rules.mode, WRAP_PLAY))
             {
                 if (xi < 0)
                     xi += World.x;

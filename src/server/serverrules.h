@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include "bit.h"
 #include "rules.h"
 
 /*
@@ -54,6 +55,11 @@ typedef struct
     int lives;
     long mode;
 } rules_t;
+
+static inline bool Wrap_play(rules_t &rules)
+{
+    return BIT(rules.mode, WRAP_PLAY);
+}
 
 void Tune_item_probs(void);
 void Tune_item_packs(void);

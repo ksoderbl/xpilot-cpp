@@ -70,6 +70,7 @@ void Race_compute_game_status(void)
      * fastest lap get points.
      */
 
+    world_t *world = &World;
     player_t *alive = nullptr, *pl;
     int num_alive_players = 0, num_active_players = 0,
         num_finished_players = 0, num_race_over_players = 0,
@@ -282,7 +283,7 @@ void Race_compute_game_status(void)
      * In limited lives mode, wait for everyone to die, except
      * for the last player.
      */
-    if (BIT(World.rules.mode, LIMITED_LIVES))
+    if (BIT(world->rules.mode, LIMITED_LIVES))
     {
         if (num_alive_players > 1)
             return;

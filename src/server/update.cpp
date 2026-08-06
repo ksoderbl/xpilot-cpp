@@ -93,7 +93,7 @@ static void Transport_to_home(player_t *pl)
         return;
     }
 
-    if (BIT(World.rules.mode, TIMING) && pl->round)
+    if (BIT(world->rules.mode, TIMING) && pl->round)
     {
         int check;
 
@@ -920,7 +920,7 @@ static void Update_players(void)
                 // warn("Player %s recovered!", pl->name);
                 /* Player has recovered (unless he is already dead). */
                 pl->recovery_count = 0;
-                if (BIT(World.rules.mode, LIMITED_LIVES))
+                if (BIT(world->rules.mode, LIMITED_LIVES))
                 {
                     if (!Player_is_dead(pl))
                         Player_set_state(pl, PL_STATE_ALIVE);

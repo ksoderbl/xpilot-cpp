@@ -95,6 +95,7 @@ static int Compare_cell_dist(const void *a, const void *b)
 
 static void Init_cell_dist(void)
 {
+    world_t *world = &World;
     cell_dist_t *dists;
     int x, y;
     int cell_dist_width;
@@ -106,7 +107,7 @@ static void Init_cell_dist(void)
 
     Free_cell_dist();
 
-    if (BIT(World.rules.mode, WRAP_PLAY))
+    if (BIT(world->rules.mode, WRAP_PLAY))
     {
         cell_max_right = MIN(MAX_CELL_DIST, (World.x / 2));
         cell_max_left = MIN(MAX_CELL_DIST, ((World.x - 1) / 2));
@@ -255,6 +256,7 @@ void Cell_get_objects(clpos_t pos,
                       int max_obj_count,
                       object_t ***obj_list, int *count_ptr)
 {
+    world_t *world = &World;
     static object_t *ObjectList[MAX_TOTAL_SHOTS + 1];
     int i, count, x, y, xw, yw, wrap;
     object_t *obj;
@@ -265,7 +267,7 @@ void Cell_get_objects(clpos_t pos,
     x = bpos.bx;
     y = bpos.by;
 
-    wrap = (BIT(World.rules.mode, WRAP_PLAY) != 0);
+    wrap = (BIT(world->rules.mode, WRAP_PLAY) != 0);
     dist = (double)(range * SQRT2);
     count = 0;
     for (i = 0; i < (int)cell_dist_size && count < max_obj_count; i++)

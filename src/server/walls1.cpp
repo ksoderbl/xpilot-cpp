@@ -175,6 +175,7 @@ static void Walldist_dump(void)
 
 static void Walldist_init(void)
 {
+    world_t *world = &World;
     int x, y, dx, dy, wx, wy;
     int dist;
     int mindist;
@@ -216,7 +217,7 @@ static void Walldist_init(void)
             }
         }
     }
-    if (!BIT(World.rules.mode, WRAP_PLAY))
+    if (!BIT(world->rules.mode, WRAP_PLAY))
     {
         for (x = 0; x < World.x; x++)
         {
@@ -250,14 +251,14 @@ static void Walldist_init(void)
         }
         for (dx = -1; dx <= 1; dx++)
         {
-            if (BIT(World.rules.mode, WRAP_PLAY) || (x + dx >= 0 && x + dx < World.x))
+            if (BIT(world->rules.mode, WRAP_PLAY) || (x + dx >= 0 && x + dx < World.x))
             {
-                wx = WRAP_XBLOCK(x + dx);
+                wx = WRAP_XBLOCK(world, x + dx);
                 for (dy = -1; dy <= 1; dy++)
                 {
-                    if (BIT(World.rules.mode, WRAP_PLAY) || (y + dy >= 0 && y + dy < World.y))
+                    if (BIT(world->rules.mode, WRAP_PLAY) || (y + dy >= 0 && y + dy < World.y))
                     {
-                        wy = WRAP_YBLOCK(y + dy);
+                        wy = WRAP_YBLOCK(world, y + dy);
                         if (walldist[wx][wy] > mindist)
                         {
                             newdist = mindist;
@@ -1852,7 +1853,7 @@ void Move_object1(object_t *obj)
 
     mi.pl = nullptr;
     mi.obj = obj;
-    mi.edge_wrap = BIT(World.rules.mode, WRAP_PLAY);
+    mi.edge_wrap = BIT(world->rules.mode, WRAP_PLAY);
     mi.edge_bounce = options.edgeBounce;
     mi.wall_bounce = BIT(mp.obj_bounce_mask, obj->type);
     mi.cannon_crashes = BIT(mp.obj_cannon_mask, obj->type);
@@ -2217,7 +2218,7 @@ void Move_player1(player_t *pl)
 
     mi.pl = pl;
     mi.obj = (object_t *)pl;
-    mi.edge_wrap = BIT(World.rules.mode, WRAP_PLAY);
+    mi.edge_wrap = BIT(world->rules.mode, WRAP_PLAY);
     mi.edge_bounce = options.edgeBounce;
     mi.wall_bounce = true;
     mi.cannon_crashes = true;
@@ -2587,6 +2588,7 @@ void Move_player1(player_t *pl)
 
 void Turn_player1(player_t *pl)
 {
+    world_t *world = &World;
     int i;
     move_info_t mi;
     move_state_t ms[ANGLE_RESOLUTION];
@@ -2617,7 +2619,7 @@ void Turn_player1(player_t *pl)
 
     mi.pl = pl;
     mi.obj = (object_t *)pl;
-    mi.edge_wrap = BIT(World.rules.mode, WRAP_PLAY);
+    mi.edge_wrap = BIT(world->rules.mode, WRAP_PLAY);
     mi.edge_bounce = options.edgeBounce;
     mi.wall_bounce = true;
     mi.cannon_crashes = true;

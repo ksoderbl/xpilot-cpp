@@ -244,7 +244,7 @@ static void PlayerCollision(void)
             continue;
 
         /* Player - player */
-        if (BIT(World.rules.mode, CRASH_WITH_PLAYER | BOUNCE_WITH_PLAYER))
+        if (BIT(world->rules.mode, CRASH_WITH_PLAYER | BOUNCE_WITH_PLAYER))
         {
             for (j = i + 1; j < NumPlayers; j++)
             {
@@ -280,7 +280,7 @@ static void PlayerCollision(void)
                     continue;
 
                 sound_play_sensors(pl->pos, PLAYER_HIT_PLAYER_SOUND);
-                if (BIT(World.rules.mode, BOUNCE_WITH_PLAYER))
+                if (BIT(world->rules.mode, BOUNCE_WITH_PLAYER))
                 {
                     if (!Player_uses_emergency_shield(pl))
                     {
@@ -297,7 +297,7 @@ static void PlayerCollision(void)
                     Obj_repel(OBJ_PTR(pl), OBJ_PTR(pl_j),
                               PIXEL_TO_CLICK(2 * SHIP_SZ));
                 }
-                if (!BIT(World.rules.mode, CRASH_WITH_PLAYER))
+                if (!BIT(world->rules.mode, CRASH_WITH_PLAYER))
                     continue;
 
                 if (pl->fuel.sum <= 0.0 || (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl)))
@@ -1059,6 +1059,7 @@ static inline double Missile_hit_drain(missileobject_t *missile)
 
 static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
 {
+    world_t *world = &World;
     player_t *kp = nullptr;
     cannon_t *cannon = nullptr;
     double drainfactor, drain;
@@ -1199,7 +1200,7 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
 
                 /* if there are no rounds in survival mode */
                 /* deaths act like rounds                  */
-                if (!BIT(World.rules.mode, LIMITED_LIVES))
+                if (!BIT(world->rules.mode, LIMITED_LIVES))
                     Rank_add_round(pl);
 
                 Rank_write_webpage();
@@ -1393,7 +1394,7 @@ static void BallCollision(void)
             continue;
 
         /* Ball - checkpoint */
-        if (BIT(World.rules.mode, TIMING) && options.ballrace && ball->ball_owner != NO_ID)
+        if (BIT(world->rules.mode, TIMING) && options.ballrace && ball->ball_owner != NO_ID)
         {
             player_t *owner = Player_by_id(ball->ball_owner);
 

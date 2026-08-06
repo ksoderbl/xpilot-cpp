@@ -64,7 +64,7 @@ static void Find_base_order(void)
     int ccx, ccy;
     double dist;
 
-    if (!BIT(World.rules.mode, TIMING))
+    if (!BIT(world->rules.mode, TIMING))
     {
         World.baseorder = nullptr;
         return;
@@ -211,8 +211,8 @@ int World_place_base(world_t *world, clpos_t pos, int dir, int team, int order)
 
     t.dir = dir;
 
-    warn("World.rules = %p", World.rules);
-    warn("World.rules.mode = %lx", World.rules.mode);
+    warn("world->rules = %p", world->rules);
+    warn("world->rules.mode = %lx", world->rules.mode);
 
     if (Team_play(world))
     {
@@ -320,7 +320,7 @@ int World_place_check(world_t *world, clpos_t pos, int ind)
 {
     // check_t t;
 
-    // if (!BIT(World.rules.mode, TIMING))
+    // if (!BIT(world->rules.mode, TIMING))
     // {
     //     warn("Checkpoint on map with no timing.");
     //     return NO_IND;
@@ -593,6 +593,8 @@ static bool Grok_map_size(void)
 
 bool Grok_map_options(void)
 {
+    world_t *world = &World;
+
     if (World.have_options)
         return true;
 
@@ -618,10 +620,10 @@ bool Grok_map_options(void)
     Set_world_items();
     Set_world_asteroids();
 
-    if (BIT(World.rules.mode, TEAM_PLAY | TIMING) == (TEAM_PLAY | TIMING))
+    if (BIT(world->rules.mode, TEAM_PLAY | TIMING) == (TEAM_PLAY | TIMING))
     {
         warn("Cannot teamplay while in race mode -- ignoring teamplay");
-        CLR_BIT(World.rules.mode, TEAM_PLAY);
+        CLR_BIT(world->rules.mode, TEAM_PLAY);
     }
 
     warn("Grok_map_options -----------------> RETURNING OK");
@@ -768,7 +770,7 @@ bool Grok_map(void)
 
         Xpmap_tags_to_internal_data();
 
-        if (BIT(World.rules.mode, TIMING))
+        if (BIT(world->rules.mode, TIMING))
             Find_base_order();
 
         D(Print_map());
@@ -777,11 +779,11 @@ bool Grok_map(void)
     if (!Verify_wormhole_consistency())
         return false;
 
-    if (BIT(World.rules.mode, TIMING) && Num_checks() == 0)
+    if (BIT(world->rules.mode, TIMING) && Num_checks() == 0)
     {
         warn("No checkpoints found while race mode (timing) was set.");
         warn("Turning off race mode.");
-        CLR_BIT(World.rules.mode, TIMING);
+        CLR_BIT(world->rules.mode, TIMING);
     }
 
     /* kps - what are these doing here ? */

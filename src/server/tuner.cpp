@@ -128,12 +128,14 @@ void tuner_playerstartsshielded(void)
 
 void tuner_worldlives(void)
 {
+    world_t *world = &World;
+
     if (options.worldLives < 0)
         options.worldLives = 0;
 
     Set_world_rules();
 
-    if (BIT(World.rules.mode, LIMITED_LIVES))
+    if (BIT(world->rules.mode, LIMITED_LIVES))
     {
         Reset_all_players();
         if (options.gameDuration == -1)
@@ -294,17 +296,16 @@ void tuner_missilelife(void)
 void tuner_gameduration(void)
 {
     if (options.gameDuration <= 0.0)
-    {
         gameOverTime = time((time_t *)nullptr);
-    }
-
     else
         gameOverTime = (time_t)(options.gameDuration * 60) + time((time_t *)nullptr);
 }
 
 void tuner_racelaps(void)
 {
-    if (BIT(World.rules.mode, TIMING))
+    world_t *world = &World;
+
+    if (BIT(world->rules.mode, TIMING))
     {
         Reset_all_players();
         if (options.gameDuration == -1)
@@ -317,9 +318,9 @@ void tuner_allowalliances(void)
     world_t *world = &World;
 
     if (Team_play(world))
-        CLR_BIT(World.rules.mode, ALLIANCES);
+        CLR_BIT(world->rules.mode, ALLIANCES);
 
-    if (!BIT(World.rules.mode, ALLIANCES) && NumAlliances > 0)
+    if (!BIT(world->rules.mode, ALLIANCES) && NumAlliances > 0)
         Dissolve_all_alliances();
 }
 

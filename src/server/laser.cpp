@@ -537,7 +537,7 @@ void Laser_pulse_collision(void)
         pulse->pos.cx += tcos(pulse->dir) * PULSE_SPEED * CLICK;
         pulse->pos.cy += tsin(pulse->dir) * PULSE_SPEED * CLICK;
 
-        if (BIT(World.rules.mode, WRAP_PLAY))
+        if (BIT(world->rules.mode, WRAP_PLAY))
         {
             pulse->pos = World_wrap_clpos(world, pulse->pos);
 
@@ -601,8 +601,8 @@ void Laser_pulse_collision(void)
         /* calculate the midpoint of the new laser pulse position. */
         midx = x1 + (dx * 0.5);
         midy = y1 + (dy * 0.5);
-        midx = WRAP_XPIXEL(midx);
-        midy = WRAP_YPIXEL(midy);
+        midx = WRAP_XPIXEL(world, midx);
+        midy = WRAP_YPIXEL(world, midy);
 
         /* assemble a shortlist of players which might get hit. */
         Laser_pulse_find_victims(&vicbuf, pulse, midx, midy);
@@ -647,7 +647,7 @@ void Laser_pulse_collision(void)
             Move_object(obj);
             if (obj->obj_life == 0)
                 break;
-            if (BIT(World.rules.mode, WRAP_PLAY))
+            if (BIT(world->rules.mode, WRAP_PLAY))
             {
                 if (x < 0)
                 {

@@ -32,8 +32,8 @@
  * Two macros for edge wrap of x and y coordinates measured in pixels.
  * Note that the correction needed shouldn't ever be bigger than one mapsize.
  */
-#define WRAP_XPIXEL(x_)                     \
-    (BIT(World.rules.mode, WRAP_PLAY)       \
+#define WRAP_XPIXEL(world, x_)              \
+    (BIT(world->rules.mode, WRAP_PLAY)      \
          ? ((x_) < 0                        \
                 ? (x_) + World.width        \
                 : ((x_) >= World.width      \
@@ -41,8 +41,8 @@
                        : (x_)))             \
          : (x_))
 
-#define WRAP_YPIXEL(y_)                      \
-    (BIT(World.rules.mode, WRAP_PLAY)        \
+#define WRAP_YPIXEL(world, y_)               \
+    (BIT(world->rules.mode, WRAP_PLAY)       \
          ? ((y_) < 0                         \
                 ? (y_) + World.height        \
                 : ((y_) >= World.height      \
@@ -54,8 +54,8 @@
  * Two macros for edge wrap of x and y coordinates measured in map blocks.
  * Note that the correction needed shouldn't ever be bigger than one mapsize.
  */
-#define WRAP_XBLOCK(x_)                 \
-    (BIT(World.rules.mode, WRAP_PLAY)   \
+#define WRAP_XBLOCK(world, x_)          \
+    (BIT(world->rules.mode, WRAP_PLAY)  \
          ? ((x_) < 0                    \
                 ? (x_) + World.x        \
                 : ((x_) >= World.x      \
@@ -63,8 +63,8 @@
                        : (x_)))         \
          : (x_))
 
-#define WRAP_YBLOCK(y_)                 \
-    (BIT(World.rules.mode, WRAP_PLAY)   \
+#define WRAP_YBLOCK(world, y_)          \
+    (BIT(world->rules.mode, WRAP_PLAY)  \
          ? ((y_) < 0                    \
                 ? (y_) + World.y        \
                 : ((y_) >= World.y      \
