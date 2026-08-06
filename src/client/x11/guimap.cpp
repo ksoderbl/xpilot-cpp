@@ -840,6 +840,11 @@ void Gui_paint_visible_border(int x, int y, int xi, int yi)
         Gui_paint_rectangle(x, y, xi, yi, visibilityBorderColor);
 }
 
+void Gui_paint_hudradar_limit(int x, int y, int xi, int yi)
+{
+    Gui_paint_rectangle(x, y, xi, yi, BLUE);
+}
+
 void Gui_paint_setup_acwise_grav(int x, int y)
 {
     Arc_add(RED, X(x + 5), Y(y + BLOCK_SZ - 5),
@@ -1041,9 +1046,9 @@ void Gui_paint_setup_item_concentrator(int x, int y)
         int rot_dir;
     } tris[] = {
 #if 0
-        { 14, 3, 0, 1, 0 },
-        { 11, 5, 3, 2, 0 },
-        {  7, 8, 5, 3, 0 },
+        {14, 3, 0, 1, 0},
+        {11, 5, 3, 2, 0},
+        {7, 8, 5, 3, 0},
 #else
         {7, 3, 0, 3, 0},
         {11, 5, 3, 3, 0},
@@ -1080,10 +1085,10 @@ void Gui_paint_setup_item_concentrator(int x, int y)
             pts[1].y = WINSCALE(cy + (int)(tris[i].radius * tsin(MOD2(tdir + ANGLE_RESOLUTION / 3, ANGLE_RESOLUTION))));
             pts[2].x = WINSCALE(cx + (int)(tris[i].radius * tcos(MOD2(tdir + 2 * ANGLE_RESOLUTION / 3, ANGLE_RESOLUTION))));
             pts[2].y = WINSCALE(cy + (int)(tris[i].radius * tsin(MOD2(tdir + 2 * ANGLE_RESOLUTION / 3, ANGLE_RESOLUTION))));
-            /* Trace("DC: %d cx=%d/%d %d/%d %d/%d %d/%d %d/%d\n",
-                    i, cx, cy, pts[0].x, pts[0].y,
-                    pts[1].x, pts[1].y, pts[2].x, pts[2].y,
-                    pts[3].x, pts[3].y); */
+            // Trace("DC: %d cx=%d/%d %d/%d %d/%d %d/%d %d/%d\n",
+            //       i, cx, cy, pts[0].x, pts[0].y,
+            //       pts[1].x, pts[1].y, pts[2].x, pts[2].y,
+            //       pts[3].x, pts[3].y);
 
             pts[3] = pts[0];
             rd.drawLines(dpy, drawPixmap, gameGC,
@@ -1106,9 +1111,9 @@ void Gui_paint_setup_asteroid_concentrator(int x, int y)
         int rot_dir;
     } sqrs[] = {
 #if 0
-        { 16, 3, 0, 1, 0 },
-        { 12, 5, 3, 2, 0 },
-        {  8, 8, 5, 3, 0 },
+        {16, 3, 0, 1, 0},
+        {12, 5, 3, 2, 0},
+        {8, 8, 5, 3, 0},
 #else
         {8, 3, 0, 3, 0},
         {12, 5, 3, 3, 0},
@@ -1147,10 +1152,10 @@ void Gui_paint_setup_asteroid_concentrator(int x, int y)
             pts[2].y = WINSCALE(cy + (int)(sqrs[i].size * tsin(MOD2(tdir + 2 * ANGLE_RESOLUTION / 4, ANGLE_RESOLUTION))));
             pts[3].x = WINSCALE(cx + (int)(sqrs[i].size * tcos(MOD2(tdir + 3 * ANGLE_RESOLUTION / 4, ANGLE_RESOLUTION))));
             pts[3].y = WINSCALE(cy + (int)(sqrs[i].size * tsin(MOD2(tdir + 3 * ANGLE_RESOLUTION / 4, ANGLE_RESOLUTION))));
-            /* Trace("DC: %d cx=%d/%d %d/%d %d/%d %d/%d %d/%d\n",
-                    i, cx, cy, pts[0].x, pts[0].y,
-                    pts[1].x, pts[1].y, pts[2].x, pts[2].y,
-                    pts[3].x, pts[3].y); */
+            // Trace("DC: %d cx=%d/%d %d/%d %d/%d %d/%d %d/%d\n",
+            //       i, cx, cy, pts[0].x, pts[0].y,
+            //       pts[1].x, pts[1].y, pts[2].x, pts[2].y,
+            //       pts[3].x, pts[3].y);
 
             pts[4] = pts[0];
             rd.drawLines(dpy, drawPixmap, gameGC,
@@ -1164,7 +1169,10 @@ void Gui_paint_setup_asteroid_concentrator(int x, int y)
 
 void Gui_paint_decor_dot(int x, int y, int size)
 {
-    Rectangle_add(BLUE, X(x + BLOCK_SZ / 2) - (backgroundPointSize >> 1),
+    if (!backgroundPointColor)
+        return;
+    Rectangle_add(backgroundPointColor,
+                  X(x + BLOCK_SZ / 2) - (backgroundPointSize >> 1),
                   Y(y + BLOCK_SZ / 2) - (backgroundPointSize >> 1),
                   size, size);
 }
@@ -1175,6 +1183,14 @@ void Gui_paint_setup_target(int x, int y, int team, double damage, bool own)
     char s[2];
 
     color = own ? BLUE : RED;
+
+    if (BIT(Setup->mode, TEAM_PLAY))
+    {
+        int team_color = Team_color(team);
+
+        if (team_color)
+            color = team_color;
+    }
 
     SET_FG(colors[color].pixel);
 
@@ -1222,14 +1238,22 @@ void Gui_paint_setup_target(int x, int y, int team, double damage, bool own)
     }
 }
 
-void Gui_paint_setup_treasure(int x, int y, int treasure, bool own)
+void Gui_paint_setup_treasure(int x, int y, int team, bool own)
 {
+    int color = own ? BLUE : RED;
+
+    if (BIT(Setup->mode, TEAM_PLAY))
+    {
+        int team_color = Team_color(team);
+
+        if (team_color)
+            color = team_color;
+    }
+
     if (!texturedObjects)
     {
         char s[2];
-        int color;
         int size;
-        color = own ? BLUE : RED;
 
         SET_FG(colors[color].pixel);
         Segment_add(color,
@@ -1249,7 +1273,7 @@ void Gui_paint_setup_treasure(int x, int y, int treasure, bool own)
         if (BIT(Setup->mode, TEAM_PLAY))
         {
             s[1] = '\0';
-            s[0] = '0' + treasure;
+            s[0] = '0' + team;
             size = XTextWidth(gameFont, s, 1);
             rd.drawString(dpy, drawPixmap, gameGC,
                           WINSCALE(X(x + BLOCK_SZ / 2)) - size / 2,
@@ -1260,7 +1284,6 @@ void Gui_paint_setup_treasure(int x, int y, int treasure, bool own)
     {
         char s[2];
         int size, type;
-        int color;
 
         type = own ? BM_HOLDER_FRIEND : BM_HOLDER_ENEMY;
 
@@ -1269,11 +1292,10 @@ void Gui_paint_setup_treasure(int x, int y, int treasure, bool own)
 
         if (BIT(Setup->mode, TEAM_PLAY))
         {
-            color = own ? BLUE : RED;
             SET_FG(colors[color].pixel);
 
             s[1] = '\0';
-            s[0] = '0' + treasure;
+            s[0] = '0' + team;
             size = XTextWidth(gameFont, s, 1);
             rd.drawString(dpy, drawPixmap, gameGC,
                           WINSCALE(X(x + BLOCK_SZ / 2)) - size / 2,
