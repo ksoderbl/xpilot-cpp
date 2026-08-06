@@ -68,95 +68,10 @@
 #include "walls2.h"
 #include "treasure.h"
 
-/*
- * The very first "analytical" collision patch, XPilot 3.6.2
- * Faster than other patches and accurate below half warp-speed
- * Trivial common subexpressions are eliminated by any reasonable compiler,
- * and kept here for readability.
- * Written by Pontus (Rakk, Kepler) pontus@ctrl-c.liu.se Jan 1998
- * Kudos to Svenske and Mad Gurka for beta testing, and Murx for
- * invaluable insights.
- */
-#if 0
-static int in_range_acd(
-        int p1x, int p1y, int p2x, int p2y,
-        int q1x, int q1y, int q2x, int q2y,
-        int r)
-{
-    long                fac1, fac2;
-    double                tmin, fminx, fminy;
-    long                top, bot;
-    long                dpx, dpy, dqx, dqy;
-    long                dx, dy, dox, doy;
-
-    /*
-     * Get the wrapped coordinates straight 
-     */
-    if (BIT(World.rules->mode, WRAP_PLAY)) {
-        if (ABS(p2x - p1x) > World.width / 2) {
-            if (p1x < p2x)
-                p1x += World.width;
-            else
-                p2x += World.width;
-        }
-        if (ABS(p2y - p1y) > World.height / 2) {
-            if (p1y < p2y)
-                p1y += World.height;
-            else
-                p2y += World.height;
-        }
-        if (ABS(q2x - q1x) > World.width / 2) {
-            if (q1x < q2x)
-                q1x += World.width;
-            else
-                q2x += World.width;
-        }
-        if (ABS(q2y - q1y) > World.height / 2) {
-            if (q1y < q2y)
-                q1y += World.height;
-            else
-                q2y += World.height;
-        }
-    }
-
-    dx = WRAP_DX(q2x - p2x);
-    dy = WRAP_DY(q2y - p2y);
-    if (sqr(dx) + sqr(dy) < sqr(r))
-        return 1;
-
-    dox = WRAP_DX(p1x - q1x);
-    doy = WRAP_DY(p1y - q1y);
-    if (sqr(dox) + sqr(doy) < sqr(r))
-        return 1;
-
-    dpx = WRAP_DX(p2x - p1x);
-    dpy = WRAP_DY(p2y - p1y);
-    dqx = WRAP_DX(q2x - q1x);
-    dqy = WRAP_DY(q2y - q1y);
-
-    /*
-     * Do the detection 
-     */
-    fac1 = dpx - dqx;
-    fac2 = dpy - dqy;
-    top = -(fac1 * dx + fac2 * dy);
-    bot = (fac1 * fac1 + fac2 * fac2);
-    if (top < 0 || bot < 1 || top > bot)
-        return 0;
-    tmin = ((double)top) / ((double)bot);        /* BG: could make top&bot doubles. */
-    fminx = dx + fac1 * tmin;
-    fminy = dy + fac2 * tmin;
-    if (fminx * fminx + fminy * fminy < r * r)
-        return 1;
-    else
-        return 0;
-}
-#endif
-
 /* new acd functions */
 /* doubles because the multiplies might overflow ints */
-static bool in_range_acd(double dx, double dy, double dvx, double dvy,
-                         double r)
+static bool in_range_acd2(double dx, double dy, double dvx, double dvy,
+                          double r)
 {
     double tmin, fminx, fminy;
     double top, bot;
@@ -261,11 +176,11 @@ static inline bool in_range(object_t *obj1, object_t *obj2, double range)
                               range);
         break;
     case 1:
-        hit = in_range_acd((double)(obj1->prevpos.cx - obj2->prevpos.cx),
-                           (double)(obj1->prevpos.cy - obj2->prevpos.cy),
-                           (double)(obj1->extmove.cx - obj2->extmove.cx),
-                           (double)(obj1->extmove.cy - obj2->extmove.cy),
-                           range);
+        hit = in_range_acd2((double)(obj1->prevpos.cx - obj2->prevpos.cx),
+                            (double)(obj1->prevpos.cy - obj2->prevpos.cy),
+                            (double)(obj1->extmove.cx - obj2->extmove.cx),
+                            (double)(obj1->extmove.cy - obj2->extmove.cy),
+                            range);
         break;
     case 2:
         hit = in_range_partial((double)(obj1->prevpos.cx - obj2->prevpos.cx),
