@@ -886,18 +886,3 @@ const char *Get_keyHelpString(keys_t key)
 
     return nullptr;
 }
-
-const char *Get_keyResourceString(keys_t key)
-{
-    int i;
-
-    for (i = 0; i < optionsVector.size(); i++)
-    {
-        xp_option_t *opt = Option_by_index(i);
-
-        if (opt->key == key)
-            return opt->name;
-    }
-
-    return nullptr;
-}
