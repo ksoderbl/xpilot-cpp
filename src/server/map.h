@@ -625,6 +625,11 @@ static inline bool Team_play(world_t *world)
     return BIT(world->rules.mode, TEAM_PLAY);
 }
 
+static inline bool Timing(world_t *world)
+{
+    return BIT(world->rules.mode, TIMING);
+}
+
 static inline bool Wrap_play(world_t *world)
 {
     return BIT(world->rules.mode, WRAP_PLAY);

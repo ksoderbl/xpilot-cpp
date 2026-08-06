@@ -494,7 +494,7 @@ void PlayerCheckpointCollision(player_t *pl)
 {
     world_t *world = &World;
 
-    if (!BIT(world->rules.mode, TIMING))
+    if (!Timing(world))
         return;
 
     if (Player_is_active(pl))

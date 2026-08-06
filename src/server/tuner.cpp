@@ -305,7 +305,7 @@ void tuner_racelaps(void)
 {
     world_t *world = &World;
 
-    if (BIT(world->rules.mode, TIMING))
+    if (Timing(world))
     {
         Reset_all_players();
         if (options.gameDuration == -1)

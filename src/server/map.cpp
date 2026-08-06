@@ -64,7 +64,7 @@ static void Find_base_order(void)
     int ccx, ccy;
     double dist;
 
-    if (!BIT(world->rules.mode, TIMING))
+    if (!Timing(world))
     {
         World.baseorder = nullptr;
         return;
@@ -320,7 +320,7 @@ int World_place_check(world_t *world, clpos_t pos, int ind)
 {
     // check_t t;
 
-    // if (!BIT(world->rules.mode, TIMING))
+    // if (!Timing(world))
     // {
     //     warn("Checkpoint on map with no timing.");
     //     return NO_IND;
@@ -770,7 +770,7 @@ bool Grok_map(void)
 
         Xpmap_tags_to_internal_data();
 
-        if (BIT(world->rules.mode, TIMING))
+        if (Timing(world))
             Find_base_order();
 
         D(Print_map());
@@ -779,7 +779,7 @@ bool Grok_map(void)
     if (!Verify_wormhole_consistency())
         return false;
 
-    if (BIT(world->rules.mode, TIMING) && Num_checks() == 0)
+    if (Timing(world) && Num_checks() == 0)
     {
         warn("No checkpoints found while race mode (timing) was set.");
         warn("Turning off race mode.");

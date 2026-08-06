@@ -54,7 +54,7 @@
  * Two macros for edge wrap of x and y coordinates measured in map blocks.
  * Note that the correction needed shouldn't ever be bigger than one mapsize.
  */
-#define WRAP_XBLOCK(world, x_)          \
+#define WORLD_WRAP_XBLOCK(world, x_)    \
     (Wrap_play(world)                   \
          ? ((x_) < 0                    \
                 ? (x_) + World.x        \
@@ -63,7 +63,7 @@
                        : (x_)))         \
          : (x_))
 
-#define WRAP_YBLOCK(world, y_)          \
+#define WORLD_WRAP_YBLOCK(world, y_)    \
     (Wrap_play(world)                   \
          ? ((y_) < 0                    \
                 ? (y_) + World.y        \

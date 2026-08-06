@@ -93,7 +93,7 @@ static void Transport_to_home(player_t *pl)
         return;
     }
 
-    if (BIT(world->rules.mode, TIMING) && pl->round)
+    if (Timing(world) && pl->round)
     {
         int check;
 

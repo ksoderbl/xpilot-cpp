@@ -895,7 +895,7 @@ static void Xpmap_place_target(world_t *world, blkpos_t blk)
 
 static void Xpmap_place_check(world_t *world, blkpos_t blk, int ind)
 {
-    if (!BIT(world->rules.mode, TIMING))
+    if (!Timing(world))
     {
         World_set_block(world, blk, SPACE);
         return;
@@ -1238,7 +1238,7 @@ void Xpmap_tags_to_internal_data(void)
                 case XPMAP_CHECK_23:
                 case XPMAP_CHECK_24:
                 case XPMAP_CHECK_25:
-                    // if (BIT(world->rules.mode, TIMING))
+                    // if (Timing(world))
                     // {
                     //     World.checks[c - 'A'].x = x;
                     //     World.checks[c - 'A'].y = y;
@@ -1312,7 +1312,7 @@ void Xpmap_tags_to_internal_data(void)
             }
         }
 
-        if (BIT(world->rules.mode, TIMING) && Num_checks() == 0)
+        if (Timing(world) && Num_checks() == 0)
         {
             printf("No checkpoints found while race mode (timing) was set.\n");
             printf("Turning off race mode.\n");

@@ -617,7 +617,7 @@ void Pause_player(player_t *pl, bool on)
                 if (Limited_lives(world))
                     pl->pl_life = world->rules.lives;
             }
-            if (BIT(world->rules.mode, TIMING))
+            if (Timing(world))
                 Player_reset_timing(pl);
         }
     }

@@ -142,7 +142,7 @@ void Pick_startpos(player_t *pl)
         }
     }
 
-    if (BIT(world->rules.mode, TIMING))
+    if (Timing(world))
     { /* pick first free base */
         for (i = 0; i < Num_bases(); i++)
         {
@@ -174,7 +174,7 @@ void Pick_startpos(player_t *pl)
     }
     else
     {
-        // pl->home_base_ind = BIT(world->rules.mode, TIMING) ? World.baseorder[i].base_idx : i;
+        // pl->home_base_ind = Timing(world) ? World.baseorder[i].base_idx : i;
         pl->home_base = Base_by_index(i);
         if (ind < NumPlayers)
         {
@@ -217,7 +217,7 @@ void Go_home(player_t *pl)
         return;
     }
 
-    if (BIT(world->rules.mode, TIMING) && pl->round && !(Player_is_waiting(pl) || Player_is_dead(pl)))
+    if (Timing(world) && pl->round && !(Player_is_waiting(pl) || Player_is_dead(pl)))
     {
         if (pl->check)
             check = pl->check - 1;
@@ -720,7 +720,7 @@ void Update_score_table(void)
                                pl->mychar, pl->alliance);
             }
         }
-        if (BIT(world->rules.mode, TIMING))
+        if (Timing(world))
         {
             if (pl->check != pl->prev_check ||
                 pl->round != pl->prev_round)
@@ -788,7 +788,7 @@ void Reset_all_players(void)
             pl->mychar = ' ';
             pl->frame_last_busy = frame_loops;
             pl->pl_life = world->rules.lives;
-            if (BIT(world->rules.mode, TIMING))
+            if (Timing(world))
             {
                 pl->dirty_legacy_count_hack = RECOVERY_DELAY;
             }
@@ -1204,7 +1204,7 @@ void Compute_game_status(void)
     if (roundtime > 0)
         roundtime--;
 
-    if (BIT(world->rules.mode, TIMING))
+    if (Timing(world))
         Race_compute_game_status();
     else if (Team_play(world))
     {

@@ -253,12 +253,12 @@ static void Walldist_init(void)
         {
             if (Wrap_play(world) || (x + dx >= 0 && x + dx < World.x))
             {
-                wx = WRAP_XBLOCK(world, x + dx);
+                wx = WORLD_WRAP_XBLOCK(world, x + dx);
                 for (dy = -1; dy <= 1; dy++)
                 {
                     if (Wrap_play(world) || (y + dy >= 0 && y + dy < World.y))
                     {
-                        wy = WRAP_YBLOCK(world, y + dy);
+                        wy = WORLD_WRAP_YBLOCK(world, y + dy);
                         if (walldist[wx][wy] > mindist)
                         {
                             newdist = mindist;

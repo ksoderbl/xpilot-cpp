@@ -1302,7 +1302,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
 
     if (options.resetOnHuman > 0 && ((NumPlayers - NumPseudoPlayers - NumRobots) <= options.resetOnHuman))
     {
-        if (BIT(world->rules.mode, TIMING))
+        if (Timing(world))
             Race_game_over();
         else if (Team_play(world))
             Team_game_over(-1, "");
@@ -1318,7 +1318,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
             roundtime = -1;
 
         Set_message_f("Player entered. Delaying 0 seconds until next %s.",
-                      (BIT(world->rules.mode, TIMING) ? "race" : "round"));
+                      (Timing(world) ? "race" : "round"));
     }
 
     return 0;

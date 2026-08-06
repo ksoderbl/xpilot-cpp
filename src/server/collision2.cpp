@@ -1394,7 +1394,7 @@ static void BallCollision(void)
             continue;
 
         /* Ball - checkpoint */
-        if (BIT(world->rules.mode, TIMING) && options.ballrace && ball->ball_owner != NO_ID)
+        if (Timing(world) && options.ballrace && ball->ball_owner != NO_ID)
         {
             player_t *owner = Player_by_id(ball->ball_owner);
 
