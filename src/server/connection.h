@@ -25,8 +25,10 @@
 
 /*
  * This include file holds defines and types related to the
- * connection of a player.  It is mainly used by netserver.c.
+ * connection of a player.  It is mainly used by netserver.cpp.
  */
+
+#include <string>
 
 #include "net.h"
 #include "shipshape.h"
@@ -34,13 +36,13 @@
 /*
  * Different states a connection can be in.
  */
-#define CONN_FREE 0x00      /* free for use */
-#define CONN_LISTENING 0x01 /* before connect() */
-#define CONN_SETUP 0x02     /* after verification */
-#define CONN_LOGIN 0x04     /* after setup info transferred */
-#define CONN_PLAYING 0x08   /* when actively playing */
-#define CONN_DRAIN 0x20     /* wait for all reliable data to be acked */
-#define CONN_READY 0x40     /* draining after LOGIN and before PLAYING */
+constexpr int CONN_FREE = 0x00;      /* free for use */
+constexpr int CONN_LISTENING = 0x01; /* before connect() */
+constexpr int CONN_SETUP = 0x02;     /* after verification */
+constexpr int CONN_LOGIN = 0x04;     /* after setup info transferred */
+constexpr int CONN_PLAYING = 0x08;   /* when actively playing */
+constexpr int CONN_DRAIN = 0x20;     /* wait for all reliable data to be acked */
+constexpr int CONN_READY = 0x40;     /* draining after LOGIN and before PLAYING */
 
 /*
  * In order to not let the server be locked by a collection
@@ -107,7 +109,7 @@ typedef struct
     int debris_colors;           /* Max. debris intensities */
     int spark_rand;              /* Sparkling effect */
     int last_mouse_pos;          /* value of last pointer pkt */
-    char *user;                  /* username of player */
+    std::string user;            /* username of player */
     char *nick;                  /* nickname of player */
     char *dpy;                   /* display of player */
     shipshape_t *ship;           /* ship shape of player */

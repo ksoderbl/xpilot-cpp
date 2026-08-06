@@ -21,6 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "net.h"
+
 #include <cassert>
 #include <cstdlib>
 #include <cstdio>
@@ -41,7 +43,6 @@
 #include "xpconfig.h"
 #include "const.h"
 #include "xperror.h"
-#include "net.h"
 #include "packet.h"
 #include "bit.h"
 #include "socklib.h"
@@ -402,7 +403,7 @@ int Packet_printf(sockbuf_t *sbuf, const char *fmt, ...)
         failure = 0,
         max_str_size;
     unsigned uval;
-    short sval;
+    int16_t sval;
     uint16_t usval;
     long lval;
     unsigned long ulval;
@@ -593,7 +594,7 @@ int Packet_scanf(sockbuf_t *sbuf, const char *fmt, ...)
         failure = 0,
         max_str_size;
     unsigned *uptr;
-    short *sptr;
+    int16_t *sptr;
     uint16_t *usptr;
     long *lptr;
     unsigned long *ulptr;
@@ -704,7 +705,7 @@ int Packet_scanf(sockbuf_t *sbuf, const char *fmt, ...)
                 switch (fmt[++i])
                 {
                 case 'd':
-                    sptr = va_arg(ap, short *);
+                    sptr = va_arg(ap, int16_t *);
                     *sptr = sbuf->ptr[j++] << 8;
                     *sptr |= (sbuf->ptr[j++] & 0xFF);
                     break;

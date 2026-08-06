@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "xperror.h"
 #include "rules.h"
 #include "bit.h"
@@ -231,11 +233,12 @@ typedef struct
     } lock;
     int lockbank[LOCKBANK_MAX]; /* Saved player locks */
 
-    short dir;                /* Direction of acceleration */
-    char mychar;              /* Special char for player */
-    char prev_mychar;         /* Special char for player */
-    char name[MAX_CHARS];     /* Nick-name of player */
-    char username[MAX_CHARS]; /* Real name of player */
+    short dir;            /* Direction of acceleration */
+    char mychar;          /* Special char for player */
+    char prev_mychar;     /* Special char for player */
+    char name[MAX_CHARS]; /* Nick-name of player */
+    // char username[MAX_CHARS]; /* Real name of player */
+    std::string username;     /* User name of player */
     char hostname[MAX_CHARS]; /* Hostname of client player uses */
     uint16_t pseudo_team;     /* Which team for detaching tanks */
     int alliance;             /* Member of which alliance? */

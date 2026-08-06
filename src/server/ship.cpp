@@ -473,7 +473,8 @@ void Tank_handle_detach(player_t *pl)
 
     strlcpy(tank->name, pl->name, MAX_CHARS);
     strlcat(tank->name, "'s tank", MAX_CHARS);
-    strlcpy(tank->username, options.tankUserName, MAX_CHARS);
+    // strlcpy(tank->username, options.tankUserName, MAX_CHARS);
+    tank->username = std::string(options.tankUserName).substr(0, MAX_CHARS);
     strlcpy(tank->hostname, options.tankHostName, MAX_CHARS);
     tank->home_base = pl->home_base;
     tank->team = pl->team;

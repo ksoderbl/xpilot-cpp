@@ -291,7 +291,7 @@ void Meta_update(bool change)
                  "%s%s=%s@%s",
                  first ? "add players " : ",",
                  pl->name,
-                 pl->username,
+                 pl->username.c_str(),
                  pl->hostname);
 
         if (Team_play(world))

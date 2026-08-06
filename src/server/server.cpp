@@ -573,7 +573,7 @@ void Server_info(char *str, size_t max_size)
                  pl->mychar, pl->team == TEAM_NOT_SET ? ' ' : (pl->team + '0'),
                  name, pl->pl_life, (int)Get_Score(pl));
         snprintf(msg, sizeof(msg), "%2d... %-36s%s@%s\n",
-                 i + 1, lblstr, pl->username, pl->hostname);
+                 i + 1, lblstr, pl->username.c_str(), pl->hostname);
         if (strlen(msg) + strlen(str) >= max_size)
             break;
         strlcat(str, msg, max_size);
@@ -801,7 +801,7 @@ void Server_log_admin_message(player_t *pl, const char *str)
                 "\t%s\n",
                 showtime(),
                 pl->name,
-                pl->username, pl->hostname,
+                pl->username.c_str(), pl->hostname,
                 Player_get_addr(pl),
                 Player_get_dpy(pl),
                 str);

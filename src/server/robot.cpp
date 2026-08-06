@@ -716,7 +716,8 @@ static void Robot_create(void)
     robot->robot_data_ptr = new_data;
 
     strlcpy(robot->name, rob->name, MAX_CHARS);
-    strlcpy(robot->username, options.robotUserName, MAX_CHARS);
+    // strlcpy(robot->username, options.robotUserName, MAX_CHARS);
+    robot->username = options.robotUserName;
     strlcpy(robot->hostname, options.robotHostName, MAX_CHARS);
 
     robot->color = WHITE;
@@ -764,7 +765,7 @@ static void Robot_create(void)
 
     if (options.logRobots)
         printf("%s %s (%d, %s) starts at startpos %d.\n",
-               showtime(), robot->name, NumPlayers, robot->username,
+               showtime(), robot->name, NumPlayers, robot->username.c_str(),
                robot->home_base->ind);
 
     if (NumPlayers == 1)

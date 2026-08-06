@@ -670,7 +670,7 @@ void Rank_get_saved_score(player_t *pl)
     rank = unused;
     /*warn("timestamp of lru node = %u", rank->timestamp);*/
 
-    Init_ranknode(rank, pl->name, pl->username, pl->hostname);
+    Init_ranknode(rank, pl->name, pl->username.c_str(), pl->hostname);
     rank->pl = pl;
     rank->timestamp = time(nullptr);
     Player_set_score(pl, 0);

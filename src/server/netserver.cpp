@@ -454,7 +454,7 @@ void Destroy_connection(connection_t *connp, const char *reason)
     printf("%s Goodbye %s=%s@%s|%s (\"%s\")\n",
            showtime(),
            connp->nick ? connp->nick : "",
-           connp->user ? connp->user : "",
+           connp->user.c_str(),
            connp->host ? connp->host : "",
            connp->dpy ? connp->dpy : "",
            reason);
@@ -472,7 +472,8 @@ void Destroy_connection(connection_t *connp, const char *reason)
         Delete_player(pl);
     }
 
-    XFREE(connp->user);
+    // XFREE(connp->user);
+    connp->user.clear();
     XFREE(connp->nick);
     XFREE(connp->dpy);
     XFREE(connp->addr);
@@ -506,7 +507,9 @@ int Check_connection(char *user, char *nick, char *dpy, char *addr)
         {
             if (strcasecmp(connp->nick, nick) == 0)
             {
-                if (!strcmp(user, connp->user) && !strcmp(dpy, connp->dpy) && !strcmp(addr, connp->addr))
+                if (!strcmp(user, connp->user.c_str()) &&
+                    !strcmp(dpy, connp->dpy) &&
+                    !strcmp(addr, connp->addr))
                     return connp->my_port;
                 return -1;
             }
@@ -646,7 +649,10 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
         }
         if (strcasecmp(connp->nick, nick) == 0)
         {
-            if (connp->state == CONN_LISTENING && strcmp(user, connp->user) == 0 && strcmp(dpy, connp->dpy) == 0 && version == connp->version)
+            if (connp->state == CONN_LISTENING &&
+                strcmp(user, connp->user.c_str()) == 0 &&
+                strcmp(dpy, connp->dpy) == 0 &&
+                version == connp->version)
                 /*
                  * May happen for multi-homed hosts
                  * and if previous packet got lost.
@@ -728,7 +734,7 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
                  SOCKBUF_WRITE | SOCKBUF_READ | SOCKBUF_LOCK);
 
     connp->my_port = my_port;
-    connp->user = xp_strdup(user);
+    connp->user = user;
     connp->nick = xp_strdup(nick);
     connp->dpy = xp_strdup(dpy);
     connp->addr = xp_strdup(addr);
@@ -787,7 +793,14 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
     connp->debris_colors = 0;
     connp->spark_rand = DEF_SPARK_RAND;
     Conn_set_state(connp, CONN_LISTENING, CONN_FREE);
-    if (connp->w.buf == nullptr || connp->r.buf == nullptr || connp->c.buf == nullptr || connp->user == nullptr || connp->nick == nullptr || connp->dpy == nullptr || connp->addr == nullptr || connp->host == nullptr)
+    if (connp->w.buf == nullptr ||
+        connp->r.buf == nullptr ||
+        connp->c.buf == nullptr ||
+        // connp->user == nullptr ||
+        connp->nick == nullptr ||
+        connp->dpy == nullptr ||
+        connp->addr == nullptr ||
+        connp->host == nullptr)
     {
         error("Not enough memory for connection");
         /* socket is not yet connected, but it doesn't matter much. */
@@ -854,7 +867,7 @@ static int Handle_listening(connection_t *connp)
     }
 
     printf("%s Welcome %s=%s@%s|%s (%s/%d)", showtime(),
-           connp->nick, connp->user, connp->host, connp->dpy,
+           connp->nick, connp->user.c_str(), connp->host, connp->dpy,
            connp->addr, connp->his_port);
     printf(" (version %04x)\n", connp->version);
 
@@ -875,10 +888,10 @@ static int Handle_listening(connection_t *connp)
     }
     Fix_user_name(user);
     Fix_nick_name(nick);
-    if (strcmp(user, connp->user))
+    if (strcmp(user, connp->user.c_str()))
     {
         printf("%s Client verified incorrectly (%s,%s)(%s,%s)\n",
-               showtime(), user, nick, connp->user, connp->nick);
+               showtime(), user, nick, connp->user.c_str(), connp->nick);
         Send_reply(connp, PKT_VERIFY, PKT_FAILURE);
         Send_reliable(connp);
         Destroy_connection(connp, "verify incorrect");
@@ -1116,7 +1129,8 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
     }
     pl = Player_by_index(NumPlayers);
     strlcpy(pl->name, connp->nick, MAX_CHARS);
-    strlcpy(pl->username, connp->user, MAX_CHARS);
+    // strlcpy(pl->username, connp->user, MAX_CHARS);
+    pl->username = connp->user;
     strlcpy(pl->hostname, connp->host, MAX_CHARS);
     if (connp->team != TEAM_NOT_SET)
         pl->team = connp->team;
@@ -1200,11 +1214,11 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
                           World.name, World.author);
         else if (Team_play(world))
             Set_message_f("%s (%s, team %d) has entered \"%s\", made by %s.",
-                          pl->name, pl->username, pl->team,
+                          pl->name, pl->username.c_str(), pl->team,
                           World.name, World.author);
         else
             Set_message_f("%s (%s) has entered \"%s\", made by %s.",
-                          pl->name, pl->username, World.name, World.author);
+                          pl->name, pl->username.c_str(), World.name, World.author);
     }
 
     if (options.greeting)
@@ -1604,7 +1618,7 @@ int Send_player(connection_t *connp, int id)
                       "%S",
                       PKT_PLAYER, pl->id,
                       pl->team, pl->mychar,
-                      pl->name, pl->username, pl->hostname,
+                      pl->name, pl->username.c_str(), pl->hostname,
                       buf);
     if (n > 0)
     {
@@ -2729,7 +2743,9 @@ static void Handle_talk(connection_t *connp, char *str)
             /* now look for a partial match on both nick and username. */
             for (sent = -1, i = 0; i < NumPlayers; i++)
             {
-                if (strncasecmp(Player_by_index(i)->name, str, len) == 0 || strncasecmp(Player_by_index(i)->username, str, len) == 0)
+                player_t *pl_i = Player_by_index(i);
+                if (strncasecmp(pl_i->name, str, len) == 0 ||
+                    strncasecmp(pl_i->username.c_str(), str, len) == 0)
                     sent = (sent == -1) ? i : -2;
             }
         }
