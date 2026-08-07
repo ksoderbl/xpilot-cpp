@@ -2501,16 +2501,16 @@ static const char *get_rgba_color_option(xp_option_t *opt)
     return buf;
 }
 
-#define COLOR(variable, defval, description)   \
-    XP_STRING_OPTION(#variable,                \
-                     defval,                   \
-                     nullptr,                  \
-                     0,                        \
-                     set_rgba_color_option,    \
-                     &variable,                \
-                     get_rgba_color_option,    \
-                     XP_OPTFLAG_CONFIG_COLORS, \
-                     "The color of " description ".\n")
+#define COLOR(variable, defval, description)            \
+    XP_CONST_CHAR_STAR_OPTION(#variable,                \
+                              defval,                   \
+                              nullptr,                  \
+                              0,                        \
+                              set_rgba_color_option,    \
+                              &variable,                \
+                              get_rgba_color_option,    \
+                              XP_OPTFLAG_CONFIG_COLORS, \
+                              "The color of " description ".\n")
 
 static xp_option_t sdlgui_options[] = {
 

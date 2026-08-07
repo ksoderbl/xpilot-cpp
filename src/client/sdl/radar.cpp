@@ -659,7 +659,7 @@ static const char *Get_geometry(xp_option_t *opt)
 }
 
 static xp_option_t radar_options[] = {
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "radarGeometry",
         "200x200+10+10",
         nullptr,

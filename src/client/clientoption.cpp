@@ -79,7 +79,7 @@ static const char *Option_default_value_to_string(xp_option_t *opt)
     case xp_double_option:
         sprintf(buf, "%.3f", opt->dbl_defval);
         break;
-    case xp_string_option:
+    case xp_const_char_star_option:
         if (opt->str_defval && strlen(opt->str_defval) > 0)
             strlcpy(buf, opt->str_defval, sizeof(buf));
         else
@@ -108,7 +108,7 @@ static void Print_default_value(xp_option_t *opt)
     case xp_bool_option:
     case xp_int_option:
     case xp_double_option:
-    case xp_string_option:
+    case xp_const_char_star_option:
         if (strlen(defval) > 0)
             printf("        The default value is: %s.\n", defval);
         else
@@ -314,7 +314,7 @@ bool Set_string_option(xp_option_t *opt, const char *value,
     bool retval = true;
 
     assert(opt);
-    assert(opt->type == xp_string_option);
+    assert(opt->type == xp_const_char_star_option);
     assert(opt->str_ptr || (opt->str_setfunc && opt->str_getfunc));
     assert(value); /* allow nullptr ? */
 
@@ -554,7 +554,7 @@ bool Set_option(const char *name, const char *value, xp_option_origin_t origin)
         return Set_int_option(opt, atoi(value), origin);
     case xp_double_option:
         return Set_double_option(opt, atof(value), origin);
-    case xp_string_option:
+    case xp_const_char_star_option:
         return Set_string_option(opt, value, origin);
     case xp_key_option:
         return Set_key_option(opt, value, origin);
@@ -636,7 +636,7 @@ const char *Option_value_to_string(xp_option_t *opt)
     case xp_double_option:
         sprintf(buf, "%.3f", *opt->dbl_ptr);
         break;
-    case xp_string_option:
+    case xp_const_char_star_option:
         /*
          * Assertion in Store_option guarantees one of these is not nullptr.
          */
@@ -750,7 +750,7 @@ void Store_option(xp_option_t *opt)
     case xp_double_option:
         Set_double_option(opt, opt->dbl_defval, xp_option_origin_default);
         break;
-    case xp_string_option:
+    case xp_const_char_star_option:
         assert(opt->str_defval);
         assert(opt->str_ptr || (opt->str_setfunc && opt->str_getfunc));
         Set_string_option(opt, opt->str_defval, xp_option_origin_default);

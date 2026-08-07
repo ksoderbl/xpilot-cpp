@@ -443,7 +443,7 @@ static const char *Get_fontName(xp_option_t *opt)
 }
 
 static xp_option_t sdlinit_options[] = {
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "geometry",
         "1280x1024",
         nullptr,
@@ -468,7 +468,7 @@ static xp_option_t sdlinit_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Height of font used for strings painted on the map.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "TTFont",
         CONF_FONTDIR "FreeSansBoldOblique.ttf",
         nullptr, 0,

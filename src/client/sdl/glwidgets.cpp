@@ -275,7 +275,7 @@ static void option_callback(void *tmp, const char *value)
     case xp_double_option:
         Set_double_option(opt, *(opt->dbl_ptr), xp_option_origin_config);
         return;
-    case xp_string_option:
+    case xp_const_char_star_option:
         if (Option_get_flags(opt) & XP_OPTFLAG_CONFIG_COLORS)
         {
             Set_string_option(opt, value, xp_option_origin_config);
@@ -309,7 +309,7 @@ GLWidget *Init_OptionWidget(xp_option_t *opt, Uint32 *fgcolor, Uint32 *bgcolor)
         if (Option_get_flags(opt) & XP_OPTFLAG_CONFIG_DEFAULT)
             return Init_DoubleChooserWidget(opt->name, opt->dbl_ptr, opt->dbl_minval, opt->dbl_maxval, fgcolor, bgcolor, option_callback, opt);
         break;
-    case xp_string_option:
+    case xp_const_char_star_option:
         if (Option_get_flags(opt) & XP_OPTFLAG_CONFIG_COLORS)
             return Init_ColorChooserWidget(opt->name, (Uint32 *)opt->private_data, fgcolor, bgcolor, option_callback, opt);
         break;

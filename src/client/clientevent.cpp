@@ -1544,7 +1544,7 @@ xp_option_t key_options[] = {
      * These are after the keys so that the key options will be
      * present when the pointer button options are stored.
      */
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "pointerButton1",
         "keyFireShot",
         nullptr, 0,
@@ -1552,7 +1552,7 @@ xp_option_t key_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The keys to activate when pressing the first mouse button.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "pointerButton2",
         "keyThrust",
         nullptr, 0,
@@ -1560,7 +1560,7 @@ xp_option_t key_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The keys to activate when pressing the second mouse button.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "pointerButton3",
         "keyThrust",
         nullptr, 0,
@@ -1568,7 +1568,7 @@ xp_option_t key_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The keys to activate when pressing the third mouse button.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "pointerButton4",
         "",
         nullptr, 0,
@@ -1576,7 +1576,7 @@ xp_option_t key_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The keys to activate when pressing the fourth mouse button.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "pointerButton5",
         "",
         nullptr, 0,

@@ -458,7 +458,7 @@ xp_option_t talk_macro_options[] = {
     /*
      * Default warning macros for newbies.
      */
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg1",
         "#t:***    BALL! Our ball is gone! Save it!   ***",
         nullptr, 0,
@@ -466,7 +466,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 1.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg2",
         "#t:*** SAFE! Our ball is safe. ***",
         nullptr, 0,
@@ -474,7 +474,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 2.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg3",
         "#t:*** COVER! The enemy ball is approaching our base. ***",
         nullptr, 0,
@@ -482,7 +482,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 3.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg4",
         "#t:*** POP! The enemy ball is back at the enemy base. ***",
         nullptr, 0,
@@ -494,7 +494,7 @@ xp_option_t talk_macro_options[] = {
      * This macro swaps between teams 2 and 4, useful on Blood's Music
      * maps.
      */
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg5",
         "#=[#t|2|/team 4|/team 2]",
         nullptr, 0,
@@ -502,7 +502,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 5.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg6",
         "",
         nullptr, 0,
@@ -510,7 +510,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 6.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg7",
         "",
         nullptr, 0,
@@ -518,7 +518,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 7.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg8",
         "",
         nullptr, 0,
@@ -526,7 +526,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 8.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg9",
         "",
         nullptr, 0,
@@ -534,7 +534,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 9.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg10",
         "",
         nullptr, 0,
@@ -542,7 +542,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 10.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg11",
         "",
         nullptr, 0,
@@ -550,7 +550,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 11.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg12",
         "",
         nullptr, 0,
@@ -558,7 +558,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 12.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg13",
         "",
         nullptr, 0,
@@ -566,7 +566,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 13.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg14",
         "",
         nullptr, 0,
@@ -574,7 +574,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 14.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg15",
         "",
         nullptr, 0,
@@ -582,7 +582,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 15.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg16",
         "",
         nullptr, 0,
@@ -590,7 +590,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 16.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg17",
         "",
         nullptr, 0,
@@ -598,7 +598,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 17.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg18",
         "",
         nullptr, 0,
@@ -606,7 +606,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 18.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg19",
         "",
         nullptr, 0,
@@ -614,7 +614,7 @@ xp_option_t talk_macro_options[] = {
         XP_OPTFLAG_DEFAULT,
         "Talkmessage 19.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "msg20",
         "",
         nullptr, 0,

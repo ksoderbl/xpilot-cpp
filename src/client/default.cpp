@@ -584,7 +584,7 @@ xp_option_t default_options[] = {
         XP_OPTFLAG_NEVER_SAVE,
         "List all servers running on the local network.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "shutdown",
         "",
         xpArgs.shutdown_reason,
@@ -594,7 +594,7 @@ xp_option_t default_options[] = {
         "Shutdown the server with a message.\n"
         "The message used is the first argument to this option.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "name",
         "",
         nullptr, 0,
@@ -602,7 +602,7 @@ xp_option_t default_options[] = {
         XP_OPTFLAG_KEEP,
         "Set the nickname.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "user",
         "",
         nullptr, 0,
@@ -610,7 +610,7 @@ xp_option_t default_options[] = {
         XP_OPTFLAG_KEEP,
         "Set the username.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "host",
         "",
         nullptr, 0,
@@ -926,7 +926,7 @@ xp_option_t default_options[] = {
         "Allows drawing polygon bitmaps specified by the (new-style) map.\n"
         "Be warned that this needs a reasonably fast graphics system.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "protocolVersion",
         "",
         nullptr, 0,
@@ -1218,7 +1218,7 @@ xp_option_t default_options[] = {
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Should the fighters have marking lights, just like airplanes?\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "modifierBank1",
         "",
         modBankStr[0], sizeof modBankStr[0],
@@ -1226,7 +1226,7 @@ xp_option_t default_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The default weapon modifier values for the first modifier bank.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "modifierBank2",
         "",
         modBankStr[1], sizeof modBankStr[1],
@@ -1234,7 +1234,7 @@ xp_option_t default_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The default weapon modifier values for the second modifier bank.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "modifierBank3",
         "",
         modBankStr[2], sizeof modBankStr[2],
@@ -1242,7 +1242,7 @@ xp_option_t default_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The default weapon modifier values for the third modifier bank.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "modifierBank4",
         "",
         modBankStr[3], sizeof modBankStr[3],
@@ -1250,7 +1250,7 @@ xp_option_t default_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The default weapon modifier values for the fourth modifier bank.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "shipShape",
         "",
         nullptr, 0,
@@ -1265,7 +1265,7 @@ xp_option_t default_options[] = {
         "and Ship Shaper for Java.  See the XPilot FAQ for details.\n"
         "See also the \"shipShapeFile\" option below.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "shipShapeFile",
         CONF_SHIP_FILE,
         nullptr, 0,
@@ -1284,7 +1284,7 @@ xp_option_t default_options[] = {
         "where all characters up to the first left parenthesis don't matter.\n"
         /* shipshopshapshepshit getting nuts from all these shpshp-s. */),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "texturePath",
         CONF_TEXTUREDIR,
         nullptr, 0,
@@ -1314,7 +1314,7 @@ xp_option_t default_options[] = {
     "Specifies how many frames between radar window updates.\n"),
 #endif
 
-// XP_STRING_OPTION(
+// XP_CONST_CHAR_STAR_OPTION(
 //     "clientRankFile",
 //     "",
 //     clientRankFile,
@@ -1323,7 +1323,7 @@ xp_option_t default_options[] = {
 //     XP_OPTFLAG_DEFAULT,
 //     "An optional file where clientside kill/death rank is stored.\n"),
 
-// XP_STRING_OPTION(
+// XP_CONST_CHAR_STAR_OPTION(
 //     "clientRankHTMLFile",
 //     "",
 //     clientRankHTMLFile,
@@ -1333,7 +1333,7 @@ xp_option_t default_options[] = {
 //     "An optional file where clientside kill/death rank is\n"
 //     "published in HTML format.\n"),
 
-// XP_STRING_OPTION(
+// XP_CONST_CHAR_STAR_OPTION(
 //     "clientRankHTMLNOJSFile",
 //     "",
 //     clientRankHTMLNOJSFile,
@@ -1344,7 +1344,7 @@ xp_option_t default_options[] = {
 //     "published in HTML format, w/o JavaScript.\n"),
 
 #ifdef SOUND
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "soundFile",
         CONF_SOUNDFILE,
         soundFile, sizeof soundFile,

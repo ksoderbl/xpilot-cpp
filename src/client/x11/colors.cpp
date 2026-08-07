@@ -1145,7 +1145,7 @@ static xp_option_t color_options[] = {
         "Use value 16. Other values are not actively supported.\n"),
 
     /* 16 user definable color values */
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color0",
         XP_COLOR0,
         color_names[0],
@@ -1154,7 +1154,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the first color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color1",
         XP_COLOR1,
         color_names[1],
@@ -1163,7 +1163,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the second color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color2",
         XP_COLOR2,
         color_names[2],
@@ -1172,7 +1172,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the third color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color3",
         XP_COLOR3,
         color_names[3],
@@ -1181,7 +1181,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the fourth color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color4",
         XP_COLOR4,
         color_names[4],
@@ -1190,7 +1190,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the fifth color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color5",
         XP_COLOR5,
         color_names[5],
@@ -1199,7 +1199,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the sixth color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color6",
         XP_COLOR6,
         color_names[6],
@@ -1208,7 +1208,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the seventh color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color7",
         XP_COLOR7,
         color_names[7],
@@ -1217,7 +1217,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the eighth color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color8",
         XP_COLOR8,
         color_names[8],
@@ -1226,7 +1226,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the ninth color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color9",
         XP_COLOR9,
         color_names[9],
@@ -1235,7 +1235,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the tenth color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color10",
         XP_COLOR10,
         color_names[10],
@@ -1244,7 +1244,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the eleventh color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color11",
         XP_COLOR11,
         color_names[11],
@@ -1253,7 +1253,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the twelfth color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color12",
         XP_COLOR12,
         color_names[12],
@@ -1262,7 +1262,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the thirteenth color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color13",
         XP_COLOR13,
         color_names[13],
@@ -1271,7 +1271,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the fourteenth color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color14",
         XP_COLOR14,
         color_names[14],
@@ -1280,7 +1280,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the fifteenth color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "color15",
         XP_COLOR15,
         color_names[15],
@@ -1289,7 +1289,7 @@ static xp_option_t color_options[] = {
         XP_OPTFLAG_DEFAULT,
         "The color value for the sixteenth color.\n"),
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "sparkColors",
         "5,6,7,3",
         sparkColors,

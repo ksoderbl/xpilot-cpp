@@ -915,7 +915,7 @@ static const char *getRecordFile(xp_option_t *opt)
 
 xp_option_t record_options[] = {
 
-    XP_STRING_OPTION(
+    XP_CONST_CHAR_STAR_OPTION(
         "recordFile",
         "",
         nullptr, 0,
