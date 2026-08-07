@@ -104,9 +104,6 @@
 #define D(x)
 #endif
 
-#define CONF_ZCAT_EXT ".gz"
-#define CONF_ZCAT_FORMAT "gzip -d -c < %s"
-
 void Conf_print(void);
 char *Conf_datadir(void);
 char *Conf_defaults_file_name(void);
@@ -124,5 +121,3 @@ char *Conf_soundfile(void);
 char *Conf_localguru(void);
 char *Conf_contactaddress(void);
 char *Conf_robotfile(void);
-char *Conf_zcat_ext(void);
-char *Conf_zcat_format(void);
