@@ -94,15 +94,6 @@
 #define CONF_CONTACTADDRESS "xpilot@xpilot.org"
 #endif
 
-/*
- * If COMPRESSED_MAPS is defined, the server will attempt to uncompress
- * maps on the fly (but only if neccessary). ZCAT_FORMAT should produce
- * a command that will unpack the given .gz file to stdout (for use in popen).
- * ZCAT_EXT should define the proper compressed file extension.
- */
-
-#define COMPRESSED_MAPS
-
 #ifdef DEBUG
 #define D(x)            \
     {                   \

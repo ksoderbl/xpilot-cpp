@@ -117,7 +117,7 @@ void audioInit(char *display)
                 while (ifile && j < MAX_RANDOM_SOUNDS)
                 {
                     if (*ifile == '/')
-                        table[i].filenames[j] = xp_strdup(ifile);
+                        table[i].filenames[j] = strdup(ifile);
                     else
                     {
                         size_t filename_size = strlen(Conf_sounddir()) + strlen(ifile) + 1;

@@ -175,7 +175,7 @@ int main(int argc, char **argv)
             warn("Failed name lookup on: %s", options.serverHost);
             exit(1);
         }
-        serverAddr = xp_strdup(addr);
+        serverAddr = strdup(addr);
         strlcpy(Server.host, options.serverHost, sizeof(Server.host));
     }
     else

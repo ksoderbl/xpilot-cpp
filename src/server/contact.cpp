@@ -1084,7 +1084,7 @@ void Set_deny_hosts(void)
 
     num_addr_mask = 0;
     XFREE(addr_mask_list);
-    if (!(list = xp_strdup(options.denyHosts)))
+    if (!(list = strdup(options.denyHosts)))
         return;
 
     for (tok = strtok(list, list_sep); tok; tok = strtok(nullptr, list_sep))

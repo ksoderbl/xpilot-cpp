@@ -521,7 +521,7 @@ static int Internet_server_show_cb(int widget, void *user_data,
        of this routine, so memory has to be persistant */
     static char ipport[MAX_HOST_LEN];
     char *eqptr = nullptr;
-    char *playslist = xp_strdup(sip->playlist.c_str());
+    char *playslist = strdup(sip->playlist.c_str());
     static const char longest_text[] = "                                 ";
 
     char *s;

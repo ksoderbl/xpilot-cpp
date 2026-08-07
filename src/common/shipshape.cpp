@@ -561,14 +561,14 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
 
         case 8: /* Keyword is 'name' */
 #ifdef _NAMEDSHIPS
-            ship->name = xp_strdup(teststr);
+            ship->name = strdup(teststr);
             /* ship->name[strlen(ship->name)-1] = '\0'; */
 #endif
             break;
 
         case 9: /* Keyword is 'author' */
 #ifdef _NAMEDSHIPS
-            ship->author = xp_strdup(teststr);
+            ship->author = strdup(teststr);
             /* ship->author[strlen(ship->author)-1] = '\0'; */
 #endif
             break;

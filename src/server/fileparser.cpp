@@ -472,7 +472,7 @@ static bool parseOpenFile(FILE *ifile, optOrigin opt_origin)
 static int copyFilename(const char *file)
 {
     XFREE(FileName);
-    FileName = xp_strdup(file);
+    FileName = strdup(file);
     return (FileName != 0);
 }
 
@@ -551,73 +551,6 @@ static char *fileAddExtension(const char *file, const char *ext)
     return path;
 }
 
-#ifdef CONF_COMPRESSED_MAPS
-static bool usePclose = false;
-
-static bool isCompressed(const char *filename)
-{
-    int fnlen = strlen(filename);
-    int celen = strlen(Conf_zcat_ext());
-
-    if (fnlen > celen && !strcmp(&filename[fnlen - celen], Conf_zcat_ext()))
-        return true;
-    return false;
-}
-
-static void closeCompressedFile(FILE *fp)
-{
-    if (usePclose)
-    {
-        pclose(fp);
-        usePclose = false;
-        XFREE(FileName);
-    }
-    else
-        fileClose(fp);
-}
-
-static FILE *openCompressedFile(const char *filename)
-{
-    FILE *fp = nullptr;
-    char *cmdline = nullptr;
-    char *newname = nullptr;
-
-    usePclose = false;
-    if (!isCompressed(filename))
-    {
-        if (access(filename, 4) == 0)
-            return fileOpen(filename);
-        newname = fileAddExtension(filename, Conf_zcat_ext());
-        if (!newname)
-            return nullptr;
-        filename = newname;
-    }
-    if (access(filename, 4) == 0)
-    {
-        cmdline = XMALLOC(char,
-                          strlen(CONF_ZCAT_FORMAT) + strlen(filename) + 1);
-        if (cmdline)
-        {
-            sprintf(cmdline, CONF_ZCAT_FORMAT, filename);
-            fp = popen(cmdline, "r");
-            if (fp)
-            {
-                usePclose = true;
-                if (!copyFilename(filename))
-                {
-                    closeCompressedFile(fp);
-                    fp = nullptr;
-                }
-            }
-        }
-    }
-    XFREE(newname);
-    XFREE(cmdline);
-    return fp;
-}
-
-#else
-
 static bool isCompressed(const char *filename)
 {
     return false;
@@ -632,7 +565,6 @@ static FILE *openCompressedFile(const char *filename)
 {
     return fileOpen(filename);
 }
-#endif
 
 /*
  * Open a map file.
@@ -640,21 +572,13 @@ static FILE *openCompressedFile(const char *filename)
  * or compress filename extension.
  * The search order should be:
  *      filename
- *      filename.gz                   if CONF_COMPRESSED_MAPS is true
  *      filename.xp2
- *      filename.xp2.gz               if CONF_COMPRESSED_MAPS is true
  *      filename.xp
- *      filename.xp.gz                if CONF_COMPRESSED_MAPS is true
  *      filename.map
- *      filename.map.gz               if CONF_COMPRESSED_MAPS is true
  *      CONF_MAPDIR filename
- *      CONF_MAPDIR filename.gz       if CONF_COMPRESSED_MAPS is true
  *      CONF_MAPDIR filename.xp2
- *      CONF_MAPDIR filename.xp2.gz   if CONF_COMPRESSED_MAPS is true
  *      CONF_MAPDIR filename.xp
- *      CONF_MAPDIR filename.xp.gz    if CONF_COMPRESSED_MAPS is true
  *      CONF_MAPDIR filename.map
- *      CONF_MAPDIR filename.map.gz   if CONF_COMPRESSED_MAPS is true
  */
 static FILE *openMapFile(const char *filename)
 {
