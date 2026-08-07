@@ -867,7 +867,7 @@ static int Handle_listening(connection_t *connp)
     }
 
     printf("%s Welcome %s=%s@%s|%s (%s/%d)", showtime(),
-           connp->nick, connp->user.c_str(), connp->host, connp->dpy,
+           connp->nick.c_str(), connp->user.c_str(), connp->host, connp->dpy,
            connp->addr, connp->his_port);
     printf(" (version %04x)\n", connp->version);
 
@@ -891,7 +891,7 @@ static int Handle_listening(connection_t *connp)
     if (strcmp(user, connp->user.c_str()))
     {
         printf("%s Client verified incorrectly (%s,%s)(%s,%s)\n",
-               showtime(), user, nick, connp->user.c_str(), connp->nick);
+               showtime(), user, nick, connp->user.c_str(), connp->nick.c_str());
         Send_reply(connp, PKT_VERIFY, PKT_FAILURE);
         Send_reliable(connp);
         Destroy_connection(connp, "verify incorrect");
@@ -996,11 +996,11 @@ static int Handle_setup(connection_t *connp)
         Conn_set_state(connp, CONN_DRAIN, CONN_LOGIN);
 
 #if 0
-    if (CheckBanned(connp->user, connp->nick, connp->addr, connp->host)) {
+    if (CheckBanned(connp->user, connp->nick.c_str(), connp->addr, connp->host)) {
     Destroy_connection(connp, "Banned from server, contact " LOCALGURU);
     return -1;
     }
-    if (!CheckAllowed(connp->user, connp->nick, connp->addr, connp->host)) {
+    if (!CheckAllowed(connp->user, connp->nick.c_str(), connp->addr, connp->host)) {
     Destroy_connection(connp, "Restricted nick, contact " LOCALGURU);
     return -1;
     }
@@ -1416,7 +1416,7 @@ int Input(void)
              */
             if (connp->state & (CONN_PLAYING | CONN_READY))
             {
-                sprintf(msg, "%s mysteriously disappeared!?", connp->nick);
+                sprintf(msg, "%s mysteriously disappeared!?", connp->nick.c_str());
                 Set_message(msg);
             }
             sprintf(msg, "timeout %02x", connp->state);
