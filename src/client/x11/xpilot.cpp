@@ -81,7 +81,7 @@ static void printfile(const char *filename)
     fclose(fp);
 }
 
-const char *Program_name(void)
+std::string Program_name(void)
 {
     return "xpilot-cpp-client-x11";
 }

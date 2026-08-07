@@ -54,12 +54,12 @@ typedef struct
 
 static int Mapdata_extract(const char *name);
 static int Mapdata_download(const URL *url, const char *filePath);
-static int Url_parse(const char *urlstr, URL *url);
+static int Url_parse(const std::string &urlstr, URL *url);
 static void Url_free_parsed(URL *url);
 
 static bool setup_done = false;
 
-int Mapdata_setup(const char *urlstr)
+int Mapdata_setup(const std::string &urlstr)
 {
     URL url;
     const char *name, *dir = nullptr;
@@ -479,7 +479,7 @@ done:
     return rv;
 }
 
-static int Url_parse(const char *urlstr, URL *url)
+static int Url_parse(const std::string &urlstr, URL *url)
 {
     int len, i, beg, doPort;
     char *buf;
@@ -488,8 +488,8 @@ static int Url_parse(const char *urlstr, URL *url)
     url->port = 80;
     url->path = "/";
 
-    len = strlen(urlstr);
-    buf = strdup(urlstr);
+    len = urlstr.length();
+    buf = strdup(urlstr.c_str());
     if (buf == nullptr)
     {
         error("no memory for URL");

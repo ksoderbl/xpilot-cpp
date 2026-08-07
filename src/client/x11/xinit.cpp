@@ -119,7 +119,7 @@ static char myClass[] = "XPilot";
 static struct
 {
     uint8_t *data;
-    const char *keysText;
+    std::string keysText;
 } itemBitmapData[NUM_ITEMS] = {
     {itemEnergyPack_bits,
      "Extra energy/fuel"},
@@ -204,7 +204,7 @@ static int Player_callback(int, void *, const char **);
 int button_form;
 static int menu_button;
 
-const char *Item_get_text(int i)
+std::string Item_get_text(int i)
 {
     return itemBitmapData[i].keysText;
 }

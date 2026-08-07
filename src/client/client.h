@@ -323,7 +323,7 @@ extern int protocolVersion;
 /*
  * somewhere
  */
-const char *Program_name(void);
+std::string Program_name(void);
 int Bitmap_add(std::string filename, int count, bool scalable);
 
 void Pointer_control_newbie_message(void);
@@ -433,7 +433,7 @@ extern void xpilotShutdown(void);
 /*
  * mapdata.c
  */
-extern int Mapdata_setup(const char *);
+extern int Mapdata_setup(const std::string &urlstr);
 
 /*
  * paintdata.c

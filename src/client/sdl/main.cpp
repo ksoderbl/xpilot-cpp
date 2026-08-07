@@ -52,7 +52,7 @@ static void sigcatch(int signum)
     exit(1);
 }
 
-const char *Program_name(void)
+std::string Program_name(void)
 {
     return "xpilot-cpp-client-sdl";
 }

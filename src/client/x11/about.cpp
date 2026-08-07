@@ -255,7 +255,7 @@ void Expose_about_window(void)
             old_y = y;
             y = DrawShadowText(dpy, aboutWindow, textGC,
                                5 * BORDER + 2 * ITEM_SIZE, old_y,
-                               Item_get_text(i),
+                               Item_get_text(i).c_str(),
                                colors[WHITE].pixel, colors[BLACK].pixel);
             if (y - old_y < 2 * ITEM_TRIANGLE_SIZE)
                 y = old_y + 2 * ITEM_TRIANGLE_SIZE;

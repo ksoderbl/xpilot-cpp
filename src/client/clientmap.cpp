@@ -1610,11 +1610,11 @@ static int Handle_shot_vector(std::array<std::vector<ShotT>, N> &shotTypes,
                               int type,
                               uint8_t *p,
                               int n,
-                              const char *name)
+                              std::string name)
 {
     if (type < 0 || type >= static_cast<int>(N))
     {
-        error("Invalid %s type %d", name, type);
+        error("Invalid %s type %d", name.c_str(), type);
         return -1;
     }
 
@@ -1623,7 +1623,7 @@ static int Handle_shot_vector(std::array<std::vector<ShotT>, N> &shotTypes,
     if (n <= 0)
     {
         if (n < 0)
-            printf("%s %d < 0\n", name, n);
+            printf("%s %d < 0\n", name.c_str(), n);
 
         shotList.clear();
         return 0;
@@ -1635,7 +1635,7 @@ static int Handle_shot_vector(std::array<std::vector<ShotT>, N> &shotTypes,
     }
     catch (const std::bad_alloc &)
     {
-        error("No memory for %s", name);
+        error("No memory for %s", name.c_str());
         shotList.clear();
         return -1;
     }

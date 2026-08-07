@@ -69,9 +69,9 @@ extern void Store_X_options(void);
 extern void Handle_X_options(void);
 
 /*
- * Prototypes for xinit.c
+ * Prototypes for xinit.cpp
  */
-extern const char *Item_get_text(int i);
+extern std::string Item_get_text(int i);
 extern int Init_top(void);
 extern void Expose_info_window(void);
 extern void Expose_button_window(int color, Window w);
