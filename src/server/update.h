@@ -26,10 +26,10 @@
 #include "player.h"
 
 void Update_objects(void);
-void Autopilot(player_t *pl, bool on);
-void Cloak(player_t *pl, bool on);
-void Deflector(player_t *pl, bool on);
-void Emergency_thrust(player_t *pl, bool on);
-void Emergency_shield(player_t *pl, bool on);
-void Phasing(player_t *pl, bool on);
-void Thrust(player_t *pl, bool on);
+void Autopilot(Player *pl, bool on);
+void Cloak(Player *pl, bool on);
+void Deflector(Player *pl, bool on);
+void Emergency_thrust(Player *pl, bool on);
+void Emergency_shield(Player *pl, bool on);
+void Phasing(Player *pl, bool on);
+void Thrust(Player *pl, bool on);

@@ -204,7 +204,7 @@ void Object_crash2(object_t *obj, int crashtype, int mapobj_ind)
     }
 }
 
-void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt)
+void Player_crash2(Player *pl, int crashtype, int mapobj_ind, int pt)
 {
     const char *howfmt = nullptr;
     const char *hudmsg = nullptr;
@@ -296,7 +296,7 @@ void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt)
 
     if (howfmt && hudmsg)
     {
-        player_t *pushers[MAX_RECORDED_SHOVES];
+        Player *pushers[MAX_RECORDED_SHOVES];
         int cnt[MAX_RECORDED_SHOVES];
         int num_pushers = 0;
         int total_pusher_count = 0;
@@ -348,11 +348,11 @@ void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt)
             bool was_tagged = false;
             bool pusher_is_tagged = false;
             double mult;
-            player_t dummy;
+            Player dummy;
 
             for (i = 0; i < num_pushers; i++)
             {
-                player_t *pusher = pushers[i];
+                Player *pusher = pushers[i];
                 const char *sep = (!i)                    ? " with help from "
                                   : (i < num_pushers - 1) ? ", "
                                                           : " and ";
@@ -609,7 +609,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
     return 1;
 }
 
-static void Bounce_player2(player_t *pl, move_t *move, int line, int point)
+static void Bounce_player2(Player *pl, move_t *move, int line, int point)
 {
     double c, s;   /* cosine and sine of 2 times line angle */
     double cl, sl; /* cosine and sine of line angle */
@@ -2906,7 +2906,7 @@ void Move_object2(object_t *obj)
 
 bool in_move_player = false;
 
-void Move_player2(player_t *pl)
+void Move_player2(Player *pl)
 {
     world_t *world = &World;
     clpos_t pos;
@@ -3049,7 +3049,7 @@ void Move_player2(player_t *pl)
     return;
 }
 
-void Turn_player2(player_t *pl, bool push)
+void Turn_player2(Player *pl, bool push)
 {
     world_t *world = &World;
     int new_dir = MOD2((int)(pl->float_dir + 0.5), ANGLE_RESOLUTION);

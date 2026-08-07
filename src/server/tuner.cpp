@@ -97,7 +97,7 @@ void tuner_allowshields(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            player_t *pl_i = Player_by_index(i);
+            Player *pl_i = Player_by_index(i);
 
             if (!Player_is_tank(pl_i))
             {

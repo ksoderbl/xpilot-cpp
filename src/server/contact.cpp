@@ -136,11 +136,11 @@ static int Kick_robot_players(int team)
         {
             /* kick robot with lowest score from any team but robot team */
             double low_score = FLT_MAX;
-            player_t *low_pl = nullptr;
+            Player *low_pl = nullptr;
 
             for (i = 0; i < NumPlayers; i++)
             {
-                player_t *pl_i = Player_by_index(i);
+                Player *pl_i = Player_by_index(i);
                 if (!Player_is_robot(pl_i) || pl_i->team == options.robotTeam)
                     continue;
                 if (Get_Score(pl_i) < low_score)
@@ -169,11 +169,11 @@ static int Kick_robot_players(int team)
         {
             /* kick robot with lowest score from this team */
             double low_score = FLT_MAX;
-            player_t *low_pl = nullptr;
+            Player *low_pl = nullptr;
 
             for (i = 0; i < NumPlayers; i++)
             {
-                player_t *pl_i = Player_by_index(i);
+                Player *pl_i = Player_by_index(i);
                 if (!Player_is_robot(pl_i) || pl_i->team != team)
                     continue;
                 if (Get_Score(pl_i) < low_score)
@@ -204,7 +204,7 @@ static int do_kick(int team, int nonlast)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        player_t *pl_i = Player_by_index(i);
+        Player *pl_i = Player_by_index(i);
 
         // if (pl_i->conn != nullptr && Player_is_paused(pl_i) && (team == TEAM_NOT_SET || (pl_i->team == team && pl_i->home_base != nullptr)) && !(pl_i->privs & PRIV_NOAUTOKICK) && (!nonlast || !(pl_i->privs & PRIV_AUTOKICKLAST)))
         if (pl_i->conn != nullptr && Player_is_paused(pl_i) && (team == TEAM_NOT_SET || (pl_i->team == team)))
@@ -283,7 +283,7 @@ static int Check_names(char *nick_name, char *user_name, char *host_name)
     }
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl_i = Player_by_index(i);
+        Player *pl_i = Player_by_index(i);
         if (strcasecmp(pl_i->name.c_str(), nick_name) == 0)
         {
             D(printf("%s %s\n", pl_i->name.c_str(), nick_name));
@@ -538,7 +538,7 @@ void Contact(int fd, void *arg)
             status = E_INVAL;
         else
         {
-            player_t *pl_found = Get_player_by_name(str, nullptr, nullptr);
+            Player *pl_found = Get_player_by_name(str, nullptr, nullptr);
 
             if (!pl_found)
                 status = E_NOT_FOUND;

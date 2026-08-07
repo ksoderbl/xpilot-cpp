@@ -25,5 +25,5 @@
 
 #include "player.h"
 
-void Transfer_tag(player_t *oldtag_pl, player_t *newtag_pl);
+void Transfer_tag(Player *oldtag_pl, Player *newtag_pl);
 void Check_tag(void);

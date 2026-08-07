@@ -66,11 +66,11 @@
  * and a string describing the error is stored in
  * 'errorstr_p' if that is not nullptr.
  */
-player_t *Get_player_by_name(const char *str,
-                             int *error_p, const char **errorstr_p)
+Player *Get_player_by_name(const char *str,
+                           int *error_p, const char **errorstr_p)
 {
     int i, id;
-    player_t *found_pl = nullptr, *pl;
+    Player *found_pl = nullptr, *pl;
     size_t len;
 
     if (str == nullptr || (len = strlen(str)) == 0)
@@ -151,13 +151,13 @@ match_several:
     return nullptr;
 }
 
-void Send_info_about_player(player_t *pl)
+void Send_info_about_player(Player *pl)
 {
     int i;
 
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl_i;
+        Player *pl_i;
 
         pl_i = Player_by_index(i);
         if (pl_i->conn != nullptr)
@@ -172,7 +172,7 @@ void Send_info_about_player(player_t *pl)
     }
 }
 
-void Set_swapper_state(player_t *pl)
+void Set_swapper_state(Player *pl)
 {
     world_t *world = &World;
 
@@ -185,7 +185,7 @@ void Set_swapper_state(player_t *pl)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            player_t *pl_i = Player_by_index(i);
+            Player *pl_i = Player_by_index(i);
 
             if (!Players_are_teammates(pl, pl_i) &&
                 !Player_is_paused(pl_i))
@@ -209,26 +209,26 @@ void Set_swapper_state(player_t *pl)
 #define CMD_RESULT_NOT_OPERATOR (-2)
 #define CMD_RESULT_NO_NAME (-3)
 
-static int Cmd_addr(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_advance(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_ally(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_get(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_help(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_kick(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_lock(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_maxturnsps(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_mute(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_op(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_password(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_pause(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_plinfo(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_queue(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_reset(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_set(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_shutdown(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_stats(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_version(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_addr(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_advance(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_ally(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_get(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_help(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_kick(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_lock(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_maxturnsps(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_mute(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_op(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_password(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_pause(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_plinfo(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_queue(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_reset(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_set(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_shutdown(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_stats(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_team(char *arg, Player *pl, bool oper, char *msg, size_t size);
+static int Cmd_version(char *arg, Player *pl, bool oper, char *msg, size_t size);
 
 typedef struct
 {
@@ -236,7 +236,7 @@ typedef struct
     const char *abbrev;
     const char *help;
     bool oper_only;
-    int (*cmd)(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+    int (*cmd)(char *arg, Player *pl, bool oper, char *msg, size_t size);
 } Command_info;
 
 /*
@@ -361,7 +361,7 @@ static Command_info commands[] = {
 /*
  * cmd parameter has no leading slash.
  */
-void Handle_player_command(player_t *pl, char *cmd)
+void Handle_player_command(Player *pl, char *cmd)
 {
     int i, result;
     char *args, msg[MSG_LEN];
@@ -449,9 +449,9 @@ void Handle_player_command(player_t *pl, char *cmd)
     }
 }
 
-static int Cmd_addr(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_addr(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
-    player_t *pl2 = nullptr;
+    Player *pl2 = nullptr;
     const char *errorstr;
 
     if (!oper)
@@ -487,7 +487,7 @@ static int Cmd_addr(char *arg, player_t *pl, bool oper, char *msg, size_t size)
  * around this, but not implemented now. Currently queue and advance
  * commands are disabled during recording.
  */
-static int Cmd_advance(char *arg, player_t *pl, bool oper,
+static int Cmd_advance(char *arg, Player *pl, bool oper,
                        char *msg, size_t size)
 {
     int result;
@@ -516,7 +516,7 @@ static int Cmd_advance(char *arg, player_t *pl, bool oper,
     return CMD_RESULT_SUCCESS;
 }
 
-static int Cmd_ally(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_ally(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
     world_t *world = &World;
     char *command;
@@ -576,7 +576,7 @@ static int Cmd_ally(char *arg, player_t *pl, bool oper, char *msg, size_t size)
         {
             /* a name is specified */
             const char *errorstr;
-            player_t *pl2 = Get_player_by_name(arg, nullptr, &errorstr);
+            Player *pl2 = Get_player_by_name(arg, nullptr, &errorstr);
 
             if (pl2)
             {
@@ -621,7 +621,7 @@ static int Cmd_ally(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     return result;
 }
 
-static int Cmd_get(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_get(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
     char value[MAX_CHARS];
     char *valcpy, *name;
@@ -662,7 +662,7 @@ static int Cmd_get(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     return retval;
 }
 
-static int Cmd_help(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_help(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
     int i;
 
@@ -713,9 +713,9 @@ static int Cmd_help(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     return CMD_RESULT_SUCCESS;
 }
 
-static int Cmd_kick(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_kick(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
-    player_t *kicked_pl;
+    Player *kicked_pl;
     const char *errorstr;
 
     if (!oper)
@@ -742,7 +742,7 @@ static int Cmd_kick(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     return CMD_RESULT_ERROR;
 }
 
-static int Cmd_lock(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_lock(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
     bool new_lock;
 
@@ -784,7 +784,7 @@ static int Cmd_lock(char *arg, player_t *pl, bool oper, char *msg, size_t size)
 }
 
 /* temporary hack */
-static int Cmd_maxturnsps(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_maxturnsps(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
     int new_maxturnsps;
 
@@ -809,10 +809,10 @@ static int Cmd_maxturnsps(char *arg, player_t *pl, bool oper, char *msg, size_t 
     return CMD_RESULT_SUCCESS;
 }
 
-static int Cmd_mute(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_mute(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
     int new_mute;
-    player_t *mutee;
+    Player *mutee;
     const char *errorstr;
 
     if (!arg || !*arg)
@@ -858,9 +858,9 @@ static int Cmd_mute(char *arg, player_t *pl, bool oper, char *msg, size_t size)
 }
 
 /* kps - this one is a bit obscure, maybe clean it up a bit ? */
-static int Cmd_op(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_op(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
-    player_t *issuer = pl;
+    Player *issuer = pl;
     char *origarg = arg;
     char *name;
     int cmd, priv;
@@ -932,7 +932,7 @@ static int Cmd_op(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     return CMD_RESULT_SUCCESS;
 }
 
-static int Cmd_password(char *arg, player_t *pl, bool oper,
+static int Cmd_password(char *arg, Player *pl, bool oper,
                         char *msg, size_t size)
 {
     if (!options.password || !arg || strcmp(arg, options.password))
@@ -958,10 +958,10 @@ static int Cmd_password(char *arg, player_t *pl, bool oper,
     return CMD_RESULT_SUCCESS;
 }
 
-static int Cmd_pause(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_pause(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
     const char *errorstr;
-    player_t *pl2;
+    Player *pl2;
 
     if (!oper)
         return CMD_RESULT_NOT_OPERATOR;
@@ -995,10 +995,10 @@ static int Cmd_pause(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     return CMD_RESULT_SUCCESS;
 }
 
-static int Cmd_plinfo(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_plinfo(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
     const char *errorstr;
-    player_t *pl2;
+    Player *pl2;
 
     if (!arg || !*arg)
         return CMD_RESULT_NO_NAME;
@@ -1027,7 +1027,7 @@ static int Cmd_plinfo(char *arg, player_t *pl, bool oper, char *msg, size_t size
     return CMD_RESULT_SUCCESS;
 }
 
-static int Cmd_queue(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_queue(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
     int result;
 
@@ -1047,7 +1047,7 @@ static int Cmd_queue(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     return CMD_RESULT_SUCCESS;
 }
 
-static int Cmd_reset(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_reset(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
     int i;
 
@@ -1065,7 +1065,7 @@ static int Cmd_reset(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     {
         for (i = NumPlayers - 1; i >= 0; i--)
         {
-            player_t *pl_i = Player_by_index(i);
+            Player *pl_i = Player_by_index(i);
 
             if (!Player_is_paused(pl_i))
                 Rank_set_score(pl_i, 0.0);
@@ -1096,7 +1096,7 @@ static int Cmd_reset(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     return CMD_RESULT_SUCCESS;
 }
 
-static int Cmd_stats(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_stats(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
     if (!arg || !*arg)
         return CMD_RESULT_NO_NAME;
@@ -1110,7 +1110,7 @@ static int Cmd_stats(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     return CMD_RESULT_SUCCESS;
 }
 
-static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_team(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
     world_t *world = &World;
     int i, team, swap_allowed;
@@ -1215,7 +1215,7 @@ static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)
             /* Found a cycle, now change the teams */
             base_t *xbase = pl->home_base, *xbase2;
             int xteam = pl->team, xteam2;
-            player_t *pl2 = pl;
+            Player *pl2 = pl;
 
             do
             {
@@ -1249,7 +1249,7 @@ static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     /* Swap a paused player away from the full team */
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        player_t *pl2 = Player_by_index(i);
+        Player *pl2 = Player_by_index(i);
 
         if (pl2->conn != nullptr && Player_is_paused(pl2) && (pl2->team == team) && pl2->home_base != nullptr)
         {
@@ -1276,7 +1276,7 @@ static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     return CMD_RESULT_SUCCESS;
 }
 
-static int Cmd_set(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+static int Cmd_set(char *arg, Player *pl, bool oper, char *msg, size_t size)
 {
     int i;
     char *option, *value;
@@ -1325,7 +1325,7 @@ static int Cmd_set(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     return CMD_RESULT_ERROR;
 }
 
-static int Cmd_shutdown(char *arg, player_t *pl, bool oper,
+static int Cmd_shutdown(char *arg, Player *pl, bool oper,
                         char *msg, size_t size)
 {
     int delay;
@@ -1370,7 +1370,7 @@ static int Cmd_shutdown(char *arg, player_t *pl, bool oper,
     return CMD_RESULT_ERROR;
 }
 
-static int Cmd_version(char *arg, player_t *pl, bool oper,
+static int Cmd_version(char *arg, Player *pl, bool oper,
                        char *msg, size_t size)
 {
     snprintf(msg, size, "%s version %s.", PACKAGE_NAME, VERSION);

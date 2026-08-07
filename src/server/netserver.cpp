@@ -468,7 +468,7 @@ void Destroy_connection(Connection *connp, const char *reason)
 
     if (connp->id != NO_ID)
     {
-        player_t *pl;
+        Player *pl;
 
         id = connp->id;
         connp->id = NO_ID;
@@ -1076,7 +1076,7 @@ static void LegalizeHost(char *string)
 static int Handle_login(Connection *connp, char *errmsg, size_t errsize)
 {
     world_t *world = &World;
-    player_t *pl;
+    Player *pl;
     int i, conn_bit;
     const char sender[] = "[*Server notice*]";
 
@@ -1184,7 +1184,7 @@ static int Handle_login(Connection *connp, char *errmsg, size_t errsize)
      */
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        player_t *pl_i;
+        Player *pl_i;
 
         pl_i = Player_by_index(i);
         Send_player(pl->conn, pl_i->id);
@@ -1198,7 +1198,7 @@ static int Handle_login(Connection *connp, char *errmsg, size_t errsize)
      */
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        player_t *pl_i;
+        Player *pl_i;
         pl_i = Player_by_index(i);
         if (pl_i->conn != nullptr)
         {
@@ -1492,7 +1492,7 @@ static int Send_modifiers(Connection *connp, char *mods)
  * receives counts for items it doesn't know about.
  * This is new since pack version 4203.
  */
-static int Send_self_items(Connection *connp, player_t *pl)
+static int Send_self_items(Connection *connp, Player *pl)
 {
     unsigned item_mask = 0;
     int i, n, item_count = 0;
@@ -1533,7 +1533,7 @@ static int Send_self_items(Connection *connp, player_t *pl)
  * Send all frame data related to the player self and his HUD.
  */
 int Send_self(Connection *connp,
-              player_t *pl,
+              Player *pl,
               int lock_id,
               int lock_dist,
               int lock_dir,
@@ -1602,7 +1602,7 @@ int Send_leave(Connection *connp, int id)
  */
 int Send_player(Connection *connp, int id)
 {
-    player_t *pl = Player_by_id(id);
+    Player *pl = Player_by_id(id);
     int n, sbuf_len = connp->c.len, himself = (pl->conn == connp);
     char buf[MSG_LEN], ext[MSG_LEN];
 
@@ -2161,7 +2161,7 @@ int Send_end_of_frame(Connection *connp)
 
 static int Receive_keyboard(Connection *connp)
 {
-    player_t *pl;
+    Player *pl;
     long change;
     uint8_t ch;
     size_t size = KEYBOARD_SIZE;
@@ -2254,7 +2254,7 @@ static int Receive_play(Connection *connp)
 
 static int Receive_power(Connection *connp)
 {
-    player_t *pl;
+    Player *pl;
     uint8_t ch;
     short tmp;
     int n, autopilot;
@@ -2683,7 +2683,7 @@ static int Receive_ack_polystyle(Connection *connp)
  */
 static void Handle_talk(Connection *connp, char *str)
 {
-    player_t *pl = Player_by_id(connp->id);
+    Player *pl = Player_by_id(connp->id);
     int i, sent, team;
     unsigned int len;
     char *cp, msg[MSG_LEN * 2];
@@ -2745,7 +2745,7 @@ static void Handle_talk(Connection *connp, char *str)
             /* now look for a partial match on both nick and username. */
             for (sent = -1, i = 0; i < NumPlayers; i++)
             {
-                player_t *pl_i = Player_by_index(i);
+                Player *pl_i = Player_by_index(i);
                 if (strncasecmp(pl_i->name.c_str(), str, len) == 0 ||
                     strncasecmp(pl_i->username.c_str(), str, len) == 0)
                     sent = (sent == -1) ? i : -2;
@@ -2830,7 +2830,7 @@ static int Receive_display(Connection *connp)
 
 static int Receive_modifier_bank(Connection *connp)
 {
-    player_t *pl;
+    Player *pl;
     uint8_t bank, ch;
     char str[MAX_CHARS];
     int n;
@@ -2860,14 +2860,14 @@ int Get_player_id(Connection *connp)
     return connp->id;
 }
 
-std::string Player_get_addr(player_t *pl)
+std::string Player_get_addr(Player *pl)
 {
     if (pl->conn != nullptr)
         return pl->conn->addr;
     return "";
 }
 
-std::string Player_get_dpy(player_t *pl)
+std::string Player_get_dpy(Player *pl)
 {
     if (pl->conn != nullptr)
         return pl->conn->dpy;
@@ -3052,7 +3052,7 @@ static int Send_motd(Connection *connp)
 
 static int Receive_pointer_move(Connection *connp)
 {
-    player_t *pl;
+    Player *pl;
     uint8_t ch;
     short movement;
     int n;
@@ -3110,7 +3110,7 @@ static int Receive_pointer_move(Connection *connp)
 
 static int Receive_fps_request(Connection *connp)
 {
-    player_t *pl;
+    Player *pl;
     int n;
     uint8_t ch, fps;
 
@@ -3135,7 +3135,7 @@ static int Receive_fps_request(Connection *connp)
 
 static int Receive_audio_request(Connection *connp)
 {
-    player_t *pl;
+    Player *pl;
     int n;
     uint8_t ch, on;
 

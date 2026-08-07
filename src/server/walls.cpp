@@ -45,7 +45,7 @@ void Move_object(object_t *obj)
         Move_object2(obj);
 }
 
-void Move_player(player_t *pl)
+void Move_player(Player *pl)
 {
     // warn("Move_player: is_polygon_map: %s", is_polygon_map ? "true" : "false");
     if (!is_polygon_map)
@@ -63,7 +63,7 @@ void Ball_line_init(void)
         Ball_line_init2();
 }
 
-void Turn_player(player_t *pl, bool push)
+void Turn_player(Player *pl, bool push)
 {
     // warn("Turn_player: is_polygon_map: %s", is_polygon_map ? "true" : "false");
     if (!is_polygon_map)

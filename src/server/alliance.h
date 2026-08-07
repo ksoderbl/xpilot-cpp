@@ -25,14 +25,14 @@
 
 #include "player.h"
 
-int Invite_player(player_t *pl, player_t *ally);
-int Cancel_invitation(player_t *pl);
-int Refuse_alliance(player_t *pl, player_t *ally);
-int Refuse_all_alliances(player_t *pl);
-int Accept_alliance(player_t *pl, player_t *ally);
-int Accept_all_alliances(player_t *pl);
+int Invite_player(Player *pl, Player *ally);
+int Cancel_invitation(Player *pl);
+int Refuse_alliance(Player *pl, Player *ally);
+int Refuse_all_alliances(Player *pl);
+int Accept_alliance(Player *pl, Player *ally);
+int Accept_all_alliances(Player *pl);
 int Get_alliance_member_count(int id);
-void Player_join_alliance(player_t *pl, player_t *ally);
+void Player_join_alliance(Player *pl, Player *ally);
 void Dissolve_all_alliances(void);
-int Leave_alliance(player_t *pl);
-void Alliance_player_list(player_t *pl);
+int Leave_alliance(Player *pl);
+void Alliance_player_list(Player *pl);

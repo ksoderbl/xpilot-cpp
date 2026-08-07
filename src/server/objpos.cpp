@@ -61,12 +61,12 @@ void Object_position_init_clpos(object_t *obj, clpos_t pos)
     Object_position_remember(obj);
 }
 
-void Player_position_restore(player_t *pl)
+void Player_position_restore(Player *pl)
 {
     Player_position_set_clicks(pl, pl->prevpos);
 }
 
-void Player_position_set_clicks(player_t *pl, clpos_t pos)
+void Player_position_set_clicks(Player *pl, clpos_t pos)
 {
 #if 1
     if (pos.cx < 0)
@@ -97,13 +97,13 @@ void Player_position_set_clicks(player_t *pl, clpos_t pos)
     pl->pos = pos;
 }
 
-void Player_position_init_clpos(player_t *pl, clpos_t pos)
+void Player_position_init_clpos(Player *pl, clpos_t pos)
 {
     Player_position_set_clicks(pl, pos);
     Player_position_remember(pl);
 }
 
-void Player_position_limit(player_t *pl)
+void Player_position_limit(Player *pl)
 {
     clpos_t pos = pl->pos;
     clpos_t opos = pos;
@@ -116,7 +116,7 @@ void Player_position_limit(player_t *pl)
     }
 }
 
-void Player_position_debug(player_t *pl, const char *msg)
+void Player_position_debug(Player *pl, const char *msg)
 {
 #if DEVELOPMENT
     int i;

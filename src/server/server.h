@@ -133,9 +133,9 @@ void release_ID(int id);
 /*
  * Prototypes for event.c
  */
-int Handle_keyboard(player_t *pl);
-void Pause_player(player_t *pl, bool on);
-int Player_lock_closest(player_t *pl, bool next);
+int Handle_keyboard(Player *pl);
+void Pause_player(Player *pl, bool on);
+int Player_lock_closest(Player *pl, bool next);
 bool team_dead(int team);
 
 /*
@@ -207,7 +207,7 @@ void Log_game(const char *heading);
 const char *Describe_game_status(void);
 void Game_Over(void);
 void Server_shutdown(const char *user_name, int delay, const char *reason);
-void Server_log_admin_message(player_t *pl, const char *str);
+void Server_log_admin_message(Player *pl, const char *str);
 int plock_server(bool on);
 void Main_loop(void);
 

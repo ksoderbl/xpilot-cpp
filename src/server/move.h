@@ -84,7 +84,7 @@ typedef struct
     int wormhole_warps;
     int phased;
     object_t *obj;
-    player_t *pl;
+    Player *pl;
 } move_info_t;
 
 // typedef struct

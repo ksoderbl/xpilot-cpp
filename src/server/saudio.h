@@ -51,13 +51,13 @@
 
 #include "audio.h"
 
-int sound_player_init(player_t *pl);
-void sound_player_on(player_t *pl, bool on);
-void sound_play_player(player_t *pl, int index);
+int sound_player_init(Player *pl);
+void sound_player_on(Player *pl, bool on);
+void sound_play_player(Player *pl, int index);
 void sound_play_all(int index);
 void sound_play_sensors(clpos_t pos, int index);
-void sound_play_queued(player_t *pl);
-void sound_close(player_t *pl);
+void sound_play_queued(Player *pl);
+void sound_close(Player *pl);
 
 #endif /* SOUND */
 

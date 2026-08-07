@@ -54,14 +54,14 @@ typedef struct
 static alliance_t *Alliances[MAX_TEAMS];
 
 static int New_alliance_ID(void);
-static void Alliance_add_player(alliance_t *alliance, player_t *pl);
-static int Alliance_remove_player(alliance_t *alliance, player_t *pl);
+static void Alliance_add_player(alliance_t *alliance, Player *pl);
+static int Alliance_remove_player(alliance_t *alliance, Player *pl);
 static void Set_alliance_message(alliance_t *alliance, const char *msg);
-static int Create_alliance(player_t *pl1, player_t *pl2);
+static int Create_alliance(Player *pl1, Player *pl2);
 static void Dissolve_alliance(int id);
-static void Merge_alliances(player_t *pl, int id2);
+static void Merge_alliances(Player *pl, int id2);
 
-int Invite_player(player_t *pl, player_t *ally)
+int Invite_player(Player *pl, Player *ally)
 {
     if (pl->id == ally->id)
     {
@@ -109,9 +109,9 @@ int Invite_player(player_t *pl, player_t *ally)
     return 1;
 }
 
-int Cancel_invitation(player_t *pl)
+int Cancel_invitation(Player *pl)
 {
-    player_t *ally;
+    Player *ally;
 
     if (pl->invite == NO_ID)
     {
@@ -131,7 +131,7 @@ int Cancel_invitation(player_t *pl)
 }
 
 /* refuses invitation from a specific player */
-int Refuse_alliance(player_t *pl, player_t *ally)
+int Refuse_alliance(Player *pl, Player *ally)
 {
     if (ally->invite != pl->id)
     {
@@ -150,13 +150,13 @@ int Refuse_alliance(player_t *pl, player_t *ally)
 }
 
 /* refuses invitations from any player */
-int Refuse_all_alliances(player_t *pl)
+int Refuse_all_alliances(Player *pl)
 {
     int i, j = 0;
 
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl2 = Player_by_index(i);
+        Player *pl2 = Player_by_index(i);
 
         if (pl2->invite == pl->id)
         {
@@ -182,7 +182,7 @@ int Refuse_all_alliances(player_t *pl)
 }
 
 /* accepts an invitation from a specific player */
-int Accept_alliance(player_t *pl, player_t *ally)
+int Accept_alliance(Player *pl, Player *ally)
 {
     int success = 1;
 
@@ -222,13 +222,13 @@ int Accept_alliance(player_t *pl, player_t *ally)
 }
 
 /* accepts invitations from any player */
-int Accept_all_alliances(player_t *pl)
+int Accept_all_alliances(Player *pl)
 {
     int i, j = 0;
 
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl2 = Player_by_index(i);
+        Player *pl2 = Player_by_index(i);
 
         if (pl2->invite == pl->id)
         {
@@ -292,7 +292,7 @@ static void Set_alliance_message(alliance_t *alliance, const char *msg)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl2 = Player_by_index(i);
+        Player *pl2 = Player_by_index(i);
 
         if (Player_is_human(pl2))
         {
@@ -324,7 +324,7 @@ static int New_alliance_ID(void)
 }
 
 /* creates an alliance between two players */
-static int Create_alliance(player_t *pl1, player_t *pl2)
+static int Create_alliance(Player *pl1, Player *pl2)
 {
     alliance_t *alliance = (alliance_t *)malloc(sizeof(alliance_t));
     char msg[MSG_LEN];
@@ -365,7 +365,7 @@ static int Create_alliance(player_t *pl1, player_t *pl2)
 }
 
 /* adds a player to an existing alliance */
-void Player_join_alliance(player_t *pl, player_t *ally)
+void Player_join_alliance(Player *pl, Player *ally)
 {
     alliance_t *alliance = Find_alliance(ally->alliance);
     char msg[MSG_LEN];
@@ -395,14 +395,14 @@ void Player_join_alliance(player_t *pl, player_t *ally)
 }
 
 /* atomic addition of player to alliance */
-static void Alliance_add_player(alliance_t *alliance, player_t *pl)
+static void Alliance_add_player(alliance_t *alliance, Player *pl)
 {
     int i;
 
     /* drop invitations for this player from other members */
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl2 = Player_by_index(i);
+        Player *pl2 = Player_by_index(i);
 
         if (pl2->invite == pl->id)
             Cancel_invitation(pl2);
@@ -413,7 +413,7 @@ static void Alliance_add_player(alliance_t *alliance, player_t *pl)
 }
 
 /* removes a player from an alliance and dissolves the alliance if necessary */
-int Leave_alliance(player_t *pl)
+int Leave_alliance(Player *pl)
 {
     alliance_t *alliance;
     char msg[MSG_LEN];
@@ -452,7 +452,7 @@ int Leave_alliance(player_t *pl)
 }
 
 /* atomic removal of player from alliance */
-static int Alliance_remove_player(alliance_t *alliance, player_t *pl)
+static int Alliance_remove_player(alliance_t *alliance, Player *pl)
 {
     if (pl->alliance == alliance->id)
     {
@@ -472,7 +472,7 @@ static void Dissolve_alliance(int id)
     /* remove all remaining members from the alliance */
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl2 = Player_by_index(i);
+        Player *pl2 = Player_by_index(i);
 
         if (pl2->alliance == id)
         {
@@ -525,7 +525,7 @@ void Dissolve_all_alliances(void)
 }
 
 /* merges two alliances by moving the members of the second to the first */
-static void Merge_alliances(player_t *pl, int id2)
+static void Merge_alliances(Player *pl, int id2)
 {
     alliance_t *alliance2 = Find_alliance(id2);
     int i;
@@ -533,7 +533,7 @@ static void Merge_alliances(player_t *pl, int id2)
     /* move each member of alliance2 to alliance1 */
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl2 = Player_by_index(i);
+        Player *pl2 = Player_by_index(i);
 
         if (pl2->alliance == id2)
         {
@@ -544,7 +544,7 @@ static void Merge_alliances(player_t *pl, int id2)
     Dissolve_alliance(id2);
 }
 
-void Alliance_player_list(player_t *pl)
+void Alliance_player_list(Player *pl)
 {
     int i;
     char msg[MSG_LEN];
@@ -566,7 +566,7 @@ void Alliance_player_list(player_t *pl)
         }
         for (i = 0; i < NumPlayers; i++)
         {
-            player_t *pl2 = Player_by_index(i);
+            Player *pl2 = Player_by_index(i);
 
             if (pl2->alliance == pl->alliance)
             {
@@ -585,7 +585,7 @@ void Alliance_player_list(player_t *pl)
         }
         for (i = 0; i < NumPlayers; i++)
         {
-            player_t *pl2 = Player_by_index(i);
+            Player *pl2 = Player_by_index(i);
 
             if (pl2->alliance == pl->alliance)
             {

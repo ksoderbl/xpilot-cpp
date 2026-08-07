@@ -71,7 +71,7 @@ static inline void update_object_speed(world_t *world, object_t *obj)
 
 static char msg[MSG_LEN];
 
-static void Transport_to_home(player_t *pl)
+static void Transport_to_home(Player *pl)
 {
     /*
      * Transport a corpse from the place where it died back to its homebase,
@@ -123,7 +123,7 @@ static void Transport_to_home(player_t *pl)
 /*
  * Turn phasing on or off.
  */
-void Phasing(player_t *pl, bool on)
+void Phasing(Player *pl, bool on)
 {
     if (on)
     {
@@ -157,7 +157,7 @@ void Phasing(player_t *pl, bool on)
 /*
  * Turn cloak on or off.
  */
-void Cloak(player_t *pl, bool on)
+void Cloak(Player *pl, bool on)
 {
     if (on)
     {
@@ -184,7 +184,7 @@ void Cloak(player_t *pl, bool on)
 /*
  * Turn deflector on or off.
  */
-void Deflector(player_t *pl, bool on)
+void Deflector(Player *pl, bool on)
 {
     if (on)
     {
@@ -209,7 +209,7 @@ void Deflector(player_t *pl, bool on)
 /*
  * Turn emergency thrust on or off.
  */
-void Emergency_thrust(player_t *pl, bool on)
+void Emergency_thrust(Player *pl, bool on)
 {
     if (on)
     {
@@ -242,7 +242,7 @@ void Emergency_thrust(player_t *pl, bool on)
 /*
  * Turn emergency shield on or off.
  */
-void Emergency_shield(player_t *pl, bool on)
+void Emergency_shield(Player *pl, bool on)
 {
     if (on)
     {
@@ -284,7 +284,7 @@ void Emergency_shield(player_t *pl, bool on)
 /*
  * Turn thrust on or off.
  */
-void Thrust(player_t *pl, bool on)
+void Thrust(Player *pl, bool on)
 {
     if (on)
         SET_BIT(pl->obj_status, THRUSTING);
@@ -297,7 +297,7 @@ void Thrust(player_t *pl, bool on)
  * automatic pilot mode any changes to the current power, turnacc, turnspeed
  * and turnresistance settings will be temporary.
  */
-void Autopilot(player_t *pl, bool on)
+void Autopilot(Player *pl, bool on)
 {
     if (on)
     {
@@ -329,7 +329,7 @@ void Autopilot(player_t *pl, bool on)
  * cause the ship to come to a rest within a short period of time.
  * This code is fairly self contained.
  */
-static void do_Autopilot(player_t *pl)
+static void do_Autopilot(Player *pl)
 {
     world_t *world = &World;
     int vad; /* Velocity Away Delta */
@@ -601,7 +601,7 @@ static void Ecm_update(void)
         {
             if (ecm->id != NO_ID)
             {
-                player_t *pl = Player_by_id(ecm->id);
+                Player *pl = Player_by_id(ecm->id);
 
                 if (pl)
                     pl->ecmcount--;
@@ -638,11 +638,11 @@ static void Transporter_update(void)
 static void Players_turn(void)
 {
     int i;
-    player_t *pl;
+    Player *pl;
     double new_float_dir;
 }
 
-static void Use_items(player_t *pl)
+static void Use_items(Player *pl)
 {
     if (pl->shield_time > 0)
     {
@@ -728,7 +728,7 @@ static void Use_items(player_t *pl)
 /*
  * Player is refueling.
  */
-static void Do_refuel(player_t *pl)
+static void Do_refuel(Player *pl)
 {
     world_t *world = &World;
     fuel_t *fs = Fuel_by_index(pl->fs);
@@ -776,7 +776,7 @@ static void Do_refuel(player_t *pl)
 /*
  * Player is repairing a target.
  */
-static void Do_repair(player_t *pl)
+static void Do_repair(Player *pl)
 {
     world_t *world = &World;
     target_t *targ = Target_by_index(pl->repair_target);
@@ -821,13 +821,13 @@ static void Do_repair(player_t *pl)
 
 /* kps - UPDATE_RATE should depend on gamespeed */
 #define UPDATE_RATE 100
-static void Update_visibility(player_t *pl, int ind)
+static void Update_visibility(Player *pl, int ind)
 {
     int j;
 
     for (j = 0; j < NumPlayers; j++)
     {
-        player_t *pl_j = Player_by_index(j);
+        Player *pl_j = Player_by_index(j);
 
         if (pl->forceVisible > 0)
             pl_j->visibility[ind].canSee = true;
@@ -857,7 +857,7 @@ static void Update_players(void)
 {
     world_t *world = &World;
     int i;
-    player_t *pl;
+    Player *pl;
 
     for (i = 0; i < NumPlayers; i++)
     {
@@ -1081,7 +1081,7 @@ void Update_objects(void)
 {
     world_t *world = &World;
     int i;
-    player_t *pl;
+    Player *pl;
     object_t *obj;
 
     tick_this_frame = true;
@@ -1099,7 +1099,7 @@ void Update_objects(void)
     {
         for (int i = 0; i < NumPlayers; i++)
         {
-            player_t *pl = Player_by_index(i);
+            Player *pl = Player_by_index(i);
             if (BIT(pl->used, HAS_SHOT))
                 Fire_normal_shots(pl);
         }
@@ -1146,7 +1146,7 @@ void Update_objects(void)
 
     for (int ind = 0; ind < NumPlayers; ind++)
     {
-        player_t *pl = PlayersArray[ind];
+        Player *pl = PlayersArray[ind];
 
         pl->updateVisibility = false;
 
@@ -1164,7 +1164,7 @@ void Update_objects(void)
 
         if (BIT(pl->lock.tagged, LOCK_PLAYER))
         {
-            player_t *lock_pl = Player_by_id(pl->lock.pl_id);
+            Player *lock_pl = Player_by_id(pl->lock.pl_id);
             pl->lock.distance =
                 World_wrap_length(
                     world,

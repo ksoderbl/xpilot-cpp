@@ -41,7 +41,7 @@
 #include "player.h"
 #include "rank.h"
 
-void Score(player_t *pl, double points, clpos_t pos, std::string msg)
+void Score(Player *pl, double points, clpos_t pos, std::string msg)
 {
     // points are assumed to be whole numbers
     int intPoints = (int)points;
@@ -85,8 +85,8 @@ int Rate(int winner, int loser)
  * KK 28-4-98: Same for killing your own tank.
  * KK 7-11-1: And for killing a member of your alliance
  */
-void Score_players(player_t *winner_pl, double winner_score,
-                   std::string winner_msg, player_t *loser_pl,
+void Score_players(Player *winner_pl, double winner_score,
+                   std::string winner_msg, Player *loser_pl,
                    double loser_score, std::string loser_msg)
 {
     if (Players_are_teammates(winner_pl, loser_pl) ||
@@ -103,22 +103,22 @@ void Score_players(player_t *winner_pl, double winner_score,
 }
 
 // xpilot-cpp uses int scoring
-double Get_Score(player_t *pl)
+double Get_Score(Player *pl)
 {
     return pl->score;
 }
 
-void Set_Score(player_t *pl, double score)
+void Set_Score(Player *pl, double score)
 {
     pl->score = score;
 }
 
-void Add_Score(player_t *pl, double score)
+void Add_Score(Player *pl, double score)
 {
     pl->score += score;
 }
 
-void Handle_Scoring(scoretype_t st, player_t *killer, player_t *victim,
+void Handle_Scoring(scoretype_t st, Player *killer, Player *victim,
                     void *extra, const char *somemsg)
 {
 }

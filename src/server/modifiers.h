@@ -90,7 +90,7 @@ static inline void Mods_clear(modifiers_t *mods)
     memset((mods), 0, sizeof(modifiers_t));
 }
 
-// void Player_set_modbank(player_t *pl, int bank, const char *str);
+// void Player_set_modbank(Player *pl, int bank, const char *str);
 
 void Mods_to_string(modifiers_t mods, char *dst, size_t size);
 std::string Mods_to_string2(modifiers_t mods);

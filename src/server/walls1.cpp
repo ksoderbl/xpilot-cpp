@@ -1062,12 +1062,12 @@ void Move_segment1(move_state_t *ms)
 
                     ball = BALL_PTR(mi->obj);
 
-                    player_t *owner = Player_by_id(ball->ball_owner);
+                    Player *owner = Player_by_id(ball->ball_owner);
                     treasure_t *td = ball->ball_treasure;
 
                     if (ms->treasure_ptr == ball->ball_treasure)
                     {
-                        player_t *pl = nullptr;
+                        Player *pl = nullptr;
                         // treasure_t *tt = &World.treasures[ms->treasure];
                         treasure_t *tt = ms->treasure_ptr;
 
@@ -1714,7 +1714,7 @@ static void Cannon_dies1(move_state_t *ms)
 {
     world_t *world = &World;
     cannon_t *cannon = ms->cannon_ptr;
-    player_t *pl = nullptr;
+    Player *pl = nullptr;
 
     cannon->dead_ticks = options.cannonDeadTime;
     cannon->conn_mask = 0;
@@ -1957,7 +1957,7 @@ void Move_object1(object_t *obj)
 static void Player_crash1(move_state_t *ms, int pt, bool turning)
 {
     world_t *world = &World;
-    player_t *pl = ms->mip->pl;
+    Player *pl = ms->mip->pl;
     int ind = GetInd(pl->id);
     const char *howfmt = nullptr;
     const char *hudmsg = nullptr;
@@ -2041,7 +2041,7 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
 
     if (howfmt && hudmsg)
     {
-        player_t *pushers[MAX_RECORDED_SHOVES];
+        Player *pushers[MAX_RECORDED_SHOVES];
         int cnt[MAX_RECORDED_SHOVES];
         int num_pushers = 0;
         int total_pusher_count = 0;
@@ -2090,7 +2090,7 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
 
             for (i = 0; i < num_pushers; i++)
             {
-                player_t *pusher = pushers[i];
+                Player *pusher = pushers[i];
                 const char *sep = (!i)                    ? " with help from "
                                   : (i < num_pushers - 1) ? ", "
                                                           : " and ";
@@ -2132,7 +2132,7 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
     }
 }
 
-void Move_player1(player_t *pl)
+void Move_player1(Player *pl)
 {
     int nothing_done = 0;
     int i;
@@ -2586,7 +2586,7 @@ void Move_player1(player_t *pl)
         Player_position_remember(pl);
 }
 
-void Turn_player1(player_t *pl)
+void Turn_player1(Player *pl)
 {
     world_t *world = &World;
     int i;

@@ -119,7 +119,7 @@ void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
 {
     world_t *world = &World;
     int j;
-    player_t *kp;
+    Player *kp;
     double win_score = 0.0, lose_score = 0.0, drainfactor;
     int win_team_members = 0, lose_team_members = 0,
         targets_remaining = 0, targets_total = 0;
@@ -211,7 +211,7 @@ void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
     {
         for (j = 0; j < NumPlayers; j++)
         {
-            player_t *pl = Player_by_index(j);
+            Player *pl = Player_by_index(j);
 
             if (Player_is_tank(pl) ||
                 (Player_is_paused(pl) && pl->pause_count <= 0) ||
@@ -282,7 +282,7 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
         targets_total = 0;
     int drainfactor;
     vector_t zero_vel = {0.0, 0.0};
-    player_t *kp;
+    Player *kp;
     bool somebody = false;
 
     /* a normal shot or a direct mine hit work, cannons don't */
@@ -372,7 +372,7 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
     {
         for (j = 0; j < NumPlayers; j++)
         {
-            player_t *pl_j = Player_by_index(j);
+            Player *pl_j = Player_by_index(j);
 
             if (Player_is_tank(pl_j) ||
                 (Player_is_paused(pl_j) && pl_j->pause_count <= 0) ||
@@ -446,7 +446,7 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
 
     for (j = 0; j < NumPlayers; j++)
     {
-        player_t *pl_j = Player_by_index(j);
+        Player *pl_j = Player_by_index(j);
 
         if (Player_is_tank(pl_j) ||
             (Player_is_paused(pl_j) && pl_j->pause_count <= 0) ||

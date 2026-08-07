@@ -92,14 +92,14 @@ typedef struct
 {
     const char *name;
     void (*robot_round_tick)(void);
-    void (*robot_create)(player_t *robot, char *str);
-    void (*robot_go_home)(player_t *robot);
-    void (*robot_play)(player_t *robot);
-    void (*robot_set_war)(player_t *victim, int killer);
-    int (*robot_war_on_player)(player_t *robot);
-    void (*robot_message)(player_t *robot, const char *str);
-    void (*robot_destroy)(player_t *robot);
-    void (*robot_invite)(player_t *robot, player_t *inviter);
+    void (*robot_create)(Player *robot, char *str);
+    void (*robot_go_home)(Player *robot);
+    void (*robot_play)(Player *robot);
+    void (*robot_set_war)(Player *victim, int killer);
+    int (*robot_war_on_player)(Player *robot);
+    void (*robot_message)(Player *robot, const char *str);
+    void (*robot_destroy)(Player *robot);
+    void (*robot_invite)(Player *robot, Player *inviter);
 } robot_type_t;
 
 /*
@@ -186,13 +186,13 @@ typedef struct robot_suibot_data
  */
 void Parse_robot_file(void);
 void Robot_init(void);
-void Robot_delete(player_t *robot, bool kicked);
-void Robot_destroy(player_t *robot);
+void Robot_delete(Player *robot, bool kicked);
+void Robot_destroy(Player *robot);
 void Robot_update(bool tick);
-void Robot_invite(player_t *robot, player_t *inviter);
-void Robot_war(player_t *robot, player_t *killer);
-void Robot_reset_war(player_t *robot);
-int Robot_war_on_player(player_t *robot);
-void Robot_go_home(player_t *robot);
-void Robot_program(player_t *robot, int victim_id);
-void Robot_message(player_t *robot, const char *message);
+void Robot_invite(Player *robot, Player *inviter);
+void Robot_war(Player *robot, Player *killer);
+void Robot_reset_war(Player *robot);
+int Robot_war_on_player(Player *robot);
+void Robot_go_home(Player *robot);
+void Robot_program(Player *robot, int victim_id);
+void Robot_message(Player *robot, const char *message);

@@ -143,7 +143,7 @@ void Object_hits_wormhole2(object_t *obj, int ind)
 /*
  * Warp balls connected to warped player.
  */
-static void Warp_balls(player_t *pl, clpos_t dest)
+static void Warp_balls(Player *pl, clpos_t dest)
 {
     world_t *world = &World;
 
@@ -198,14 +198,14 @@ static int Find_wormhole_dest(int wh_hit_ind)
 /*
  * Move player trough wormhole.
  */
-static void Traverse_wormhole(player_t *pl)
+static void Traverse_wormhole(Player *pl)
 {
 }
 
 /*
  * Returns true if warp status was achieved.
  */
-bool Initiate_hyperjump(player_t *pl)
+bool Initiate_hyperjump(Player *pl)
 {
     if (pl->item[ITEM_HYPERJUMP] <= 0)
         return false;
@@ -224,11 +224,11 @@ bool Initiate_hyperjump(player_t *pl)
 /*
  * Player has used hyperjump item.
  */
-static void Hyperjump(player_t *pl)
+static void Hyperjump(Player *pl)
 {
 }
 
-void Do_warp(player_t *pl)
+void Do_warp(Player *pl)
 {
     world_t *world = &World;
     position_t w;
@@ -429,11 +429,11 @@ void Do_warp(player_t *pl)
     sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
 }
 
-void Player_warp(player_t *pl)
+void Player_warp(Player *pl)
 {
 }
 
-void Player_finish_warp(player_t *pl)
+void Player_finish_warp(Player *pl)
 {
 }
 

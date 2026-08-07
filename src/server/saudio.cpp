@@ -53,7 +53,7 @@ typedef struct _AudioQRec
     struct _AudioQRec *next;
 } AudioQRec, *AudioQPtr;
 
-static void queue_audio(player_t *pl, int index, int volume)
+static void queue_audio(Player *pl, int index, int volume)
 {
     AudioQPtr a, p, prev;
 
@@ -87,7 +87,7 @@ static void queue_audio(player_t *pl, int index, int volume)
         pl->audio = (void *)a;
 }
 
-int sound_player_init(player_t *pl)
+int sound_player_init(Player *pl)
 {
     SDBG(printf("sound_player_init %p\n", pl));
 
@@ -100,7 +100,7 @@ int sound_player_init(player_t *pl)
  * Set (or reset) a player status flag indicating
  * that a player wants (or doesn't want) sound.
  */
-void sound_player_on(player_t *pl, bool on)
+void sound_player_on(Player *pl, bool on)
 {
     SDBG(printf("sound_player_on %p, %d\n", pl, on));
 
@@ -121,7 +121,7 @@ void sound_player_on(player_t *pl, bool on)
 /*
  * Play a sound for a player.
  */
-void sound_play_player(player_t *pl, int index)
+void sound_play_player(Player *pl, int index)
 {
     SDBG(printf("sound_play_player %p, %d\n", pl, index));
 
@@ -163,7 +163,7 @@ void sound_play_sensors(clpos_t pos, int index)
         dy,
         range,
         factor;
-    player_t *pl;
+    Player *pl;
 
     SDBG(printf("sound_play_sensors %g, %g, %d\n", x, y, index));
 
@@ -193,7 +193,7 @@ void sound_play_sensors(clpos_t pos, int index)
     }
 }
 
-void sound_play_queued(player_t *pl)
+void sound_play_queued(Player *pl)
 {
     AudioQPtr p,
         n;
@@ -212,7 +212,7 @@ void sound_play_queued(player_t *pl)
     }
 }
 
-void sound_close(player_t *pl)
+void sound_close(Player *pl)
 {
     AudioQPtr p,
         n;

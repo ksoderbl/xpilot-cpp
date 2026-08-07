@@ -32,7 +32,7 @@ int Setup_connection(char *real, char *nick, char *dpy, int team,
                      char *addr, char *host, unsigned version);
 int Input(void);
 int Send_reply(Connection *connp, int replyto, int result);
-int Send_self(Connection *connp, player_t *pl,
+int Send_self(Connection *connp, Player *pl,
               int lock_id,
               int lock_dist,
               int lock_dir,
@@ -87,8 +87,8 @@ int Send_trans(Connection *connp, clpos_t pos1, clpos_t pos2);
 void Get_display_parameters(Connection *connp, int *width, int *height,
                             int *debris_colors, int *spark_rand);
 int Get_player_id(Connection *connp);
-std::string Player_get_addr(player_t *pl);
-std::string Player_get_dpy(player_t *pl);
+std::string Player_get_addr(Player *pl);
+std::string Player_get_dpy(Player *pl);
 int Send_shape(Connection *connp, int shape);
 int Check_max_clients_per_IP(std::string host_addr);
 

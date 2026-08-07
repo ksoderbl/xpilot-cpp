@@ -247,7 +247,7 @@ static void SortRankings(void)
 static const char *Rank_get_logout_message(ranknode_t *rank)
 {
     static char msg[MSG_LEN];
-    player_t *pl;
+    Player *pl;
 
     assert(strlen(rank->name) > 0);
     pl = Get_player_by_name(rank->name, nullptr, nullptr);
@@ -528,7 +528,7 @@ static void Init_ranknode(ranknode_t *rank,
 ranknode_t *Rank_get_by_name(const char *name)
 {
     int i;
-    player_t *pl;
+    Player *pl;
 
     assert(name != nullptr);
 
@@ -607,7 +607,7 @@ void Rank_init_saved_scores(void)
  * A player has logged in. Find his info or create new info by kicking
  * the player who hasn't played for the longest time.
  */
-void Rank_get_saved_score(player_t *pl)
+void Rank_get_saved_score(Player *pl)
 {
     ranknode_t *rank, *unused = nullptr;
     int i;
@@ -678,7 +678,7 @@ void Rank_get_saved_score(player_t *pl)
 }
 
 /* A player has quit, save his info and mark him as not playing. */
-void Rank_save_score(player_t *pl)
+void Rank_save_score(Player *pl)
 {
     ranknode_t *rank = pl->rank;
 

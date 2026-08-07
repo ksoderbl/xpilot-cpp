@@ -75,7 +75,7 @@ void teamcup_init(void)
 static void teamcup_open_score_file(void)
 {
     char msg[MSG_LEN];
-    player_t *pl;
+    Player *pl;
     int i;
 
     if (!options.teamcup)
@@ -184,7 +184,7 @@ void teamcup_round_end(int winning_team)
     double best_score = -FLT_MAX;
     double best_team_score = -FLT_MAX;
     double double_max = FLT_MAX;
-    player_t *pl;
+    Player *pl;
 
     if (!options.teamcup)
         return;

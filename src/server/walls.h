@@ -45,8 +45,8 @@ extern unsigned SPACE_BLOCKS;
 
 void Walls_init(void);
 void Move_object(object_t *obj);
-void Move_player(player_t *pl);
+void Move_player(Player *pl);
 void Move_init(void);
-void Turn_player(player_t *pl, bool push);
+void Turn_player(Player *pl, bool push);
 
 void Ball_line_init(void);

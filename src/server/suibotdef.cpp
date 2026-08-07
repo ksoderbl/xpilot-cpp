@@ -84,14 +84,14 @@
  * Prototypes for methods of the suibot.
  */
 static void Robot_suibot_round_tick(void);
-static void Robot_suibot_create(player_t *pl, char *str);
-static void Robot_suibot_go_home(player_t *pl);
-static void Robot_suibot_play(player_t *pl);
-static void Robot_suibot_set_war(player_t *pl, int victim_id);
-static int Robot_suibot_war_on_player(player_t *pl);
-static void Robot_suibot_message(player_t *pl, const char *str);
-static void Robot_suibot_destroy(player_t *pl);
-static void Robot_suibot_invite(player_t *pl, player_t *inviter);
+static void Robot_suibot_create(Player *pl, char *str);
+static void Robot_suibot_go_home(Player *pl);
+static void Robot_suibot_play(Player *pl);
+static void Robot_suibot_set_war(Player *pl, int victim_id);
+static int Robot_suibot_war_on_player(Player *pl);
+static void Robot_suibot_message(Player *pl, const char *str);
+static void Robot_suibot_destroy(Player *pl);
+static void Robot_suibot_invite(Player *pl, Player *inviter);
 int Robot_suibot_setup(robot_type_t *type_ptr);
 
 /*
@@ -136,14 +136,14 @@ int Robot_suibot_setup(robot_type_t *type_ptr)
 /*
  * Private functions.
  */
-static bool Detect_ship(player_t *pl, player_t *ship);
-static void Robot_move_randomly(player_t *pl);
+static bool Detect_ship(Player *pl, Player *ship);
+static void Robot_move_randomly(Player *pl);
 
 /*
  * Function to cast from player structure to robot data structure.
  * This isolates casts (aka. type violations) to a few places.
  */
-static robot_default_data_t *Robot_suibot_get_data(player_t *pl)
+static robot_default_data_t *Robot_suibot_get_data(Player *pl)
 {
     return (robot_default_data_t *)pl->robot_data_ptr->private_data;
 }
@@ -151,7 +151,7 @@ static robot_default_data_t *Robot_suibot_get_data(player_t *pl)
 /*
  * Create the suibot.
  */
-static void Robot_suibot_create(player_t *pl, char *str)
+static void Robot_suibot_create(Player *pl, char *str)
 {
     robot_default_data_t *my_data;
 
@@ -177,7 +177,7 @@ static void Robot_suibot_create(player_t *pl, char *str)
 /*
  * A suibot is placed on its homebase.
  */
-static void Robot_suibot_go_home(player_t *pl)
+static void Robot_suibot_go_home(Player *pl)
 {
     robot_default_data_t *my_data = Robot_suibot_get_data(pl);
 
@@ -188,7 +188,7 @@ static void Robot_suibot_go_home(player_t *pl)
 /*
  * A default robot is declaring war (or resetting war).
  */
-static void Robot_suibot_set_war(player_t *pl, int victim_id)
+static void Robot_suibot_set_war(Player *pl, int victim_id)
 {
     robot_default_data_t *my_data = Robot_suibot_get_data(pl);
 
@@ -204,7 +204,7 @@ static void Robot_suibot_set_war(player_t *pl, int victim_id)
 /*
  * Return the id of the player a default robot has war against (or NO_ID).
  */
-static int Robot_suibot_war_on_player(player_t *pl)
+static int Robot_suibot_war_on_player(Player *pl)
 {
     robot_default_data_t *my_data = Robot_suibot_get_data(pl);
 
@@ -217,14 +217,14 @@ static int Robot_suibot_war_on_player(player_t *pl)
 /*
  * A default robot receives a message.
  */
-static void Robot_suibot_message(player_t *pl, const char *message)
+static void Robot_suibot_message(Player *pl, const char *message)
 {
 }
 
 /*
  * A default robot is destroyed.
  */
-static void Robot_suibot_destroy(player_t *pl)
+static void Robot_suibot_destroy(Player *pl)
 {
     XFREE(pl->robot_data_ptr->private_data);
 }
@@ -232,7 +232,7 @@ static void Robot_suibot_destroy(player_t *pl)
 /*
  * A default robot is asked to join an alliance
  */
-static void Robot_suibot_invite(player_t *pl, player_t *inviter)
+static void Robot_suibot_invite(Player *pl, Player *inviter)
 {
     int war_id = Robot_suibot_war_on_player(pl), i;
     robot_default_data_t *my_data = Robot_suibot_get_data(pl);
@@ -245,7 +245,7 @@ static void Robot_suibot_invite(player_t *pl, player_t *inviter)
            let robots refuse in this case */
         for (i = 0; i < NumPlayers; i++)
         {
-            player_t *pl_i = Player_by_index(i);
+            Player *pl_i = Player_by_index(i);
 
             if (Player_is_human(pl_i) && Players_are_allies(pl, pl_i))
             {
@@ -280,7 +280,7 @@ static void Robot_suibot_invite(player_t *pl, player_t *inviter)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            player_t *pl_i = Player_by_index(i);
+            Player *pl_i = Player_by_index(i);
             if (pl_i->alliance == inviter->alliance)
             {
                 if (pl_i->id == war_id)
@@ -304,7 +304,7 @@ static void Robot_suibot_invite(player_t *pl, player_t *inviter)
         Refuse_alliance(pl, inviter);
 }
 
-static inline int decide_travel_dir(player_t *pl)
+static inline int decide_travel_dir(Player *pl)
 {
     world_t *world = &World;
     double gdir;
@@ -321,7 +321,7 @@ static inline int decide_travel_dir(player_t *pl)
     return MOD2((int)(gdir + 0.5), ANGLE_RESOLUTION);
 }
 
-static void Robot_take_off_from_base(player_t *pl)
+static void Robot_take_off_from_base(Player *pl)
 {
     robot_default_data_t *my_data = Robot_suibot_get_data(pl);
     /*Function that could do specific things when robot takes off*/
@@ -337,7 +337,7 @@ static void Robot_take_off_from_base(player_t *pl)
 
 // /*KS: let robot "play mouse" */
 
-static void Robot_set_pointing_direction(player_t *pl, double direction)
+static void Robot_set_pointing_direction(Player *pl, double direction)
 {
     robot_default_data_t *my_data = Robot_suibot_get_data(pl);
     int turnvel;
@@ -392,7 +392,7 @@ static bool Wall_in_between_points(int cx1, int cy1, int cx2, int cy2)
     return false;
 }
 
-bool Robot_evade_shot(player_t *pl);
+bool Robot_evade_shot(Player *pl);
 
 typedef struct
 {
@@ -400,7 +400,7 @@ typedef struct
     double sqdistance;
 } object_proximity_t;
 
-static bool Get_object_proximity(player_t *pl, object_t *shot, double sqmaxdist, int maxtime, object_proximity_t *object_proximity)
+static bool Get_object_proximity(Player *pl, object_t *shot, double sqmaxdist, int maxtime, object_proximity_t *object_proximity)
 {
     world_t *world = &World;
     /* get square of closest distance between player and object
@@ -446,7 +446,7 @@ static bool Get_object_proximity(player_t *pl, object_t *shot, double sqmaxdist,
     return true;
 }
 
-bool Robot_evade_shot(player_t *pl)
+bool Robot_evade_shot(Player *pl)
 {
     world_t *world = &World;
     /*  change to use   struct dangerous_shot_data *shotsarray; */
@@ -454,7 +454,7 @@ bool Robot_evade_shot(player_t *pl)
     object_t *shot, **obj_list;
     int obj_count;
     long killing_shots;
-    //  player_t *opponent;
+    //  Player *opponent;
 
     killing_shots = KILLING_SHOTS;
     if (options.treasureCollisionMayKill)
@@ -620,7 +620,7 @@ bool Robot_evade_shot(player_t *pl)
     return true;
 }
 
-static void Robot_move_randomly(player_t *pl)
+static void Robot_move_randomly(Player *pl)
 {
     double direction;
 
@@ -653,7 +653,7 @@ static void Robot_move_randomly(player_t *pl)
     }
 }
 
-double Robot_ram_object(player_t *pl, object_t *object)
+double Robot_ram_object(Player *pl, object_t *object)
 {
     world_t *world = &World;
     double direction;
@@ -792,11 +792,11 @@ double Robot_ram_object(player_t *pl, object_t *object)
 }
 
 // #define NO_DIR -1
-void Robot_find_shooting_dir(player_t *pl, player_t *pl_to_suicide)
+void Robot_find_shooting_dir(Player *pl, Player *pl_to_suicide)
 {
 }
 
-void Robot_attack_player(player_t *pl, player_t *opponent)
+void Robot_attack_player(Player *pl, Player *opponent)
 {
     world_t *world = &World;
     int dcx, dcy;
@@ -931,14 +931,14 @@ static inline double Wrap_length_min(world_t *world, double dcx, double dcy, dou
     return MIN(len, min);
 }
 
-static void Robotdef_fire_laser(player_t *pl)
+static void Robotdef_fire_laser(Player *pl)
 {
     world_t *world = &World;
     robot_default_data_t *my_data = Robot_suibot_get_data(pl);
     double x2, y2, x3, y3, x4, y4, x5, y5;
     double ship_dist, dir3, dir4, dir5;
     clpos_t m_gun;
-    player_t *ship;
+    Player *ship;
 
     if (BIT(my_data->robot_lock, LOCK_PLAYER) && Player_is_active(Player_by_id(my_data->robot_lock_id)))
         ship = Player_by_id(my_data->robot_lock_id);
@@ -973,7 +973,7 @@ static void Robotdef_fire_laser(player_t *pl)
     SET_BIT(pl->used, HAS_LASER);
 }
 
-static bool Detect_ship(player_t *pl, player_t *ship)
+static bool Detect_ship(Player *pl, Player *ship)
 {
     world_t *world = &World;
     double distance;
@@ -1021,10 +1021,10 @@ static bool Detect_ship(player_t *pl, player_t *ship)
     return false;
 }
 
-static void Robot_suibot_play(player_t *pl)
+static void Robot_suibot_play(Player *pl)
 {
     world_t *world = &World;
-    player_t *ship;
+    Player *ship;
     int direction;
     double distance, ship_dist, enemy_dist, speed, x_speed, y_speed;
     int item_dist, mine_dist, item_i, mine_i;
@@ -1033,7 +1033,7 @@ static void Robot_suibot_play(player_t *pl)
     robot_default_data_t *my_data = Robot_suibot_get_data(pl);
 
     double ship_dist_closest;
-    player_t *closest_opponent;
+    Player *closest_opponent;
     closest_opponent = nullptr;
     const int maxdist = 1200; /* maximum distance from which to try to pop ball*/
     double ball_dist;
@@ -1079,7 +1079,7 @@ static void Robot_suibot_play(player_t *pl)
     ship_dist_closest = 2 * World.hypotenuse;
     for (ship_i = 0; ship_i < NumPlayers; ship_i++)
     {
-        player_t *ship = Player_by_index(ship_i);
+        Player *ship = Player_by_index(ship_i);
         ship_dist = CLICK_TO_PIXEL((int)(World_wrap_length(
             world,
             pl->pos.cx - ship->pos.cx,

@@ -55,7 +55,7 @@
 bool updateScores = true;
 
 int playerArrayNumber;
-player_t **PlayersArray;
+Player **PlayersArray;
 #define MAX_SPECTATORS 0
 static int GetIndArray[NUM_IDS + MAX_SPECTATORS + 1];
 
@@ -89,7 +89,7 @@ int GetInd(int id)
  * Functions on player array.
  */
 
-void Pick_startpos(player_t *pl)
+void Pick_startpos(Player *pl)
 {
     world_t *world = &World;
     int ind = GetInd(pl->id), i, num_free, pick = 0, seen = 0, order, min_order = INT_MAX;
@@ -131,7 +131,7 @@ void Pick_startpos(player_t *pl)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl_i = Player_by_index(i);
+        Player *pl_i = Player_by_index(i);
 
         if (pl_i->id != pl->id &&
             !Player_is_tank(pl_i) &&
@@ -180,7 +180,7 @@ void Pick_startpos(player_t *pl)
         {
             for (i = 0; i < NumPlayers; i++)
             {
-                player_t *pl_i = Player_by_index(i);
+                Player *pl_i = Player_by_index(i);
 
                 if (pl_i->conn != nullptr)
                     Send_base(pl_i->conn, pl->id, pl->home_base->ind);
@@ -191,7 +191,7 @@ void Pick_startpos(player_t *pl)
     }
 }
 
-void Go_home(player_t *pl)
+void Go_home(Player *pl)
 {
     world_t *world = &World;
     int ind = GetInd(pl->id), i, dir, check;
@@ -200,8 +200,8 @@ void Go_home(player_t *pl)
 
     if (ind != pl->ind)
     {
-        player_t *pl1 = PlayersArray[ind];
-        player_t *pl2 = PlayersArray[pl->ind];
+        Player *pl1 = PlayersArray[ind];
+        Player *pl2 = PlayersArray[pl->ind];
         warn("******** ERROR!!!!");
         warn("pl1: '%s', pl2: '%s'", pl1->name.c_str(), pl2->name.c_str());
     }
@@ -274,7 +274,7 @@ void Go_home(player_t *pl)
     pl->updateVisibility = true;
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl_i = Player_by_index(i);
+        Player *pl_i = Player_by_index(i);
 
         pl->visibility[i].lastChange = 0;
         pl_i->visibility[ind].lastChange = 0;
@@ -303,7 +303,7 @@ void Base_set_option(base_t *base, const char *name, const char *value)
  * amount of fuel, the number of sensor items (each one adds 25%), and the
  * minimum and maximum visibility limits in effect.
  */
-void Compute_sensor_range(player_t *pl)
+void Compute_sensor_range(Player *pl)
 {
     static int init = 0;
     static double EnergyRangeFactor;
@@ -337,7 +337,7 @@ void Compute_sensor_range(player_t *pl)
 /*
  * Give ship one more tank, if possible.
  */
-void Player_add_tank(player_t *pl, double tank_fuel)
+void Player_add_tank(Player *pl, double tank_fuel)
 {
     double tank_cap, add_fuel;
 
@@ -358,7 +358,7 @@ void Player_add_tank(player_t *pl, double tank_fuel)
 /*
  * Remove a tank from a ship, if possible.
  */
-void Player_remove_tank(player_t *pl, int which_tank)
+void Player_remove_tank(Player *pl, int which_tank)
 {
     int i, tank_ind;
     double tank_fuel, tank_cap;
@@ -384,7 +384,7 @@ void Player_remove_tank(player_t *pl, int which_tank)
     }
 }
 
-void Player_hit_armor(player_t *pl)
+void Player_hit_armor(Player *pl)
 {
     if (--pl->item[ITEM_ARMOR] <= 0)
         CLR_BIT(pl->have, HAS_ARMOR);
@@ -393,7 +393,7 @@ void Player_hit_armor(player_t *pl)
 /*
  * Clear used bits.
  */
-void Player_used_kill(player_t *pl)
+void Player_used_kill(Player *pl)
 {
     pl->used &= ~USED_KILL;
     if (!BIT(DEF_HAVE, HAS_SHIELD))
@@ -403,7 +403,7 @@ void Player_used_kill(player_t *pl)
 /*
  * Calculate the mass of a player.
  */
-void Player_set_mass(player_t *pl)
+void Player_set_mass(Player *pl)
 {
     //  BUGFIX: xpilot 4.5.5beta has option minItemMass,
     //  making the ship 3 units too heavy on blood's music.
@@ -416,7 +416,7 @@ void Player_set_mass(player_t *pl)
  * Give player the initial number of tanks and amount of fuel.
  * Upto the maximum allowed.
  */
-static void Player_init_fuel(player_t *pl, double total_fuel)
+static void Player_init_fuel(Player *pl, double total_fuel)
 {
     double fuel = total_fuel;
     int i;
@@ -443,7 +443,7 @@ static void Player_init_fuel(player_t *pl, double total_fuel)
  * Set initial items for a player.
  * Number of initial items can depend on which base the player starts from.
  */
-void Player_init_items(player_t *pl)
+void Player_init_items(Player *pl)
 {
     int i, num_tanks;
     double total_fuel;
@@ -473,7 +473,7 @@ void Player_init_items(player_t *pl)
 }
 #endif
 
-void Player_init_items(player_t *pl)
+void Player_init_items(Player *pl)
 {
     int i;
 
@@ -501,12 +501,12 @@ void Player_init_items(player_t *pl)
 int Init_player(int ind, shipshape_t *ship, int type)
 {
     world_t *world = &World;
-    player_t *pl = Player_by_index(ind);
-    visibility_t *v = pl->visibility;
+    Player *pl = Player_by_index(ind);
+    visibility_t *visibility = pl->visibility;
     int i;
 
-    memset(pl, 0, sizeof(player_t));
-    pl->visibility = v;
+    *pl = Player{};
+    pl->visibility = visibility;
 
     /*
      * Make sure floats, doubles and pointers are correctly zeroed.
@@ -594,7 +594,7 @@ int Init_player(int ind, shipshape_t *ship, int type)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            player_t *pl_i = Player_by_index(i);
+            Player *pl_i = Player_by_index(i);
             /* If a non-team member has lost a life,
              * then it's too late to join. */
             if (pl_i->pl_life < world->rules.lives && !Players_are_teammates(pl, pl_i))
@@ -651,51 +651,43 @@ int Init_player(int ind, shipshape_t *ship, int type)
     return pl->id;
 }
 
-static player_t *playerArray;
-static visibility_t *visibilityArray;
+static Player *playerArray = nullptr;
+static visibility_t *visibilityArray = nullptr;
 
 void Alloc_players(int number)
 {
-    player_t *p;
-    visibility_t *t;
-    size_t n = number;
-    int i;
+    // Player *p;
+    // visibility_t *t;
+    // size_t n = number;
+    // int i;
 
-    /* Allocate space for pointers */
-    PlayersArray = XCALLOC(player_t *, n);
-
-    /* Allocate space for all entries, all player structs */
-    p = playerArray = XCALLOC(player_t, n);
-
+    PlayersArray = new Player *[number];
+    playerArray = new Player[number];
     /* Allocate space for all visibility arrays, n arrays of n entries */
-    t = visibilityArray = XCALLOC(visibility_t, n * n);
+    visibilityArray = new visibility_t[number * number]{};
 
-    if (!PlayersArray || !playerArray || !visibilityArray)
+    for (int i = 0; i < number; i++)
     {
-        error("Not enough memory for Players.");
-        exit(1);
-    }
-
-    for (i = 0; i < number; i++)
-    {
-        PlayersArray[i] = p++;
-        PlayersArray[i]->visibility = t;
-        /* Advance to next block/array */
-        t += number;
+        PlayersArray[i] = &playerArray[i];
+        PlayersArray[i]->visibility = &visibilityArray[i * number];
     }
 
     playerArrayNumber = number;
 
     /* Initialize player id to index lookup table */
-    for (i = 0; i < NELEM(GetIndArray); i++)
+    for (int i = 0; i < NELEM(GetIndArray); i++)
         GetIndArray[i] = NO_IND;
 }
 
 void Free_players(void)
 {
-    XFREE(PlayersArray);
-    XFREE(playerArray);
-    XFREE(visibilityArray);
+    delete[] PlayersArray;
+    delete[] playerArray;
+    delete[] visibilityArray;
+
+    PlayersArray = nullptr;
+    playerArray = nullptr;
+    visibilityArray = nullptr;
 }
 
 void Update_score_table(void)
@@ -705,7 +697,7 @@ void Update_score_table(void)
 
     for (int j = 0; j < NumPlayers; j++)
     {
-        player_t *pl = Player_by_index(j);
+        Player *pl = Player_by_index(j);
 
         if (pl->update_score)
         {
@@ -713,7 +705,7 @@ void Update_score_table(void)
 
             for (int i = 0; i < NumPlayers; i++)
             {
-                player_t *pl_i = Player_by_index(i);
+                Player *pl_i = Player_by_index(i);
 
                 if (pl_i->conn != nullptr)
                     Send_score(pl_i->conn, pl->id, Get_Score(pl), pl->pl_life,
@@ -734,7 +726,7 @@ void Update_score_table(void)
                             : (pl->check - 1);
                 for (int i = 0; i < NumPlayers; i++)
                 {
-                    player_t *pl_i = Player_by_index(i);
+                    Player *pl_i = Player_by_index(i);
 
                     if (pl_i->conn != nullptr)
                         Send_timing(pl_i->conn, pl->id, check, pl->round);
@@ -748,7 +740,7 @@ void Update_score_table(void)
 void Reset_all_players(void)
 {
     world_t *world = &World;
-    player_t *pl;
+    Player *pl;
     int i, j;
 
     updateScores = true;
@@ -887,7 +879,7 @@ void Reset_all_players(void)
 void Check_team_members(int team)
 {
     world_t *world = &World;
-    player_t *pl;
+    Player *pl;
     team_t *teamp;
     int members, i;
 
@@ -933,7 +925,7 @@ static void Compute_end_of_round_values(double *average_score,
     /* ratio for this round */
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl = Player_by_index(i);
+        Player *pl = Player_by_index(i);
 
         if (Player_is_tank(pl) ||
             (Player_is_paused(pl) && pl->pause_count <= 0) ||
@@ -966,7 +958,7 @@ static void Give_best_player_bonus(double average_score,
         sprintf(msg, "There is no Deadly Player.");
     else if (num_best_players == 1)
     {
-        player_t *bp = Player_by_index(best_players[0]);
+        Player *bp = Player_by_index(best_players[0]);
 
         sprintf(msg,
                 "%s is the Deadliest Player with a kill ratio of %d/%d.",
@@ -983,7 +975,7 @@ static void Give_best_player_bonus(double average_score,
         msg[0] = '\0';
         for (i = 0; i < num_best_players; i++)
         {
-            player_t *bp = Player_by_index(best_players[i]);
+            Player *bp = Player_by_index(best_players[i]);
             double ratio = Rate(Get_Score(bp), average_score);
             double score = (ratio + num_best_players) / num_best_players;
 
@@ -1019,7 +1011,7 @@ static void Give_best_player_bonus(double average_score,
     Set_message(msg);
 }
 
-static void Give_individual_bonus(player_t *pl, double average_score)
+static void Give_individual_bonus(Player *pl, double average_score)
 {
     double ratio, points;
 
@@ -1086,7 +1078,7 @@ void Team_game_over(int winning_team, const char *reason)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            player_t *pl_i = Player_by_index(i);
+            Player *pl_i = Player_by_index(i);
 
             if (pl_i->team != winning_team)
                 continue;
@@ -1174,7 +1166,7 @@ void Individual_game_over(int winner)
     {
         for (j = 0; j < NumPlayers; j++)
         {
-            player_t *pl_j = Player_by_index(j);
+            Player *pl_j = Player_by_index(j);
 
             if (Player_is_robot(pl_j))
             {
@@ -1198,7 +1190,7 @@ void Compute_game_status(void)
 {
     world_t *world = &World;
     int i;
-    // player_t *pl;
+    // Player *pl;
     char msg[MSG_LEN];
 
     if (roundtime > 0)
@@ -1225,7 +1217,7 @@ void Compute_game_status(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            player_t *pl_i = Player_by_index(i);
+            Player *pl_i = Player_by_index(i);
 
             if (Player_is_tank(pl_i))
                 /* Ignore tanks. */
@@ -1340,7 +1332,7 @@ void Compute_game_status(void)
 
             for (i = 0; i < NumPlayers; i++)
             {
-                player_t *pl_i = Player_by_index(i);
+                Player *pl_i = Player_by_index(i);
                 if (Player_is_paused(pl_i) || Player_is_tank(pl_i))
                     continue;
                 team_score[pl_i->team] += Get_Score(pl_i);
@@ -1444,7 +1436,7 @@ void Compute_game_status(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            player_t *pl_i = Player_by_index(i);
+            Player *pl_i = Player_by_index(i);
 
             if (Player_is_paused(pl_i) || Player_is_tank(pl_i))
                 continue;
@@ -1474,7 +1466,7 @@ void Compute_game_status(void)
     }
 }
 
-void Delete_player(player_t *pl)
+void Delete_player(Player *pl)
 {
     int ind = GetInd(pl->id), i, j, id = pl->id;
     object_t *obj;
@@ -1630,7 +1622,7 @@ void Delete_player(player_t *pl)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        player_t *pl_i = Player_by_index(i);
+        Player *pl_i = Player_by_index(i);
 
         if (Player_is_tank(pl_i) && pl_i->lock.pl_id == id)
         {
@@ -1663,7 +1655,7 @@ void Delete_player(player_t *pl)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        player_t *pl_i = Player_by_index(i);
+        Player *pl_i = Player_by_index(i);
 
         if (pl_i->conn != nullptr)
             Send_leave(pl_i->conn, id);
@@ -1678,7 +1670,7 @@ void Delete_player(player_t *pl)
 }
 
 /*
-void Add_spectator(player_t *pl)
+void Add_spectator(Player *pl)
 {
     pl->home_base = nullptr;
     pl->team = 0;
@@ -1688,7 +1680,7 @@ void Add_spectator(player_t *pl)
     NumSpectators++;
 }
 
-void Delete_spectator(player_t *pl)
+void Delete_spectator(Player *pl)
 {
     int i, ind = GetInd(pl->id);
 
@@ -1708,7 +1700,7 @@ void Delete_spectator(player_t *pl)
 }
 */
 
-void Detach_ball(player_t *pl, ballobject_t *ball)
+void Detach_ball(Player *pl, ballobject_t *ball)
 {
     int i, cnt;
 
@@ -1740,7 +1732,7 @@ void Detach_ball(player_t *pl, ballobject_t *ball)
     }
 }
 
-void Kill_player(player_t *pl, bool add_rank_death)
+void Kill_player(Player *pl, bool add_rank_death)
 {
     // warn("Kill_player: player: %s", pl->name.c_str());
 
@@ -1774,7 +1766,7 @@ static std::string bitsToStr(uint32_t s)
     return ret;
 }
 
-void Player_death_reset(player_t *pl, bool add_rank_death)
+void Player_death_reset(Player *pl, bool add_rank_death)
 {
     world_t *world = &World;
     // warn("Player_death_reset: player: %s", pl->name.c_str());
@@ -1933,7 +1925,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
 /* determines if two players are immune to eachother */
 bool Team_immune(int id1, int id2)
 {
-    player_t *pl1, *pl2;
+    Player *pl1, *pl2;
 
     /* owned stuff is never team immune */
     if (id1 == id2)
@@ -1984,13 +1976,13 @@ char *Player_state_str(int state)
     return buf;
 }
 
-void Player_print_state(player_t *pl, const char *funcname)
+void Player_print_state(Player *pl, const char *funcname)
 {
     warn("%-20s: %-16s (%c): %-20s ", funcname, pl->name.c_str(), pl->mychar,
          Player_state_str(pl->pl_state));
 }
 
-void Player_set_state(player_t *pl, int state)
+void Player_set_state(Player *pl, int state)
 {
     // warn("Player_set_state: Player: %s, state: %s", pl->name.c_str(), Player_state_str(state));
 

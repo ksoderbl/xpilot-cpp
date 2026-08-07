@@ -65,7 +65,7 @@
  * Functions for shots.
  */
 
-void Place_mine(player_t *pl)
+void Place_mine(Player *pl)
 {
     vector_t zero_vel = {0.0, 0.0};
 
@@ -88,9 +88,9 @@ void Place_mine(player_t *pl)
     Place_general_mine(pl->id, pl->team, 0, pl->pos, zero_vel, pl->mods);
 }
 
-void Place_moving_mine(player_t *pl)
+void Place_moving_mine(Player *pl)
 {
-    // player_t *pl = PlayersArray[ind];
+    // Player *pl = PlayersArray[ind];
     vector_t vel = pl->vel;
 
     if (pl->item[ITEM_MINE] <= 0 || (BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE) && !options.shieldedMining))
@@ -125,7 +125,7 @@ void Place_general_mine(int id, int team, int status,
     int used, i, minis;
     double life, drain, mass;
     vector_t mv;
-    player_t *pl = Player_by_id(id);
+    Player *pl = Player_by_id(id);
     // cannon_t *cannon = Cannon_by_id(id);
 
     // if (NumObjs + mods.mini >= MAX_TOTAL_SHOTS)
@@ -196,7 +196,7 @@ void Place_general_mine(int id, int team, int status,
         {
             for (i = 0; i < NumPlayers; i++)
             {
-                player_t *pl_i = Player_by_index(i);
+                Player *pl_i = Player_by_index(i);
 
                 if (pl_i->id != pl->id && !Team_immune(pl_i->id, pl->id) && !Player_is_tank(pl_i))
                 {
@@ -298,7 +298,7 @@ void Place_general_mine(int id, int team, int status,
  *     Cause the mine which is closest to a player and owned
  *     by that player to detonate.
  */
-void Detonate_mines(player_t *pl)
+void Detonate_mines(Player *pl)
 {
     world_t *world = &World;
     int i, closest = -1;
@@ -408,14 +408,14 @@ char *Describe_shot(int type, int status, modifiers_t mods, int hit)
     return msg;
 }
 
-static inline bool Player_can_fire_shot(player_t *pl)
+static inline bool Player_can_fire_shot(Player *pl)
 {
     if (pl->shots >= options.maxPlayerShots || BIT(pl->used, HAS_SHIELD) || Player_is_phasing(pl))
         return false;
     return true;
 }
 
-void Fire_main_shot(player_t *pl, int type, int dir)
+void Fire_main_shot(Player *pl, int type, int dir)
 {
     clpos_t m_gun, pos;
 
@@ -430,7 +430,7 @@ void Fire_main_shot(player_t *pl, int type, int dir)
                       dir, pl->mods, NO_ID);
 }
 
-void Fire_shot(player_t *pl, int type, int dir)
+void Fire_shot(Player *pl, int type, int dir)
 {
     if (!Player_can_fire_shot(pl))
         return;
@@ -439,7 +439,7 @@ void Fire_shot(player_t *pl, int type, int dir)
                       dir, pl->mods, NO_ID);
 }
 
-void Fire_left_shot(player_t *pl, int type, int dir, int gun)
+void Fire_left_shot(Player *pl, int type, int dir, int gun)
 {
     clpos_t l_gun, pos;
 
@@ -454,7 +454,7 @@ void Fire_left_shot(player_t *pl, int type, int dir, int gun)
                       dir, pl->mods, NO_ID);
 }
 
-void Fire_right_shot(player_t *pl, int type, int dir, int gun)
+void Fire_right_shot(Player *pl, int type, int dir, int gun)
 {
     clpos_t r_gun, pos;
 
@@ -469,7 +469,7 @@ void Fire_right_shot(player_t *pl, int type, int dir, int gun)
                       dir, pl->mods, NO_ID);
 }
 
-void Fire_left_rshot(player_t *pl, int type, int dir, int gun)
+void Fire_left_rshot(Player *pl, int type, int dir, int gun)
 {
     clpos_t l_rgun, pos;
 
@@ -484,7 +484,7 @@ void Fire_left_rshot(player_t *pl, int type, int dir, int gun)
                       dir, pl->mods, NO_ID);
 }
 
-void Fire_right_rshot(player_t *pl, int type, int dir, int gun)
+void Fire_right_rshot(Player *pl, int type, int dir, int gun)
 {
     clpos_t r_rgun, pos;
 
@@ -514,7 +514,7 @@ void Fire_general_shot(int id, int team, bool cannon,
     clpos_t shotpos;
     object_t *mini_objs[MODS_MINI_MAX + 1];
     torpobject_t *torp;
-    player_t *pl = Player_by_id(id);
+    Player *pl = Player_by_id(id);
     // cannon_t *cannon = Cannon_by_id(id);
 
     if (NumObjs >= MAX_TOTAL_SHOTS)
@@ -1076,7 +1076,7 @@ void Fire_general_shot(int id, int team, bool cannon,
     }
 }
 
-void Fire_normal_shots(player_t *pl)
+void Fire_normal_shots(Player *pl)
 {
     int i, shot_angle;
 
@@ -1143,7 +1143,7 @@ void Delete_shot(int ind)
     object_t *shot = Obj[ind]; /* Used when swapping places */
     ballobject_t *ball;
     itemobject_t *item;
-    player_t *pl;
+    Player *pl;
     bool addMine = false, addHeat = false, addBall = false;
     modifiers_t mods;
     int i, intensity, type, color, num_debris, status;
@@ -1176,7 +1176,7 @@ void Delete_shot(int ind)
              */
             for (i = 0; i < NumPlayers; i++)
             {
-                player_t *pl_i = Player_by_index(i);
+                Player *pl_i = Player_by_index(i);
 
                 if (pl_i->ball == ball)
                     pl_i->ball = nullptr;
@@ -1455,7 +1455,7 @@ void Delete_shot(int ind)
 void Update_connector_force(ballobject_t *ball)
 {
     world_t *world = &World;
-    player_t *pl = Player_by_id(ball->id);
+    Player *pl = Player_by_id(ball->id);
     vector_t D;
     double length, length2, force, ratio, accell, cosine;
     double pl_damping, ball_damping;
@@ -1543,7 +1543,7 @@ void Update_torpedo(torpobject_t *torp)
 void Update_missile(missileobject_t *missile)
 {
     world_t *world = &World;
-    player_t *pl;
+    Player *pl;
     int angle, theta;
     double range = 0.0, acc = SMART_SHOT_ACC;
     double x_dif = 0.0, y_dif = 0.0, shot_speed, a;
@@ -1602,7 +1602,7 @@ void Update_missile(missileobject_t *missile)
                 range = HEAT_RANGE * (heat->heat_count / HEAT_CLOSE_TIMEOUT);
                 for (i = 0; i < NumPlayers; i++)
                 {
-                    player_t *pl_i = Player_by_index(i);
+                    Player *pl_i = Player_by_index(i);
                     clpos_t engine;
 
                     if (!Player_is_thrusting(pl_i))

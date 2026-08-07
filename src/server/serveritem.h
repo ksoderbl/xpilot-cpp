@@ -28,5 +28,5 @@
 
 int IsOffensiveItem(enum Item i);
 int IsDefensiveItem(enum Item i);
-int CountOffensiveItems(player_t *pl);
-int CountDefensiveItems(player_t *pl);
+int CountOffensiveItems(Player *pl);
+int CountDefensiveItems(Player *pl);

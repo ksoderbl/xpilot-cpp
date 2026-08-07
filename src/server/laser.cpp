@@ -54,7 +54,7 @@
 
 #include "update.h"
 
-void Fire_laser(player_t *pl)
+void Fire_laser(Player *pl)
 {
     world_t *world = &World;
 
@@ -82,7 +82,7 @@ void Fire_general_laser(int id, int team, clpos_t pos, int dir,
 {
     pulse_t *pulse;
     int life;
-    player_t *pl = Player_by_id(id);
+    Player *pl = Player_by_id(id);
     /*cannon_t *cannon = Cannon_by_id(id);*/
 
     if (pl)
@@ -143,7 +143,7 @@ typedef struct vicbuf
 static void Laser_pulse_destroy_one(int pulse_index)
 {
     // int ind;
-    player_t *pl;
+    Player *pl;
     pulse_t *pulse_ptr;
 
     pulse_ptr = Pulses[pulse_index];
@@ -187,7 +187,7 @@ static void Laser_pulse_find_victims(
 {
     world_t *world = &World;
     int i;
-    player_t *vic;
+    Player *vic;
     double dist;
     int midcx = FLOAT_TO_CLICK(midx);
     int midcy = FLOAT_TO_CLICK(midy);
@@ -262,8 +262,8 @@ static void Laser_pulse_hits_player(
     bool *refl)
 {
     world_t *world = &World;
-    player_t *pl;
-    player_t *vicpl;
+    Player *pl;
+    Player *vicpl;
     // int ind;
     int sc;
     char msg[MSG_LEN];
@@ -443,7 +443,7 @@ static int Laser_pulse_check_player_hits(
             /* remove victim by copying the last victim over it */
             vicbuf->vic_ptr[j] = vicbuf->vic_ptr[--vicbuf->num_vic];
         else
-            /* remember shortest distance from pulse to player_t */
+            /* remember shortest distance from pulse to Player */
             vicbuf->vic_ptr[j].prev_dist = dist;
     }
 
@@ -497,7 +497,7 @@ void Laser_pulse_collision(void)
     double x, y, x1, x2, y1, y2;
     double dx, dy;
     double midx, midy;
-    player_t *pl;
+    Player *pl;
     pulse_t *pulse;
     object_t *obj = nullptr;
     std::vector<object_t *> obj_list;
@@ -725,10 +725,10 @@ void Laser_pulse_collision(void)
  * Do what needs to be done when a laser pulse
  * actually hits a player.
  */
-void Laser_pulse_hits_player2(player_t *pl, pulseobject_t *pulse)
+void Laser_pulse_hits_player2(Player *pl, pulseobject_t *pulse)
 {
     world_t *world = &World;
-    player_t *kp = Player_by_id(pulse->id);
+    Player *kp = Player_by_id(pulse->id);
     cannon_t *cannon = nullptr;
 
     if (kp == nullptr)

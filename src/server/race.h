@@ -27,6 +27,6 @@
 
 void Race_compute_game_status(void);
 void Race_game_over(void);
-void Player_reset_timing(player_t *pl);
-void Player_pass_checkpoint(player_t *pl);
-void PlayerCheckpointCollision(player_t *pl);
+void Player_reset_timing(Player *pl);
+void Player_pass_checkpoint(Player *pl);
+void PlayerCheckpointCollision(Player *pl);

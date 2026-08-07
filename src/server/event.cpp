@@ -69,7 +69,7 @@ bool team_dead(int team)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl = Player_by_index(i);
+        Player *pl = Player_by_index(i);
 
         if (pl->team != team)
             continue;
@@ -83,7 +83,7 @@ bool team_dead(int team)
 /*
  * Return true if a lock is allowed.
  */
-static bool Player_lock_allowed(player_t *pl, player_t *lock_pl)
+static bool Player_lock_allowed(Player *pl, Player *lock_pl)
 {
     world_t *world = &World;
 
@@ -115,10 +115,10 @@ static bool Player_lock_allowed(player_t *pl, player_t *lock_pl)
     return false;
 }
 
-static void Player_lock_next_or_prev(player_t *pl, int key)
+static void Player_lock_next_or_prev(Player *pl, int key)
 {
     int i, j, ind = GetInd(pl->id);
-    player_t *pl_i;
+    Player *pl_i;
 
     j = i = GetInd(pl->lock.pl_id);
 
@@ -156,12 +156,12 @@ static void Player_lock_next_or_prev(player_t *pl, int key)
     }
 }
 
-int Player_lock_closest(player_t *pl, bool next)
+int Player_lock_closest(Player *pl, bool next)
 {
     world_t *world = &World;
     int i;
     double dist = 0.0, best, l;
-    player_t *lock_pl = nullptr, *new_pl = nullptr;
+    Player *lock_pl = nullptr, *new_pl = nullptr;
 
     if (!next)
         CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
@@ -184,7 +184,7 @@ int Player_lock_closest(player_t *pl, bool next)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl_i = Player_by_index(i);
+        Player *pl_i = Player_by_index(i);
 
         if (pl_i == lock_pl ||
             !Player_is_active(pl_i) ||
@@ -212,10 +212,10 @@ int Player_lock_closest(player_t *pl, bool next)
     return 1;
 }
 
-static void Player_change_home(player_t *pl)
+static void Player_change_home(Player *pl)
 {
     world_t *world = &World;
-    player_t *pl2 = nullptr;
+    Player *pl2 = nullptr;
     base_t *base2 = nullptr;
     base_t *enemybase = nullptr;
     double l, dist = 1e19;
@@ -270,7 +270,7 @@ static void Player_change_home(player_t *pl)
     /* Let's see if someone else in our has this base. */
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl_i = Player_by_index(i);
+        Player *pl_i = Player_by_index(i);
 
         if (pl_i->id != pl->id &&
             !Player_is_tank(pl_i) &&
@@ -317,14 +317,14 @@ static void Player_change_home(player_t *pl)
      */
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl_i = Player_by_index(i);
+        Player *pl_i = Player_by_index(i);
 
         if (pl_i->conn != nullptr)
             Send_base(pl_i->conn, pl->id, pl->home_base->ind);
     }
 }
 
-static void Player_refuel(player_t *pl)
+static void Player_refuel(Player *pl)
 {
     world_t *world = &World;
     int i;
@@ -353,7 +353,7 @@ static void Player_refuel(player_t *pl)
 }
 
 /* Repair target or possibly something else. */
-static void Player_repair(player_t *pl)
+static void Player_repair(Player *pl)
 {
     world_t *world = &World;
     int i;
@@ -383,7 +383,7 @@ static void Player_repair(player_t *pl)
 }
 
 /* Player pressed pause key. */
-static void Player_toggle_pause(player_t *pl)
+static void Player_toggle_pause(Player *pl)
 {
     warn("Player_toggle_pause: %s", pl->name.c_str());
 
@@ -512,7 +512,7 @@ static void Player_toggle_pause(player_t *pl)
         b = tmp;         \
     }
 
-static void Player_swap_settings(player_t *pl)
+static void Player_swap_settings(Player *pl)
 {
     if (Player_is_hoverpaused(pl) || Player_uses_autopilot(pl))
         return;
@@ -528,7 +528,7 @@ static void Player_swap_settings(player_t *pl)
 
 #undef FOOBARSWAP
 
-static void Player_toggle_compass(player_t *pl)
+static void Player_toggle_compass(Player *pl)
 {
     int i, k, ind = GetInd(pl->id);
 
@@ -549,7 +549,7 @@ static void Player_toggle_compass(player_t *pl)
     Player_lock_closest(pl, false);
 }
 
-void Pause_player(player_t *pl, bool on)
+void Pause_player(Player *pl, bool on)
 {
     world_t *world = &World;
     int i;
@@ -588,7 +588,7 @@ void Pause_player(player_t *pl, bool on)
             {
                 for (i = 0; i < NumPlayers; i++)
                 {
-                    player_t *pl_i = Player_by_index(i);
+                    Player *pl_i = Player_by_index(i);
 
                     /* If a non-team member has lost a life,
                      * then it's too late to join. */
@@ -623,7 +623,7 @@ void Pause_player(player_t *pl, bool on)
     }
 }
 
-int Handle_keyboard(player_t *pl)
+int Handle_keyboard(Player *pl)
 {
     // warn("Handle_keyboard: player %s", pl->name.c_str());
 

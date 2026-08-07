@@ -54,8 +54,8 @@
 
 static int Cannon_select_weapon(cannon_t *cannon);
 static void Cannon_aim(cannon_t *cannon, int weapon,
-                       player_t **pl_p, int *dir);
-static void Cannon_fire(cannon_t *cannon, int weapon, player_t *pl, int dir);
+                       Player **pl_p, int *dir);
+static void Cannon_fire(cannon_t *cannon, int weapon, Player *pl, int dir);
 static int Cannon_in_danger(cannon_t *cannon);
 static int Cannon_select_defense(cannon_t *cannon);
 static void Cannon_defend(cannon_t *cannon, int defense);
@@ -110,7 +110,7 @@ void Cannon_update(bool tick)
             c->damaged = 0;
         if (c->tractor_count > 0)
         {
-            player_t *tpl = Player_by_id(c->tractor_target_id);
+            Player *tpl = Player_by_id(c->tractor_target_id);
             // int ind = GetInd(c->tractor_target_id);
             if (World_wrap_length(
                     world,
@@ -250,7 +250,7 @@ void Cannon_check_defense(cannon_t *c)
 
 void Cannon_check_fire(cannon_t *c)
 {
-    player_t *pl = nullptr;
+    Player *pl = nullptr;
     int dir = 0,
         weapon = Cannon_select_weapon(c);
 
@@ -399,7 +399,7 @@ static int Cannon_select_weapon(cannon_t *c)
    modes 1 and 2 only fire if a player is within range of the selected weapon.
    mode 3 only fires if a player will be in range when the shot is expected to hit.
  */
-static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
+static void Cannon_aim(cannon_t *c, int weapon, Player **pl_p, int *dir)
 {
     world_t *world = &World;
     double speed = options.shotSpeed;
@@ -449,7 +449,7 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
 
     for (i = 0; i < NumPlayers && !ready; i++)
     {
-        player_t *pl = Player_by_index(i);
+        Player *pl = Player_by_index(i);
         double tdist, tdx, tdy;
 
         tdx = WORLD_WRAP_DCX(world, pl->pos.cx - c->pos.cx) / CLICK;
@@ -547,7 +547,7 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
 
 /* does the actual firing. also determines in which way to use weapons that
    have more than one possible use. */
-static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
+static void Cannon_fire(cannon_t *c, int weapon, Player *pl, int dir)
 {
     world_t *world = &World;
     modifiers_t mods;
@@ -773,7 +773,7 @@ void Object_hits_cannon2(object_t *obj, cannon_t *c)
     }
     else
     {
-        player_t *pl = Player_by_id(obj->id);
+        Player *pl = Player_by_id(obj->id);
 
         if (!BIT(c->used, HAS_EMERGENCY_SHIELD))
         {
@@ -795,7 +795,7 @@ void Object_hits_cannon1(object_t *obj, cannon_t *c)
     }
     else
     {
-        player_t *pl = Player_by_id(obj->id);
+        Player *pl = Player_by_id(obj->id);
 
         if (!BIT(c->used, HAS_EMERGENCY_SHIELD))
         {
@@ -807,7 +807,7 @@ void Object_hits_cannon1(object_t *obj, cannon_t *c)
     }
 }
 
-void Cannon_dies(cannon_t *c, player_t *pl)
+void Cannon_dies(cannon_t *c, Player *pl)
 {
     world_t *world = &World;
     vector_t zero_vel = {0.0, 0.0};

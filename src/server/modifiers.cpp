@@ -515,7 +515,7 @@ static int str2num(const char **strp, int min, int max)
     return num;
 }
 
-void Player_set_modbank(player_t *pl, int bank, const char *str)
+void Player_set_modbank(Player *pl, int bank, const char *str)
 {
     world_t *world = &World;
     const char *cp;

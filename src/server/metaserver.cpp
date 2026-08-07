@@ -203,7 +203,7 @@ void Meta_update(bool change)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl = Player_by_index(i);
+        Player *pl = Player_by_index(i);
 
         if (!Player_is_human(pl) ||
             Player_is_paused(pl))
@@ -279,7 +279,7 @@ void Meta_update(bool change)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl = Player_by_index(i);
+        Player *pl = Player_by_index(i);
         char str[4 * MAX_CHARS];
         char tstr[32];
 

@@ -33,6 +33,6 @@
 void Walls_init1(void);
 void Move_init1(void);
 void Move_object1(object_t *obj);
-void Move_player1(player_t *pl);
-void Turn_player1(player_t *pl);
+void Move_player1(Player *pl);
+void Turn_player1(Player *pl);
 void Move_segment1(move_state_t *ms);

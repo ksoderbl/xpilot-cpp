@@ -28,8 +28,8 @@
 #include "object.h"
 
 void Object_position_set_clpos(object_t *obj, clpos_t pos);
-void Player_position_restore(player_t *pl);
-void Player_position_set_clicks(player_t *pl, clpos_t pos);
-void Player_position_init_clpos(player_t *pl, clpos_t pos);
-void Player_position_limit(player_t *pl);
-void Player_position_debug(player_t *pl, const char *msg);
+void Player_position_restore(Player *pl);
+void Player_position_set_clicks(Player *pl, clpos_t pos);
+void Player_position_init_clpos(Player *pl, clpos_t pos);
+void Player_position_limit(Player *pl);
+void Player_position_debug(Player *pl, const char *msg);

@@ -46,13 +46,13 @@ void Groups_init(void);
 void Walls_init2(void);
 void Move_init2(void);
 void Move_object2(object_t *obj);
-void Move_player2(player_t *pl);
-void Turn_player2(player_t *pl, bool push);
+void Move_player2(Player *pl);
+void Turn_player2(Player *pl, bool push);
 int is_inside(int x, int y, hitmask_t hitmask, const object_t *obj);
 int shape_is_inside(int cx, int cy, hitmask_t hitmask, const object_t *obj,
                     shape_t *s, int dir);
 int Polys_to_client(uint8_t **);
-void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt);
+void Player_crash2(Player *pl, int crashtype, int mapobj_ind, int pt);
 void Object_crash2(object_t *obj, int crashtype, int mapobj_ind);
 void Ball_line_init2(void);
 void Move_point(const move_t *move, struct collans *answer);

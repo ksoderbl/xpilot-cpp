@@ -71,7 +71,7 @@ void Race_compute_game_status(void)
      */
 
     world_t *world = &World;
-    player_t *alive = nullptr, *pl;
+    Player *alive = nullptr, *pl;
     int num_alive_players = 0, num_active_players = 0,
         num_finished_players = 0, num_race_over_players = 0,
         num_waiting_players = 0, pos = 1, total_pts, i;
@@ -121,7 +121,7 @@ void Race_compute_game_status(void)
     if (options.eliminationRace) {
     for (;;) {
         int pli, count = 0, lap = INT_MAX;
-        player_t *pl_i;
+        Player *pl_i;
 
         for (i = 0; i < NumPlayers; i++) {
         pl = Player_by_index(i);
@@ -301,7 +301,7 @@ void Race_compute_game_status(void)
 
 void Race_game_over(void)
 {
-    player_t *pl;
+    Player *pl;
     int i, j, k,
         bestlap = 0, num_best_players = 0,
         num_active_players = 0, num_ordered_players = 0, *order;
@@ -324,7 +324,7 @@ void Race_game_over(void)
             {
                 for (j = 0; j < i; j++)
                 {
-                    player_t *pl_j = Player_by_index(order[j]);
+                    Player *pl_j = Player_by_index(order[j]);
 
                     if (pl->best_lap < pl_j->best_lap)
                         break;
@@ -414,7 +414,7 @@ void Race_game_over(void)
     Reset_all_players();
 }
 
-void Player_reset_timing(player_t *pl)
+void Player_reset_timing(Player *pl)
 {
     pl->round = 0;
     pl->check = 0;
@@ -424,7 +424,7 @@ void Player_reset_timing(player_t *pl)
     pl->last_lap_time = 0;
 }
 
-void Player_pass_checkpoint(player_t *pl)
+void Player_pass_checkpoint(Player *pl)
 {
     int j;
 
@@ -490,7 +490,7 @@ void Player_pass_checkpoint(player_t *pl)
     updateScores = true;
 }
 
-void PlayerCheckpointCollision(player_t *pl)
+void PlayerCheckpointCollision(Player *pl)
 {
     world_t *world = &World;
 

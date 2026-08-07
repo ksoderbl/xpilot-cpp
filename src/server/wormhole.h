@@ -33,10 +33,10 @@
 /*
  * Prototypes for wormhole.cpp
  */
-bool Initiate_hyperjump(player_t *pl);
-void Do_warp(player_t *pl);
-void Player_warp(player_t *pl);
-void Player_finish_warp(player_t *pl);
+bool Initiate_hyperjump(Player *pl);
+void Do_warp(Player *pl);
+void Player_warp(Player *pl);
+void Player_finish_warp(Player *pl);
 void Object_warp(object_t *obj);
 void Object_finish_warp(object_t *obj);
 void Object_hits_wormhole1(object_t *obj, int ind);

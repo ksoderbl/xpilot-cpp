@@ -25,9 +25,9 @@
 
 #include "player.h"
 
-void Fire_laser(player_t *pl);
+void Fire_laser(Player *pl);
 void Fire_general_laser(int id, int team, clpos_t pos,
                         int dir, modifiers_t mods);
-void Laser_pulse_hits_player2(player_t *pl, pulseobject_t *pulse);
+void Laser_pulse_hits_player2(Player *pl, pulseobject_t *pulse);
 
 void Laser_pulse_collision(void);
