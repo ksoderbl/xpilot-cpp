@@ -801,7 +801,8 @@ void Server_log_admin_message(player_t *pl, const char *str)
                 "\t%s\n",
                 showtime(),
                 pl->name.c_str(),
-                pl->username.c_str(), pl->hostname,
+                pl->username.c_str(),
+                pl->hostname.c_str(),
                 Player_get_addr(pl),
                 Player_get_dpy(pl),
                 str);

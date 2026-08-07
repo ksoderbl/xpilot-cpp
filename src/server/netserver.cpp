@@ -90,6 +90,9 @@
  * if the acknowledgement timer expires.
  */
 
+#include <string>
+#include <vector>
+
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -150,10 +153,11 @@
 #define MAX_MOTD_SIZE (30 * 1024)
 #define MAX_MOTD_LOOPS (10 * FPS)
 
-static connection_t *Conn = nullptr;
+// static connection_t *Conn = nullptr;
+static std::vector<connection_t> Conn; // TODO: rename to connections
+static int max_connections = 0;
 static setup_t *Setup = nullptr;
 static setup_t *Oldsetup = nullptr;
-static int max_connections = 0;
 static int (*playing_receive[256])(connection_t *connp),
     (*login_receive[256])(connection_t *connp),
     (*drain_receive[256])(connection_t *connp);
@@ -359,8 +363,6 @@ static void Init_receive(void)
  */
 int Setup_net_server(void)
 {
-    size_t size;
-
     Init_receive();
 
     if (Init_setup() == -1)
@@ -372,13 +374,15 @@ int Setup_net_server(void)
      * the contact socket, and the socket for the resolver library routines.
      */
     max_connections = MIN(MAX_SELECT_FD - 5, Num_bases());
-    size = max_connections * sizeof(*Conn);
-    if ((Conn = (connection_t *)malloc(size)) == nullptr)
-    {
-        error("Cannot allocate memory for connections");
-        return -1;
-    }
-    memset(Conn, 0, size);
+
+    // size = max_connections * sizeof(*Conn);
+    // if ((Conn = (connection_t *)malloc(size)) == nullptr)
+    // {
+    //     error("Cannot allocate memory for connections");
+    //     return -1;
+    // }
+    // memset(Conn, 0, size);
+    Conn.resize(max_connections);
 
     return 0;
 }
@@ -456,8 +460,8 @@ void Destroy_connection(connection_t *connp, const char *reason)
            showtime(),
            connp->nick.c_str(),
            connp->user.c_str(),
-           connp->host ? connp->host : "",
-           connp->dpy ? connp->dpy : "",
+           connp->host.c_str(),
+           connp->dpy.c_str(),
            reason);
 
     Conn_set_state(connp, CONN_FREE, CONN_FREE);
@@ -475,9 +479,9 @@ void Destroy_connection(connection_t *connp, const char *reason)
 
     connp->user.clear();
     connp->nick.clear();
-    XFREE(connp->dpy);
-    XFREE(connp->addr);
-    XFREE(connp->host);
+    connp->dpy.clear();
+    connp->addr.clear();
+    connp->host.clear();
 
     Sockbuf_cleanup(&connp->w);
     Sockbuf_cleanup(&connp->r);
@@ -492,7 +496,8 @@ void Destroy_connection(connection_t *connp, const char *reason)
     }
     sock_close(sock);
 
-    memset(connp, 0, sizeof(*connp));
+    // memset(connp, 0, sizeof(*connp));
+    *connp = connection_t{};
 }
 
 int Check_connection(char *user, char *nick, char *dpy, char *addr)
@@ -508,8 +513,8 @@ int Check_connection(char *user, char *nick, char *dpy, char *addr)
             if (strcasecmp(connp->nick.c_str(), nick) == 0)
             {
                 if (!strcmp(user, connp->user.c_str()) &&
-                    !strcmp(dpy, connp->dpy) &&
-                    !strcmp(addr, connp->addr))
+                    !strcmp(dpy, connp->dpy.c_str()) &&
+                    !strcmp(addr, connp->addr.c_str()))
                     return connp->my_port;
                 return -1;
             }
@@ -651,7 +656,7 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
         {
             if (connp->state == CONN_LISTENING &&
                 strcmp(user, connp->user.c_str()) == 0 &&
-                strcmp(dpy, connp->dpy) == 0 &&
+                strcmp(dpy, connp->dpy.c_str()) == 0 &&
                 version == connp->version)
                 /*
                  * May happen for multi-homed hosts
@@ -735,10 +740,10 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
 
     connp->my_port = my_port;
     connp->user = user;
-    connp->nick = strdup(nick);
-    connp->dpy = strdup(dpy);
-    connp->addr = strdup(addr);
-    connp->host = strdup(host);
+    connp->nick = nick;
+    connp->dpy = dpy;
+    connp->addr = addr;
+    connp->host = host;
     connp->ship = nullptr;
     connp->team = team;
     connp->version = version;
@@ -795,12 +800,7 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
     Conn_set_state(connp, CONN_LISTENING, CONN_FREE);
     if (connp->w.buf == nullptr ||
         connp->r.buf == nullptr ||
-        connp->c.buf == nullptr ||
-        // connp->user == nullptr ||
-        // connp->nick == nullptr ||
-        connp->dpy == nullptr ||
-        connp->addr == nullptr ||
-        connp->host == nullptr)
+        connp->c.buf == nullptr)
     {
         error("Not enough memory for connection");
         /* socket is not yet connected, but it doesn't matter much. */
@@ -843,7 +843,7 @@ static int Handle_listening(connection_t *connp)
     if (sock_connect(&connp->w.sock, connp->addr, connp->his_port) == -1)
     {
         error("Cannot connect datagram socket (%s,%d,%d,%d,%d)",
-              connp->addr, connp->his_port,
+              connp->addr.c_str(), connp->his_port,
               connp->w.sock.error.error,
               connp->w.sock.error.call,
               connp->w.sock.error.line);
@@ -857,7 +857,7 @@ static int Handle_listening(connection_t *connp)
         if (sock_connect(&connp->w.sock, connp->addr, connp->his_port) == -1)
         {
             error("Still cannot connect datagram socket (%s,%d,%d,%d,%d)",
-                  connp->addr, connp->his_port,
+                  connp->addr.c_str(), connp->his_port,
                   connp->w.sock.error.error,
                   connp->w.sock.error.call,
                   connp->w.sock.error.line);
@@ -867,8 +867,8 @@ static int Handle_listening(connection_t *connp)
     }
 
     printf("%s Welcome %s=%s@%s|%s (%s/%d)", showtime(),
-           connp->nick.c_str(), connp->user.c_str(), connp->host, connp->dpy,
-           connp->addr, connp->his_port);
+           connp->nick.c_str(), connp->user.c_str(), connp->host.c_str(), connp->dpy.c_str(),
+           connp->addr.c_str(), connp->his_port);
     printf(" (version %04x)\n", connp->version);
 
     if (connp->r.ptr[0] != PKT_VERIFY)
@@ -996,11 +996,11 @@ static int Handle_setup(connection_t *connp)
         Conn_set_state(connp, CONN_DRAIN, CONN_LOGIN);
 
 #if 0
-    if (CheckBanned(connp->user, connp->nick.c_str(), connp->addr, connp->host)) {
+    if (CheckBanned(connp->user, connp->nick.c_str(), connp->addr.c_str(), connp->host)) {
     Destroy_connection(connp, "Banned from server, contact " LOCALGURU);
     return -1;
     }
-    if (!CheckAllowed(connp->user, connp->nick.c_str(), connp->addr, connp->host)) {
+    if (!CheckAllowed(connp->user, connp->nick.c_str(), connp->addr.c_str(), connp->host)) {
     Destroy_connection(connp, "Restricted nick, contact " LOCALGURU);
     return -1;
     }
@@ -1132,7 +1132,8 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
     pl->name = connp->nick;
     // strlcpy(pl->username, connp->user, MAX_CHARS);
     pl->username = connp->user;
-    strlcpy(pl->hostname, connp->host, MAX_CHARS);
+    // strlcpy(pl->hostname, connp->host, MAX_CHARS);
+    pl->hostname = connp->host;
     if (connp->team != TEAM_NOT_SET)
         pl->team = connp->team;
     pl->version = connp->version;
@@ -2859,18 +2860,18 @@ int Get_player_id(connection_t *connp)
     return connp->id;
 }
 
-const char *Player_get_addr(player_t *pl)
+std::string Player_get_addr(player_t *pl)
 {
     if (pl->conn != nullptr)
         return pl->conn->addr;
-    return nullptr;
+    return "";
 }
 
-const char *Player_get_dpy(player_t *pl)
+std::string Player_get_dpy(player_t *pl)
 {
     if (pl->conn != nullptr)
         return pl->conn->dpy;
-    return nullptr;
+    return "";
 }
 
 static int Receive_shape(connection_t *connp)
@@ -3153,7 +3154,7 @@ static int Receive_audio_request(connection_t *connp)
     return 1;
 }
 
-int Check_max_clients_per_IP(char *host_addr)
+int Check_max_clients_per_IP(std::string host_addr)
 {
     int i, clients_per_ip = 0;
     connection_t *connp;
@@ -3164,7 +3165,8 @@ int Check_max_clients_per_IP(char *host_addr)
     for (i = 0; i < max_connections; i++)
     {
         connp = &Conn[i];
-        if (connp->state != CONN_FREE && !strcasecmp(connp->addr, host_addr))
+        if (connp->state != CONN_FREE &&
+            !strcasecmp(connp->addr.c_str(), host_addr.c_str()))
             clients_per_ip++;
     }
 

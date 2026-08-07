@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include <string>
+
 #define SOCK_HOSTNAME_LENGTH 256
 #define SOCK_FD_INVALID (-1)
 #define SOCK_IS_ERROR (-1)
@@ -84,7 +86,7 @@ int sock_set_non_blocking(sock_t *sock, int flag);
 int sock_open_tcp(sock_t *sock);
 int sock_open_tcp_connected_non_blocking(sock_t *sock, char *host, int port);
 int sock_open_udp(sock_t *sock, char *dotaddr, int port);
-int sock_connect(sock_t *sock, char *host, int port);
+int sock_connect(sock_t *sock, std::string host, int port);
 int sock_get_last_port(sock_t *sock);
 char *sock_get_last_addr(sock_t *sock);
 char *sock_get_last_name(sock_t *sock);

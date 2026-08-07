@@ -236,11 +236,12 @@ typedef struct
     // char name[MAX_CHARS]; /* Nick-name of player */
     std::string name;
     // char username[MAX_CHARS]; /* Real name of player */
-    std::string username;     /* User name of player */
-    char hostname[MAX_CHARS]; /* Hostname of client player uses */
-    uint16_t pseudo_team;     /* Which team for detaching tanks */
-    int alliance;             /* Member of which alliance? */
-    int invite;               /* Invitation for alliance */
+    std::string username; /* User name of player */
+    // char hostname[MAX_CHARS]; /* Hostname of client player uses */
+    std::string hostname;
+    uint16_t pseudo_team; /* Which team for detaching tanks */
+    int alliance;         /* Member of which alliance? */
+    int invite;           /* Invitation for alliance */
     ballobject_t *ball;
 
     /*

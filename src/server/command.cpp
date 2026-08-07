@@ -463,12 +463,12 @@ static int Cmd_addr(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     pl2 = Get_player_by_name(arg, nullptr, &errorstr);
     if (pl2)
     {
-        const char *addr = Player_get_addr(pl2);
+        std::string addr = Player_get_addr(pl2);
 
-        if (addr == nullptr)
+        if (addr.empty())
             snprintf(msg, size, "Unable to get address for %s.", pl2->name.c_str());
         else
-            snprintf(msg, size, "%s plays from: %s.", pl2->name.c_str(), addr);
+            snprintf(msg, size, "%s plays from: %s.", pl2->name.c_str(), addr.c_str());
     }
     else
     {

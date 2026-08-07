@@ -63,8 +63,8 @@
 
 static jmp_buf env;
 
-static struct hostent *sock_get_host_by_name(const char *name);
-static struct hostent *sock_get_host_by_addr(const char *addr, int len, int type);
+static struct hostent *sock_get_host_by_name(std::string name);
+static struct hostent *sock_get_host_by_addr(std::string addr, int len, int type);
 
 static void sock_flags_add(sock_t *sock, unsigned bits)
 {
@@ -372,7 +372,7 @@ int sock_open_udp(sock_t *sock, char *dotaddr, int port)
     return SOCK_IS_OK;
 }
 
-int sock_connect(sock_t *sock, char *host, int port)
+int sock_connect(sock_t *sock, std::string host, int port)
 {
     struct sockaddr_in dest;
     struct hostent *hp;
@@ -380,7 +380,7 @@ int sock_connect(sock_t *sock, char *host, int port)
     memset(&dest, 0, sizeof(dest));
     dest.sin_family = AF_INET;
     dest.sin_port = htons((uint16_t)port);
-    dest.sin_addr.s_addr = inet_addr(host);
+    dest.sin_addr.s_addr = inet_addr(host.c_str());
     if ((dest.sin_addr.s_addr & 0xFFFFFFFF) == 0xFFFFFFFF)
     {
         errno = 0;
@@ -739,7 +739,7 @@ static void sock_catch_alarm(int signum)
     longjmp(env, 1);
 }
 
-static struct hostent *sock_get_host_by_name(const char *name)
+static struct hostent *sock_get_host_by_name(std::string name)
 {
     struct hostent *hp;
 
@@ -753,7 +753,7 @@ static struct hostent *sock_get_host_by_name(const char *name)
     signal(SIGALRM, sock_catch_alarm);
     alarm(SOCK_GETHOST_TIMEOUT);
 
-    hp = gethostbyname(name);
+    hp = gethostbyname(name.c_str());
 
     alarm(0);
     signal(SIGALRM, SIG_DFL);
@@ -761,7 +761,7 @@ static struct hostent *sock_get_host_by_name(const char *name)
     return hp;
 }
 
-static struct hostent *sock_get_host_by_addr(const char *addr, int len, int type)
+static struct hostent *sock_get_host_by_addr(std::string addr, int len, int type)
 {
     struct hostent *hp;
 
@@ -775,7 +775,7 @@ static struct hostent *sock_get_host_by_addr(const char *addr, int len, int type
     signal(SIGALRM, sock_catch_alarm);
     alarm(SOCK_GETHOST_TIMEOUT);
 
-    hp = gethostbyaddr(addr, len, type);
+    hp = gethostbyaddr(addr.c_str(), len, type);
 
     alarm(0);
     signal(SIGALRM, SIG_DFL);

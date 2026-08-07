@@ -721,7 +721,8 @@ static void Robot_create(void)
     robot->name = rob->name;
     // strlcpy(robot->username, options.robotUserName, MAX_CHARS);
     robot->username = options.robotUserName;
-    strlcpy(robot->hostname, options.robotHostName, MAX_CHARS);
+    // strlcpy(robot->hostname, options.robotHostName, MAX_CHARS);
+    robot->hostname = options.robotHostName;
 
     robot->color = WHITE;
     robot->turnspeed = MAX_PLAYER_TURNSPEED;

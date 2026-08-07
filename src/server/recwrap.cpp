@@ -35,7 +35,7 @@ int sock_closeRec(sock_t *sock)
     return sock_close(sock);
 }
 
-int sock_connectRec(sock_t *sock, char *host, int port)
+int sock_connectRec(sock_t *sock, std::string host, int port)
 {
     int i;
 

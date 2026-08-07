@@ -891,7 +891,9 @@ static int Queue_player(char *user, char *nick, char *disp, int team,
         if (!strcasecmp(nick, qp->nick_name))
         {
             /* same screen? */
-            if (!strcmp(addr, qp->host_addr) && !strcmp(user, qp->user_name) && !strcmp(disp, qp->disp_name))
+            if (!strcmp(addr, qp->host_addr) &&
+                !strcmp(user, qp->user_name) &&
+                !strcmp(disp, qp->disp_name))
             {
                 qp->last_ack_recv = main_loops;
                 qp->port = port;

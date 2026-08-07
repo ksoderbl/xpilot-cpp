@@ -87,10 +87,10 @@ int Send_trans(connection_t *connp, clpos_t pos1, clpos_t pos2);
 void Get_display_parameters(connection_t *connp, int *width, int *height,
                             int *debris_colors, int *spark_rand);
 int Get_player_id(connection_t *connp);
-const char *Player_get_addr(player_t *pl);
-const char *Player_get_dpy(player_t *pl);
+std::string Player_get_addr(player_t *pl);
+std::string Player_get_dpy(player_t *pl);
 int Send_shape(connection_t *connp, int shape);
-int Check_max_clients_per_IP(char *host_addr);
+int Check_max_clients_per_IP(std::string host_addr);
 
 #define FEATURE(connp, feature) ((connp)->features & (feature))
 #define F_POLY (1 << 0)

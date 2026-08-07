@@ -74,46 +74,47 @@ constexpr int CONN_READY = 0x40;     /* draining after LOGIN and before PLAYING 
 /*
  * All the player connection state info.
  */
-typedef struct
+class connection_t
 {
-    int ind;                     /* index of connection, was conn_index */
-    int state;                   /* state of connection */
-    int drain_state;             /* state after draining done */
-    unsigned magic;              /* magic cookie */
-    sockbuf_t r;                 /* input buffer */
-    sockbuf_t w;                 /* output buffer */
-    sockbuf_t c;                 /* reliable data buffer */
-    long start;                  /* time of last state change */
-    long timeout;                /* time when state timeouts */
-    long last_send_loops;        /* last update of reliable */
-    long reliable_offset;        /* amount of data acked */
-    long reliable_unsent;        /* next unsend reliable byte */
-    long retransmit_at_loop;     /* next retransmission time */
-    int rtt_smoothed;            /* smoothed roundtrip time */
-    int rtt_dev;                 /* roundtrip time deviation */
-    int rtt_retransmit;          /* retransmission time */
-    int rtt_timeouts;            /* how many timeouts */
-    int acks;                    /* good acknowledgements */
-    int setup;                   /* amount of setup done */
-    int my_port;                 /* server port for this player */
-    int his_port;                /* client port for this player */
-    int id;                      /* index into GetIndArray[] or NO_ID */
-    int team;                    /* team of player */
-    unsigned version;            /* XPilot version of client */
-    long last_key_change;        /* last keyboard change */
-    long talk_sequence_num;      /* talk acknowledgement */
-    long motd_offset;            /* offset into motd or -1 */
-    long motd_stop;              /* max offset into motd */
-    int num_keyboard_updates;    /* Keyboards in one packet */
-    int view_width, view_height; /* Viewable area dimensions */
-    int debris_colors;           /* Max. debris intensities */
-    int spark_rand;              /* Sparkling effect */
-    int last_mouse_pos;          /* value of last pointer pkt */
-    std::string user;            /* username of player */
-    std::string nick;            /* nickname of player */
-    char *dpy;                   /* display of player */
-    shipshape_t *ship;           /* ship shape of player */
-    char *addr;                  /* address of players host */
-    char *host;                  /* hostname of players host */
-    int features;                /* supported features */
-} connection_t;
+public:
+    int ind = 0;                         /* index of connection, was conn_index */
+    int state = 0;                       /* state of connection */
+    int drain_state = 0;                 /* state after draining done */
+    unsigned magic = 0;                  /* magic cookie */
+    sockbuf_t r{};                       /* input buffer */
+    sockbuf_t w{};                       /* output buffer */
+    sockbuf_t c{};                       /* reliable data buffer */
+    long start = 0;                      /* time of last state change */
+    long timeout = 0;                    /* time when state timeouts */
+    long last_send_loops = 0;            /* last update of reliable */
+    long reliable_offset = 0;            /* amount of data acked */
+    long reliable_unsent = 0;            /* next unsend reliable byte */
+    long retransmit_at_loop = 0;         /* next retransmission time */
+    int rtt_smoothed = 0;                /* smoothed roundtrip time */
+    int rtt_dev = 0;                     /* roundtrip time deviation */
+    int rtt_retransmit = 0;              /* retransmission time */
+    int rtt_timeouts = 0;                /* how many timeouts */
+    int acks = 0;                        /* good acknowledgements */
+    int setup = 0;                       /* amount of setup done */
+    int my_port = 0;                     /* server port for this player */
+    int his_port = 0;                    /* client port for this player */
+    int id = 0;                          /* index into GetIndArray[] or NO_ID */
+    int team = 0;                        /* team of player */
+    unsigned version = 0;                /* XPilot version of client */
+    long last_key_change = 0;            /* last keyboard change */
+    long talk_sequence_num = 0;          /* talk acknowledgement */
+    long motd_offset = 0;                /* offset into motd or -1 */
+    long motd_stop = 0;                  /* max offset into motd */
+    int num_keyboard_updates = 0;        /* Keyboards in one packet */
+    int view_width = 0, view_height = 0; /* Viewable area dimensions */
+    int debris_colors = 0;               /* Max. debris intensities */
+    int spark_rand = 0;                  /* Sparkling effect */
+    int last_mouse_pos = 0;              /* value of last pointer pkt */
+    std::string user;                    /* username of player */
+    std::string nick;                    /* nickname of player */
+    std::string dpy;                     /* display of player */
+    shipshape_t *ship = nullptr;         /* ship shape of player */
+    std::string addr;                    /* address of players host */
+    std::string host;                    /* hostname of players host */
+    int features = 0;                    /* supported features */
+};
