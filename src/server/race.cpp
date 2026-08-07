@@ -100,19 +100,19 @@ void Race_compute_game_status(void)
         Player_set_state(pl, PL_STATE_DEAD);
         sprintf(msg, "%s finished the race. Last lap time: %.2fs. "
             "Personal race best lap time: %.2fs.",
-            pl->name,
+            pl->name.c_str(),
             (double) pl->last_lap_time / FPS,
             (double) pl->best_lap / FPS);
     }
     else if (pl->round > 1)
         sprintf(msg, "%s completes lap %d in %.2fs. "
             "Personal race best lap time: %.2fs.",
-            pl->name,
+            pl->name.c_str(),
             pl->round-1,
             (double) pl->last_lap_time / FPS,
             (double) pl->best_lap / FPS);
     else {
-        sprintf(msg, "%s starts lap 1 of %d", pl->name,
+        sprintf(msg, "%s starts lap 1 of %d", pl->name.c_str(),
             options.raceLaps);
         CLR_BIT(pl->pl_status, FINISH); /* no elimination from starting */
     }
@@ -157,12 +157,12 @@ void Race_compute_game_status(void)
             if (count == 1) {
             sprintf(msg, "%s was the last to complete lap "
                 "%d and is out of the race.",
-                pl->name, pl_i->round - 1);
+                pl->name.c_str(), pl_i->round - 1);
             Set_message(msg);
             }
             else {
             sprintf(msg, "%s was the last to complete some "
-                "lap between %d and %d.", pl->name,
+                "lap between %d and %d.", pl->name.c_str(),
                 pl->round, pl_i->round - 1);
             Set_message(msg);
             }
@@ -246,7 +246,7 @@ void Race_compute_game_status(void)
                     sprintf(msg,
                             "%s finishes %sin position %d "
                             "scoring %.2f point%s.",
-                            pl->name,
+                            pl->name.c_str(),
                             (num_finished_players == 1) ? "" : "jointly ",
                             pos, pts,
                             (pts == 1) ? "" : "s");
@@ -260,7 +260,7 @@ void Race_compute_game_status(void)
                 {
                     sprintf(msg,
                             "%s finishes %sin position %d.",
-                            pl->name,
+                            pl->name.c_str(),
                             (num_finished_players == 1) ? "" : "jointly ",
                             pos);
                     Set_message(msg);
@@ -396,7 +396,7 @@ void Race_game_over(void)
             if (pl->best_lap == bestlap)
             {
                 Set_message_f("%s %s the best lap time of %.2fs",
-                              pl->name,
+                              pl->name.c_str(),
                               (num_best_players == 1) ? "had" : "shares",
                               (double)bestlap / FPS);
                 Score(pl, 5 + num_active_players, pl->pos,
@@ -460,7 +460,7 @@ void Player_pass_checkpoint(player_t *pl)
             SET_BIT(pl->pl_status, FINISH);
             Set_message_f("%s finished the race. Last lap time: %.2fs. "
                           "Personal race best lap time: %.2fs.",
-                          pl->name,
+                          pl->name.c_str(),
                           (double)pl->last_lap_time / FPS,
                           (double)pl->best_lap / FPS);
         }
@@ -468,14 +468,14 @@ void Player_pass_checkpoint(player_t *pl)
         {
             Set_message_f("%s completes lap %d in %.2fs. "
                           "Personal race best lap time: %.2fs.",
-                          pl->name,
+                          pl->name.c_str(),
                           pl->round - 1,
                           (double)pl->last_lap_time / FPS,
                           (double)pl->best_lap / FPS);
         }
         else
             Set_message_f("%s starts lap 1 of %d.",
-                          pl->name, options.raceLaps);
+                          pl->name.c_str(), options.raceLaps);
 #else
         /* this is how 4.3.1X did this */
         SET_BIT(pl->pl_status, FINISH);

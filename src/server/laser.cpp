@@ -311,7 +311,7 @@ static void Laser_pulse_hits_player(
             {
                 sprintf(msg,
                         "%s got paralysed by %s's stun laser.",
-                        vicpl->name, pl->name);
+                        vicpl->name.c_str(), pl->name.c_str());
                 if (vicpl->id == pl->id)
                     strcat(msg, " How strange!");
             }
@@ -319,7 +319,7 @@ static void Laser_pulse_hits_player(
             {
                 sprintf(msg,
                         "%s got paralysed by a stun laser.",
-                        vicpl->name);
+                        vicpl->name.c_str());
             }
             Set_message(msg);
             CLR_BIT(vicpl->used,
@@ -347,11 +347,11 @@ static void Laser_pulse_hits_player(
             {
                 sprintf(msg,
                         "%s got roasted alive by %s's laser.",
-                        vicpl->name, pl->name);
+                        vicpl->name.c_str(), pl->name.c_str());
                 if (vicpl->id == pl->id)
                 {
                     sc = Rate(0, pl->score) * options.laserKillScoreMult * options.selfKillScoreMult;
-                    Score(vicpl, -sc, vicpl->pos, vicpl->name);
+                    Score(vicpl, -sc, vicpl->pos, vicpl->name.c_str());
                     strcat(msg, " How strange!");
                 }
                 else
@@ -359,8 +359,8 @@ static void Laser_pulse_hits_player(
                     sc = Rate(pl->score,
                               vicpl->score) *
                          options.laserKillScoreMult;
-                    Score_players(pl, sc, vicpl->name,
-                                  vicpl, -sc, pl->name);
+                    Score_players(pl, sc, vicpl->name.c_str(),
+                                  vicpl, -sc, pl->name.c_str());
                 }
             }
             else
@@ -369,7 +369,7 @@ static void Laser_pulse_hits_player(
                 Score(vicpl, -sc, vicpl->pos, "Cannon");
                 sprintf(msg,
                         "%s got roasted alive by cannonfire.",
-                        vicpl->name);
+                        vicpl->name.c_str());
             }
             sound_play_sensors(vicpl->pos, PLAYER_ROASTED_SOUND);
             Set_message(msg);
@@ -616,7 +616,7 @@ void Laser_pulse_collision(void)
         // {
         //     printf("Laser_pulse_collision: pulse %d, obj_list.size() = %d\n", p, obj_list.size());
         //     if (pl)
-        //         printf("Laser_pulse_collision: Player %d: %s\n", GetInd(pl->id), pl->name);
+        //         printf("Laser_pulse_collision: Player %d: %s\n", GetInd(pl->id), pl->name.c_str());
         // }
 
         pulseobject_t *pulse_ptr = PULSE_PTR(obj);
@@ -769,10 +769,10 @@ void Laser_pulse_hits_player2(player_t *pl, pulseobject_t *pulse)
         {
             if (kp)
                 Set_message_f("%s got paralysed by %s's stun laser.%s",
-                              pl->name, kp->name,
+                              pl->name.c_str(), kp->name.c_str(),
                               pl->id == kp->id ? " How strange!" : "");
             else
-                Set_message_f("%s got paralysed by a stun laser.", pl->name);
+                Set_message_f("%s got paralysed by a stun laser.", pl->name.c_str());
 
             CLR_BIT(pl->used,
                     HAS_SHIELD | HAS_LASER | OBJ_SHOT);
@@ -797,17 +797,17 @@ void Laser_pulse_hits_player2(player_t *pl, pulseobject_t *pulse)
             if (kp)
             {
                 Set_message_f("%s got roasted alive by %s's laser.%s",
-                              pl->name, kp->name,
+                              pl->name.c_str(), kp->name.c_str(),
                               pl->id == kp->id ? " How strange!" : "");
             }
             else if (cannon != nullptr)
             {
-                Set_message_f("%s got roasted alive by cannonfire.", pl->name);
+                Set_message_f("%s got roasted alive by cannonfire.", pl->name.c_str());
             }
             else
             {
                 assert(pulse->id == NO_ID);
-                Set_message_f("%s got roasted alive.", pl->name);
+                Set_message_f("%s got roasted alive.", pl->name.c_str());
             }
 
             sound_play_sensors(pl->pos, PLAYER_ROASTED_SOUND);

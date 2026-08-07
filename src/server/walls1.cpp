@@ -2049,7 +2049,7 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
         int i, j, sc;
 
         Player_set_state(pl, PL_STATE_KILLED);
-        sprintf(msg, howfmt, pl->name, (!pt) ? " head first" : "");
+        sprintf(msg, howfmt, pl->name.c_str(), (!pt) ? " head first" : "");
 
         /* get a list of who pushed me */
         for (i = 0; i < MAX_RECORDED_SHOVES; i++)
@@ -2095,19 +2095,19 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
                                   : (i < num_pushers - 1) ? ", "
                                                           : " and ";
                 int sep_len = strlen(sep);
-                int name_len = strlen(pusher->name);
+                int name_len = pusher->name.length();
 
                 if (msg_len + sep_len + name_len + 2 < sizeof msg)
                 {
                     strcpy(msg_ptr, sep);
                     msg_len += sep_len;
                     msg_ptr += sep_len;
-                    strcpy(msg_ptr, pusher->name);
+                    strcpy(msg_ptr, pusher->name.c_str());
                     msg_len += name_len;
                     msg_ptr += name_len;
                 }
                 sc = cnt[i] * (int)floor(Rate(pusher->score, Get_Score(pl)) * options.shoveKillScoreMult) / total_pusher_count;
-                Score(pusher, sc, pl->pos, pl->name);
+                Score(pusher, sc, pl->pos, pl->name.c_str());
                 if (i >= num_pushers - 1)
                 {
                     pusher->kills++;

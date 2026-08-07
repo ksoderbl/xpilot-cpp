@@ -568,7 +568,7 @@ void Server_info(char *str, size_t max_size)
     for (i = 0; i < NumPlayers; i++)
     {
         pl = order[i];
-        strlcpy(name, pl->name, MAX_CHARS);
+        strlcpy(name, pl->name.c_str(), MAX_CHARS);
         snprintf(lblstr, sizeof(lblstr), "%c%c %-19s%03d%6d",
                  pl->mychar, pl->team == TEAM_NOT_SET ? ' ' : (pl->team + '0'),
                  name, pl->pl_life, (int)Get_Score(pl));
@@ -747,13 +747,13 @@ void Game_Over(void)
     }
     if (win_pl)
     {
-        snprintf(msg, sizeof(msg), "Best human player: %s", win_pl->name);
+        snprintf(msg, sizeof(msg), "Best human player: %s", win_pl->name.c_str());
         Set_message(msg);
         printf("%s\n", msg);
     }
     if (lose_pl && lose_pl != win_pl)
     {
-        snprintf(msg, sizeof(msg), "Worst human player: %s", lose_pl->name);
+        snprintf(msg, sizeof(msg), "Worst human player: %s", lose_pl->name.c_str());
         Set_message(msg);
         printf("%s\n", msg);
     }
@@ -800,13 +800,13 @@ void Server_log_admin_message(player_t *pl, const char *str)
                 "%s[%s]{%s@%s(%s)|%s}:\n"
                 "\t%s\n",
                 showtime(),
-                pl->name,
+                pl->name.c_str(),
                 pl->username.c_str(), pl->hostname,
                 Player_get_addr(pl),
                 Player_get_dpy(pl),
                 str);
         fclose(fp);
-        snprintf(msg, sizeof(msg), "%s [%s]:[%s]", str, pl->name, "GOD");
+        snprintf(msg, sizeof(msg), "%s [%s]:[%s]", str, pl->name.c_str(), "GOD");
         Set_player_message(pl, msg);
     }
     else

@@ -290,7 +290,7 @@ void Meta_update(bool change)
         snprintf(str, sizeof(str),
                  "%s%s=%s@%s",
                  first ? "add players " : ",",
-                 pl->name,
+                 pl->name.c_str(),
                  pl->username.c_str(),
                  pl->hostname);
 

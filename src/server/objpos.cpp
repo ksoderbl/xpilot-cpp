@@ -121,7 +121,7 @@ void Player_position_debug(player_t *pl, const char *msg)
 #if DEVELOPMENT
     int i;
 
-    printf("pl %s pos dump: ", pl->name);
+    printf("pl %s pos dump: ", pl->name.c_str());
     if (msg)
         printf("(%s)", msg);
     printf("\n");

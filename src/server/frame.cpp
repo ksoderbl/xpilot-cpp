@@ -953,23 +953,23 @@ static void Frame_ships(connection_t *conn, player_t *pl)
 
         pl_i = Player_by_index(i);
 
-        // warn("pl_i is %s", pl_i->name);
+        // warn("pl_i is %s", pl_i->name.c_str());
 
         if (!BIT(pl_i->obj_status, LEGACY_PLAYING | LEGACY_PAUSE))
         {
-            // warn("pl_i is %s, not playing or pause, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
+            // warn("pl_i is %s, not playing or pause, state %s", pl_i->name.c_str(), Player_state_str(pl_i->pl_state));
             continue;
         }
 
         if (BIT(pl_i->obj_status, LEGACY_GAME_OVER))
         {
-            // warn("pl_i is %s, GAME_OVER, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
+            // warn("pl_i is %s, GAME_OVER, state %s", pl_i->name.c_str(), Player_state_str(pl_i->pl_state));
             continue;
         }
 
         if (!clpos_inview(cv, pl_i->pos))
         {
-            // warn("pl_i is %s,  not in view, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
+            // warn("pl_i is %s,  not in view, state %s", pl_i->name.c_str(), Player_state_str(pl_i->pl_state));
             continue;
         }
 
@@ -977,12 +977,12 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         {
             if ((((int)pl_i->pause_count) % 12) == 1)
                 warn("Sending paused: pl_i: %s, state %s, pause_count: %d",
-                     pl_i->name, Player_state_str(pl_i->pl_state), (int)pl_i->pause_count);
+                     pl_i->name.c_str(), Player_state_str(pl_i->pl_state), (int)pl_i->pause_count);
             Send_paused(conn, pl_i->pos, (int)pl_i->pause_count);
             continue;
         }
 
-        // warn("---> pl_i is %s, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
+        // warn("---> pl_i is %s, state %s", pl_i->name.c_str(), Player_state_str(pl_i->pl_state));
 
         /* Don't transmit information if fighter is invisible */
         if (pl->visibility[i].canSee ||
@@ -1246,7 +1246,7 @@ void Frame_update(void)
     {
         pl = Player_by_index(i);
         conn = pl->conn;
-        // warn("Player %s conn is %p", pl->name, conn);
+        // warn("Player %s conn is %p", pl->name.c_str(), conn);
         if (conn == nullptr)
             continue;
         if (BIT(pl->obj_status, LEGACY_PAUSE | LEGACY_GAME_OVER) && !options.allowViewing)

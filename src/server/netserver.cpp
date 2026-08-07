@@ -454,7 +454,7 @@ void Destroy_connection(connection_t *connp, const char *reason)
     }
     printf("%s Goodbye %s=%s@%s|%s (\"%s\")\n",
            showtime(),
-           connp->nick ? connp->nick : "",
+           connp->nick.c_str(),
            connp->user.c_str(),
            connp->host ? connp->host : "",
            connp->dpy ? connp->dpy : "",
@@ -473,9 +473,8 @@ void Destroy_connection(connection_t *connp, const char *reason)
         Delete_player(pl);
     }
 
-    // XFREE(connp->user);
     connp->user.clear();
-    XFREE(connp->nick);
+    connp->nick.clear();
     XFREE(connp->dpy);
     XFREE(connp->addr);
     XFREE(connp->host);
@@ -506,7 +505,7 @@ int Check_connection(char *user, char *nick, char *dpy, char *addr)
         connp = &Conn[i];
         if (connp->state == CONN_LISTENING)
         {
-            if (strcasecmp(connp->nick, nick) == 0)
+            if (strcasecmp(connp->nick.c_str(), nick) == 0)
             {
                 if (!strcmp(user, connp->user.c_str()) &&
                     !strcmp(dpy, connp->dpy) &&
@@ -648,7 +647,7 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
                 free_conn_index = i;
             continue;
         }
-        if (strcasecmp(connp->nick, nick) == 0)
+        if (strcasecmp(connp->nick.c_str(), nick) == 0)
         {
             if (connp->state == CONN_LISTENING &&
                 strcmp(user, connp->user.c_str()) == 0 &&
@@ -798,7 +797,7 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
         connp->r.buf == nullptr ||
         connp->c.buf == nullptr ||
         // connp->user == nullptr ||
-        connp->nick == nullptr ||
+        // connp->nick == nullptr ||
         connp->dpy == nullptr ||
         connp->addr == nullptr ||
         connp->host == nullptr)
@@ -1116,9 +1115,9 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (strcasecmp(Player_by_index(i)->name, connp->nick) == 0)
+        if (strcasecmp(Player_by_index(i)->name.c_str(), connp->nick.c_str()) == 0)
         {
-            warn("Name already in use %s", connp->nick);
+            warn("Name already in use %s", connp->nick.c_str());
             strlcpy(errmsg, "Name already in use", errsize);
             return -1;
         }
@@ -1129,7 +1128,8 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         return -1;
     }
     pl = Player_by_index(NumPlayers);
-    strlcpy(pl->name, connp->nick, MAX_CHARS);
+    // strlcpy(pl->name.c_str(), connp->nick, MAX_CHARS);
+    pl->name = connp->nick;
     // strlcpy(pl->username, connp->user, MAX_CHARS);
     pl->username = connp->user;
     strlcpy(pl->hostname, connp->host, MAX_CHARS);
@@ -1167,7 +1167,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
 
     {
         printf("%s %s (%d) starts at startpos %d.\n", showtime(),
-               pl->name, NumPlayers, pl->home_base ? pl->home_base->ind : -1);
+               pl->name.c_str(), NumPlayers, pl->home_base ? pl->home_base->ind : -1);
     }
 
     /*
@@ -1215,11 +1215,11 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
                           World.name, World.author);
         else if (Team_play(world))
             Set_message_f("%s (%s, team %d) has entered \"%s\", made by %s.",
-                          pl->name, pl->username.c_str(), pl->team,
+                          pl->name.c_str(), pl->username.c_str(), pl->team,
                           World.name, World.author);
         else
             Set_message_f("%s (%s) has entered \"%s\", made by %s.",
-                          pl->name, pl->username.c_str(), World.name, World.author);
+                          pl->name.c_str(), pl->username.c_str(), World.name, World.author);
     }
 
     if (options.greeting)
@@ -1619,7 +1619,7 @@ int Send_player(connection_t *connp, int id)
                       "%S",
                       PKT_PLAYER, pl->id,
                       pl->team, pl->mychar,
-                      pl->name, pl->username.c_str(), pl->hostname,
+                      pl->name.c_str(), pl->username.c_str(), pl->hostname,
                       buf);
     if (n > 0)
     {
@@ -2184,7 +2184,7 @@ static int Receive_keyboard(connection_t *connp)
     {
         connp->last_key_change = change;
         pl = Player_by_id(connp->id);
-        // warn("--> Receive_keyboard, player %s", pl->name);
+        // warn("--> Receive_keyboard, player %s", pl->name.c_str());
         memcpy(pl->last_keyv, connp->r.ptr, size);
         connp->r.ptr += size;
         Handle_keyboard(pl);
@@ -2693,13 +2693,13 @@ static void Handle_talk(connection_t *connp, char *str)
     if ((cp = strchr(str, ':')) == nullptr || cp == str || strchr("-_~)(/\\}{[]", cp[1]) /* smileys are smileys */
     )
     {
-        sprintf(msg, "%s [%s]", str, pl->name);
+        sprintf(msg, "%s [%s]", str, pl->name.c_str());
         Set_message(msg);
         return;
     }
     *cp++ = '\0';
     len = strlen(str);
-    sprintf(msg, "%s [%s]", cp, pl->name);
+    sprintf(msg, "%s [%s]", cp, pl->name.c_str());
 
     if (strspn(str, "0123456789") == len)
     { /* Team message */
@@ -2733,7 +2733,7 @@ static void Handle_talk(connection_t *connp, char *str)
         /* first look for an exact match on player nickname. */
         for (i = 0; i < NumPlayers; i++)
         {
-            if (strcasecmp(Player_by_index(i)->name, str) == 0)
+            if (strcasecmp(Player_by_index(i)->name.c_str(), str) == 0)
             {
                 sent = i;
                 break;
@@ -2745,7 +2745,7 @@ static void Handle_talk(connection_t *connp, char *str)
             for (sent = -1, i = 0; i < NumPlayers; i++)
             {
                 player_t *pl_i = Player_by_index(i);
-                if (strncasecmp(pl_i->name, str, len) == 0 ||
+                if (strncasecmp(pl_i->name.c_str(), str, len) == 0 ||
                     strncasecmp(pl_i->username.c_str(), str, len) == 0)
                     sent = (sent == -1) ? i : -2;
             }
@@ -2765,7 +2765,7 @@ static void Handle_talk(connection_t *connp, char *str)
         default:
             if (PlayersArray[sent] != pl)
             {
-                sprintf(msg + strlen(msg), ":[%s]", PlayersArray[sent]->name);
+                sprintf(msg + strlen(msg), ":[%s]", PlayersArray[sent]->name.c_str());
                 Set_player_message(PlayersArray[sent], msg);
                 Set_player_message(pl, msg);
             }

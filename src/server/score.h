@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "player.h"
 
 #define CANNON_SCORE -1436
@@ -33,7 +35,7 @@
 
 /* score.c */
 
-void Score(player_t *pl, double points, clpos_t pos, const char *msg);
+void Score(player_t *pl, double points, clpos_t pos, std::string msg);
 int Rate(int winner, int loser);
 
 /*
@@ -52,8 +54,8 @@ int Rate(int winner, int loser);
  * KK 7-11-1: And for killing a member of your alliance
  */
 void Score_players(player_t *winner_pl, double winner_score,
-                   char *winner_msg, player_t *loser_pl,
-                   double loser_score, char *loser_msg);
+                   std::string winner_msg, player_t *loser_pl,
+                   double loser_score, std::string loser_msg);
 
 double Get_Score(player_t *pl);
 

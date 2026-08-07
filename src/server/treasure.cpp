@@ -114,7 +114,7 @@ void Ball_is_replaced2(ballobject_t *ball)
     if (!options.zeroSumScoring)
         Score(pl, 2.0, ball->pos, "Treasure: ");
     Set_message_f(" < %s (team %d) has replaced the treasure >",
-                  pl->name, pl->team);
+                  pl->name.c_str(), pl->team);
     Rank_saved_ball(pl);
 }
 
@@ -181,7 +181,7 @@ static int Punish_team2(player_t *pl, treasure_t *td, clpos_t pos)
     }
     sound_play_all(DESTROY_BALL_SOUND);
     Set_message_f(" < %s's (%d) team has destroyed team %d treasure >",
-                  pl->name, pl->team, td->team);
+                  pl->name.c_str(), pl->team, td->team);
     updateScores = true;
 
     return 1;
@@ -375,7 +375,7 @@ void Ball_is_replaced1(ballobject_t *ball)
     SET_BIT(ball->obj_status, (NOEXPLOSION | RECREATE));
 
     Score(pl, 5, ball->pos, "Treasure: ");
-    Set_message_f(" < %s (team %d) has replaced the treasure >", pl->name, pl->team);
+    Set_message_f(" < %s (team %d) has replaced the treasure >", pl->name.c_str(), pl->team);
     Rank_saved_ball(pl);
 }
 
@@ -441,7 +441,7 @@ int Punish_team1(player_t *pl, treasure_t *td, clpos_t pos)
 
     sound_play_all(DESTROY_BALL_SOUND);
     Set_message_f(" < %s's (%d) team has destroyed team %d treasure >",
-                  pl->name, pl->team, td->team);
+                  pl->name.c_str(), pl->team, td->team);
 
     if (!somebody)
     {

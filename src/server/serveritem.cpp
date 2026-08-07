@@ -729,10 +729,10 @@ void Do_general_transporter(int id, clpos_t pos,
         amount = MIN(victim->item[item], 3);
         if (amount == 1)
             sprintf(msg, "%s stole a missile from %s.",
-                    (pl ? pl->name : "A cannon"), victim->name);
+                    (pl ? pl->name.c_str() : "A cannon"), victim->name.c_str());
         else
             sprintf(msg, "%s stole %d missiles from %s",
-                    (pl ? pl->name : "A cannon"), (int)amount, victim->name);
+                    (pl ? pl->name.c_str() : "A cannon"), (int)amount, victim->name.c_str());
         break;
     case ITEM_CLOAK:
         what = "a cloaking device";
@@ -839,8 +839,8 @@ void Do_general_transporter(int id, clpos_t pos,
         double percent = 10.0 + 40.0 * rfrac();
         amount = victim->fuel.sum * percent / 100.0;
         sprintf(msg, "%s stole %.1f units (%.1f%%) of fuel from %s.",
-                (pl ? pl->name : "A cannon"),
-                amount, percent, victim->name);
+                (pl ? pl->name.c_str() : "A cannon"),
+                amount, percent, victim->name.c_str());
     }
         Player_add_fuel(victim, -amount);
         break;
@@ -851,8 +851,8 @@ void Do_general_transporter(int id, clpos_t pos,
 
     /* inform the world about the robbery */
     if (!msg[0])
-        sprintf(msg, "%s stole %s from %s.", (pl ? pl->name : "A cannon"),
-                what, victim->name);
+        sprintf(msg, "%s stole %s from %s.", (pl ? pl->name.c_str() : "A cannon"),
+                what, victim->name.c_str());
     Set_message(msg);
 
     /* cannons take care of themselves */

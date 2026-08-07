@@ -1112,7 +1112,7 @@ static void Robot_suibot_play(player_t *pl)
         char msg[MSG_LEN];
         /* if not true, there's a bug */
         warn(" Robotdef.c: opponent very close, but variable empty!\n");
-        sprintf(msg, "Bug: Chasing a non-existant opponent! [%s]", pl->name);
+        sprintf(msg, "Bug: Chasing a non-existant opponent! [%s]", pl->name.c_str());
         Set_message(msg);
         return;
     }

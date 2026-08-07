@@ -214,14 +214,14 @@ static int do_kick(int team, int nonlast)
             {
                 Set_message_f("The paused \"%s\" was kicked because the "
                               "game is full.",
-                              pl_i->name);
+                              pl_i->name.c_str());
                 Destroy_connection(pl_i->conn, "no pause with full game");
             }
             else
             {
                 Set_message_f("The paused \"%s\" was kicked because team %d "
                               "is full.",
-                              pl_i->name, team);
+                              pl_i->name.c_str(), team);
                 Destroy_connection(pl_i->conn, "no pause with full team");
             }
             num_unpaused++;
@@ -284,9 +284,9 @@ static int Check_names(char *nick_name, char *user_name, char *host_name)
     for (i = 0; i < NumPlayers; i++)
     {
         player_t *pl_i = Player_by_index(i);
-        if (strcasecmp(pl_i->name, nick_name) == 0)
+        if (strcasecmp(pl_i->name.c_str(), nick_name) == 0)
         {
-            D(printf("%s %s\n", pl_i->name, nick_name));
+            D(printf("%s %s\n", pl_i->name.c_str(), nick_name));
             return E_IN_USE;
         }
     }
@@ -546,7 +546,7 @@ void Contact(int fd, void *arg)
             {
                 Set_message_f("\"%s\" upset the gods and was kicked out "
                               "of the game.",
-                              pl_found->name);
+                              pl_found->name.c_str());
                 if (pl_found->conn == nullptr)
                     Delete_player(pl_found);
                 else

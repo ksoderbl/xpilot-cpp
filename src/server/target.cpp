@@ -262,12 +262,12 @@ void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
          */
         if (options.targetTeamCollision && targets_total < 10)
             Set_message_f("%s blew up one of team %d's targets.",
-                          kp->name, targ->team);
+                          kp->name.c_str(), targ->team);
         return;
     }
 
     Set_message_f("%s blew up team %d's %starget.",
-                  kp->name, targ->team, (targets_total > 1) ? "last " : "");
+                  kp->name.c_str(), targ->team, (targets_total > 1) ? "last " : "");
 }
 
 void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
@@ -429,12 +429,12 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
          */
         if (options.targetTeamCollision && targets_total < 10)
             Set_message_f("%s blew up one of team %d's targets.",
-                          kp->name, targ->team);
+                          kp->name.c_str(), targ->team);
         return;
     }
 
     Set_message_f("%s blew up team %d's %starget.",
-                  kp->name, targ->team, (targets_total > 1) ? "last " : "");
+                  kp->name.c_str(), targ->team, (targets_total > 1) ? "last " : "");
 
     if (options.targetKillTeam)
     {

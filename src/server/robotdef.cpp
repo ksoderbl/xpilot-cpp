@@ -224,7 +224,7 @@ static void Robot_default_create(player_t *pl, char *str)
         if (str && *str)
         {
             warn("invalid parameters for default robot %s: \"%s\"",
-                 pl->name, str);
+                 pl->name.c_str(), str);
             my_data->attack = (int)(rfrac() * 99.5);
             my_data->defense = 100 - my_data->attack;
         }

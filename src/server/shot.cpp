@@ -218,7 +218,7 @@ void Place_general_mine(int id, int team, int status,
 
         if (used > 1)
         {
-            Set_message_f("%s has %s %s!", pl->name,
+            Set_message_f("%s has %s %s!", pl->name.c_str(),
                           (BIT(status, GRAVITY) ? "thrown" : "dropped"),
                           Describe_shot(OBJ_MINE, status, mods, 0));
             sound_play_all(NUKE_LAUNCH_SOUND);
@@ -686,7 +686,7 @@ void Fire_general_shot(int id, int team, bool cannon,
 
             if (used > 1)
             {
-                Set_message_f("%s has launched %s!", pl->name,
+                Set_message_f("%s has launched %s!", pl->name.c_str(),
                               Describe_shot(type, status, mods, 0));
                 sound_play_all(NUKE_LAUNCH_SOUND);
             }

@@ -22,6 +22,8 @@
  */
 /* Robot code originally submitted by Maurice Abraham. */
 
+#include <string>
+
 #include <cstdlib>
 #include <cerrno>
 #include <cctype>
@@ -544,7 +546,7 @@ void Robot_init(void)
 }
 
 static void Robot_talks(enum robot_talk_t says_what,
-                        char *robot_name, const char *other_name)
+                        std::string robot_name, std::string other_name)
 {
     /*
      * Insert your own witty messages here and remove the silly ones.
@@ -644,9 +646,9 @@ static void Robot_talks(enum robot_talk_t says_what,
         next_msg = 0;
     i = next_msg % n;
     if (two == 2)
-        Set_message_f(msgsp[i], other_name, robot_name);
+        Set_message_f(msgsp[i], other_name.c_str(), robot_name.c_str());
     else
-        Set_message_f(msgsp[i], robot_name);
+        Set_message_f(msgsp[i], robot_name.c_str());
 }
 
 static void Robot_create(void)
@@ -715,7 +717,8 @@ static void Robot_create(void)
     robot = Player_by_index(NumPlayers);
     robot->robot_data_ptr = new_data;
 
-    strlcpy(robot->name, rob->name, MAX_CHARS);
+    // strlcpy(robot->name.c_str(), rob->name.c_str(), MAX_CHARS);
+    robot->name = rob->name;
     // strlcpy(robot->username, options.robotUserName, MAX_CHARS);
     robot->username = options.robotUserName;
     strlcpy(robot->hostname, options.robotHostName, MAX_CHARS);
@@ -761,11 +764,11 @@ static void Robot_create(void)
         }
     }
 
-    Robot_talks(ROBOT_TALK_ENTER, robot->name, "");
+    Robot_talks(ROBOT_TALK_ENTER, robot->name.c_str(), "");
 
     if (options.logRobots)
         printf("%s %s (%d, %s) starts at startpos %d.\n",
-               showtime(), robot->name, NumPlayers, robot->username.c_str(),
+               showtime(), robot->name.c_str(), NumPlayers, robot->username.c_str(),
                robot->home_base->ind);
 
     if (NumPlayers == 1)
@@ -822,7 +825,7 @@ void Robot_delete(player_t *pl, bool kicked)
     {
         if (kicked)
             Set_message_f("%s upset the gods and was kicked out of the game.",
-                          pl->name);
+                          pl->name.c_str());
         Delete_player(pl);
     }
 }
@@ -889,13 +892,13 @@ void Robot_war(player_t *pl, player_t *kp)
 
     if (Player_is_robot(kp))
     {
-        Robot_talks(ROBOT_TALK_KILL, kp->name, pl->name);
+        Robot_talks(ROBOT_TALK_KILL, kp->name.c_str(), pl->name.c_str());
         Robot_set_war(kp, NO_ID);
     }
 
     if (Player_is_robot(pl) && rfrac() * 100.0 < Get_Score(kp) - Get_Score(pl) && !Players_are_teammates(pl, kp) && !Players_are_allies(pl, kp))
     {
-        Robot_talks(ROBOT_TALK_WAR, pl->name, kp->name);
+        Robot_talks(ROBOT_TALK_WAR, pl->name.c_str(), kp->name.c_str());
 
         if (Robot_war_on_player(pl) != kp->id)
         {
@@ -955,24 +958,24 @@ static bool Robot_check_leave(player_t *pl)
     {
         if (options.robotLeaveLife > 0 && pl->pl_life >= options.robotLeaveLife)
         {
-            Set_message_f("%s retired.", pl->name);
+            Set_message_f("%s retired.", pl->name.c_str());
             leave = true;
         }
         else if (options.robotLeaveScore != 0 && Get_Score(pl) < options.robotLeaveScore)
         {
-            Set_message_f("%s left out of disappointment.", pl->name);
+            Set_message_f("%s left out of disappointment.", pl->name.c_str());
             leave = true;
         }
         else if (options.robotLeaveRatio != 0 && Get_Score(pl) / (pl->pl_life + 1) < options.robotLeaveRatio)
         {
-            Set_message_f("%s played too badly.", pl->name);
+            Set_message_f("%s played too badly.", pl->name.c_str());
             leave = true;
         }
     }
 
     if (leave)
     {
-        Robot_talks(ROBOT_TALK_LEAVE, pl->name, "");
+        Robot_talks(ROBOT_TALK_LEAVE, pl->name.c_str(), "");
         Robot_delete(pl, false);
         return true;
     }

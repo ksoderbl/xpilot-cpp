@@ -90,7 +90,7 @@ player_t *Get_player_by_name(const char *str,
     for (i = 0; i < NumPlayers; i++)
     {
         pl = Player_by_index(i);
-        if (!strcasecmp(pl->name, str))
+        if (!strcasecmp(pl->name.c_str(), str))
             return pl;
     }
 
@@ -99,7 +99,7 @@ player_t *Get_player_by_name(const char *str,
     {
         pl = Player_by_index(i);
 
-        if (!strncasecmp(pl->name, str, len))
+        if (!strncasecmp(pl->name.c_str(), str, len))
         {
             if (found_pl)
                 goto match_several;
@@ -119,9 +119,12 @@ player_t *Get_player_by_name(const char *str,
 
         pl = Player_by_index(i);
 
-        for (j = 0; j < 1 + (int)strlen(pl->name) - (int)len; j++)
+        for (j = 0; j < 1 + (int)pl->name.length() - (int)len; j++)
         {
-            if (!strncasecmp(pl->name + j, str, len))
+            std::string sub = pl->name.substr(j);
+            warn("str = %s, sub = %s", str, sub.c_str());
+            // if (!strncasecmp(pl->name.c_str() + j, str, len))
+            if (!strncasecmp(sub.c_str(), str, len))
             {
                 if (found_pl)
                     goto match_several;
@@ -463,9 +466,9 @@ static int Cmd_addr(char *arg, player_t *pl, bool oper, char *msg, size_t size)
         const char *addr = Player_get_addr(pl2);
 
         if (addr == nullptr)
-            snprintf(msg, size, "Unable to get address for %s.", pl2->name);
+            snprintf(msg, size, "Unable to get address for %s.", pl2->name.c_str());
         else
-            snprintf(msg, size, "%s plays from: %s.", pl2->name, addr);
+            snprintf(msg, size, "%s plays from: %s.", pl2->name.c_str(), addr);
     }
     else
     {
@@ -725,7 +728,7 @@ static int Cmd_kick(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     if (kicked_pl)
     {
         snprintf(msg, size, "%s kicked %s out! [*Server notice*]",
-                 pl->name, kicked_pl->name);
+                 pl->name.c_str(), kicked_pl->name.c_str());
         if (kicked_pl->conn == nullptr)
             Delete_player(kicked_pl);
         else
@@ -772,7 +775,7 @@ static int Cmd_lock(char *arg, player_t *pl, bool oper, char *msg, size_t size)
         game_lock = new_lock;
         snprintf(msg, size, " < The game has been %s by %s! >",
                  game_lock ? "locked" : "unlocked",
-                 pl->name);
+                 pl->name.c_str());
         Set_message(msg);
         strlcpy(msg, "", size);
     }
@@ -830,7 +833,7 @@ static int Cmd_mute(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     {
         mutee->muted = mutee->muted ? false : true;
         snprintf(msg, size, "Player %s is now %s.",
-                 mutee->name, mutee->muted ? "muted" : "unmuted");
+                 mutee->name.c_str(), mutee->muted ? "muted" : "unmuted");
         return CMD_RESULT_SUCCESS;
     }
     else
@@ -846,7 +849,7 @@ static int Cmd_mute(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     // {
     //     mute_baseless = new_mute;
     //     snprintf(msg, size, " < Baseless paused players have been %s by %s! >",
-    //              mute_baseless ? "muted" : "unmuted", pl->name);
+    //              mute_baseless ? "muted" : "unmuted", pl->name.c_str());
     //     Set_message(msg);
     //     strlcpy(msg, "", size);
     // }
@@ -921,10 +924,10 @@ static int Cmd_op(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     if (pl != issuer)
     {
         snprintf(msg, size, "%s executed '/op %s' on you. [*Server notice*]",
-                 issuer->name, origarg);
+                 issuer->name.c_str(), origarg);
         Set_player_message(pl, msg);
     }
-    snprintf(msg, size, "Executed '/op %s' on %s", origarg, pl->name);
+    snprintf(msg, size, "Executed '/op %s' on %s", origarg, pl->name.c_str());
 
     return CMD_RESULT_SUCCESS;
 }
@@ -979,7 +982,7 @@ static int Cmd_pause(char *arg, player_t *pl, bool oper, char *msg, size_t size)
             Kill_player(pl2, false);
         Pause_player(pl2, true);
         snprintf(msg, size, "%s was paused by %s. [*Server notice*]",
-                 pl2->name, pl->name);
+                 pl2->name.c_str(), pl->name.c_str());
         Set_message(msg);
         strlcpy(msg, "", size);
     }
@@ -1016,7 +1019,7 @@ static int Cmd_plinfo(char *arg, player_t *pl, bool oper, char *msg, size_t size
     snprintf(msg, size,
              "%-15s Ver: 0x%x MaxFPS: %d Turnspeed: %.2f Turnres: %.2f "
              "RTT: %i ms RTT_dev: %i ms",
-             pl2->name, pl2->version,
+             pl2->name.c_str(), pl2->version,
              pl2->player_fps, pl2->turnspeed, pl2->turnresistance,
              (int)((pl2->conn->rtt_smoothed >> 3) * timePerFrame * 1000),
              (int)((pl2->conn->rtt_dev >> 2) * timePerFrame * 1000));
@@ -1072,7 +1075,7 @@ static int Cmd_reset(char *arg, player_t *pl, bool oper, char *msg, size_t size)
             options.gameDuration = 0;
         roundsPlayed = 0;
 
-        snprintf(msg, size, " < Total reset by %s! >", pl->name);
+        snprintf(msg, size, " < Total reset by %s! >", pl->name.c_str());
         Set_message(msg);
         strlcpy(msg, "", size);
 
@@ -1085,7 +1088,7 @@ static int Cmd_reset(char *arg, player_t *pl, bool oper, char *msg, size_t size)
         if (options.gameDuration == -1)
             options.gameDuration = 0;
 
-        snprintf(msg, size, " < Round reset by %s! >", pl->name);
+        snprintf(msg, size, " < Round reset by %s! >", pl->name.c_str());
         Set_message(msg);
         strlcpy(msg, "", size);
     }
@@ -1182,7 +1185,7 @@ static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)
 
     if (World.teams[team].NumBases > World.teams[team].NumMembers)
     {
-        snprintf(msg, size, "%s has swapped to team %d.", pl->name, team);
+        snprintf(msg, size, "%s has swapped to team %d.", pl->name.c_str(), team);
         Set_message(msg);
         if (pl->home_base)
             World.teams[pl->team].NumMembers--;
@@ -1262,7 +1265,7 @@ static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)
             Send_info_about_player(pl2);
             Send_info_about_player(pl);
             snprintf(msg, size, "%s has swapped with paused %s.",
-                     pl->name, pl2->name);
+                     pl->name.c_str(), pl2->name.c_str());
             Set_message(msg);
             strlcpy(msg, "", size);
             return CMD_RESULT_SUCCESS;
@@ -1303,7 +1306,7 @@ static int Cmd_set(char *arg, player_t *pl, bool oper, char *msg, size_t size)
 
             Get_option_value(option, val, sizeof(val));
             snprintf(msg, size, " < Option %s set to %s by %s. >",
-                     option, val, pl->name);
+                     option, val, pl->name.c_str());
             Set_message(msg);
             strlcpy(msg, "", size);
 
@@ -1357,7 +1360,7 @@ static int Cmd_shutdown(char *arg, player_t *pl, bool oper,
 
     if (is_shutting_down || delay > 0)
     {
-        Server_shutdown(pl->name, delay, reason);
+        Server_shutdown(pl->name.c_str(), delay, reason);
         return CMD_RESULT_SUCCESS;
     }
     else

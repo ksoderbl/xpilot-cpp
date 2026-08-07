@@ -103,7 +103,7 @@ int Invite_player(player_t *pl, player_t *ally)
     else if (Player_is_human(ally))
     {
         char msg[MSG_LEN];
-        sprintf(msg, " < %s seeks an alliance with you >", pl->name);
+        sprintf(msg, " < %s seeks an alliance with you >", pl->name.c_str());
         Set_player_message(ally, msg);
     }
     return 1;
@@ -124,7 +124,7 @@ int Cancel_invitation(player_t *pl)
     {
         char msg[MSG_LEN];
         sprintf(msg, " < %s has cancelled the invitation for an alliance >",
-                pl->name);
+                pl->name.c_str());
         Set_player_message(ally, msg);
     }
     return 1;
@@ -143,7 +143,7 @@ int Refuse_alliance(player_t *pl, player_t *ally)
     {
         char msg[MSG_LEN];
         sprintf(msg, " < %s has declined your invitation for an alliance >",
-                pl->name);
+                pl->name.c_str());
         Set_player_message(ally, msg);
     }
     return 1;
@@ -350,15 +350,15 @@ static int Create_alliance(player_t *pl1, player_t *pl2)
     /* announcement */
     if (options.announceAlliances)
     {
-        sprintf(msg, " < %s and %s have formed alliance %d >", pl1->name,
-                pl2->name, alliance->id);
+        sprintf(msg, " < %s and %s have formed alliance %d >", pl1->name.c_str(),
+                pl2->name.c_str(), alliance->id);
         Set_message(msg);
     }
     else
     {
-        sprintf(msg, " < You have formed an alliance with %s >", pl2->name);
+        sprintf(msg, " < You have formed an alliance with %s >", pl2->name.c_str());
         Set_player_message(pl1, msg);
-        sprintf(msg, " < You have formed an alliance with %s >", pl1->name);
+        sprintf(msg, " < You have formed an alliance with %s >", pl1->name.c_str());
         Set_player_message(pl2, msg);
     }
     return 1;
@@ -376,16 +376,16 @@ void Player_join_alliance(player_t *pl, player_t *ally)
         if (options.announceAlliances)
         {
             sprintf(msg, " < %s has joined alliance %d >",
-                    pl->name, alliance->id);
+                    pl->name.c_str(), alliance->id);
             Set_message(msg);
         }
         else
         {
-            sprintf(msg, " < %s has joined your alliance >", pl->name);
+            sprintf(msg, " < %s has joined your alliance >", pl->name.c_str());
             Set_alliance_message(alliance, msg);
             if (Player_is_human(pl))
             {
-                sprintf(msg, " < You have joined %s's alliance >", ally->name);
+                sprintf(msg, " < You have joined %s's alliance >", ally->name.c_str());
                 Set_player_message(pl, msg);
             }
         }
@@ -430,13 +430,13 @@ int Leave_alliance(player_t *pl)
     {
         if (options.announceAlliances)
         {
-            sprintf(msg, " < %s has left alliance %d >", pl->name,
+            sprintf(msg, " < %s has left alliance %d >", pl->name.c_str(),
                     alliance->id);
             Set_message(msg);
         }
         else
         {
-            sprintf(msg, " < %s has left your alliance >", pl->name);
+            sprintf(msg, " < %s has left your alliance >", pl->name.c_str());
             Set_alliance_message(alliance, msg);
             if (Player_is_human(pl))
             {
@@ -578,7 +578,7 @@ void Alliance_player_list(player_t *pl)
                         Set_player_message(pl, msg);
                         strlcpy(msg, " <            ", sizeof(msg));
                     }
-                    strlcat(msg, pl2->name, sizeof(msg));
+                    strlcat(msg, pl2->name.c_str(), sizeof(msg));
                     strlcat(msg, ", ", sizeof(msg));
                 }
             }
@@ -597,7 +597,7 @@ void Alliance_player_list(player_t *pl)
                         Set_player_message(pl, msg);
                         strlcpy(msg, " <            ", sizeof(msg));
                     }
-                    strlcat(msg, pl2->name, sizeof(msg));
+                    strlcat(msg, pl2->name.c_str(), sizeof(msg));
                     strlcat(msg, ", ", sizeof(msg));
                 }
             }

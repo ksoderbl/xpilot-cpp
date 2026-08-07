@@ -876,7 +876,7 @@ static void Update_players(void)
         {
             Set_message_f("%s was kicked out because of flooding. "
                           "[*Server notice*]",
-                          pl->name);
+                          pl->name.c_str());
             Destroy_connection(pl->conn, "flooding");
             i--;
             continue;
@@ -906,7 +906,7 @@ static void Update_players(void)
         if (pl->pause_count > 0)
         {
             pl->pause_count -= timeStep;
-            // warn("Player %s pause count is %f", pl->name, pl->pause_count);
+            // warn("Player %s pause count is %f", pl->name.c_str(), pl->pause_count);
             if (pl->pause_count <= 0)
                 pl->pause_count = 0;
         }
@@ -914,10 +914,10 @@ static void Update_players(void)
         if (pl->recovery_count > 0)
         {
             pl->recovery_count -= timeStep;
-            // warn("Player %s recovery count is %f", pl->name, pl->recovery_count);
+            // warn("Player %s recovery count is %f", pl->name.c_str(), pl->recovery_count);
             if (pl->recovery_count <= 0)
             {
-                // warn("Player %s recovered!", pl->name);
+                // warn("Player %s recovered!", pl->name.c_str());
                 /* Player has recovered (unless he is already dead). */
                 pl->recovery_count = 0;
                 if (Limited_lives(world))
@@ -941,12 +941,12 @@ static void Update_players(void)
         if (Player_is_self_destructing(pl))
         {
             pl->self_destruct_count -= timeStep;
-            // warn("Player %s self destruct count is %f", pl->name, pl->self_destruct_count);
+            // warn("Player %s self destruct count is %f", pl->name.c_str(), pl->self_destruct_count);
             if (pl->self_destruct_count <= 0)
             {
                 Handle_Scoring(SCORE_SELF_DESTRUCT, pl, nullptr, nullptr, nullptr);
                 Player_set_state(pl, PL_STATE_KILLED);
-                Set_message_f("%s has committed suicide.", pl->name);
+                Set_message_f("%s has committed suicide.", pl->name.c_str());
                 Throw_items(pl);
                 Kill_player(pl, true);
                 updateScores = true;
@@ -1213,7 +1213,7 @@ void Update_objects(void)
             Player_is_paused(pl) &&
             frame_loops - pl->frame_last_busy > options.maxPauseTime)
         {
-            Set_message_f("%s was auto-kicked for pausing too long [*Server notice*]", pl->name);
+            Set_message_f("%s was auto-kicked for pausing too long [*Server notice*]", pl->name.c_str());
             Set_message(msg);
             Destroy_connection(pl->conn, "auto-kicked: paused too long");
         }

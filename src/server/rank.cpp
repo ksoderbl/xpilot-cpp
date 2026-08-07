@@ -617,7 +617,7 @@ void Rank_get_saved_score(player_t *pl)
     for (i = 0; i < MAX_SCORES; i++)
     {
         rank = &ranknodes[i];
-        if (!strcasecmp(pl->name, rank->name))
+        if (!strcasecmp(pl->name.c_str(), rank->name))
         {
             if (rank->pl == nullptr)
             {
@@ -670,7 +670,7 @@ void Rank_get_saved_score(player_t *pl)
     rank = unused;
     /*warn("timestamp of lru node = %u", rank->timestamp);*/
 
-    Init_ranknode(rank, pl->name, pl->username.c_str(), pl->hostname);
+    Init_ranknode(rank, pl->name.c_str(), pl->username.c_str(), pl->hostname);
     rank->pl = pl;
     rank->timestamp = time(nullptr);
     Player_set_score(pl, 0);

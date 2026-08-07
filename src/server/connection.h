@@ -110,7 +110,7 @@ typedef struct
     int spark_rand;              /* Sparkling effect */
     int last_mouse_pos;          /* value of last pointer pkt */
     std::string user;            /* username of player */
-    char *nick;                  /* nickname of player */
+    std::string nick;            /* nickname of player */
     char *dpy;                   /* display of player */
     shipshape_t *ship;           /* ship shape of player */
     char *addr;                  /* address of players host */

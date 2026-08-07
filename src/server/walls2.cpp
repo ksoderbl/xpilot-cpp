@@ -304,7 +304,7 @@ void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt)
         int i, j;
 
         Player_set_state(pl, PL_STATE_KILLED);
-        sprintf(msg, howfmt, pl->name, (!pt) ? " head first" : "");
+        sprintf(msg, howfmt, pl->name.c_str(), (!pt) ? " head first" : "");
 
         /* get a list of who pushed me */
         for (i = 0; i < MAX_RECORDED_SHOVES; i++)
@@ -357,14 +357,14 @@ void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt)
                                   : (i < num_pushers - 1) ? ", "
                                                           : " and ";
                 size_t sep_len = strlen(sep);
-                size_t name_len = strlen(pusher->name);
+                size_t name_len = pusher->name.length();
 
                 if (msg_len + sep_len + name_len + 2 < sizeof msg)
                 {
                     strcpy(msg_ptr, sep);
                     msg_len += sep_len;
                     msg_ptr += sep_len;
-                    strcpy(msg_ptr, pusher->name);
+                    strcpy(msg_ptr, pusher->name.c_str());
                     msg_len += name_len;
                     msg_ptr += name_len;
                 }
@@ -3028,7 +3028,7 @@ void Move_player2(player_t *pl)
                          * too, because they're not checked */
 #if 0
             sprintf(msg, "%s got stuck (Illegal shape? "
-                "Shapes aren't checked) [*Notice*]", pl->name);
+                "Shapes aren't checked) [*Notice*]", pl->name.c_str());
             Set_message(msg);
 #endif
                         mv.delta.cx = 0;

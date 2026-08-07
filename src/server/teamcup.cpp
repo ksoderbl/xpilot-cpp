@@ -120,7 +120,7 @@ static void teamcup_open_score_file(void)
     for (i = 0; i < NumPlayers; i++)
     {
         pl = Player_by_index(i);
-        teamcup_log("Team %d: %s\n", pl->team, pl->name);
+        teamcup_log("Team %d: %s\n", pl->team, pl->name.c_str());
     }
 }
 
@@ -224,7 +224,7 @@ void teamcup_round_end(int winning_team)
         list[best] = NumPlayers;
         pl = Player_by_index(best);
         teamcup_log("%d\t%.0f\t%2d/%d\t%s\n", pl->team, Get_Score(pl),
-                    pl->kills, pl->deaths, pl->name);
+                    pl->kills, pl->deaths, pl->name.c_str());
 
         if (team_score[pl->team] == double_max)
             team_score[pl->team] = 0.0;

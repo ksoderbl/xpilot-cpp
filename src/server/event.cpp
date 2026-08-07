@@ -241,7 +241,7 @@ static void Player_change_home(player_t *pl)
                 continue;
             }
             base2 = base;
-            // Set_message_f("%s has changed home base.", pl->name);
+            // Set_message_f("%s has changed home base.", pl->name.c_str());
             break;
         }
     }
@@ -263,7 +263,7 @@ static void Player_change_home(player_t *pl)
     /* Maybe the base is our own base? */
     if (base2 == pl->home_base)
     {
-        warn("Own base for pl %s", pl->name); // TODO Remove
+        warn("Own base for pl %s", pl->name.c_str()); // TODO Remove
         return;
     }
 
@@ -278,7 +278,7 @@ static void Player_change_home(player_t *pl)
         {
             // Pick_startpos(pl_i);
             // Set_message_f("%s has taken over %s's home base.",
-            //               pl->name, pl_i->name);
+            //               pl->name.c_str(), pl_i->name.c_str());
             pl2 = pl_i;
             break;
         }
@@ -307,10 +307,10 @@ static void Player_change_home(player_t *pl)
     {
         Pick_startpos(pl2);
         Set_message_f("%s has taken over %s's home base.",
-                      pl->name, pl2->name);
+                      pl->name.c_str(), pl2->name.c_str());
     }
     else
-        Set_message_f("%s has changed home base.", pl->name);
+        Set_message_f("%s has changed home base.", pl->name.c_str());
 
     /*
      * Send info about new bases.
@@ -385,7 +385,7 @@ static void Player_repair(player_t *pl)
 /* Player pressed pause key. */
 static void Player_toggle_pause(player_t *pl)
 {
-    warn("Player_toggle_pause: %s", pl->name);
+    warn("Player_toggle_pause: %s", pl->name.c_str());
 
     world_t *world = &World;
 
@@ -554,7 +554,7 @@ void Pause_player(player_t *pl, bool on)
     world_t *world = &World;
     int i;
 
-    warn("Pause_player: player = %s, on = %d", pl->name, on);
+    warn("Pause_player: player = %s, on = %d", pl->name.c_str(), on);
 
     /* kps - add support for pausing robots ? */
     if (!Player_is_human(pl))
@@ -625,7 +625,7 @@ void Pause_player(player_t *pl, bool on)
 
 int Handle_keyboard(player_t *pl)
 {
-    // warn("Handle_keyboard: player %s", pl->name);
+    // warn("Handle_keyboard: player %s", pl->name.c_str());
 
     int i, j, k, key, pressed, xi, yi;
     double minv;
@@ -751,7 +751,7 @@ int Handle_keyboard(player_t *pl)
 
         if (pressed)
         {
-            warn("event.cpp KEYPRESS: player: %s, key %d: %s", pl->name, key, keyToStr((keys_t)key).c_str());
+            warn("event.cpp KEYPRESS: player: %s, key %d: %s", pl->name.c_str(), key, keyToStr((keys_t)key).c_str());
 
             /* --- KEYPRESS --- */
             switch (key)
@@ -1119,7 +1119,7 @@ int Handle_keyboard(player_t *pl)
         }
         else
         {
-            warn("event.cpp KEYRELEASE: player: %s, key %d", pl->name, key);
+            warn("event.cpp KEYRELEASE: player: %s, key %d", pl->name.c_str(), key);
 
             /* --- KEYRELEASE --- */
             switch (key)

@@ -41,17 +41,17 @@
 #include "player.h"
 #include "rank.h"
 
-void Score(player_t *pl, double points, clpos_t pos, const char *msg)
+void Score(player_t *pl, double points, clpos_t pos, std::string msg)
 {
     // points are assumed to be whole numbers
     int intPoints = (int)points;
 
     Rank_add_score(pl, intPoints);
 
-    // xpinfo("Player %s score changed by %f and is now %d", pl->name, points, pl->score);
+    // xpinfo("Player %s score changed by %f and is now %d", pl->name.c_str(), points, pl->score);
 
     if (pl->conn != nullptr)
-        Send_score_object(pl->conn, intPoints, pos, msg);
+        Send_score_object(pl->conn, intPoints, pos, msg.c_str());
 
     updateScores = true;
 }
@@ -86,10 +86,12 @@ int Rate(int winner, int loser)
  * KK 7-11-1: And for killing a member of your alliance
  */
 void Score_players(player_t *winner_pl, double winner_score,
-                   char *winner_msg, player_t *loser_pl,
-                   double loser_score, char *loser_msg)
+                   std::string winner_msg, player_t *loser_pl,
+                   double loser_score, std::string loser_msg)
 {
-    if (Players_are_teammates(winner_pl, loser_pl) || Players_are_allies(winner_pl, loser_pl) || (Player_is_tank(loser_pl) && loser_pl->lock.pl_id == winner_pl->id))
+    if (Players_are_teammates(winner_pl, loser_pl) ||
+        Players_are_allies(winner_pl, loser_pl) ||
+        (Player_is_tank(loser_pl) && loser_pl->lock.pl_id == winner_pl->id))
     {
         if (winner_score > 0)
             winner_score = -winner_score;

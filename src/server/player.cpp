@@ -196,14 +196,14 @@ void Go_home(player_t *pl)
     world_t *world = &World;
     int ind = GetInd(pl->id), i, dir, check;
 
-    warn("===> Go_home: player %s, ind = %d, pl->ind = %d", pl->name, ind, pl->ind);
+    warn("===> Go_home: player %s, ind = %d, pl->ind = %d", pl->name.c_str(), ind, pl->ind);
 
     if (ind != pl->ind)
     {
         player_t *pl1 = PlayersArray[ind];
         player_t *pl2 = PlayersArray[pl->ind];
         warn("******** ERROR!!!!");
-        warn("pl1: '%s', pl2: '%s'", pl1->name, pl2->name);
+        warn("pl1: '%s', pl2: '%s'", pl1->name.c_str(), pl2->name.c_str());
     }
 
     double vx, vy, velo;
@@ -910,7 +910,7 @@ void Check_team_members(int team)
             pl = Player_by_index(i);
             if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl) && pl->team == team)
                 warn("Team %d currently has player %d: \"%s\"",
-                     team, i + 1, pl->name);
+                     team, i + 1, pl->name.c_str());
         }
         teamp->NumMembers = members;
     }
@@ -970,7 +970,7 @@ static void Give_best_player_bonus(double average_score,
 
         sprintf(msg,
                 "%s is the Deadliest Player with a kill ratio of %d/%d.",
-                bp->name,
+                bp->name.c_str(),
                 bp->kills, bp->deaths);
         points = best_ratio * Rate(Get_Score(bp), average_score);
         // if (!options.zeroSumScoring)
@@ -994,12 +994,12 @@ static void Give_best_player_bonus(double average_score,
                 else
                     strcat(msg, ", ");
             }
-            if (strlen(msg) + 8 + strlen(bp->name) >= sizeof(msg))
+            if (strlen(msg) + 8 + bp->name.length() >= sizeof(msg))
             {
                 Set_message(msg);
                 msg[0] = '\0';
             }
-            strcat(msg, bp->name);
+            strcat(msg, bp->name.c_str());
             points = (int)(best_ratio * score);
             // if (!options.zeroSumScoring)
             Score(bp, points, bp->pos, "[Deadly]");
@@ -1149,7 +1149,7 @@ void Individual_game_over(int winner)
     else
     {
         Set_message_f(" < %s has won the round! >",
-                      Player_by_index(winner)->name);
+                      Player_by_index(winner)->name.c_str());
         sound_play_all(PLAYER_WIN_SOUND);
     }
 
@@ -1742,7 +1742,7 @@ void Detach_ball(player_t *pl, ballobject_t *ball)
 
 void Kill_player(player_t *pl, bool add_rank_death)
 {
-    // warn("Kill_player: player: %s", pl->name);
+    // warn("Kill_player: player: %s", pl->name.c_str());
 
     Explode_fighter(pl);
     Player_death_reset(pl, add_rank_death);
@@ -1777,7 +1777,7 @@ static std::string bitsToStr(uint32_t s)
 void Player_death_reset(player_t *pl, bool add_rank_death)
 {
     world_t *world = &World;
-    // warn("Player_death_reset: player: %s", pl->name);
+    // warn("Player_death_reset: player: %s", pl->name.c_str());
 
     int i;
 
@@ -1804,7 +1804,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     uint32_t s = pl->obj_status;
 
     warn("before: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
-         pl->name, pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
+         pl->name.c_str(), pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
 
     pl->obj_status &= ~(LEGACY_KILL_BITS);
 
@@ -1824,7 +1824,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     //  WARPED);
 
     warn("after : player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
-         pl->name, pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
+         pl->name.c_str(), pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
 
     pl->deaths++;
 
@@ -1916,7 +1916,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     // }
 
     warn("after2: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
-         pl->name, pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
+         pl->name.c_str(), pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
 
     if (add_rank_death)
     {
@@ -1986,13 +1986,13 @@ char *Player_state_str(int state)
 
 void Player_print_state(player_t *pl, const char *funcname)
 {
-    warn("%-20s: %-16s (%c): %-20s ", funcname, pl->name, pl->mychar,
+    warn("%-20s: %-16s (%c): %-20s ", funcname, pl->name.c_str(), pl->mychar,
          Player_state_str(pl->pl_state));
 }
 
 void Player_set_state(player_t *pl, int state)
 {
-    // warn("Player_set_state: Player: %s, state: %s", pl->name, Player_state_str(state));
+    // warn("Player_set_state: Player: %s, state: %s", pl->name.c_str(), Player_state_str(state));
 
     pl->pl_state = state;
 

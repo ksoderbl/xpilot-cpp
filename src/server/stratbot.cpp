@@ -231,7 +231,7 @@ static void Stratbot_message(int ind, const char *message)
     if ((ptr = strchr(sender_name, ']')) != nullptr) {
         *ptr = '\0';        /* remove the ']' separator */
     }
-    printf("%s got message \"%s\" from \"%s\"\n", pl->name, msg, sender_name);
+    printf("%s got message \"%s\" from \"%s\"\n", pl->name.c_str(), msg, sender_name);
 #endif
 }
 
