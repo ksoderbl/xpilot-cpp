@@ -162,7 +162,7 @@ static inline bool clpos_inview(click_visibility_t &cv, clpos_t pos)
 //     return clpos_inview(cv, pos);
 // }
 
-static void fastshot_end(connection_t *conn)
+static void fastshot_end(Connection *conn)
 {
     int i;
 
@@ -178,7 +178,7 @@ static void fastshot_end(connection_t *conn)
     }
 }
 
-static void debris_end(connection_t *conn)
+static void debris_end(Connection *conn)
 {
     int i;
 
@@ -303,7 +303,7 @@ static void Frame_radar_buffer_add(clpos_t pos, int s)
     radarVector.push_back(t);
 }
 
-static void Frame_radar_buffer_send(connection_t *conn, player_t *pl)
+static void Frame_radar_buffer_send(Connection *conn, player_t *pl)
 {
     int i, dest, tmp;
     radar_t *p;
@@ -383,7 +383,7 @@ static void Frame_radar_buffer_free(void)
     // max_radar = 0;
 }
 
-static int Frame_status(connection_t *conn, player_t *pl)
+static int Frame_status(Connection *conn, player_t *pl)
 {
     world_t *world = &World;
     static char modsstr[MAX_CHARS];
@@ -473,7 +473,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
     return 1;
 }
 
-static void Frame_map(connection_t *conn, player_t *pl)
+static void Frame_map(Connection *conn, player_t *pl)
 {
     world_t *world = &World;
     int i, k, conn_bit = (1 << conn->ind);
@@ -661,7 +661,7 @@ static void Frame_shuffle(void)
     }
 }
 
-static void Frame_shots(connection_t *conn, player_t *pl)
+static void Frame_shots(Connection *conn, player_t *pl)
 {
     world_t *world = &World;
     int i, k, color;
@@ -861,7 +861,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
     }
 }
 
-static void Frame_ships(connection_t *conn, player_t *pl)
+static void Frame_ships(Connection *conn, player_t *pl)
 {
     world_t *world = &World;
     pulse_t *pulse;
@@ -1045,7 +1045,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
     }
 }
 
-static void Frame_radar(connection_t *conn, player_t *pl)
+static void Frame_radar(Connection *conn, player_t *pl)
 {
     world_t *world = &World;
     int i, k, mask, shownuke, size;
@@ -1172,7 +1172,7 @@ static void Frame_lose_item_state(player_t *pl)
     }
 }
 
-static void Frame_parameters(connection_t *conn, player_t *pl)
+static void Frame_parameters(Connection *conn, player_t *pl)
 {
     world_t *world = &World;
     Get_display_parameters(conn, &view_width, &view_height,
@@ -1204,7 +1204,7 @@ void Frame_update(void)
 {
     world_t *world = &World;
     int i, ind, player_fps;
-    connection_t *conn;
+    Connection *conn;
     player_t *pl, *pl2;
     time_t newTimeLeft = 0;
     static time_t oldTimeLeft;

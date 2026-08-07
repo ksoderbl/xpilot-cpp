@@ -276,8 +276,8 @@ typedef struct
 
     int ecmcount; /* number of active ecms */
 
-    connection_t *conn; /* connection pointer, nullptr if robot */
-    unsigned version;   /* XPilot version number of client */
+    Connection *conn; /* connection pointer, nullptr if robot */
+    unsigned version; /* XPilot version number of client */
 
     BITV_DECL(last_keyv, NUM_SERVER_KEYS); /* Keyboard state */
     BITV_DECL(prev_keyv, NUM_SERVER_KEYS); /* Keyboard state */

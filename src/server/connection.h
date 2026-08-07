@@ -74,7 +74,7 @@ constexpr int CONN_READY = 0x40;     /* draining after LOGIN and before PLAYING 
 /*
  * All the player connection state info.
  */
-class connection_t
+class Connection
 {
 public:
     int ind = 0;                         /* index of connection, was conn_index */
