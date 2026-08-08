@@ -92,7 +92,6 @@ bool Verify_wormhole_consistency(void)
             blkpos_t blkpos = Clpos_to_blkpos(wormhole->pos);
 
             World.block[blkpos.bx][blkpos.by] = SPACE;
-            World.itemID[blkpos.bx][blkpos.by] = (uint16_t)-1;
         }
         World.NumWormholes = 0;
     }
@@ -474,13 +473,9 @@ void add_temp_wormholes(int xin, int yin, int xout, int yout)
     outhole.type = WORM_OUT;
     inhole.lastblock = World.block[xin][yin];
     outhole.lastblock = World.block[xout][yout];
-    inhole.lastID = World.itemID[xin][yin];
-    outhole.lastID = World.itemID[xout][yout];
     World.wormholes[World.NumWormholes] = inhole;
     World.wormholes[World.NumWormholes + 1] = outhole;
     World.block[xin][yin] = World.block[xout][yout] = WORMHOLE;
-    World.itemID[xin][yin] = World.NumWormholes;
-    World.itemID[xout][yout] = World.NumWormholes + 1;
     World.NumWormholes += 2;
 }
 
@@ -491,7 +486,6 @@ void remove_temp_wormhole(int ind)
     hole = World.wormholes[ind];
     blkpos_t blkpos = Clpos_to_blkpos(hole.pos);
     World.block[blkpos.bx][blkpos.by] = hole.lastblock;
-    World.itemID[blkpos.bx][blkpos.by] = hole.lastID;
     World.NumWormholes--;
     if (ind != World.NumWormholes)
     {

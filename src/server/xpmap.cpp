@@ -992,7 +992,6 @@ void Xpmap_tags_to_internal_data(void)
         for (x = 0; x < World.x; x++)
         {
             // uint8_t *line = World.block[x];
-            // uint16_t *itemID = World.itemID[x];
 
             for (y = 0; y < World.y; y++)
             {
@@ -1002,8 +1001,6 @@ void Xpmap_tags_to_internal_data(void)
                 pos.cx = (x + 0.5) * BLOCK_CLICKS;
                 pos.cy = (y + 0.5) * BLOCK_CLICKS;
                 blkpos_t blk = Clpos_to_blkpos(pos);
-
-                World.itemID[x][y] = (uint16_t)-1;
 
                 // Default: space
                 World_set_block(world, blk, SPACE);
@@ -1033,32 +1030,26 @@ void Xpmap_tags_to_internal_data(void)
                     break;
 
                 case XPMAP_CANNON_UP:
-                    World.itemID[x][y] = World.cannons.size();
                     Xpmap_place_cannon(world, blk, DIR_UP);
                     break;
                 case XPMAP_CANNON_LEFT:
-                    World.itemID[x][y] = World.cannons.size();
                     Xpmap_place_cannon(world, blk, DIR_LEFT);
                     break;
                 case XPMAP_CANNON_RIGHT:
-                    World.itemID[x][y] = World.cannons.size();
                     Xpmap_place_cannon(world, blk, DIR_RIGHT);
                     break;
                 case XPMAP_CANNON_DOWN:
-                    World.itemID[x][y] = World.cannons.size();
                     Xpmap_place_cannon(world, blk, DIR_DOWN);
                     break;
 
                 case XPMAP_FUEL:
                     World.block[x][y] = FUEL;
-                    World.itemID[x][y] = World.fuels.size();
                     World_place_fuel(world, pos, TEAM_NOT_SET);
                     break;
 
                 case XPMAP_TREASURE:
                 case XPMAP_EMPTY_TREASURE:
                     World.block[x][y] = TREASURE;
-                    World.itemID[x][y] = World.treasures.size();
                     // line[y] = TREASURE;
                     // itemID[y] = World.NumTreasures;
                     // World.treasures[World.NumTreasures].blk_pos.bx = x;
@@ -1081,7 +1072,6 @@ void Xpmap_tags_to_internal_data(void)
                     break;
                 case XPMAP_TARGET:
                     World.block[x][y] = TARGET;
-                    World.itemID[x][y] = World.targets.size();
                     // World.targets[World.NumTargets].blk_pos.bx = x;
                     // World.targets[World.NumTargets].blk_pos.by = y;
                     // World.targets[World.NumTargets].pos.cx = cx;
@@ -1125,7 +1115,6 @@ void Xpmap_tags_to_internal_data(void)
                 case XPMAP_BASE_TEAM_8:
                 case XPMAP_BASE_TEAM_9:
                     World.block[x][y] = BASE;
-                    World.itemID[x][y] = Num_bases();
                     Xpmap_place_base(world, blk, (int)(c - XPMAP_BASE_TEAM_0));
                     break;
 
@@ -1156,21 +1145,17 @@ void Xpmap_tags_to_internal_data(void)
 
                 case XPMAP_WORMHOLE_NORMAL:
                     // Xpmap_place_wormhole(blk, WORM_NORMAL);
-                    // World.itemID[x][y] = Num_wormholes();
                     // worm_norm++;
                     // break;
                 case XPMAP_WORMHOLE_IN:
                     // Xpmap_place_wormhole(blk, WORM_IN);
-                    // World.itemID[x][y] = Num_wormholes();
                     // worm_in++;
                     // break;
                 case XPMAP_WORMHOLE_OUT:
                     // Xpmap_place_wormhole(blk, WORM_OUT);
-                    // World.itemID[x][y] = Num_wormholes();
                     // worm_out++;
                     // break;
                     World.block[x][y] = WORMHOLE;
-                    World.itemID[x][y] = World.NumWormholes;
                     World.wormholes[World.NumWormholes].pos = pos;
                     World.wormholes[World.NumWormholes].countdown = 0;
                     World.wormholes[World.NumWormholes].lastdest = -1;
@@ -1293,9 +1278,6 @@ void Xpmap_tags_to_internal_data(void)
         //         World.block
         //             [World.wormholes[i].blk_pos.bx]
         //             [World.wormholes[i].blk_pos.by] = SPACE;
-        //         World.itemID
-        //             [World.wormholes[i].blk_pos.bx]
-        //             [World.wormholes[i].blk_pos.by] = (uint16_t)-1;
         //     }
         //     World.NumWormholes = 0;
         // }

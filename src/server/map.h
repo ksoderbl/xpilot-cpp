@@ -305,10 +305,6 @@ struct world
 
     uint8_t **block; /* type of item in each block */
 
-    /* index into mapobject depending on value of corresponding block,
-    ** -1 for space, walls, etc */
-    uint16_t **itemID;
-
     vector_t **gravity;
 
     item_t items[NUM_ITEMS];

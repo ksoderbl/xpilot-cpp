@@ -105,19 +105,19 @@ static bool Really_empty_space(Player *pl, int x, int y)
         return false;
 
     case WORMHOLE:
-        if (!options.wormholeVisible || World.wormholes[World.itemID[x][y]].type == WORM_OUT)
+        if (!options.wormholeVisible || wormholeXY(x, y)->type == WORM_OUT)
             return true;
         else
             return false;
 
     case TARGET:
-        if (!options.targetTeamCollision && Team_play(world) && World.targets[World.itemID[x][y]].team == pl->team)
+        if (!options.targetTeamCollision && Team_play(world) && targetXY(x, y)->team == pl->team)
             return true;
         else
             return false;
 
     case CANNON:
-        if (options.teamImmunity && Team_play(world) && World.cannons[World.itemID[x][y]].team == pl->team)
+        if (options.teamImmunity && Team_play(world) && cannonXY(x, y)->team == pl->team)
             return true;
         else
             return false;

@@ -1118,19 +1118,6 @@ void Move_segment1(move_state_t *ms)
             {
                 if (mi->target_crashes)
                 {
-                    /*-BA This can be slow for large number of targets.
-                     *     added itemID array for extra speed, (at cost of some memory.)
-                     *
-                     *for (i = 0; ; i++) {
-                     *    if (World.targets[i].pos.x == block.x
-                     *        && World.targets[i].pos.y == block.y) {
-                     *        break;
-                     *     }
-                     * }
-                     *
-                     * ms->target = i;
-                     */
-                    // ms->target = i = World.itemID[block.x][block.y];
                     ms->target_ptr = targetXY(block.x, block.y);
 
                     if (!options.targetTeamCollision)

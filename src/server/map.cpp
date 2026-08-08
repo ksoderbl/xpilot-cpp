@@ -458,7 +458,6 @@ int World_init(void)
 void World_free(void)
 {
     XFREE(World.block);
-    XFREE(World.itemID);
     XFREE(World.gravity);
     World.asteroidConcs.clear();
     World.bases.clear();
@@ -479,8 +478,6 @@ static bool World_alloc(void)
     int x;
     uint8_t *map_line;
     uint8_t **map_pointer;
-    uint16_t *item_line;
-    uint16_t **item_pointer;
     vector_t *grav_line;
     vector_t **grav_pointer;
 
@@ -489,12 +486,10 @@ static bool World_alloc(void)
 
     World.block = (uint8_t **)
         malloc(sizeof(uint8_t *) * World.x + World.x * sizeof(uint8_t) * World.y);
-    World.itemID = (uint16_t **)
-        malloc(sizeof(uint16_t *) * World.x + World.x * sizeof(uint16_t) * World.y);
     World.gravity = (vector_t **)
         malloc(sizeof(vector_t *) * World.x + World.x * sizeof(vector_t) * World.y);
 
-    if (World.block == nullptr || World.itemID == nullptr || World.gravity == nullptr)
+    if (World.block == nullptr || World.gravity == nullptr)
     {
         World_free();
         error("Couldn't allocate memory for map");
@@ -503,8 +498,6 @@ static bool World_alloc(void)
 
     map_pointer = World.block;
     map_line = (uint8_t *)((uint8_t **)map_pointer + World.x);
-    item_pointer = World.itemID;
-    item_line = (uint16_t *)((uint16_t **)item_pointer + World.x);
     grav_pointer = World.gravity;
     grav_line = (vector_t *)((vector_t **)grav_pointer + World.x);
 
@@ -513,9 +506,6 @@ static bool World_alloc(void)
         *map_pointer = map_line;
         map_pointer += 1;
         map_line += World.y;
-        *item_pointer = item_line;
-        item_pointer += 1;
-        item_line += World.y;
         *grav_pointer = grav_line;
         grav_pointer += 1;
         grav_line += World.y;
