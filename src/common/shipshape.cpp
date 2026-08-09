@@ -72,13 +72,10 @@ void ShipShape::rotateShip(int dir)
         return;
     }
 
-    points.clear();
-    leftGunClickPositions.clear();
-    rightGunClickPositions.clear();
-
     clpos_t pos;
 
     // pts
+    points.clear();
     for (int i = 0; i < this->num_points; i++)
     {
         pos = this->pts[i][0];
@@ -95,6 +92,7 @@ void ShipShape::rotateShip(int dir)
     mainGunClickPosition = My_rotate_clpos(pos, dir);
 
     // left guns
+    leftGunClickPositions.clear();
     for (int i = 0; i < this->num_l_gun; i++)
     {
         pos = this->l_gun[i][0];
@@ -103,11 +101,48 @@ void ShipShape::rotateShip(int dir)
     }
 
     // right guns
+    rightGunClickPositions.clear();
     for (int i = 0; i < this->num_r_gun; i++)
     {
         pos = this->r_gun[i][0];
         pos = My_rotate_clpos(pos, dir);
         rightGunClickPositions.push_back(pos);
+    }
+
+    // left rear guns
+    leftRearGunClickPositions.clear();
+    for (int i = 0; i < this->num_l_rgun; i++)
+    {
+        pos = this->l_rgun[i][0];
+        pos = My_rotate_clpos(pos, dir);
+        leftRearGunClickPositions.push_back(pos);
+    }
+
+    // right rear guns
+    rightRearGunClickPositions.clear();
+    for (int i = 0; i < this->num_r_rgun; i++)
+    {
+        pos = this->r_rgun[i][0];
+        pos = My_rotate_clpos(pos, dir);
+        rightRearGunClickPositions.push_back(pos);
+    }
+
+    // left lights
+    leftLightClickPositions.clear();
+    for (int i = 0; i < this->num_l_light; i++)
+    {
+        pos = this->l_light[i][0];
+        pos = My_rotate_clpos(pos, dir);
+        leftLightClickPositions.push_back(pos);
+    }
+
+    // right lights
+    rightLightClickPositions.clear();
+    for (int i = 0; i < this->num_r_light; i++)
+    {
+        pos = this->r_light[i][0];
+        pos = My_rotate_clpos(pos, dir);
+        rightLightClickPositions.push_back(pos);
     }
 
     currentDir = dir;
@@ -1503,9 +1538,10 @@ void Convert_ship_2_string(ShipShape *ship, char *buf, char *ext,
         {
             strcpy(&tmp[0], "(LR:");
             tmplen = strlen(&tmp[0]);
-            for (i = 0; i < ship->num_l_rgun && i < MAX_GUN_PTS; i++)
+            std::vector<clpos_t> l_rguns = ship->getLeftRearGunClickPositions(0);
+            for (i = 0; i < l_rguns.size() && i < MAX_GUN_PTS; i++)
             {
-                position_t l_rgun = Ship_get_l_rgun_position(ship, i, 0);
+                position_t l_rgun = clpos2position(l_rguns[i]);
 
                 sprintf(&tmp[tmplen], " %d,%d",
                         (int)l_rgun.x, (int)l_rgun.y);
@@ -1528,9 +1564,10 @@ void Convert_ship_2_string(ShipShape *ship, char *buf, char *ext,
         {
             strcpy(&tmp[0], "(RR:");
             tmplen = strlen(&tmp[0]);
-            for (i = 0; i < ship->num_r_rgun && i < MAX_GUN_PTS; i++)
+            std::vector<clpos_t> r_rguns = ship->getRightRearGunClickPositions(0);
+            for (i = 0; i < r_rguns.size() && i < MAX_GUN_PTS; i++)
             {
-                position_t r_rgun = Ship_get_r_rgun_position(ship, i, 0);
+                position_t r_rgun = clpos2position(r_rguns[i]);
 
                 sprintf(&tmp[tmplen], " %d,%d",
                         (int)r_rgun.x, (int)r_rgun.y);
@@ -1553,9 +1590,10 @@ void Convert_ship_2_string(ShipShape *ship, char *buf, char *ext,
         {
             strcpy(&tmp[0], "(LL:");
             tmplen = strlen(&tmp[0]);
-            for (i = 0; i < ship->num_l_light && i < MAX_LIGHT_PTS; i++)
+            std::vector<clpos_t> l_lights = ship->getLeftLightClickPositions(0);
+            for (i = 0; i < l_lights.size() && i < MAX_LIGHT_PTS; i++)
             {
-                position_t l_light = Ship_get_l_light_position(ship, i, 0);
+                position_t l_light = clpos2position(l_lights[i]);
 
                 sprintf(&tmp[tmplen], " %d,%d",
                         (int)l_light.x, (int)l_light.y);
@@ -1578,9 +1616,10 @@ void Convert_ship_2_string(ShipShape *ship, char *buf, char *ext,
         {
             strcpy(&tmp[0], "(RL:");
             tmplen = strlen(&tmp[0]);
-            for (i = 0; i < ship->num_r_light && i < MAX_LIGHT_PTS; i++)
+            std::vector<clpos_t> r_lights = ship->getRightLightClickPositions(0);
+            for (i = 0; i < r_lights.size() && i < MAX_LIGHT_PTS; i++)
             {
-                position_t r_light = Ship_get_r_light_position(ship, i, 0);
+                position_t r_light = clpos2position(r_lights[i]);
 
                 sprintf(&tmp[tmplen], " %d,%d",
                         (int)r_light.x, (int)r_light.y);

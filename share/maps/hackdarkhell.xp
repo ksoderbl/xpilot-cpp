@@ -18,6 +18,7 @@ nukeminmines:5
 allowshields:no
 initialsensors:2
 initialwideangles:2
+initialrearshots:0
 initiallasers:2
 initialemergencyshields:2
 initialemergencythrusts:2

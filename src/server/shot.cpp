@@ -449,7 +449,7 @@ void Fire_left_shot(Player *pl, int type, int dir, int gun)
     // l_gun = Ship_get_l_gun_clpos(pl->ship, gun, pl->dir);
     std::vector<clpos_t> &l_guns = pl->ship->getLeftGunClickPositions(pl->dir);
 
-    warn("Fire_left_shot: l_guns.size() = %d, gun = %d", l_guns.size(), gun);
+    // warn("Fire_left_shot: l_guns.size() = %d, gun = %d", l_guns.size(), gun);
 
     if (l_guns.size() <= gun)
         return;
@@ -472,7 +472,7 @@ void Fire_right_shot(Player *pl, int type, int dir, int gun)
     // r_gun = Ship_get_r_gun_clpos(pl->ship, gun, pl->dir);
     std::vector<clpos_t> &r_guns = pl->ship->getRightGunClickPositions(pl->dir);
 
-    warn("Fire_right_shot: r_guns.size() = %d, gun = %d", r_guns.size(), gun);
+    // warn("Fire_right_shot: r_guns.size() = %d, gun = %d", r_guns.size(), gun);
 
     if (r_guns.size() <= gun)
         return;
@@ -492,7 +492,15 @@ void Fire_left_rshot(Player *pl, int type, int dir, int gun)
     if (!Player_can_fire_shot(pl))
         return;
 
-    l_rgun = Ship_get_l_rgun_clpos(pl->ship, gun, pl->dir);
+    // l_rgun = Ship_get_l_rgun_clpos(pl->ship, gun, pl->dir);
+    std::vector<clpos_t> &l_rguns = pl->ship->getLeftRearGunClickPositions(pl->dir);
+
+    // warn("Fire_left_rshot: l_rguns.size() = %d, gun = %d", l_rguns.size(), gun);
+
+    if (l_rguns.size() <= gun)
+        return;
+    l_rgun = l_rguns[gun];
+
     pos.cx = pl->pos.cx + l_rgun.cx;
     pos.cy = pl->pos.cy + l_rgun.cy;
 
@@ -507,7 +515,15 @@ void Fire_right_rshot(Player *pl, int type, int dir, int gun)
     if (!Player_can_fire_shot(pl))
         return;
 
-    r_rgun = Ship_get_r_rgun_clpos(pl->ship, gun, pl->dir);
+    // r_rgun = Ship_get_r_rgun_clpos(pl->ship, gun, pl->dir);
+    std::vector<clpos_t> &r_rguns = pl->ship->getRightRearGunClickPositions(pl->dir);
+
+    // warn("Fire_right_rshot: r_rguns.size() = %d, gun = %d", r_rguns.size(), gun);
+
+    if (r_rguns.size() <= gun)
+        return;
+    r_rgun = r_rguns[gun];
+
     pos.cx = pl->pos.cx + r_rgun.cx;
     pos.cy = pl->pos.cy + r_rgun.cy;
 

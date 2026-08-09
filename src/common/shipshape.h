@@ -86,6 +86,26 @@ public:
         rotateShip(dir);
         return rightGunClickPositions;
     }
+    std::vector<clpos_t> &getLeftRearGunClickPositions(int dir)
+    {
+        rotateShip(dir);
+        return leftRearGunClickPositions;
+    }
+    std::vector<clpos_t> &getRightRearGunClickPositions(int dir)
+    {
+        rotateShip(dir);
+        return rightRearGunClickPositions;
+    }
+    std::vector<clpos_t> &getLeftLightClickPositions(int dir)
+    {
+        rotateShip(dir);
+        return leftLightClickPositions;
+    }
+    std::vector<clpos_t> &getRightLightClickPositions(int dir)
+    {
+        rotateShip(dir);
+        return rightLightClickPositions;
+    }
 
     void rotateShip(int dir);
 
@@ -94,6 +114,10 @@ public:
     clpos_t mainGunClickPosition;
     std::vector<clpos_t> leftGunClickPositions;
     std::vector<clpos_t> rightGunClickPositions;
+    std::vector<clpos_t> leftRearGunClickPositions;
+    std::vector<clpos_t> rightRearGunClickPositions;
+    std::vector<clpos_t> leftLightClickPositions;
+    std::vector<clpos_t> rightLightClickPositions;
 
     int currentDir = -1; // current rotated direction
     int currentDirCacheHits = 0;
@@ -167,26 +191,26 @@ Ship_get_point_clpos(ShipShape *ship, int i, int dir)
 // {
 //     return ship->r_gun[gun][dir];
 // }
-static inline clpos_t
-Ship_get_l_rgun_clpos(ShipShape *ship, int gun, int dir)
-{
-    return ship->l_rgun[gun][dir];
-}
-static inline clpos_t
-Ship_get_r_rgun_clpos(ShipShape *ship, int gun, int dir)
-{
-    return ship->r_rgun[gun][dir];
-}
-static inline clpos_t
-Ship_get_l_light_clpos(ShipShape *ship, int l, int dir)
-{
-    return ship->l_light[l][dir];
-}
-static inline clpos_t
-Ship_get_r_light_clpos(ShipShape *ship, int l, int dir)
-{
-    return ship->r_light[l][dir];
-}
+// static inline clpos_t
+// Ship_get_l_rgun_clpos(ShipShape *ship, int gun, int dir)
+// {
+//     return ship->l_rgun[gun][dir];
+// }
+// static inline clpos_t
+// Ship_get_r_rgun_clpos(ShipShape *ship, int gun, int dir)
+// {
+//     return ship->r_rgun[gun][dir];
+// }
+// static inline clpos_t
+// Ship_get_l_light_clpos(ShipShape *ship, int l, int dir)
+// {
+//     return ship->l_light[l][dir];
+// }
+// static inline clpos_t
+// Ship_get_r_light_clpos(ShipShape *ship, int l, int dir)
+// {
+//     return ship->r_light[l][dir];
+// }
 static inline clpos_t
 Ship_get_m_rack_clpos(ShipShape *ship, int rack, int dir)
 {
@@ -218,26 +242,26 @@ Ship_get_point_position(ShipShape *ship, int i, int dir)
 // {
 //     return clpos2position(Ship_get_r_gun_clpos(ship, gun, dir));
 // }
-static inline position_t
-Ship_get_l_rgun_position(ShipShape *ship, int gun, int dir)
-{
-    return clpos2position(Ship_get_l_rgun_clpos(ship, gun, dir));
-}
-static inline position_t
-Ship_get_r_rgun_position(ShipShape *ship, int gun, int dir)
-{
-    return clpos2position(Ship_get_r_rgun_clpos(ship, gun, dir));
-}
-static inline position_t
-Ship_get_l_light_position(ShipShape *ship, int l, int dir)
-{
-    return clpos2position(Ship_get_l_light_clpos(ship, l, dir));
-}
-static inline position_t
-Ship_get_r_light_position(ShipShape *ship, int l, int dir)
-{
-    return clpos2position(Ship_get_r_light_clpos(ship, l, dir));
-}
+// static inline position_t
+// Ship_get_l_rgun_position(ShipShape *ship, int gun, int dir)
+// {
+//     return clpos2position(Ship_get_l_rgun_clpos(ship, gun, dir));
+// }
+// static inline position_t
+// Ship_get_r_rgun_position(ShipShape *ship, int gun, int dir)
+// {
+//     return clpos2position(Ship_get_r_rgun_clpos(ship, gun, dir));
+// }
+// static inline position_t
+// Ship_get_l_light_position(ShipShape *ship, int l, int dir)
+// {
+//     return clpos2position(Ship_get_l_light_clpos(ship, l, dir));
+// }
+// static inline position_t
+// Ship_get_r_light_position(ShipShape *ship, int l, int dir)
+// {
+//     return clpos2position(Ship_get_r_light_clpos(ship, l, dir));
+// }
 static inline position_t
 Ship_get_m_rack_position(ShipShape *ship, int rack, int dir)
 {

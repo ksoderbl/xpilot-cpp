@@ -797,9 +797,13 @@ static void Gui_paint_marking_lights(int id, int x, int y,
 
     if (((loopsSlow + id) & 0xF) == 0)
     {
-        for (lcnt = 0; lcnt < ship->num_l_light; lcnt++)
+        std::vector<clpos_t> &l_lights = ship->getLeftLightClickPositions(dir);
+
+        // for (lcnt = 0; lcnt < ship->num_l_light; lcnt++)
+        for (auto &pos : l_lights)
         {
-            position_t l_light = Ship_get_l_light_position(ship, lcnt, dir);
+            // position_t l_light = Ship_get_l_light_position(ship, lcnt, dir);
+            position_t l_light = clpos2position(pos);
             Rectangle_add(RED,
                           X(x + l_light.x) - 2,
                           Y(y + l_light.y) - 2,
@@ -818,10 +822,14 @@ static void Gui_paint_marking_lights(int id, int x, int y,
     }
     else if (((loopsSlow + id) & 0xF) == 2)
     {
-        for (lcnt = 0; lcnt < ship->num_r_light; lcnt++)
+        std::vector<clpos_t> &r_lights = ship->getRightLightClickPositions(dir);
+
+        // for (lcnt = 0; lcnt < ship->num_r_light; lcnt++)
+        for (auto &pos : r_lights)
         {
             int rightLightColor = maxColors > 4 ? 4 : BLUE;
-            position_t r_light = Ship_get_r_light_position(ship, lcnt, dir);
+            // position_t r_light = Ship_get_r_light_position(ship, lcnt, dir);
+            position_t r_light = clpos2position(pos);
             Rectangle_add(rightLightColor,
                           X(x + r_light.x) - 2,
                           Y(y + r_light.y) - 2,
