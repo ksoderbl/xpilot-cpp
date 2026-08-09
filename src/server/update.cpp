@@ -81,7 +81,7 @@ static void Transport_to_home(Player *pl)
      * acceleration G, during the second part we make this a negative one -G.
      * This results in a visually pleasing take off and landing.
      */
-    world_t *world = &World;
+    world_t *world = &theWorld;
     clpos_t startpos;
     double dx, dy, t, m;
     const double T = RECOVERY_DELAY;
@@ -100,8 +100,8 @@ static void Transport_to_home(Player *pl)
         if (pl->check)
             check = pl->check - 1;
         else
-            check = Num_checks() - 1;
-        startpos = Check_by_index(check)->pos;
+            check = Num_checks(world) - 1;
+        startpos = Check_by_index(world, check)->pos;
     }
     else
         startpos = pl->home_base->pos;
@@ -331,7 +331,7 @@ void Autopilot(Player *pl, bool on)
  */
 static void do_Autopilot(Player *pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int vad; /* Velocity Away Delta */
     int dir, afterburners;
     vector_t gravity;
@@ -498,6 +498,7 @@ static void do_Autopilot(Player *pl)
 
 static void Fuel_update(void)
 {
+    world_t *world = &theWorld;
     int i;
     double fuel;
     int frames_per_update;
@@ -509,9 +510,9 @@ static void Fuel_update(void)
     fuel = (NumPlayers * STATION_REGENERATION * timeStep);
     frames_per_update = (int)(MAX_STATION_FUEL / (fuel * BLOCK_SZ));
 
-    for (i = 0; i < Num_fuels(); i++)
+    for (i = 0; i < Num_fuels(world); i++)
     {
-        fuel_t *fs = Fuel_by_index(i);
+        fuel_t *fs = Fuel_by_index(world, i);
 
         if (fs->fuel == MAX_STATION_FUEL)
             continue;
@@ -535,7 +536,7 @@ static void legacy_mode_ball_hack(ballobject_t *ball)
 
 static void Misc_object_update(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int i;
     object_t *obj;
 
@@ -586,16 +587,17 @@ static void Misc_object_update(void)
 
 static void Ecm_update(void)
 {
+    world_t *world = &theWorld;
     int i;
     double ecmSizeFactor = 0.5;
 
-    // if (Num_ecms() > 0)
-    //     warn("Ecm_Update: ecms: %d", Num_ecms());
+    // if (Num_ecms(world) > 0)
+    //     warn("Ecm_Update: ecms: %d", Num_ecms(world));
 
     // Update ECM blasts
-    for (i = 0; i < Num_ecms(); i++)
+    for (i = 0; i < Num_ecms(world); i++)
     {
-        ecm_t *ecm = Ecm_by_index(i);
+        ecm_t *ecm = Ecm_by_index(world, i);
 
         if ((ecm->size *= ecmSizeFactor) < 1.0)
         {
@@ -606,9 +608,9 @@ static void Ecm_update(void)
                 if (pl)
                     pl->ecmcount--;
             }
-            // --World.NumEcms;
-            // World.ecms[i] = World.ecms[World.NumEcms];
-            World.ecms.erase(World.ecms.begin() + i);
+            // --world->NumEcms;
+            // world->ecms[i] = world->ecms[world->NumEcms];
+            world->ecms.erase(world->ecms.begin() + i);
             i--;
         }
     }
@@ -616,20 +618,21 @@ static void Ecm_update(void)
 
 static void Transporter_update(void)
 {
+    world_t *world = &theWorld;
     int i;
 
-    // if (Num_transporters() > 0)
-    //     warn("Num_transporters: transporters: %d", Num_transporters());
+    // if (Num_transporters(world) > 0)
+    //     warn("Num_transporters: transporters: %d", Num_transporters(world));
 
-    for (i = 0; i < Num_transporters(); i++)
+    for (i = 0; i < Num_transporters(world); i++)
     {
-        transporter_t *trans = Transporter_by_index(i);
+        transporter_t *trans = Transporter_by_index(world, i);
 
         if (--trans->count <= 0)
         {
-            // --World.NumTransporters;
-            // World.transporters[i] = World.transporters[World.NumTransporters];
-            World.transporters.erase(World.transporters.begin() + i);
+            // --world->NumTransporters;
+            // world->transporters[i] = world->transporters[world->NumTransporters];
+            world->transporters.erase(world->transporters.begin() + i);
             i--;
         }
     }
@@ -730,8 +733,8 @@ static void Use_items(Player *pl)
  */
 static void Do_refuel(Player *pl)
 {
-    world_t *world = &World;
-    fuel_t *fs = Fuel_by_index(pl->fs);
+    world_t *world = &theWorld;
+    fuel_t *fs = Fuel_by_index(world, pl->fs);
 
     if ((World_wrap_length(
              world,
@@ -778,8 +781,8 @@ static void Do_refuel(Player *pl)
  */
 static void Do_repair(Player *pl)
 {
-    world_t *world = &World;
-    target_t *targ = Target_by_index(pl->repair_target);
+    world_t *world = &theWorld;
+    target_t *targ = Target_by_index(world, pl->repair_target);
 
     if ((World_wrap_length(world,
                            pl->pos.cx - targ->pos.cx,
@@ -855,7 +858,7 @@ static void Update_visibility(Player *pl, int ind)
  */
 static void Update_players(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int i;
     Player *pl;
 
@@ -1079,7 +1082,7 @@ static void Update_players(void)
  */
 void Update_objects(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int i;
     Player *pl;
     object_t *obj;
@@ -1109,22 +1112,22 @@ void Update_objects(void)
      * Special items.
      */
     for (i = 0; i < NUM_ITEMS; i++)
-        if (World.items[i].num < World.items[i].max && World.items[i].chance > 0 && (rfrac() * World.items[i].chance) < 1.0f)
+        if (world->items[i].num < world->items[i].max && world->items[i].chance > 0 && (rfrac() * world->items[i].chance) < 1.0f)
             Place_item(nullptr, i);
 
     Fuel_update();
     Misc_object_update();
 
     Asteroid_update();
-    if (Num_ecms() > 0)
+    if (Num_ecms(world) > 0)
         Ecm_update();
-    if (Num_transporters() > 0)
+    if (Num_transporters(world) > 0)
         Transporter_update();
 
-    if (Num_cannons() > 0)
+    if (Num_cannons(world) > 0)
         Cannon_update(tick_this_frame);
 
-    if (Num_targets() > 0)
+    if (Num_targets(world) > 0)
         Target_update();
 
     // xpinfo("player loop");
@@ -1136,11 +1139,11 @@ void Update_objects(void)
      */
     Update_players();
 
-    for (int i = Num_wormholes() - 1; i >= 0; i--)
+    for (int i = Num_wormholes(world) - 1; i >= 0; i--)
     {
-        if (World.wormholes[i].countdown > 0)
-            World.wormholes[i].countdown--;
-        if (World.wormholes[i].temporary && World.wormholes[i].countdown <= 0)
+        if (world->wormholes[i].countdown > 0)
+            world->wormholes[i].countdown--;
+        if (world->wormholes[i].temporary && world->wormholes[i].countdown <= 0)
             remove_temp_wormhole(i);
     }
 

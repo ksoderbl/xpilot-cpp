@@ -47,7 +47,7 @@ static base_t *current_base = nullptr;
 
 static void tagstart(void *data, const char *el, const char **attr)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     static double scale = 1;
     static bool xptag = false;
 
@@ -285,7 +285,7 @@ static void tagstart(void *data, const char *el, const char **attr)
             exit(1);
         }
         ind = World_place_base(world, pos, dir, team, order);
-        current_base = Base_by_index(ind);
+        current_base = Base_by_index(world, ind);
         return;
     }
 
@@ -330,7 +330,7 @@ static void tagstart(void *data, const char *el, const char **attr)
         }
         cannon_ind = World_place_cannon(world, pos, dir, team);
         P_start_cannon(cannon_ind);
-        current_cannon = Cannon_by_index(cannon_ind);
+        current_cannon = Cannon_by_index(world, cannon_ind);
         return;
     }
 

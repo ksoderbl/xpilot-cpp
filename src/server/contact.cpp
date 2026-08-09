@@ -124,7 +124,7 @@ int Contact_init(void)
  */
 static int Kick_robot_players(int team)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int i;
 
     if (NumRobots == 0) /* no robots available for kicking */
@@ -165,7 +165,7 @@ static int Kick_robot_players(int team)
     }
     else
     {
-        if (World.teams[team].NumRobots > 0)
+        if (world->teams[team].NumRobots > 0)
         {
             /* kick robot with lowest score from this team */
             double low_score = FLT_MAX;
@@ -736,7 +736,7 @@ static void Queue_ack(struct queued_player *qp, int qpos)
 
 void Queue_loop(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     struct queued_player *qp, *prev = 0, *next = 0;
     int qpos = 0, login_port;
     static long last_unqueued_loops;
@@ -789,9 +789,9 @@ void Queue_loop(void)
         {
 
             /* is there a homebase available? */
-            if (NumPlayers - NumPseudoPlayers + login_in_progress < Num_bases() ||
-                (Kick_robot_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < Num_bases()) ||
-                (Kick_paused_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < Num_bases()))
+            if (NumPlayers - NumPseudoPlayers + login_in_progress < Num_bases(world) ||
+                (Kick_robot_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < Num_bases(world)) ||
+                (Kick_paused_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < Num_bases(world)))
             {
 
                 /* find a team for this fellow. */
@@ -801,7 +801,7 @@ void Queue_loop(void)
                     /* see if he has a reasonable suggestion. */
                     if (qp->team >= 0 && qp->team < MAX_TEAMS)
                     {
-                        if ((World.teams[qp->team].NumMembers >= World.teams[qp->team].NumBases &&
+                        if ((world->teams[qp->team].NumMembers >= world->teams[qp->team].NumBases &&
                              !Kick_robot_players(qp->team) &&
                              !Kick_paused_players(qp->team)) ||
                             (qp->team == options.robotTeam && options.reserveRobotTeam))
@@ -814,7 +814,7 @@ void Queue_loop(void)
                         qp->team = Pick_team(PL_TYPE_HUMAN);
                         if (qp->team == TEAM_NOT_SET || (qp->team == options.robotTeam && options.reserveRobotTeam))
                         {
-                            if (NumRobots > World.teams[options.robotTeam].NumRobots)
+                            if (NumRobots > world->teams[options.robotTeam].NumRobots)
                             {
                                 Kick_robot_players(TEAM_NOT_SET);
                                 qp->team = Pick_team(PL_TYPE_HUMAN);

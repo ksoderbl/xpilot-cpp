@@ -306,7 +306,7 @@ static void Robot_suibot_invite(Player *pl, Player *inviter)
 
 static inline int decide_travel_dir(Player *pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     double gdir;
 
     if (pl->velocity <= 0.2)
@@ -369,7 +369,7 @@ static void Robot_set_pointing_direction(Player *pl, double direction)
 /* Wall between two given points?*/
 static bool Wall_in_between_points(int cx1, int cy1, int cx2, int cy2)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     struct collans answer;
     move_t mv;
     mv.delta.cx = WORLD_WRAP_DCX(world, cx2 - cx1);
@@ -402,7 +402,7 @@ typedef struct
 
 static bool Get_object_proximity(Player *pl, object_t *shot, double sqmaxdist, int maxtime, object_proximity_t *object_proximity)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     /* get square of closest distance between player and object
      * compare with sqmaxdist and maxtime and return sqdistance and time
      * if both are smaller than the maximal wanted values
@@ -448,7 +448,7 @@ static bool Get_object_proximity(Player *pl, object_t *shot, double sqmaxdist, i
 
 bool Robot_evade_shot(Player *pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     /*  change to use   struct dangerous_shot_data *shotsarray; */
     int j;
     object_t *shot, **obj_list;
@@ -655,7 +655,7 @@ static void Robot_move_randomly(Player *pl)
 
 double Robot_ram_object(Player *pl, object_t *object)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     double direction;
     int x, y, x_tgo, y_tgo;
     double velx, vely; /* relative positions and velocities */
@@ -798,7 +798,7 @@ void Robot_find_shooting_dir(Player *pl, Player *pl_to_suicide)
 
 void Robot_attack_player(Player *pl, Player *opponent)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int dcx, dcy;
     double direction;
     double velx, vely;
@@ -933,7 +933,7 @@ static inline double Wrap_length_min(world_t *world, double dcx, double dcy, dou
 
 static void Robotdef_fire_laser(Player *pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     robot_default_data_t *my_data = Robot_suibot_get_data(pl);
     double x2, y2, x3, y3, x4, y4, x5, y5;
     double ship_dist, dir3, dir4, dir5;
@@ -975,7 +975,7 @@ static void Robotdef_fire_laser(Player *pl)
 
 static bool Detect_ship(Player *pl, Player *ship)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     double distance;
 
     /* can't go after non-playing ships */
@@ -1023,7 +1023,7 @@ static bool Detect_ship(Player *pl, Player *ship)
 
 static void Robot_suibot_play(Player *pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     Player *ship;
     int direction;
     double distance, ship_dist, enemy_dist, speed, x_speed, y_speed;
@@ -1076,7 +1076,7 @@ static void Robot_suibot_play(Player *pl)
 
     Thrust(pl, false);
 
-    ship_dist_closest = 2 * World.hypotenuse;
+    ship_dist_closest = 2 * world->hypotenuse;
     for (ship_i = 0; ship_i < NumPlayers; ship_i++)
     {
         Player *ship = Player_by_index(ship_i);
@@ -1170,7 +1170,7 @@ static void Robot_suibot_play(Player *pl)
     {
         if (Wall_in_between_points((pl->pos.cx), (pl->pos.cy), (ball->pos.cx),
                                    (ball->pos.cy)))
-            ball_dist = 2 * World.hypotenuse;
+            ball_dist = 2 * world->hypotenuse;
     }
 
     if (ship_dist_closest < maxdist && ship_dist_closest < (2.5 * ball_dist) && (Wall_in_between_points((pl->pos.cx), (pl->pos.cy), (closest_opponent->pos.cx), (closest_opponent->pos.cy)) == 0) && (!BIT(pl->have, HAS_BALL)))
@@ -1229,6 +1229,7 @@ static void Robot_suibot_play(Player *pl)
 
 static void Robot_suibot_round_tick(void)
 {
+    world_t *world = &theWorld;
     double min_visibility = 256.0;
     double min_enemy_distance = 512.0;
 
@@ -1239,10 +1240,10 @@ static void Robot_suibot_round_tick(void)
         * (NUM_IDS - NumRobots)) / NUM_IDS);*/
 
     /* limit distance to allowable enemies. */
-    Max_enemy_distance = World.hypotenuse;
-    if (World.hypotenuse > Visibility_distance)
-        Max_enemy_distance = World.hypotenuse;
+    Max_enemy_distance = world->hypotenuse;
+    if (world->hypotenuse > Visibility_distance)
+        Max_enemy_distance = world->hypotenuse;
     /*    min_enemy_distance
-            + (((World.hypotenuse - min_enemy_distance)
+            + (((world->hypotenuse - min_enemy_distance)
             * (NUM_IDS - NumRobots)) / NUM_IDS);*/
 }

@@ -248,7 +248,7 @@ static inline void Set_laser_modifier(modifiers_t *mods, int value)
  */
 int Mods_set(modifiers_t *mods, modifier_t modifier, int val)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
 
     int oldVal = Mods_get(*mods, modifier);
     // warn("Mods_set: modifier: %d, oldVal: %d, value: %d", modifier, oldVal, val);
@@ -479,7 +479,7 @@ std::string Mods_to_string2(modifiers_t mods)
 
 void Mods_filter(modifiers_t *mods)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
 
     if (!BIT(world->rules.mode, ALLOW_NUKES))
         Mods_set(mods, ModsNuclear, 0);
@@ -517,7 +517,7 @@ static int str2num(const char **strp, int min, int max)
 
 void Player_set_modbank(Player *pl, int bank, const char *str)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     const char *cp;
     modifiers_t mods;
     int mini, velocity, spread, power;

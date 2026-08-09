@@ -66,8 +66,10 @@ void tuner_ballmass(void)
 
 void tuner_maxrobots(void)
 {
+    world_t *world = &theWorld;
+
     if (options.maxRobots < 0)
-        options.maxRobots = Num_bases();
+        options.maxRobots = Num_bases(world);
 
     if (options.maxRobots < options.minRobots)
         options.minRobots = options.maxRobots;
@@ -128,7 +130,7 @@ void tuner_playerstartsshielded(void)
 
 void tuner_worldlives(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
 
     if (options.worldLives < 0)
         options.worldLives = 0;
@@ -150,14 +152,15 @@ void tuner_cannonsmartness(void)
 
 void tuner_teamcannons(void)
 {
+    world_t *world = &theWorld;
     int i;
     int team;
 
     if (options.teamCannons)
     {
-        for (i = 0; i < Num_cannons(); i++)
+        for (i = 0; i < Num_cannons(world); i++)
         {
-            cannon_t *cannon = Cannon_by_index(i);
+            cannon_t *cannon = Cannon_by_index(world, i);
 
             team = Find_closest_team(cannon->pos);
             if (team == TEAM_NOT_SET)
@@ -167,8 +170,8 @@ void tuner_teamcannons(void)
     }
     else
     {
-        for (i = 0; i < Num_cannons(); i++)
-            Cannon_by_index(i)->team = TEAM_NOT_SET;
+        for (i = 0; i < Num_cannons(world); i++)
+            Cannon_by_index(world, i)->team = TEAM_NOT_SET;
     }
 }
 
@@ -186,27 +189,29 @@ void tuner_maxcannonshotlife(void)
 
 void tuner_cannonsuseitems(void)
 {
+    world_t *world = &theWorld;
     int i, j;
     cannon_t *c;
 
     Move_init();
 
-    for (i = 0; i < Num_cannons(); i++)
+    for (i = 0; i < Num_cannons(world); i++)
     {
-        c = &World.cannons[i];
+        c = &world->cannons[i];
         for (j = 0; j < NUM_ITEMS; j++)
         {
             c->item[j] = 0;
 
             if (options.cannonsUseItems)
                 Cannon_add_item(c, j,
-                                (int)(rfrac() * (World.items[j].initial + 1)));
+                                (int)(rfrac() * (world->items[j].initial + 1)));
         }
     }
 }
 
 void tuner_wormtime(void)
 {
+    world_t *world = &theWorld;
     int i;
 
     if (options.wormTime < 0)
@@ -215,17 +220,17 @@ void tuner_wormtime(void)
     /* Make sure all wormholes get a new destination */
     if (options.wormTime)
     {
-        for (i = 0; i < Num_wormholes(); i++)
-            World.wormholes[i].countdown = options.wormTime;
+        for (i = 0; i < Num_wormholes(world); i++)
+            world->wormholes[i].countdown = options.wormTime;
     }
     else
     {
-        for (i = 0; i < Num_wormholes(); i++)
+        for (i = 0; i < Num_wormholes(world); i++)
         {
-            if (World.wormholes[i].temporary)
+            if (world->wormholes[i].temporary)
                 remove_temp_wormhole(i);
             else
-                World.wormholes[i].countdown = WORMCOUNT;
+                world->wormholes[i].countdown = WORMCOUNT;
         }
     }
 }
@@ -303,7 +308,7 @@ void tuner_gameduration(void)
 
 void tuner_racelaps(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
 
     if (Timing(world))
     {
@@ -315,7 +320,7 @@ void tuner_racelaps(void)
 
 void tuner_allowalliances(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
 
     if (Team_play(world))
         CLR_BIT(world->rules.mode, ALLIANCES);

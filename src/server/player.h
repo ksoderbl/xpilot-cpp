@@ -673,7 +673,7 @@ static inline bool Player_is_tank(Player *pl)
  */
 static inline bool Players_are_teammates(Player *pl1, Player *pl2)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     if (Team_play(world) && pl1->team != TEAM_NOT_SET && pl1->team == pl2->team)
         return true;
     return false;

@@ -194,7 +194,7 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
 
 void Delta_mv_partly_elastic(object_t *obj1, object_t *obj2, double elastic)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     double m1 = (double)obj1->mass,
            m2 = (double)obj2->mass,
            ms = m1 + m2;
@@ -245,7 +245,7 @@ void Delta_mv_partly_elastic(object_t *obj1, object_t *obj2, double elastic)
 
 void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     double xd, yd, force, dm, dvx1, dvy1, dvx2, dvy2, a;
     int obj_theta;
 
@@ -587,7 +587,7 @@ void Make_debris(clpos_t pos,
                  double min_speed, double max_speed,
                  double min_life, double max_life)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     object_t *debris;
     int i, life;
     modifiers_t mods;
@@ -612,10 +612,10 @@ void Make_debris(clpos_t pos,
             max_life = options.shotLife;
         }
     }
-    if (min_speed * max_life > World.hypotenuse)
-        min_speed = World.hypotenuse / max_life;
-    if (max_speed * min_life > World.hypotenuse)
-        max_speed = World.hypotenuse / min_life;
+    if (min_speed * max_life > world->hypotenuse)
+        min_speed = world->hypotenuse / max_life;
+    if (max_speed * min_life > world->hypotenuse)
+        max_speed = world->hypotenuse / min_life;
     if (max_speed < min_speed)
         max_speed = min_speed;
 
@@ -656,9 +656,9 @@ void Make_debris(clpos_t pos,
         debris->mass = mass;
         debris->type = type;
         life = (int)(min_life + rfrac() * (max_life - min_life) + 1);
-        if (life * speed > World.hypotenuse)
+        if (life * speed > world->hypotenuse)
         {
-            life = (long)(World.hypotenuse / speed);
+            life = (long)(world->hypotenuse / speed);
         }
         debris->obj_life = life;
         debris->fuselife = life;
@@ -686,7 +686,7 @@ void Make_wreckage(clpos_t pos,
     int i, life, size;
     modifiers_t mods;
     double mass, sum_mass = 0.0;
-    world_t *world = &World;
+    world_t *world = &theWorld;
 
     if (!options.useWreckage)
         return;
@@ -707,10 +707,10 @@ void Make_wreckage(clpos_t pos,
         }
     }
 
-    if (min_speed * max_life > World.hypotenuse)
-        min_speed = World.hypotenuse / max_life;
-    if (max_speed * min_life > World.hypotenuse)
-        max_speed = World.hypotenuse / min_life;
+    if (min_speed * max_life > world->hypotenuse)
+        min_speed = world->hypotenuse / max_life;
+    if (max_speed * min_life > world->hypotenuse)
+        max_speed = world->hypotenuse / min_life;
     if (max_speed < min_speed)
         max_speed = min_speed;
 
@@ -763,9 +763,9 @@ void Make_wreckage(clpos_t pos,
 
         /* Lifespan  */
         life = (int)(min_life + rfrac() * (max_life - min_life) + 1);
-        if (life * speed > World.hypotenuse)
+        if (life * speed > world->hypotenuse)
         {
-            life = (long)(World.hypotenuse / speed);
+            life = (long)(world->hypotenuse / speed);
         }
         wreckage->obj_life = life;
         wreckage->fuselife = wreckage->obj_life;

@@ -83,29 +83,29 @@ static int in_range_acd(
      * Get the wrapped coordinates straight 
      */
     if (Wrap_play(world)) {
-        if (ABS(p2x - p1x) > World.width / 2) {
+        if (ABS(p2x - p1x) > world->width / 2) {
             if (p1x < p2x)
-                p1x += World.width;
+                p1x += world->width;
             else
-                p2x += World.width;
+                p2x += world->width;
         }
-        if (ABS(p2y - p1y) > World.height / 2) {
+        if (ABS(p2y - p1y) > world->height / 2) {
             if (p1y < p2y)
-                p1y += World.height;
+                p1y += world->height;
             else
-                p2y += World.height;
+                p2y += world->height;
         }
-        if (ABS(q2x - q1x) > World.width / 2) {
+        if (ABS(q2x - q1x) > world->width / 2) {
             if (q1x < q2x)
-                q1x += World.width;
+                q1x += world->width;
             else
-                q2x += World.width;
+                q2x += world->width;
         }
-        if (ABS(q2y - q1y) > World.height / 2) {
+        if (ABS(q2y - q1y) > world->height / 2) {
             if (q1y < q2y)
-                q1y += World.height;
+                q1y += world->height;
             else
-                q2y += World.height;
+                q2y += world->height;
         }
     }
 
@@ -147,7 +147,7 @@ static int in_range_acd(
     int q1cx, int q1cy, int q2cx, int q2cy,
     int r)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     long fac1, fac2;
     double tmin, fminx, fminy;
     long top, bot;
@@ -167,57 +167,57 @@ static int in_range_acd(
      */
     if (Wrap_play(world))
     {
-        if ((mpx = (ABS(p2x - p1x) > World.width / 2)))
+        if ((mpx = (ABS(p2x - p1x) > world->width / 2)))
         {
             if (p1x > p2x)
-                p1x -= World.width;
+                p1x -= world->width;
             else
-                p2x -= World.width;
+                p2x -= world->width;
         }
-        if ((mpy = (ABS(p2y - p1y) > World.height / 2)))
+        if ((mpy = (ABS(p2y - p1y) > world->height / 2)))
         {
             if (p1y > p2y)
-                p1y -= World.height;
+                p1y -= world->height;
             else
-                p2y -= World.height;
+                p2y -= world->height;
         }
-        if ((mqx = (ABS(q2x - q1x) > World.width / 2)))
+        if ((mqx = (ABS(q2x - q1x) > world->width / 2)))
         {
             if (q1x > q2x)
-                q1x -= World.width;
+                q1x -= world->width;
             else
-                q2x -= World.width;
+                q2x -= world->width;
         }
-        if ((mqy = (ABS(q2y - q1y) > World.height / 2)))
+        if ((mqy = (ABS(q2y - q1y) > world->height / 2)))
         {
             if (q1y > q2y)
-                q1y -= World.height;
+                q1y -= world->height;
             else
-                q2y -= World.height;
+                q2y -= world->height;
         }
 
-        if (mpx && !mqx && (q2x > World.width / 2 || q1x > World.width / 2))
+        if (mpx && !mqx && (q2x > world->width / 2 || q1x > world->width / 2))
         {
-            q1x -= World.width;
-            q2x -= World.width;
+            q1x -= world->width;
+            q2x -= world->width;
         }
 
-        if (mqy && !mpy && (q2y > World.height / 2 || q1y > World.height / 2))
+        if (mqy && !mpy && (q2y > world->height / 2 || q1y > world->height / 2))
         {
-            q1y -= World.height;
-            q2y -= World.height;
+            q1y -= world->height;
+            q2y -= world->height;
         }
 
-        if (mqx && !mpx && (p2x > World.width / 2 || p1x > World.width / 2))
+        if (mqx && !mpx && (p2x > world->width / 2 || p1x > world->width / 2))
         {
-            p1x -= World.width;
-            p2x -= World.width;
+            p1x -= world->width;
+            p2x -= world->width;
         }
 
-        if (mqy && !mpy && (p2y > World.height / 2 || p1y > World.height / 2))
+        if (mqy && !mpy && (p2y > world->height / 2 || p1y > world->height / 2))
         {
-            p1y -= World.height;
-            p2y -= World.height;
+            p1y -= world->height;
+            p2y -= world->height;
         }
     }
 
@@ -268,7 +268,7 @@ void Check_collision1(void)
 
 static void PlayerCollision(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int i, j;
     int sc, sc2;
     Player *pl;
@@ -489,7 +489,7 @@ static void PlayerCollision(void)
                         ball->ball_loose_ticks = 0;
                     ball->ball_owner = pl->id;
                     SET_BIT(ball->obj_status, GRAVITY);
-                    // World.treasures[ball->treasure].have = false;
+                    // world->treasures[ball->treasure].have = false;
                     ball->ball_treasure->have = false;
                     SET_BIT(pl->have, HAS_BALL);
                     pl->ball = nullptr;
@@ -517,7 +517,7 @@ static void PlayerCollision(void)
                     if (dist < mindist)
                     {
                         ballobject_t *ball = BALL_PTR(obj);
-                        // int bteam = World.treasures[ball->treasure].team;
+                        // int bteam = world->treasures[ball->treasure].team;
                         int bteam = ball->ball_treasure->team;
 
                         /*
@@ -553,7 +553,7 @@ static inline double collision_cost(double mass, double speed)
 
 static void PlayerObjectCollision(Player *pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int j, obj_count;
     int range, radius;
     object_t *obj, **obj_list;
@@ -722,7 +722,7 @@ static void PlayerObjectCollision(Player *pl)
 
 static void Player_collides_with_ball(Player *pl, ballobject_t *ball, int radius)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int sc;
     int killer;
 
@@ -788,6 +788,7 @@ static void Player_collides_with_ball(Player *pl, ballobject_t *ball, int radius
 
 static void Player_collides_with_item(Player *pl, itemobject_t *item)
 {
+    world_t *world = &theWorld;
     int old_have;
     enum Item item_index = (enum Item)item->item_type;
 
@@ -823,78 +824,78 @@ static void Player_collides_with_item(Player *pl, itemobject_t *item)
     {
     case ITEM_WIDEANGLE:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, WIDEANGLE_SHOT_PICKUP_SOUND);
         break;
     case ITEM_ECM:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, ECM_PICKUP_SOUND);
         break;
     case ITEM_ARMOR:
         pl->item[item_index]++;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_ARMOR);
         sound_play_sensors(pl->pos, ARMOR_PICKUP_SOUND);
         break;
     case ITEM_TRANSPORTER:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, TRANSPORTER_PICKUP_SOUND);
         break;
     case ITEM_MIRROR:
         pl->item[ITEM_MIRROR] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_MIRROR);
         sound_play_sensors(pl->pos, MIRROR_PICKUP_SOUND);
         break;
     case ITEM_DEFLECTOR:
         pl->item[ITEM_DEFLECTOR] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_DEFLECTOR);
         sound_play_sensors(pl->pos, DEFLECTOR_PICKUP_SOUND);
         break;
     case ITEM_HYPERJUMP:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, HYPERJUMP_PICKUP_SOUND);
         break;
     case ITEM_PHASING:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_PHASING_DEVICE);
         sound_play_sensors(pl->pos, PHASING_DEVICE_PICKUP_SOUND);
         break;
     case ITEM_SENSOR:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         pl->updateVisibility = true;
         sound_play_sensors(pl->pos, SENSOR_PACK_PICKUP_SOUND);
         break;
     case ITEM_AFTERBURNER:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_AFTERBURNER);
         sound_play_sensors(pl->pos, AFTERBURNER_PICKUP_SOUND);
         break;
     case ITEM_REARSHOT:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, BACK_SHOT_PICKUP_SOUND);
         break;
     case ITEM_MISSILE:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, ROCKET_PACK_PICKUP_SOUND);
         break;
     case ITEM_CLOAK:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_CLOAKING_DEVICE);
         pl->updateVisibility = true;
@@ -906,17 +907,17 @@ static void Player_collides_with_item(Player *pl, itemobject_t *item)
         break;
     case ITEM_MINE:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, MINE_PACK_PICKUP_SOUND);
         break;
     case ITEM_LASER:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, LASER_PICKUP_SOUND);
         break;
     case ITEM_EMERGENCY_THRUST:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_EMERGENCY_THRUST);
         sound_play_sensors(pl->pos, EMERGENCY_THRUST_PICKUP_SOUND);
@@ -924,7 +925,7 @@ static void Player_collides_with_item(Player *pl, itemobject_t *item)
     case ITEM_EMERGENCY_SHIELD:
         old_have = pl->have;
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_EMERGENCY_SHIELD);
         sound_play_sensors(pl->pos, EMERGENCY_SHIELD_PICKUP_SOUND);
@@ -939,21 +940,21 @@ static void Player_collides_with_item(Player *pl, itemobject_t *item)
         break;
     case ITEM_TRACTOR_BEAM:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_TRACTOR_BEAM);
         sound_play_sensors(pl->pos, TRACTOR_BEAM_PICKUP_SOUND);
         break;
     case ITEM_AUTOPILOT:
         pl->item[item_index] += item->item_count;
-        LIMIT(pl->item[item_index], 0, World.items[item_index].limit);
+        LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_AUTOPILOT);
         sound_play_sensors(pl->pos, AUTOPILOT_PICKUP_SOUND);
         break;
 
     case ITEM_TANK:
-        if (pl->fuel.num_tanks < World.items[ITEM_TANK].limit)
+        if (pl->fuel.num_tanks < world->items[ITEM_TANK].limit)
             Player_add_tank(pl, TANK_FUEL(pl->fuel.num_tanks + 1));
         else
             Player_add_fuel(pl, TANK_FUEL(MAX_TANKS));
@@ -1315,9 +1316,9 @@ static void AsteroidCollision(void)
         // TODO: rather do some wrap thing than using assert
         /*
      assert(OBJ_X_IN_BLOCKS(ast) >= 0);
-     assert(OBJ_X_IN_BLOCKS(ast) < World.x);
+     assert(OBJ_X_IN_BLOCKS(ast) < world->x);
      assert(OBJ_Y_IN_BLOCKS(ast) >= 0);
-     assert(OBJ_Y_IN_BLOCKS(ast) < World.y);
+     assert(OBJ_Y_IN_BLOCKS(ast) < world->y);
      */
 
         Cell_get_objects(ast->pos,
@@ -1440,7 +1441,7 @@ static void AsteroidCollision(void)
 /* do ball - object and ball - checkpoint collisions */
 static void BallCollision(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int i, j, obj_count;
     int ignored_object_types;
     object_t **obj_list;
@@ -1475,7 +1476,7 @@ static void BallCollision(void)
 
             if (!options.ballrace_connect || ball->id == owner->id)
             {
-                clpos_t cpos = Check_by_index(owner->check)->pos;
+                clpos_t cpos = Check_by_index(world, owner->check)->pos;
 
                 if (World_wrap_length(
                         world,
@@ -1525,7 +1526,7 @@ static void BallCollision(void)
                  * the treasure: */
                 {
                     ballobject_t *b2 = BALL_PTR(obj);
-                    // if (World.treasures[b2->treasure].have)
+                    // if (world->treasures[b2->treasure].have)
                     if (b2->ball_treasure->have)
                         break;
 

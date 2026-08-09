@@ -99,7 +99,7 @@ static bool Asteroid_remove_from_list(wireobject_t *ast)
  */
 void Break_asteroid(wireobject_t *asteroid)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     double mass, mass3;
     double speed, speed1, speed2, radius;
     int dir, dir1, dir2, split_dir;
@@ -229,7 +229,7 @@ void Break_asteroid(wireobject_t *asteroid)
  */
 static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     wireobject_t *asteroid;
     double radius;
     int bx;
@@ -320,7 +320,7 @@ static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
  */
 static void Place_asteroid(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int place_count, dir, dist, i;
     int bx, by;
     unsigned space;
@@ -333,8 +333,8 @@ static void Place_asteroid(void)
     space |= FRICTION_BIT;
     /* would be dubious: space |= CANNON_BIT; */
 
-    if (Num_asteroidConcs() > 0 && rfrac() < options.asteroidConcentratorProb)
-        con = AsteroidConc_by_index((int)(rfrac() * Num_asteroidConcs()));
+    if (Num_asteroidConcs(world) > 0 && rfrac() < options.asteroidConcentratorProb)
+        con = AsteroidConc_by_index(world, (int)(rfrac() * Num_asteroidConcs(world)));
     else
         con = nullptr;
 
@@ -420,7 +420,7 @@ static void Asteroid_rotate(wireobject_t *wireobj)
  */
 void Asteroid_update(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int num;
     wireobject_t *asteroid;
 

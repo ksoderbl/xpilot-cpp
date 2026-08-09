@@ -57,12 +57,13 @@ void Wormhole_line_init(void)
 
 bool Verify_wormhole_consistency(void)
 {
+    world_t *world = &theWorld;
     int i, worm_in = 0, worm_out = 0, worm_norm = 0;
 
     /* count wormhole types */
-    for (i = 0; i < Num_wormholes(); i++)
+    for (i = 0; i < Num_wormholes(world); i++)
     {
-        int type = Wormhole_by_index(i)->type;
+        int type = Wormhole_by_index(world, i)->type;
 
         if (type == WORM_NORMAL)
             worm_norm++;
@@ -86,14 +87,14 @@ bool Verify_wormhole_consistency(void)
         int i;
 
         printf("Inconsistent use of wormholes, removing them.\n");
-        for (i = 0; i < World.NumWormholes; i++)
+        for (i = 0; i < world->NumWormholes; i++)
         {
-            wormhole_t *wormhole = Wormhole_by_index(i);
+            wormhole_t *wormhole = Wormhole_by_index(world, i);
             blkpos_t blkpos = Clpos_to_blkpos(wormhole->pos);
 
-            World.block[blkpos.bx][blkpos.by] = SPACE;
+            world->block[blkpos.bx][blkpos.by] = SPACE;
         }
-        World.NumWormholes = 0;
+        world->NumWormholes = 0;
     }
 
     return true;
@@ -112,8 +113,9 @@ hitmask_t Wormhole_hitmask(wormhole_t *wormhole)
 
 bool Wormhole_hitfunc(group_t *gp, const move_t *move)
 {
+    world_t *world = &theWorld;
     const object_t *obj = move->obj;
-    wormhole_t *wormhole = Wormhole_by_index(gp->mapobj_ind);
+    wormhole_t *wormhole = Wormhole_by_index(world, gp->mapobj_ind);
 
     if (wormhole->type == WORM_OUT)
         return false;
@@ -144,7 +146,7 @@ void Object_hits_wormhole2(object_t *obj, int ind)
  */
 static void Warp_balls(Player *pl, clpos_t dest)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
 
     /*
      * Don't connect to balls while warping.
@@ -229,13 +231,13 @@ static void Hyperjump(Player *pl)
 
 void Do_warp(Player *pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     position_t w;
     int wx, wy, proximity,
         nearestFront, nearestRear,
         proxFront, proxRear, j;
 
-    if (pl->wormHoleHit >= Num_wormholes())
+    if (pl->wormHoleHit >= Num_wormholes(world))
     {
         /* could happen if the player hit a temporary wormhole
            that was removed while the player was warping */
@@ -247,32 +249,32 @@ void Do_warp(Player *pl)
     {
         wormhole_t *wormhole = nullptr;
 
-        if (World.wormholes[pl->wormHoleHit].countdown > 0)
+        if (world->wormholes[pl->wormHoleHit].countdown > 0)
         {
-            j = World.wormholes[pl->wormHoleHit].lastdest;
+            j = world->wormholes[pl->wormHoleHit].lastdest;
         }
         else if (rfrac() < 0.10)
         {
             do
-                j = (int)(rfrac() * Num_wormholes());
-            while (World.wormholes[j].type == WORM_IN || pl->wormHoleHit == j || World.wormholes[j].temporary);
+                j = (int)(rfrac() * Num_wormholes(world));
+            while (world->wormholes[j].type == WORM_IN || pl->wormHoleHit == j || world->wormholes[j].temporary);
         }
         else
         {
             nearestFront = nearestRear = -1;
             proxFront = proxRear = 10000000;
 
-            for (j = 0; j < Num_wormholes(); j++)
+            for (j = 0; j < Num_wormholes(world); j++)
             {
-                wormhole = Wormhole_by_index(j);
+                wormhole = Wormhole_by_index(world, j);
 
                 if (j == pl->wormHoleHit || wormhole->type == WORM_IN || wormhole->temporary)
                     continue;
 
-                // wx = (wormhole->blk_pos.bx - World.wormholes[pl->wormHoleHit].blk_pos.bx) * BLOCK_SZ;
-                // wy = (wormhole->blk_pos.by - World.wormholes[pl->wormHoleHit].blk_pos.by) * BLOCK_SZ;
-                wx = CLICK_TO_PIXEL(wormhole->pos.cx - World.wormholes[pl->wormHoleHit].pos.cx);
-                wy = CLICK_TO_PIXEL(wormhole->pos.cy - World.wormholes[pl->wormHoleHit].pos.cy);
+                // wx = (wormhole->blk_pos.bx - world->wormholes[pl->wormHoleHit].blk_pos.bx) * BLOCK_SZ;
+                // wy = (wormhole->blk_pos.by - world->wormholes[pl->wormHoleHit].blk_pos.by) * BLOCK_SZ;
+                wx = CLICK_TO_PIXEL(wormhole->pos.cx - world->wormholes[pl->wormHoleHit].pos.cx);
+                wy = CLICK_TO_PIXEL(wormhole->pos.cy - world->wormholes[pl->wormHoleHit].pos.cy);
                 wx = WORLD_WRAP_DX(world, wx);
                 wy = WORLD_WRAP_DY(world, wy);
 
@@ -306,8 +308,8 @@ void Do_warp(Player *pl)
             {
                 do
                 {
-                    j = (int)(rfrac() * Num_wormholes());
-                    wormhole = Wormhole_by_index(j);
+                    j = (int)(rfrac() * Num_wormholes(world));
+                    wormhole = Wormhole_by_index(world, j);
                 } while (wormhole->type == WORM_IN || j == pl->wormHoleHit);
             }
 #endif /* RANDOM_REAR_WORM */
@@ -315,11 +317,11 @@ void Do_warp(Player *pl)
 
         sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
 
-        wormhole = Wormhole_by_index(j);
+        wormhole = Wormhole_by_index(world, j);
         warn("Wormhole index is %d", j);
 
-        // w.x = (World.wormholes[j].blk_pos.bx + 0.5) * BLOCK_SZ;
-        // w.y = (World.wormholes[j].blk_pos.by + 0.5) * BLOCK_SZ;
+        // w.x = (world->wormholes[j].blk_pos.bx + 0.5) * BLOCK_SZ;
+        // w.y = (world->wormholes[j].blk_pos.by + 0.5) * BLOCK_SZ;
         w.x = CLICK_TO_PIXEL(wormhole->pos.cx);
         w.y = CLICK_TO_PIXEL(wormhole->pos.cy);
     }
@@ -329,10 +331,10 @@ void Do_warp(Player *pl)
         int counter;
         for (counter = 20; counter > 0; counter--)
         {
-            w.x = (int)(rfrac() * World.width);
-            w.y = (int)(rfrac() * World.height);
-            if (BIT(1U << World.block[(int)(w.x / BLOCK_SZ)]
-                                     [(int)(w.y / BLOCK_SZ)],
+            w.x = (int)(rfrac() * world->width);
+            w.y = (int)(rfrac() * world->height);
+            if (BIT(1U << world->block[(int)(w.x / BLOCK_SZ)]
+                                      [(int)(w.y / BLOCK_SZ)],
                     SPACE_BLOCKS))
             {
                 break;
@@ -345,8 +347,8 @@ void Do_warp(Player *pl)
         }
         if (counter &&
             options.wormTime &&
-            BIT(1U << World.block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)], SPACE_BIT) &&
-            BIT(1U << World.block[(int)(w.x / BLOCK_SZ)][(int)(w.y / BLOCK_SZ)], SPACE_BIT))
+            BIT(1U << world->block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)], SPACE_BIT) &&
+            BIT(1U << world->block[(int)(w.x / BLOCK_SZ)][(int)(w.y / BLOCK_SZ)], SPACE_BIT))
         {
             add_temp_wormholes(OBJ_X_IN_BLOCKS(pl),
                                OBJ_Y_IN_BLOCKS(pl),
@@ -381,7 +383,7 @@ void Do_warp(Player *pl)
     //         ballpos.y = b->pix_pos.y + (w.y - pl->pix_pos.y);
     //         ballpos.x = WRAP_XPIXEL(ballpos.x);
     //         ballpos.y = WRAP_YPIXEL(ballpos.y);
-    //         if (ballpos.x < 0 || ballpos.x >= World.width || ballpos.y < 0 || ballpos.y >= World.height)
+    //         if (ballpos.x < 0 || ballpos.x >= world->width || ballpos.y < 0 || ballpos.y >= world->height)
     //         {
     //             b->obj_life = 0.0;
     //         }
@@ -415,10 +417,10 @@ void Do_warp(Player *pl)
 
     if ((j != pl->wormHoleHit) && (pl->wormHoleHit != -1))
     {
-        World.wormholes[pl->wormHoleHit].lastdest = j;
-        if (!World.wormholes[j].temporary)
+        world->wormholes[pl->wormHoleHit].lastdest = j;
+        if (!world->wormholes[j].temporary)
         {
-            World.wormholes[pl->wormHoleHit].countdown = (options.wormTime ? options.wormTime : WORMCOUNT);
+            world->wormholes[pl->wormHoleHit].countdown = (options.wormTime ? options.wormTime : WORMCOUNT);
         }
     }
 
@@ -446,15 +448,16 @@ void Object_finish_warp(object_t *obj)
 
 void add_temp_wormholes(int xin, int yin, int xout, int yout)
 {
+    world_t *world = &theWorld;
     wormhole_t inhole, outhole, *wwhtemp;
 
-    if ((wwhtemp = (wormhole_t *)realloc(World.wormholes,
-                                         (World.NumWormholes + 2) * sizeof(wormhole_t))) == nullptr)
+    if ((wwhtemp = (wormhole_t *)realloc(world->wormholes,
+                                         (world->NumWormholes + 2) * sizeof(wormhole_t))) == nullptr)
     {
         error("No memory for temporary wormholes.");
         return;
     }
-    World.wormholes = wwhtemp;
+    world->wormholes = wwhtemp;
 
     blkpos_t inblk, outblk;
 
@@ -467,41 +470,44 @@ void add_temp_wormholes(int xin, int yin, int xout, int yout)
     outhole.pos = Block_get_center_clpos(outblk);
 
     inhole.countdown = outhole.countdown = options.wormTime;
-    inhole.lastdest = World.NumWormholes + 1;
+    inhole.lastdest = world->NumWormholes + 1;
     inhole.temporary = outhole.temporary = 1;
     inhole.type = WORM_IN;
     outhole.type = WORM_OUT;
-    inhole.lastblock = World.block[xin][yin];
-    outhole.lastblock = World.block[xout][yout];
-    World.wormholes[World.NumWormholes] = inhole;
-    World.wormholes[World.NumWormholes + 1] = outhole;
-    World.block[xin][yin] = World.block[xout][yout] = WORMHOLE;
-    World.NumWormholes += 2;
+    inhole.lastblock = world->block[xin][yin];
+    outhole.lastblock = world->block[xout][yout];
+    world->wormholes[world->NumWormholes] = inhole;
+    world->wormholes[world->NumWormholes + 1] = outhole;
+    world->block[xin][yin] = world->block[xout][yout] = WORMHOLE;
+    world->NumWormholes += 2;
 }
 
 void remove_temp_wormhole(int ind)
 {
+    world_t *world = &theWorld;
     wormhole_t hole;
 
-    hole = World.wormholes[ind];
+    hole = world->wormholes[ind];
     blkpos_t blkpos = Clpos_to_blkpos(hole.pos);
-    World.block[blkpos.bx][blkpos.by] = hole.lastblock;
-    World.NumWormholes--;
-    if (ind != World.NumWormholes)
+    world->block[blkpos.bx][blkpos.by] = hole.lastblock;
+    world->NumWormholes--;
+    if (ind != world->NumWormholes)
     {
-        World.wormholes[ind] = World.wormholes[World.NumWormholes];
+        world->wormholes[ind] = world->wormholes[world->NumWormholes];
     }
-    World.wormholes = (wormhole_t *)realloc(World.wormholes,
-                                            World.NumWormholes * sizeof(wormhole_t));
+    world->wormholes = (wormhole_t *)realloc(world->wormholes,
+                                             world->NumWormholes * sizeof(wormhole_t));
 }
 
 // Returns pointer to wormhole at block with coordinates (x, y).
 // This assumes the map is block based.
 wormhole_t *wormholeXY(int x, int y)
 {
-    for (int i = 0; i < Num_wormholes(); i++)
+    world_t *world = &theWorld;
+
+    for (int i = 0; i < Num_wormholes(world); i++)
     {
-        wormhole_t *wormhole = Wormhole_by_index(i);
+        wormhole_t *wormhole = Wormhole_by_index(world, i);
         blkpos_t blk = Clpos_to_blkpos(wormhole->pos);
         if (blk.bx == x && blk.by == y)
             return wormhole;
@@ -513,9 +519,9 @@ wormhole_t *wormholeXY(int x, int y)
 // This function should be eventually removed.
 int Index_by_wormhole(world_t *world, wormhole_t *wormhole)
 {
-    for (int i = 0; i < Num_wormholes(); i++)
+    for (int i = 0; i < Num_wormholes(world); i++)
     {
-        if (Wormhole_by_index(i) == wormhole)
+        if (Wormhole_by_index(world, i) == wormhole)
             return i;
     }
     return NO_IND;

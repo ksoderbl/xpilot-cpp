@@ -36,7 +36,7 @@
 
 static void Compute_global_gravity(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int xi, yi, dx, dy;
     double xforce, yforce, strength, theta;
     vector_t *grav;
@@ -46,11 +46,11 @@ static void Compute_global_gravity(void)
         theta = (options.gravityAngle * PI) / 180.0;
         xforce = cos(theta) * options.gravity;
         yforce = sin(theta) * options.gravity;
-        for (xi = 0; xi < World.x; xi++)
+        for (xi = 0; xi < world->x; xi++)
         {
-            grav = World.gravity[xi];
+            grav = world->gravity[xi];
 
-            for (yi = 0; yi < World.y; yi++, grav++)
+            for (yi = 0; yi < world->y; yi++, grav++)
             {
                 grav->x = xforce;
                 grav->y = yforce;
@@ -59,13 +59,13 @@ static void Compute_global_gravity(void)
     }
     else
     {
-        for (xi = 0; xi < World.x; xi++)
+        for (xi = 0; xi < world->x; xi++)
         {
-            grav = World.gravity[xi];
+            grav = world->gravity[xi];
             dx = (xi - options.gravityPoint.x) * BLOCK_SZ;
             dx = WORLD_WRAP_DX(world, dx);
 
-            for (yi = 0; yi < World.y; yi++, grav++)
+            for (yi = 0; yi < world->y; yi++, grav++)
             {
                 dy = (yi - options.gravityPoint.y) * BLOCK_SZ;
                 dy = WORLD_WRAP_DY(world, dy);
@@ -116,7 +116,7 @@ static void Compute_grav_tab(vector_t grav_tab[GRAV_RANGE + 1][GRAV_RANGE + 1])
 
 static void Compute_local_gravity(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int xi, yi, i, gx, gy, ax, ay, dx, dy, gtype;
     int first_xi, last_xi, first_yi, last_yi, mod_xi, mod_yi;
     int min_xi, max_xi, min_yi, max_yi;
@@ -126,19 +126,19 @@ static void Compute_local_gravity(void)
     Compute_grav_tab(grav_tab);
 
     min_xi = 0;
-    max_xi = World.x - 1;
+    max_xi = world->x - 1;
     min_yi = 0;
-    max_yi = World.y - 1;
+    max_yi = world->y - 1;
     if (Wrap_play(world))
     {
-        min_xi -= MIN(GRAV_RANGE, World.x);
-        max_xi += MIN(GRAV_RANGE, World.x);
-        min_yi -= MIN(GRAV_RANGE, World.y);
-        max_yi += MIN(GRAV_RANGE, World.y);
+        min_xi -= MIN(GRAV_RANGE, world->x);
+        max_xi += MIN(GRAV_RANGE, world->x);
+        min_yi -= MIN(GRAV_RANGE, world->y);
+        max_yi += MIN(GRAV_RANGE, world->y);
     }
-    for (i = 0; i < Num_gravs(); i++)
+    for (i = 0; i < Num_gravs(world); i++)
     {
-        grav_t *g = Grav_by_index(i);
+        grav_t *g = Grav_by_index(world, i);
 
         gx = CLICK_TO_BLOCK(g->pos.cx);
         gy = CLICK_TO_BLOCK(g->pos.cy);
@@ -155,7 +155,7 @@ static void Compute_local_gravity(void)
 
         gtype = g->type;
 
-        mod_xi = (first_xi < 0) ? (first_xi + World.x) : first_xi;
+        mod_xi = (first_xi < 0) ? (first_xi + world->x) : first_xi;
         dx = gx - first_xi;
         fx = force;
         for (xi = first_xi; xi <= last_xi; xi++, dx--)
@@ -168,9 +168,9 @@ static void Compute_local_gravity(void)
             else
                 ax = dx;
 
-            mod_yi = (first_yi < 0) ? (first_yi + World.y) : first_yi;
+            mod_yi = (first_yi < 0) ? (first_yi + world->y) : first_yi;
             dy = gy - first_yi;
-            grav = &World.gravity[mod_xi][mod_yi];
+            grav = &world->gravity[mod_xi][mod_yi];
             tab = grav_tab[ax];
             fy = force;
             for (yi = first_yi; yi <= last_yi; yi++, dy--)
@@ -210,22 +210,22 @@ static void Compute_local_gravity(void)
                 }
                 mod_yi++;
                 grav++;
-                if (mod_yi >= World.y)
+                if (mod_yi >= world->y)
                 {
                     mod_yi = 0;
-                    grav = World.gravity[mod_xi];
+                    grav = world->gravity[mod_xi];
                 }
             }
-            if (++mod_xi >= World.x)
+            if (++mod_xi >= world->x)
                 mod_xi = 0;
         }
     }
     /*
-     * We may want to free the World.gravity memory here
+     * We may want to free the world->gravity memory here
      * as it is not used anywhere else.
-     * e.g.: free(World.gravity);
-     *       World.gravity = nullptr;
-     *       World.NumGravs = 0;
+     * e.g.: free(world->gravity);
+     *       world->gravity = nullptr;
+     *       world->NumGravs = 0;
      * Some of the more modern maps have quite a few gravity symbols.
      */
 }

@@ -160,6 +160,8 @@ static inline bool can_hit(group_t *gp, const move_t *move)
 
 void Object_crash2(object_t *obj, int crashtype, int mapobj_ind)
 {
+    world_t *world = &theWorld;
+
     switch (crashtype)
     {
 
@@ -181,7 +183,7 @@ void Object_crash2(object_t *obj, int crashtype, int mapobj_ind)
 
     case CrashTarget:
         obj->obj_life = 0.0;
-        Object_hits_target2(obj, Target_by_index(mapobj_ind), -1.0);
+        Object_hits_target2(obj, Target_by_index(world, mapobj_ind), -1.0);
         break;
 
     case CrashWall:
@@ -195,7 +197,7 @@ void Object_crash2(object_t *obj, int crashtype, int mapobj_ind)
 
     case CrashCannon:
         obj->obj_life = 0.0;
-        Object_hits_cannon2(obj, Cannon_by_index(mapobj_ind));
+        Object_hits_cannon2(obj, Cannon_by_index(world, mapobj_ind));
         break;
 
     case CrashUnknown:
@@ -206,6 +208,7 @@ void Object_crash2(object_t *obj, int crashtype, int mapobj_ind)
 
 void Player_crash2(Player *pl, int crashtype, int mapobj_ind, int pt)
 {
+    world_t *world = &theWorld;
     const char *howfmt = nullptr;
     const char *hudmsg = nullptr;
 
@@ -251,7 +254,7 @@ void Player_crash2(Player *pl, int crashtype, int mapobj_ind, int pt)
         howfmt = "%s smashed%s against a target";
         hudmsg = "[Target]";
         sound_play_sensors(pl->pos, PLAYER_HIT_WALL_SOUND);
-        Object_hits_target2(OBJ_PTR(pl), Target_by_index(mapobj_ind), -1.0);
+        Object_hits_target2(OBJ_PTR(pl), Target_by_index(world, mapobj_ind), -1.0);
         break;
 
     case CrashTreasure:
@@ -262,7 +265,7 @@ void Player_crash2(Player *pl, int crashtype, int mapobj_ind, int pt)
 
     case CrashCannon:
     {
-        cannon_t *cannon = Cannon_by_index(mapobj_ind);
+        cannon_t *cannon = Cannon_by_index(world, mapobj_ind);
 
         if (!Player_uses_emergency_shield(pl))
         {
@@ -410,7 +413,7 @@ void Player_crash2(Player *pl, int crashtype, int mapobj_ind, int pt)
 
     if (Player_is_killed(pl) && Get_Score(pl) < 0 && Player_is_robot(pl))
     {
-        pl->home_base = Base_by_index(0);
+        pl->home_base = Base_by_index(world, 0);
         Pick_startpos(pl);
     }
 }
@@ -475,7 +478,7 @@ static inline group_t *Get_group(int group_ind)
 
 static int Bounce_object(object_t *obj, move_t *move, int line, int point)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     double fx, fy;
     double c, s, wall_brake_factor = options.objectWallBounceBrakeFactor;
     int group, type;
@@ -515,7 +518,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
     if (type == TARGET)
     {
         obj->obj_life = 0.0;
-        Object_hits_target2(obj, Target_by_index(mapobj_ind), -1.0);
+        Object_hits_target2(obj, Target_by_index(world, mapobj_ind), -1.0);
         return 0;
     }
 
@@ -611,6 +614,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
 
 static void Bounce_player2(Player *pl, move_t *move, int line, int point)
 {
+    world_t *world = &theWorld;
     double c, s;   /* cosine and sine of 2 times line angle */
     double cl, sl; /* cosine and sine of line angle */
     double x, y, l2, l;
@@ -694,7 +698,7 @@ static void Bounce_player2(Player *pl, move_t *move, int line, int point)
 
         if (cost && type == TARGET)
             Object_hits_target2(OBJ_PTR(pl),
-                                Target_by_index(mapobj_ind),
+                                Target_by_index(world, mapobj_ind),
                                 cost / 4.0);
     }
 
@@ -827,6 +831,7 @@ static int Lines_check(int msx, int msy, int mdx, int mdy, int *mindone,
                        int chxy, const move_t *move, int *minline,
                        int *height)
 {
+    world_t *world = &theWorld;
     int lsx, lsy, ldx, ldy, temp, mirror, start, end, i, x, sy, ey, prod;
     int mbase = mdy >> 1, hit = 0;
 
@@ -862,13 +867,13 @@ static int Lines_check(int msx, int msy, int mdx, int mdy, int *mindone,
         lsy -= msy;
         if (chxy)
         {
-            lsx = CENTER_YCLICK(lsx);
-            lsy = CENTER_XCLICK(lsy);
+            lsx = CENTER_YCLICK(world, lsx);
+            lsy = CENTER_XCLICK(world, lsy);
         }
         else
         {
-            lsx = CENTER_XCLICK(lsx);
-            lsy = CENTER_YCLICK(lsy);
+            lsx = CENTER_XCLICK(world, lsx);
+            lsy = CENTER_YCLICK(world, lsy);
         }
         if (*height < lsy + (ldy < 0 ? ldy : 0))
             continue;
@@ -1094,7 +1099,7 @@ void Move_point(const move_t *move, struct collans *answer)
 static void Shape_move(const move_t *move, shape_t *s,
                        int dir, struct collans *answer)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int minline, mindone, minheight, minpoint;
     int i, block;
     int msx = move->start.cx, msy = move->start.cy;
@@ -1244,7 +1249,7 @@ static int Shape_morph(shape_t *shape1, int dir1,
                        int x, int y,
                        struct collans *myanswer)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     struct collans answer;
     int i, p, xo1, xo2, yo1, yo2, xn1, xn2, yn1, yn2, xp, yp, s, t;
     uint16_t *points;
@@ -1311,8 +1316,8 @@ static int Shape_morph(shape_t *shape1, int dir1,
 
         if (linet[p].group && (!can_hit(&groups[linet[p].group], &mv)))
             continue;
-        xp = CENTER_XCLICK(linet[p].start.cx - x);
-        yp = CENTER_YCLICK(linet[p].start.cy - y);
+        xp = CENTER_XCLICK(world, linet[p].start.cx - x);
+        yp = CENTER_YCLICK(world, linet[p].start.cy - y);
 
         /*pto1 = pts1[num_points - 1];
           ptn1 = pts2[num_points - 1];*/
@@ -1425,15 +1430,15 @@ static int Shape_morph(shape_t *shape1, int dir1,
  * otherwise (the number of the line is not used when writing this). */
 static int Away(move_t *move, int line)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int dx, dy, lsx, lsy;
     clvec_t delta_saved;
     struct collans ans;
 
     lsx = linet[line].start.cx - move->start.cx;
     lsy = linet[line].start.cy - move->start.cy;
-    lsx = CENTER_XCLICK(lsx);
-    lsy = CENTER_YCLICK(lsy);
+    lsx = CENTER_XCLICK(world, lsx);
+    lsy = CENTER_YCLICK(world, lsy);
 
     if (ABS(linet[line].delta.cx) >= ABS(linet[line].delta.cy))
     {
@@ -1487,18 +1492,18 @@ static int Away(move_t *move, int line)
  * be too efficient. */
 static int Clear_corner(move_t *move, object_t *obj, int l1, int l2)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int x, y, xm, ym;
     int l1sx, l2sx, l1sy, l2sy;
 
     l1sx = move->start.cx - linet[l1].start.cx;
     l1sy = move->start.cy - linet[l1].start.cy;
-    l1sx = CENTER_XCLICK(l1sx);
-    l1sy = CENTER_YCLICK(l1sy);
+    l1sx = CENTER_XCLICK(world, l1sx);
+    l1sy = CENTER_YCLICK(world, l1sy);
     l2sx = move->start.cx - linet[l2].start.cx;
     l2sy = move->start.cy - linet[l2].start.cy;
-    l2sx = CENTER_XCLICK(l2sx);
-    l2sy = CENTER_YCLICK(l2sy);
+    l2sx = CENTER_XCLICK(world, l2sx);
+    l2sy = CENTER_YCLICK(world, l2sy);
 
     for (;;)
     {
@@ -1594,7 +1599,7 @@ static int Clear_corner(move_t *move, object_t *obj, int l1, int l2)
 static int Shape_away(move_t *move, shape_t *s,
                       int dir, int line, struct collans *ans)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int dx, dy;
     clvec_t delta_saved;
 
@@ -1643,6 +1648,7 @@ static void store_4byte(int value, uint8_t **start, int *offset, int *sz)
 
 int Polys_to_client(uint8_t **start)
 {
+    world_t *world = &theWorld;
     int i, j, startx, starty, dx, dy;
     int *edges;
     int size, offset;
@@ -1714,10 +1720,10 @@ int Polys_to_client(uint8_t **start)
             starty = dy;
         }
     }
-    STORE1(Num_bases());
-    for (i = 0; i < Num_bases(); i++)
+    STORE1(Num_bases(world));
+    for (i = 0; i < Num_bases(world); i++)
     {
-        base_t *base = Base_by_index(i);
+        base_t *base = Base_by_index(world, i);
         if (base->team == TEAM_NOT_SET)
             STORE1(0);
         else
@@ -1726,19 +1732,19 @@ int Polys_to_client(uint8_t **start)
         STORE2(base->pos.cy >> CLICK_SHIFT);
         STORE1(base->dir);
     }
-    STORE2(Num_fuels());
-    for (i = 0; i < Num_fuels(); i++)
+    STORE2(Num_fuels(world));
+    for (i = 0; i < Num_fuels(world); i++)
     {
-        fuel_t *fs = Fuel_by_index(i);
+        fuel_t *fs = Fuel_by_index(world, i);
 
         STORE2(fs->pos.cx >> CLICK_SHIFT);
         STORE2(fs->pos.cy >> CLICK_SHIFT);
     }
-    STORE1(Num_checks());
-    for (i = 0; i < Num_checks(); i++)
+    STORE1(Num_checks(world));
+    for (i = 0; i < Num_checks(world); i++)
     {
-        STORE2(World.checks[i].pos.cx >> CLICK_SHIFT);
-        STORE2(World.checks[i].pos.cy >> CLICK_SHIFT);
+        STORE2(world->checks[i].pos.cx >> CLICK_SHIFT);
+        STORE2(world->checks[i].pos.cy >> CLICK_SHIFT);
     }
     return offset;
 }
@@ -1930,12 +1936,13 @@ static void insert_y(int block, int y)
 
 static void store_inside_line(int bx, int by, int ox, int oy, int dx, int dy)
 {
+    world_t *world = &theWorld;
     int block;
     struct templine *s;
 
     block = bx + mapx * by;
-    ox = CENTER_XCLICK(ox - bx * B_CLICKS);
-    oy = CENTER_YCLICK(oy - by * B_CLICKS);
+    ox = CENTER_XCLICK(world, ox - bx * B_CLICKS);
+    oy = CENTER_YCLICK(world, oy - by * B_CLICKS);
     if (oy >= 0 && oy < B_CLICKS && ox >= B_CLICKS)
         insert_y(block, oy);
     if (oy + dy >= 0 && oy + dy < B_CLICKS && ox + dx >= B_CLICKS)
@@ -2085,12 +2092,14 @@ static void allocate_inside(void)
 static double edge_distance(int bx, int by, int ox, int oy, int dx, int dy,
                             int *dir)
 {
-    int last_width = (World.cwidth - 1) % B_CLICKS + 1;
-    int last_height = (World.cheight - 1) % B_CLICKS + 1;
+    world_t *world = &theWorld;
+
+    int last_width = (world->cwidth - 1) % B_CLICKS + 1;
+    int last_height = (world->cheight - 1) % B_CLICKS + 1;
     double xdist, ydist, dist;
 
-    ox = CENTER_XCLICK(ox - bx * B_CLICKS);
-    oy = CENTER_YCLICK(oy - by * B_CLICKS);
+    ox = CENTER_XCLICK(world, ox - bx * B_CLICKS);
+    oy = CENTER_YCLICK(world, oy - by * B_CLICKS);
     if (dx > 0)
         xdist = ((bx == mapx - 1) ? last_width : B_CLICKS) - .5 - ox;
     else if (dx < 0)
@@ -2126,7 +2135,7 @@ static double edge_distance(int bx, int by, int ox, int oy, int dx, int dy,
 #define POSMOD(x, y) ((x) >= 0 ? (x) % (y) : ((x) + 1) % (y) + (y) - 1)
 static void Inside_init(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int dx, dy, bx, by, ox, oy, startx, starty;
     int i, j, num_points, minx = -1, miny = -1, polyInd, groupInd;
     int bx2, by2, maxx = -1, maxy = -1, dir;
@@ -2253,7 +2262,7 @@ static void Inside_init(void)
 #define NCLLIN (10 + 1)
 static void Distance_init(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int cx, cy;
     int *lineno, *dis;
     int lsx, lsy, ldx, ldy, temp, dist, n, i, bx, by, j, k;
@@ -2315,10 +2324,10 @@ static void Distance_init(void)
                 cx = bx * B_CLICKS + B_CLICKS / 2;
                 cy = by * B_CLICKS + B_CLICKS / 2;
                 base = (by * mapx + bx) * LINSIZE;
-                lsx = CENTER_XCLICK(linet[i].start.cx - cx);
+                lsx = CENTER_XCLICK(world, linet[i].start.cx - cx);
                 if (ABS(lsx) > 32767 + MAX_MOVE + B_CLICKS / 2)
                     continue;
-                lsy = CENTER_YCLICK(linet[i].start.cy - cy);
+                lsy = CENTER_YCLICK(world, linet[i].start.cy - cy);
                 if (ABS(lsy) > 32767 + MAX_MOVE + B_CLICKS / 2)
                     continue;
                 ldx = linet[i].delta.cx;
@@ -2478,6 +2487,7 @@ static void Distance_init(void)
 
 static void Corner_init(void)
 {
+    world_t *world = &theWorld;
     int bx, by, cx, cy, dist, i;
     uint16_t *ptr, *temp;
     int block, size = mapx * mapy;
@@ -2514,9 +2524,9 @@ static void Corner_init(void)
                 dist = blockline[block].distance + MAX_SHAPE_OFFSET + B_CLICKS / 2;
                 cx = bx * B_CLICKS + B_CLICKS / 2;
                 cy = by * B_CLICKS + B_CLICKS / 2;
-                if (ABS(CENTER_XCLICK(linet[i].start.cx - cx)) > dist)
+                if (ABS(CENTER_XCLICK(world, linet[i].start.cx - cx)) > dist)
                     continue;
-                if (ABS(CENTER_YCLICK(linet[i].start.cy - cy)) > dist)
+                if (ABS(CENTER_YCLICK(world, linet[i].start.cy - cy)) > dist)
                     continue;
                 temp[++temp[DISIZE * block] + DISIZE * block] = i;
                 size++;
@@ -2563,6 +2573,7 @@ void Ball_line_init2(void)
 
 static void Poly_to_lines(void)
 {
+    world_t *world = &theWorld;
     int i, np, j, startx, starty, dx, dy, group, *styleptr, style;
     int *edges;
 
@@ -2625,13 +2636,14 @@ static void Poly_to_lines(void)
 
 void Walls_init2(void)
 {
+    world_t *world = &theWorld;
     double x, y, l2;
     int i;
 
     warn("Walls_init2");
 
-    mapx = (World.cwidth + B_MASK) >> B_SHIFT;
-    mapy = (World.cheight + B_MASK) >> B_SHIFT;
+    mapx = (world->cwidth + B_MASK) >> B_SHIFT;
+    mapy = (world->cheight + B_MASK) >> B_SHIFT;
 
     warn("Walls_init2: calling Poly_to_lines");
 
@@ -2691,7 +2703,7 @@ void Walls_init2(void)
 
 static void Move_asteroid(object_t *obj)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     move_t mv;
     struct collans ans;
     wireobject_t *asteroid = (wireobject_t *)obj;
@@ -2752,7 +2764,7 @@ static void Move_asteroid(object_t *obj)
 
 static void Move_ball(object_t *obj)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     move_t mv;
     struct collans ans;
     int owner;
@@ -2822,7 +2834,7 @@ static void Move_ball(object_t *obj)
 
 void Move_object2(object_t *obj)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int t;
     move_t mv;
     struct collans ans;
@@ -2908,7 +2920,7 @@ bool in_move_player = false;
 
 void Move_player2(Player *pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     clpos_t pos;
     move_t mv;
     struct collans ans;
@@ -2933,7 +2945,7 @@ void Move_player2(Player *pl)
     /* Figure out which friction to use. */
     if (Player_is_phasing(pl))
         fric = friction;
-    else if (Num_frictionAreas() > 0)
+    else if (Num_frictionAreas(world) > 0)
     {
         int group, i;
 
@@ -2942,9 +2954,9 @@ void Move_player2(Player *pl)
         group = is_inside(pl->pos.cx, pl->pos.cy, NONBALL_BIT, (object_t *)pl);
         if (group != NO_GROUP)
         {
-            for (i = 0; i < Num_frictionAreas(); i++)
+            for (i = 0; i < Num_frictionAreas(world); i++)
             {
-                friction_area_t *fa = FrictionArea_by_index(i);
+                friction_area_t *fa = FrictionArea_by_index(world, i);
 
                 if (fa->group == group)
                 {
@@ -3044,14 +3056,14 @@ void Move_player2(Player *pl)
     pl->velocity = VECTOR_LENGTH(pl->vel);
     /* !@# Better than ignoring collisions after wall touch for players,
      * but might cause some erroneous hits */
-    pl->extmove.cx = CENTER_XCLICK(pl->pos.cx - pl->prevpos.cx);
-    pl->extmove.cy = CENTER_YCLICK(pl->pos.cy - pl->prevpos.cy);
+    pl->extmove.cx = CENTER_XCLICK(world, pl->pos.cx - pl->prevpos.cx);
+    pl->extmove.cy = CENTER_YCLICK(world, pl->pos.cy - pl->prevpos.cy);
     return;
 }
 
 void Turn_player2(Player *pl, bool push)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int new_dir = MOD2((int)(pl->float_dir + 0.5), ANGLE_RESOLUTION);
     int next_dir, sign, group;
     hitmask_t hitmask;
@@ -3187,8 +3199,8 @@ void Turn_player2(Player *pl, bool push)
             }
             else
             {
-                cx = CENTER_XCLICK(linet[ans.moved.cx].start.cx - pl->pos.cx);
-                cy = CENTER_YCLICK(linet[ans.moved.cx].start.cy - pl->pos.cy);
+                cx = CENTER_XCLICK(world, linet[ans.moved.cx].start.cx - pl->pos.cx);
+                cy = CENTER_YCLICK(world, linet[ans.moved.cx].start.cy - pl->pos.cy);
                 l = sqrt(cx * cx + cy * cy);
                 pc = cx / l;
                 ps = cy / l;

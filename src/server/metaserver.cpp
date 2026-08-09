@@ -167,7 +167,7 @@ void Meta_update(bool change)
 {
 #define GIVE_META_SERVER_A_HINT 180
 
-    world_t *world = &World;
+    world_t *world = &theWorld;
     char *string = meta_update_string, freebases[120];
     int i, num_active_players, active_per_team[MAX_TEAMS];
     size_t len, max_size;
@@ -224,7 +224,7 @@ void Meta_update(bool change)
 
         for (i = 0; i < MAX_TEAMS; i++)
         {
-            team_t *team = Team_by_index(i);
+            team_t *team = Team_by_index(world, i);
 
             if (i == options.robotTeam && options.reserveRobotTeam)
                 continue;
@@ -243,7 +243,7 @@ void Meta_update(bool change)
     }
     else
         snprintf(freebases, sizeof(freebases), "=%d",
-                 Num_bases() - num_active_players - login_in_progress);
+                 Num_bases(world) - num_active_players - login_in_progress);
 
     snprintf(string, max_size,
              "add server %s\n"
@@ -263,9 +263,9 @@ void Meta_update(bool change)
              "add queue %d\n"
              "add sound %s\n",
              Server.host, num_active_players,
-             META_VERSION, World.name, World.x, World.y, World.author,
-             Num_bases(), FPS, options.contactPort,
-             game_mode, World.NumTeamBases, freebases,
+             META_VERSION, world->name, world->x, world->y, world->author,
+             Num_bases(world), FPS, options.contactPort,
+             game_mode, world->NumTeamBases, freebases,
              Timing(world) ? 1 : 0,
              (long)(time(nullptr) - serverStartTime),
              queue_length, options.sound ? "yes" : "no");

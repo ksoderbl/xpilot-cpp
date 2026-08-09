@@ -92,9 +92,11 @@ void Make_treasure_ball(treasure_t *t)
 
 void Treasure_init(void)
 {
+    world_t *world = &theWorld;
     int i;
-    for (i = 0; i < Num_treasures(); i++)
-        Make_treasure_ball(Treasure_by_index(i));
+
+    for (i = 0; i < Num_treasures(world); i++)
+        Make_treasure_ball(Treasure_by_index(world, i));
 }
 
 /*
@@ -139,7 +141,7 @@ void Ball_is_destroyed2(ballobject_t *ball)
 // Punish_team1 = xpilot 4.5.5, Punish_team2 = NG
 static int Punish_team2(Player *pl, treasure_t *td, clpos_t pos)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     double win_score = 0.0, lose_score = 0.0;
     int i, win_team_members = 0, lose_team_members = 0;
     bool somebody = false;
@@ -189,7 +191,7 @@ static int Punish_team2(Player *pl, treasure_t *td, clpos_t pos)
 
 void Ball_hits_goal2(ballobject_t *ball, group_t *gp)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     Player *owner;
     treasure_t *td;
     int i;
@@ -225,7 +227,7 @@ void Ball_hits_goal2(ballobject_t *ball, group_t *gp)
     if (gp->team == owner->team &&
         td->team != options.specialBallTeam)
     {
-        treasure_t *tt = Treasure_by_index(gp->mapobj_ind);
+        treasure_t *tt = Treasure_by_index(world, gp->mapobj_ind);
 
         Ball_is_destroyed2(ball);
 
@@ -254,7 +256,7 @@ void Ball_hits_goal2(ballobject_t *ball, group_t *gp)
         for (i = 0; i < MAX_TEAMS; i++)
         {
 
-            if (World.teams[i].NumMembers == 0 || i == owner->team)
+            if (world->teams[i].NumMembers == 0 || i == owner->team)
                 continue;
             opponent_teams++;
             td->team = i; /* give ball to team that has to be punished*/
@@ -263,20 +265,20 @@ void Ball_hits_goal2(ballobject_t *ball, group_t *gp)
                 CLR_BIT(ball->obj_status, RECREATE);
                 /*undo treasure counts from Punish_team so we don't
                   have to touch that function and possibly break it*/
-                World.teams[owner->team].TreasuresDestroyed--;
-                World.teams[td->team].TreasuresLeft++;
+                world->teams[owner->team].TreasuresDestroyed--;
+                world->teams[td->team].TreasuresLeft++;
             }
         }
         td->team = options.specialBallTeam;
-        World.teams[options.specialBallTeam].TreasuresLeft--;
-        World.teams[owner->team].TreasuresDestroyed++;
-        World.teams[options.specialBallTeam].TreasuresDestroyed++;
+        world->teams[options.specialBallTeam].TreasuresLeft--;
+        world->teams[owner->team].TreasuresDestroyed++;
+        world->teams[options.specialBallTeam].TreasuresDestroyed++;
 
         if (!opponent_teams)
         {
             SET_BIT(ball->obj_status, RECREATE);
             if (Punish_team2(owner, td, ball->pos))
-                World.teams[options.specialBallTeam].TreasuresLeft++;
+                world->teams[options.specialBallTeam].TreasuresLeft++;
         }
         return;
     }
@@ -290,8 +292,8 @@ void Ball_hits_goal2(ballobject_t *ball, group_t *gp)
             CLR_BIT(ball->obj_status, RECREATE);
             /*undo treasure counts from Punish_team so we don't
               have to touch that function and possibly break it*/
-            World.teams[td->team].TreasuresLeft++;
-            World.teams[options.specialBallTeam].TreasuresLeft--;
+            world->teams[td->team].TreasuresLeft++;
+            world->teams[options.specialBallTeam].TreasuresLeft--;
         }
 
         td->team = options.specialBallTeam;
@@ -402,7 +404,7 @@ void Ball_is_destroyed1(ballobject_t *ball)
 // pos = ball position
 int Punish_team1(Player *pl, treasure_t *td, clpos_t pos)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     static char msg[MSG_LEN];
     int i;
     int win_score = 0, lose_score = 0;
@@ -450,8 +452,8 @@ int Punish_team1(Player *pl, treasure_t *td, clpos_t pos)
     }
 
     td->destroyed++;
-    World.teams[td->team].TreasuresLeft--;
-    World.teams[pl->team].TreasuresDestroyed++;
+    world->teams[td->team].TreasuresLeft--;
+    world->teams[pl->team].TreasuresDestroyed++;
 
     sc = 3 * Rate(win_score, lose_score);
     por = (sc * lose_team_members) / (2 * win_team_members + 1);
@@ -487,9 +489,11 @@ int Punish_team1(Player *pl, treasure_t *td, clpos_t pos)
 // This assumes the map is block based.
 treasure_t *treasureXY(int x, int y)
 {
-    for (int i = 0; i < Num_treasures(); i++)
+    world_t *world = &theWorld;
+
+    for (int i = 0; i < Num_treasures(world); i++)
     {
-        treasure_t *treasure = Treasure_by_index(i);
+        treasure_t *treasure = Treasure_by_index(world, i);
         blkpos_t blk = Clpos_to_blkpos(treasure->pos);
         if (blk.bx == x && blk.by == y)
             return treasure;

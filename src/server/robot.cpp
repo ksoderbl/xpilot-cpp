@@ -653,7 +653,7 @@ static void Robot_talks(enum robot_talk_t says_what,
 
 static void Robot_create(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     Player *robot;
     robot_t *rob;
     int i, num, most_used, least_used;
@@ -736,8 +736,8 @@ static void Robot_create(void)
     {
         robot->team = Pick_team(PL_TYPE_ROBOT);
         // warn("Robot team: %d", robot->team);
-        World.teams[robot->team].NumMembers++;
-        World.teams[robot->team].NumRobots++;
+        world->teams[robot->team].NumMembers++;
+        world->teams[robot->team].NumRobots++;
     }
     if (robot->mychar != 'W')
         robot->mychar = 'R';
@@ -947,7 +947,7 @@ static void Robot_play(Player *pl)
  */
 static bool Robot_check_leave(Player *pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     bool leave = false;
 
     if (!options.robotsLeave)
@@ -1016,7 +1016,7 @@ static void Tank_play(Player *pl)
  */
 void Robot_update(bool tick)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     Player *pl;
     int i;
     static int new_robot_delay;
@@ -1027,12 +1027,12 @@ void Robot_update(bool tick)
     num_playing_ships = num_any_ships - NumPseudoPlayers;
     if ((num_playing_ships < options.maxRobots ||
          NumRobots < options.minRobots) &&
-        num_playing_ships < Num_bases() &&
+        num_playing_ships < Num_bases(world) &&
         num_any_ships < NUM_IDS &&
         NumRobots < MAX_ROBOTS &&
         !(Team_play(world) &&
           options.restrictRobots &&
-          World.teams[options.robotTeam].NumMembers >= World.teams[options.robotTeam].NumBases))
+          world->teams[options.robotTeam].NumMembers >= world->teams[options.robotTeam].NumBases))
     {
 
         if (++new_robot_delay >= ROBOT_CREATE_DELAY)
@@ -1046,7 +1046,7 @@ void Robot_update(bool tick)
         new_robot_delay = 0;
         if (NumRobots > 0)
         {
-            if ((num_playing_ships > Num_bases()) || (num_any_ships > NUM_IDS) || (num_playing_ships > options.maxRobots && NumRobots > options.minRobots))
+            if ((num_playing_ships > Num_bases(world)) || (num_any_ships > NUM_IDS) || (num_playing_ships > options.maxRobots && NumRobots > options.minRobots))
                 Robot_delete(nullptr, false);
         }
     }

@@ -56,7 +56,7 @@
 
 void Fire_laser(Player *pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
 
     if (pl->item[ITEM_LASER] > pl->num_pulses && pl->velocity < PULSE_SPEED - PULSE_SAMPLE_DISTANCE)
     {
@@ -185,7 +185,7 @@ static void Laser_pulse_find_victims(
     double midx,
     double midy)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int i;
     Player *vic;
     double dist;
@@ -261,7 +261,7 @@ static void Laser_pulse_hits_player(
     victim_t *victim,
     bool *refl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     Player *pl;
     Player *vicpl;
     // int ind;
@@ -398,7 +398,7 @@ static int Laser_pulse_check_player_hits(
     vicbuf_t *vicbuf,
     bool *refl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int j;
     int hits = 0;
     /* int                        ind; */
@@ -456,7 +456,7 @@ static void Laser_pulse_get_object_list(
     double midx,
     double midy)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     double dx, dy;
     int range;
     object_t *ast;
@@ -488,7 +488,7 @@ static void Laser_pulse_get_object_list(
  */
 void Laser_pulse_collision(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int i;
     int p;
     int max, hits;
@@ -551,7 +551,7 @@ void Laser_pulse_collision(void)
             x1 = CLICK_TO_FLOAT(pulse->pos.cx);
             y1 = CLICK_TO_FLOAT(pulse->pos.cy);
 
-            if (x1 < 0 || x1 >= World.width || y1 < 0 || y1 >= World.height)
+            if (x1 < 0 || x1 >= world->width || y1 < 0 || y1 >= world->height)
             {
                 pulse->len = 0;
                 continue;
@@ -562,9 +562,9 @@ void Laser_pulse_collision(void)
                 pulse->len = (int)(pulse->len * (0 - x1) / (x2 - x1));
                 x2 = x1 + tcos(pulse->dir) * pulse->len;
             }
-            if (x2 >= World.width)
+            if (x2 >= world->width)
             {
-                pulse->len = (int)(pulse->len * (World.width - 1 - x1) / (x2 - x1));
+                pulse->len = (int)(pulse->len * (world->width - 1 - x1) / (x2 - x1));
                 x2 = x1 + tcos(pulse->dir) * pulse->len;
             }
             y2 = y1 + tsin(pulse->dir) * pulse->len;
@@ -574,9 +574,9 @@ void Laser_pulse_collision(void)
                 x2 = x1 + tcos(pulse->dir) * pulse->len;
                 y2 = y1 + tsin(pulse->dir) * pulse->len;
             }
-            if (y2 > World.height)
+            if (y2 > world->height)
             {
-                pulse->len = (int)(pulse->len * (World.height - 1 - y1) / (y2 - y1));
+                pulse->len = (int)(pulse->len * (world->height - 1 - y1) / (y2 - y1));
                 x2 = x1 + tcos(pulse->dir) * pulse->len;
                 y2 = y1 + tsin(pulse->dir) * pulse->len;
             }
@@ -651,23 +651,23 @@ void Laser_pulse_collision(void)
             {
                 if (x < 0)
                 {
-                    x += World.width;
-                    x1 += World.width;
+                    x += world->width;
+                    x1 += world->width;
                 }
-                else if (x >= World.width)
+                else if (x >= world->width)
                 {
-                    x -= World.width;
-                    x1 -= World.width;
+                    x -= world->width;
+                    x1 -= world->width;
                 }
                 if (y < 0)
                 {
-                    y += World.height;
-                    y1 += World.height;
+                    y += world->height;
+                    y1 += world->height;
                 }
-                else if (y >= World.height)
+                else if (y >= world->height)
                 {
-                    y -= World.height;
-                    y1 -= World.height;
+                    y -= world->height;
+                    y1 -= world->height;
                 }
             }
 
@@ -727,7 +727,7 @@ void Laser_pulse_collision(void)
  */
 void Laser_pulse_hits_player2(Player *pl, pulseobject_t *pulse)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     Player *kp = Player_by_id(pulse->id);
     cannon_t *cannon = nullptr;
 

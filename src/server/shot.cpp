@@ -121,7 +121,7 @@ void Place_moving_mine(Player *pl)
 void Place_general_mine(int id, int team, int status,
                         clpos_t pos, vector_t vel, modifiers_t mods)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int used, i, minis;
     double life, drain, mass;
     vector_t mv;
@@ -300,7 +300,7 @@ void Place_general_mine(int id, int team, int status,
  */
 void Detonate_mines(Player *pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int i, closest = -1;
     double dist, min_dist = world->hypotenuse + 1;
 
@@ -503,7 +503,7 @@ void Fire_general_shot(int id, int team, bool cannon,
                        clpos_t pos, int type, int dir,
                        modifiers_t mods, int target_id)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int used, fuse = 0, lock = 0, status = GRAVITY, i, ldir, minis;
     int pl_range, pl_radius, rack_no = 0, racks_left = 0, r, on_this_rack = 0;
     int side = 0, fired = 0;
@@ -1139,7 +1139,7 @@ void Fire_normal_shots(Player *pl)
 /* Removes shot from array */
 void Delete_shot(int ind)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     object_t *shot = Obj[ind]; /* Used when swapping places */
     ballobject_t *ball;
     itemobject_t *item;
@@ -1356,7 +1356,7 @@ void Delete_shot(int ind)
             break;
         }
 
-        World.items[item->item_type].num--;
+        world->items[item->item_type].num--;
 
         break;
 
@@ -1454,7 +1454,7 @@ void Delete_shot(int ind)
  */
 void Update_connector_force(ballobject_t *ball)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     Player *pl = Player_by_id(ball->id);
     vector_t D;
     double length, length2, force, ratio, accell, cosine;
@@ -1542,7 +1542,7 @@ void Update_torpedo(torpobject_t *torp)
 
 void Update_missile(missileobject_t *missile)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     Player *pl;
     int angle, theta;
     double range = 0.0, acc = SMART_SHOT_ACC;
@@ -1730,15 +1730,15 @@ void Update_missile(missileobject_t *missile)
             if (Wrap_play(world))
             {
                 if (xi < 0)
-                    xi += World.x;
-                else if (xi >= World.x)
-                    xi -= World.x;
+                    xi += world->x;
+                else if (xi >= world->x)
+                    xi -= world->x;
                 if (yi < 0)
-                    yi += World.y;
-                else if (yi >= World.y)
-                    yi -= World.y;
+                    yi += world->y;
+                else if (yi >= world->y)
+                    yi -= world->y;
             }
-            if (xi < 0 || xi >= World.x || yi < 0 || yi >= World.y)
+            if (xi < 0 || xi >= world->x || yi < 0 || yi >= world->y)
                 break;
 
             /*
@@ -1746,7 +1746,7 @@ void Update_missile(missileobject_t *missile)
              * Someone please write polygon based missile navigation code.
              */
 
-            switch (World.block[xi][yi])
+            switch (world->block[xi][yi])
             {
             case TARGET:
             case TREASURE:
@@ -1783,9 +1783,9 @@ void Update_missile(missileobject_t *missile)
                 xt = xi + sur[(i + j + si) & 7].dx;
                 yt = yi + sur[(i + j + si) & 7].dy;
 
-                if (xt >= 0 && xt < World.x && yt >= 0 && yt < World.y)
+                if (xt >= 0 && xt < world->x && yt >= 0 && yt < world->y)
                 {
-                    switch (World.block[xt][yt])
+                    switch (world->block[xt][yt])
                     {
                     case TARGET:
                     case TREASURE:

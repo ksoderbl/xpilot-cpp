@@ -32,44 +32,44 @@
  * Two macros for edge wrap of x and y coordinates measured in pixels.
  * Note that the correction needed shouldn't ever be bigger than one mapsize.
  */
-#define WRAP_XPIXEL(world, x_)              \
-    (Wrap_play(world)                       \
-         ? ((x_) < 0                        \
-                ? (x_) + World.width        \
-                : ((x_) >= World.width      \
-                       ? (x_) - World.width \
-                       : (x_)))             \
+#define WRAP_XPIXEL(world, x_)               \
+    (Wrap_play(world)                        \
+         ? ((x_) < 0                         \
+                ? (x_) + world->width        \
+                : ((x_) >= world->width      \
+                       ? (x_) - world->width \
+                       : (x_)))              \
          : (x_))
 
-#define WRAP_YPIXEL(world, y_)               \
-    (Wrap_play(world)                        \
-         ? ((y_) < 0                         \
-                ? (y_) + World.height        \
-                : ((y_) >= World.height      \
-                       ? (y_) - World.height \
-                       : (y_)))              \
+#define WRAP_YPIXEL(world, y_)                \
+    (Wrap_play(world)                         \
+         ? ((y_) < 0                          \
+                ? (y_) + world->height        \
+                : ((y_) >= world->height      \
+                       ? (y_) - world->height \
+                       : (y_)))               \
          : (y_))
 
 /*
  * Two macros for edge wrap of x and y coordinates measured in map blocks.
  * Note that the correction needed shouldn't ever be bigger than one mapsize.
  */
-#define WORLD_WRAP_XBLOCK(world, x_)    \
-    (Wrap_play(world)                   \
-         ? ((x_) < 0                    \
-                ? (x_) + World.x        \
-                : ((x_) >= World.x      \
-                       ? (x_) - World.x \
-                       : (x_)))         \
+#define WORLD_WRAP_XBLOCK(world, x_)     \
+    (Wrap_play(world)                    \
+         ? ((x_) < 0                     \
+                ? (x_) + world->x        \
+                : ((x_) >= world->x      \
+                       ? (x_) - world->x \
+                       : (x_)))          \
          : (x_))
 
-#define WORLD_WRAP_YBLOCK(world, y_)    \
-    (Wrap_play(world)                   \
-         ? ((y_) < 0                    \
-                ? (y_) + World.y        \
-                : ((y_) >= World.y      \
-                       ? (y_) - World.y \
-                       : (y_)))         \
+#define WORLD_WRAP_YBLOCK(world, y_)     \
+    (Wrap_play(world)                    \
+         ? ((y_) < 0                     \
+                ? (y_) + world->y        \
+                : ((y_) >= world->y      \
+                       ? (y_) - world->y \
+                       : (y_)))          \
          : (y_))
 
 /*

@@ -27,13 +27,14 @@
 void Object_position_set_clpos(object_t *obj, clpos_t pos)
 {
 #if 1
+    world_t *world = &theWorld;
     if (pos.cx < 0)
     {
         printf("BUG!  Illegal object position (cx < 0): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (pos.cx >= World.cwidth)
+    if (pos.cx >= world->cwidth)
     {
         printf("BUG!  Illegal object position (cx > world width): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
@@ -45,7 +46,7 @@ void Object_position_set_clpos(object_t *obj, clpos_t pos)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (pos.cy >= World.cheight)
+    if (pos.cy >= world->cheight)
     {
         printf("BUG!  Illegal object position (cy > world height): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
@@ -69,13 +70,14 @@ void Player_position_restore(Player *pl)
 void Player_position_set_clicks(Player *pl, clpos_t pos)
 {
 #if 1
+    world_t *world = &theWorld;
     if (pos.cx < 0)
     {
         printf("BUG!  Illegal player position (cx < 0): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (pos.cx >= World.cwidth)
+    if (pos.cx >= world->cwidth)
     {
         printf("BUG!  Illegal player position (cx > world width): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
@@ -87,7 +89,7 @@ void Player_position_set_clicks(Player *pl, clpos_t pos)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (pos.cy >= World.cheight)
+    if (pos.cy >= world->cheight)
     {
         printf("BUG!  Illegal player position (cy > world height): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
@@ -105,11 +107,12 @@ void Player_position_init_clpos(Player *pl, clpos_t pos)
 
 void Player_position_limit(Player *pl)
 {
+    world_t *world = &theWorld;
     clpos_t pos = pl->pos;
     clpos_t opos = pos;
 
-    LIMIT(pos.cx, 0, World.cwidth - 1);
-    LIMIT(pos.cy, 0, World.cheight - 1);
+    LIMIT(pos.cx, 0, world->cwidth - 1);
+    LIMIT(pos.cy, 0, world->cheight - 1);
     if (pos.cx != opos.cx || pos.cy != opos.cy)
     {
         Player_position_set_clicks(pl, pos);

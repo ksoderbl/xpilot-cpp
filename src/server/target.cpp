@@ -58,12 +58,12 @@
  */
 void Target_update(void)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int i, j;
 
-    for (i = 0; i < Num_targets(); i++)
+    for (i = 0; i < Num_targets(world); i++)
     {
-        target_t *targ = Target_by_index(i);
+        target_t *targ = Target_by_index(world, i);
 
         if (targ->dead_ticks > 0)
         {
@@ -77,9 +77,9 @@ void Target_update(void)
 
                 if (options.targetSync)
                 {
-                    for (j = 0; j < Num_targets(); j++)
+                    for (j = 0; j < Num_targets(world); j++)
                     {
-                        target_t *t = Target_by_index(j);
+                        target_t *t = Target_by_index(world, j);
 
                         if (t->team == targ->team)
                         {
@@ -117,7 +117,7 @@ void Target_update(void)
 
 void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int j;
     Player *kp;
     double win_score = 0.0, lose_score = 0.0, drainfactor;
@@ -234,9 +234,9 @@ void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
     }
     if (somebody)
     {
-        for (j = 0; j < Num_targets(); j++)
+        for (j = 0; j < Num_targets(world); j++)
         {
-            target_t *t = Target_by_index(j);
+            target_t *t = Target_by_index(world, j);
 
             if (t->team == targ->team)
             {
@@ -272,7 +272,7 @@ void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
 
 void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int j, sc, por;
     int win_score = 0,
         lose_score = 0;
@@ -395,9 +395,9 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
     }
     if (somebody)
     {
-        for (j = 0; j < Num_targets(); j++)
+        for (j = 0; j < Num_targets(world); j++)
         {
-            target_t *t = Target_by_index(j);
+            target_t *t = Target_by_index(world, j);
 
             if (t->team == targ->team)
             {
@@ -493,6 +493,7 @@ void Target_set_hitmask(int group, target_t *targ)
 
 void Target_init(void)
 {
+    world_t *world = &theWorld;
     int groupInd = 0;
 
     // for (group = 0; group < num_groups; group++)
@@ -501,7 +502,7 @@ void Target_init(void)
         // group_t *gp = groupptr_by_id(group);
 
         if (gp.type == TARGET)
-            Target_set_hitmask(groupInd, Target_by_index(gp.mapobj_ind));
+            Target_set_hitmask(groupInd, Target_by_index(world, gp.mapobj_ind));
         groupInd++;
     }
 
@@ -540,9 +541,10 @@ void World_remove_target(world_t *world, target_t *targ)
 // This assumes the map is block based.
 target_t *targetXY(int x, int y)
 {
-    for (int i = 0; i < Num_targets(); i++)
+    world_t *world = &theWorld;
+    for (int i = 0; i < Num_targets(world); i++)
     {
-        target_t *target = Target_by_index(i);
+        target_t *target = Target_by_index(world, i);
         blkpos_t blk = Clpos_to_blkpos(target->pos);
         if (blk.bx == x && blk.by == y)
             return target;

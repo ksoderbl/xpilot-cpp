@@ -85,7 +85,7 @@ bool team_dead(int team)
  */
 static bool Player_lock_allowed(Player *pl, Player *lock_pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
 
     /* we can never lock on ourselves, nor on nullptr. */
     if (lock_pl == nullptr || pl->id == lock_pl->id)
@@ -158,7 +158,7 @@ static void Player_lock_next_or_prev(Player *pl, int key)
 
 int Player_lock_closest(Player *pl, bool next)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int i;
     double dist = 0.0, best, l;
     Player *lock_pl = nullptr, *new_pl = nullptr;
@@ -214,7 +214,7 @@ int Player_lock_closest(Player *pl, bool next)
 
 static void Player_change_home(Player *pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     Player *pl2 = nullptr;
     base_t *base2 = nullptr;
     base_t *enemybase = nullptr;
@@ -224,9 +224,9 @@ static void Player_change_home(Player *pl)
     int xi = OBJ_X_IN_BLOCKS(pl);
     int yi = OBJ_Y_IN_BLOCKS(pl);
 
-    for (i = 0; i < Num_bases(); i++)
+    for (i = 0; i < Num_bases(world); i++)
     {
-        base_t *base = Base_by_index(i);
+        base_t *base = Base_by_index(world, i);
         blkpos_t blkpos = Clpos_to_blkpos(base->pos);
 
         if (blkpos.bx == xi && blkpos.by == yi)
@@ -326,7 +326,7 @@ static void Player_change_home(Player *pl)
 
 static void Player_refuel(Player *pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int i;
     double l, dist = 1e19;
 
@@ -334,9 +334,9 @@ static void Player_refuel(Player *pl)
         return;
 
     CLR_BIT(pl->used, USES_REFUEL);
-    for (i = 0; i < Num_fuels(); i++)
+    for (i = 0; i < Num_fuels(world); i++)
     {
-        fuel_t *fs = Fuel_by_index(i);
+        fuel_t *fs = Fuel_by_index(world, i);
 
         l = World_wrap_length(
             world,
@@ -355,7 +355,7 @@ static void Player_refuel(Player *pl)
 /* Repair target or possibly something else. */
 static void Player_repair(Player *pl)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int i;
     double l, dist = 1e19;
 
@@ -363,9 +363,9 @@ static void Player_repair(Player *pl)
         return;
 
     CLR_BIT(pl->used, USES_REPAIR);
-    for (i = 0; i < Num_targets(); i++)
+    for (i = 0; i < Num_targets(world); i++)
     {
-        target_t *targ = Target_by_index(i);
+        target_t *targ = Target_by_index(world, i);
 
         if (targ->team == pl->team && targ->dead_ticks <= 0)
         {
@@ -387,7 +387,7 @@ static void Player_toggle_pause(Player *pl)
 {
     warn("Player_toggle_pause: %s", pl->name.c_str());
 
-    world_t *world = &World;
+    world_t *world = &theWorld;
 
     enum pausetype
     {
@@ -407,8 +407,8 @@ static void Player_toggle_pause(Player *pl)
     {
         xi = OBJ_X_IN_BLOCKS(pl);
         yi = OBJ_Y_IN_BLOCKS(pl);
-        j = CLICK_TO_BLOCK(World.bases[pl->home_base->ind].pos.cx);
-        k = CLICK_TO_BLOCK(World.bases[pl->home_base->ind].pos.cy);
+        j = CLICK_TO_BLOCK(world->bases[pl->home_base->ind].pos.cx);
+        k = CLICK_TO_BLOCK(world->bases[pl->home_base->ind].pos.cy);
 
         base_t *base = pl->home_base;
 
@@ -551,7 +551,7 @@ static void Player_toggle_compass(Player *pl)
 
 void Pause_player(Player *pl, bool on)
 {
-    world_t *world = &World;
+    world_t *world = &theWorld;
     int i;
 
     warn("Pause_player: player = %s, on = %d", pl->name.c_str(), on);
@@ -563,7 +563,7 @@ void Pause_player(Player *pl, bool on)
     if (on && !Player_is_paused(pl))
     { /* Turn pause mode on */
         if (pl->team != TEAM_NOT_SET)
-            World.teams[pl->team].SwapperId = NO_ID;
+            world->teams[pl->team].SwapperId = NO_ID;
         /* Minimum pause time is 10 seconds at gamespeed 12. */
         pl->pause_count = 10 * 12;
         /* player might have paused when recovering */
