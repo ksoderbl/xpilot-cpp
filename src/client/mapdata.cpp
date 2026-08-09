@@ -173,7 +173,7 @@ int Mapdata_setup(const std::string &urlstr)
     /* reset path so that it points to the package file name */
     *ptr = '.';
 
-    warn("Downloading map data from %s to %s.", urlstr, path);
+    warn("Downloading map data from %s to %s.", urlstr.c_str(), path);
 
     if (!Mapdata_download(&url, path))
     {
