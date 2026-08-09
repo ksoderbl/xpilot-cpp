@@ -69,6 +69,10 @@ void ShipShape::rotateShip(int dir)
     {
         currentDirCacheHits++;
         // warn("rotate, dir is already %d", dir);
+        double cacheHitRatio = 100.0 * (double)currentDirCacheHits / (double)(currentDirCacheMisses + currentDirCacheHits);
+        warn("rotate, dir is already %d (cache hits %d/%d =  %f%%)",
+             dir, currentDirCacheHits, (currentDirCacheMisses + currentDirCacheHits), cacheHitRatio);
+
         return;
     }
 
@@ -143,6 +147,15 @@ void ShipShape::rotateShip(int dir)
         pos = this->r_light[i][0];
         pos = My_rotate_clpos(pos, dir);
         rightLightClickPositions.push_back(pos);
+    }
+
+    // missile racks
+    missileRackClickPositions.clear();
+    for (int i = 0; i < this->num_m_rack; i++)
+    {
+        pos = this->m_rack[i][0];
+        pos = My_rotate_clpos(pos, dir);
+        missileRackClickPositions.push_back(pos);
     }
 
     currentDir = dir;
@@ -1456,13 +1469,16 @@ void Convert_ship_2_string(ShipShape *ship, char *buf, char *ext,
 
         strcpy(buf, "(SH:");
         buflen = strlen(&buf[0]);
-        for (i = 0; i < ship->num_points && i < MAX_SHIP_PTS; i++)
+        std::vector<clpos_t> &points = ship->getPoints(0);
+        for (i = 0; i < points.size() && i < MAX_SHIP_PTS; i++)
         {
-            position_t pt = Ship_get_point_position(ship, i, 0);
+            // position_t pt = Ship_get_point_position(ship, i, 0);
+            position_t pt = clpos2position(points[i]);
 
             sprintf(&buf[buflen], " %d,%d", (int)pt.x, (int)pt.y);
             buflen += strlen(&buf[buflen]);
         }
+
         // engine = Ship_get_engine_position(ship, 0);
         engine = clpos2position(ship->getEngineClickPosition(0));
         m_gun = clpos2position(ship->getMainGunClickPosition(0));
@@ -1642,9 +1658,10 @@ void Convert_ship_2_string(ShipShape *ship, char *buf, char *ext,
         {
             strcpy(&tmp[0], "(MR:");
             tmplen = strlen(&tmp[0]);
-            for (i = 0; i < ship->num_m_rack && i < MAX_RACK_PTS; i++)
+            std::vector<clpos_t> m_racks = ship->getMissileRackClickPositions(0);
+            for (i = 0; i < m_racks.size() && i < MAX_RACK_PTS; i++)
             {
-                position_t m_rack = Ship_get_m_rack_position(ship, i, 0);
+                position_t m_rack = clpos2position(m_racks[i]);
 
                 sprintf(&tmp[tmplen], " %d,%d",
                         (int)m_rack.x, (int)m_rack.y);
@@ -1768,9 +1785,11 @@ int Calculate_shield_radius(ShipShape *ship)
     int i;
     int radius2, max_radius = 0;
 
-    for (i = 0; i < ship->num_points; i++)
+    std::vector<clpos_t> &points = ship->getPoints(0);
+
+    for (auto &pos : points)
     {
-        position_t pti = Ship_get_point_position(ship, i, 0);
+        position_t pti = clpos2position(pos);
         radius2 = (int)(sqr(pti.x) + sqr(pti.y));
         if (radius2 > max_radius)
             max_radius = radius2;

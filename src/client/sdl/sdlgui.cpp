@@ -1520,10 +1520,13 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
             glLineStipple(3, 0xAAAA);
         }
 
+        std::vector<clpos_t> &p = ship->getPoints(dir);
         glBegin(GL_LINE_LOOP);
-        for (i = 0; i < ship->num_points; i++)
+        // for (i = 0; i < ship->num_points; i++)
+        for (clpos_t &pos : p)
         {
-            point = Ship_get_point_position(ship, i, dir);
+            // point = Ship_get_point_position(ship, i, dir);
+            point = clpos2position(pos);
             glVertex2d(x + point.x, y + point.y);
         }
         glEnd();

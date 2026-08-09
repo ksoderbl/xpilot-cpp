@@ -106,6 +106,11 @@ public:
         rotateShip(dir);
         return rightLightClickPositions;
     }
+    std::vector<clpos_t> &getMissileRackClickPositions(int dir)
+    {
+        rotateShip(dir);
+        return missileRackClickPositions;
+    }
 
     void rotateShip(int dir);
 
@@ -118,6 +123,7 @@ public:
     std::vector<clpos_t> rightRearGunClickPositions;
     std::vector<clpos_t> leftLightClickPositions;
     std::vector<clpos_t> rightLightClickPositions;
+    std::vector<clpos_t> missileRackClickPositions;
 
     int currentDir = -1; // current rotated direction
     int currentDirCacheHits = 0;
@@ -211,17 +217,17 @@ Ship_get_point_clpos(ShipShape *ship, int i, int dir)
 // {
 //     return ship->r_light[l][dir];
 // }
-static inline clpos_t
-Ship_get_m_rack_clpos(ShipShape *ship, int rack, int dir)
-{
-    return ship->m_rack[rack][dir];
-}
+// static inline clpos_t
+// Ship_get_m_rack_clpos(ShipShape *ship, int rack, int dir)
+// {
+//     return ship->m_rack[rack][dir];
+// }
 
-static inline position_t
-Ship_get_point_position(ShipShape *ship, int i, int dir)
-{
-    return clpos2position(Ship_get_point_clpos(ship, i, dir));
-}
+// static inline position_t
+// Ship_get_point_position(ShipShape *ship, int i, int dir)
+// {
+//     return clpos2position(Ship_get_point_clpos(ship, i, dir));
+// }
 // static inline position_t
 // Ship_get_engine_position(ShipShape *ship, int dir)
 // {
@@ -262,8 +268,8 @@ Ship_get_point_position(ShipShape *ship, int i, int dir)
 // {
 //     return clpos2position(Ship_get_r_light_clpos(ship, l, dir));
 // }
-static inline position_t
-Ship_get_m_rack_position(ShipShape *ship, int rack, int dir)
-{
-    return clpos2position(Ship_get_m_rack_clpos(ship, rack, dir));
-}
+// static inline position_t
+// Ship_get_m_rack_position(ShipShape *ship, int rack, int dir)
+// {
+//     return clpos2position(Ship_get_m_rack_clpos(ship, rack, dir));
+// }

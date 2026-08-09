@@ -1019,12 +1019,24 @@ void Fire_general_shot(int id, int team, bool cannon,
                     rack_no = 0;
                 r = 0;
             }
-            m_rack = Ship_get_m_rack_clpos(pl->ship, rack_no, pl->dir);
+            // m_rack = Ship_get_m_rack_clpos(pl->ship, rack_no, pl->dir);
+            std::vector<clpos_t> &m_racks = pl->ship->getMissileRackClickPositions(pl->dir);
+
+            if (m_racks.size() <= rack_no)
+            {
+                warn("Fire_general_shot: m_racks.size() = %d, rack_no = %d", m_racks.size(), rack_no);
+                continue;
+            }
+            m_rack = m_racks[rack_no];
+
             shotpos.cx += m_rack.cx;
             shotpos.cy += m_rack.cy;
             /*side = CLICK_TO_PIXEL(pl->ship->m_rack[rack_no][0].cy);*/
-            side = CLICK_TO_PIXEL(
-                Ship_get_m_rack_clpos(pl->ship, rack_no, 0).cy);
+            // side = CLICK_TO_PIXEL(
+            //     Ship_get_m_rack_clpos(pl->ship, rack_no, 0).cy);
+            // TODO: this can be optimized, the rotation to dir = 0 is a bit stupid here.
+            std::vector<clpos_t> &m_racks0 = pl->ship->getMissileRackClickPositions(0);
+            side = CLICK_TO_PIXEL(m_racks0[rack_no].cy);
         }
         shotpos = World_wrap_clpos(world, shotpos);
         Object_position_init_clpos(shot, shotpos);
