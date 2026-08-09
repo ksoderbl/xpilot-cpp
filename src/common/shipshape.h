@@ -59,6 +59,13 @@ public:
     ShipShape();
     ~ShipShape();
 
+    std::vector<position_t> &getPoints(int dir);
+
+    void rotate(int dir);
+
+    std::vector<position_t> points;
+    int currentDir; // current rotated direction
+
     clpos_t *pts[MAX_SHIP_PTS];       /* the shape rotated many ways */
     int num_points;                   /* total points in object */
     clpos_t engine[ANGLE_RESOLUTION]; /* Engine position */

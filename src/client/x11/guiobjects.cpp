@@ -21,6 +21,9 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include <string>
+#include <vector>
+
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
@@ -939,21 +942,25 @@ static void Set_drawstyle_dashed(int ship_color)
 static int set_shipshape(int world_x, int world_y,
                          int dir, ShipShape *ship, XPoint *points)
 {
-    int cnt;
+    int cnt = 0;
     position_t ship_point_pos;
     XPoint *xpts = points;
     int window_x;
     int window_y;
     double x, y;
 
-    for (cnt = 0; cnt < ship->num_points; cnt++)
+    std::vector<position_t> &p = ship->getPoints(dir);
+
+    // for (cnt = 0; cnt < ship->num_points; cnt++)
+    for (position_t &ship_point_pos : p)
     {
-        ship_point_pos = Ship_get_point_position(ship, cnt, dir);
+        // ship_point_pos = Ship_get_point_position(ship, cnt, dir);
         window_x = X(world_x + ship_point_pos.x);
         window_y = Y(world_y + ship_point_pos.y);
         xpts->x = WINSCALE(window_x);
         xpts->y = WINSCALE(window_y);
         xpts++;
+        cnt++;
     }
     points[cnt++] = points[0];
 

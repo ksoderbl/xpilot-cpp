@@ -44,11 +44,52 @@ static bool shapeLimits = true;
 ShipShape::ShipShape()
 {
     warn("ShipShape::ShipShape: Hello world!");
+    // Assume rotate never gets negative angles like this.
+    currentDir = INT_MIN;
 }
 
 ShipShape::~ShipShape()
 {
     warn("ShipShape::~ShipShape: Goodbye cruel world!");
+}
+
+std::vector<position_t> &ShipShape::getPoints(int dir)
+{
+    // warn("getPoints, dir %d", dir);
+    rotate(dir);
+    return points;
+}
+
+static inline position_t My_rotate(position_t pos, int dir)
+{
+    position_t ret;
+
+    ret.x = tcos(dir) * pos.x - tsin(dir) * pos.y;
+    ret.y = tsin(dir) * pos.x + tcos(dir) * pos.y;
+
+    return ret;
+}
+
+void ShipShape::rotate(int dir)
+{
+    if (dir == currentDir)
+    {
+        // warn("rotate, dir is already %d", dir);
+        return;
+    }
+
+    points.clear();
+
+    for (int i = 0; i < this->num_points; i++)
+    {
+        position_t pos = Ship_get_point_position(this, i, 0);
+        pos = My_rotate(pos, dir);
+        points.push_back(pos);
+    }
+
+    currentDir = dir;
+
+    // warn("rotate, new dir is %d", dir);
 }
 
 static int Get_shape_keyword(char *keyw);
