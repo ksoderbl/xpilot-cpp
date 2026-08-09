@@ -211,9 +211,6 @@ int World_place_base(world_t *world, clpos_t pos, int dir, int team, int order)
 
     t.dir = dir;
 
-    warn("world->rules = %p", world->rules);
-    warn("world->rules.mode = %lx", world->rules.mode);
-
     if (Team_play(world))
     {
         if (team < 0 || team >= MAX_TEAMS)

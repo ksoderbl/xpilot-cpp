@@ -49,6 +49,14 @@ static void tagstart(void *data, const char *el, const char **attr)
 {
     world_t *world = &theWorld;
     static double scale = 1;
+    // The CLICK value specifies the amount of clicks in a pixel.
+    // The xp2 maps assume that CLICK equals 64, which is the standard xpilot values for CLICK.
+    // However, to use other values for CLICK, e.g. 256, the values in the xp2 map have to
+    // be scaled to the currently used value of CLICK.
+    static double clMultiplier = CLICK / 64.0;
+
+    // warn("clMultiplier = %f", clMultiplier);
+
     static bool xptag = false;
 
     if (!strcasecmp(el, "XPilotMap"))
@@ -196,9 +204,9 @@ static void tagstart(void *data, const char *el, const char **attr)
         while (*attr)
         {
             if (!strcasecmp(*attr, "x"))
-                pos.cx = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cx = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             if (!strcasecmp(*attr, "y"))
-                pos.cy = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cy = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             if (!strcasecmp(*attr, "style"))
                 style = P_get_poly_id(*(attr + 1));
             attr += 2;
@@ -231,9 +239,9 @@ static void tagstart(void *data, const char *el, const char **attr)
         while (*attr)
         {
             if (!strcasecmp(*attr, "x"))
-                pos.cx = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cx = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             if (!strcasecmp(*attr, "y"))
-                pos.cy = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cy = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             attr += 2;
         }
         World_place_check(world, pos, -1);
@@ -250,9 +258,9 @@ static void tagstart(void *data, const char *el, const char **attr)
             if (!strcasecmp(*attr, "team"))
                 team = atoi(*(attr + 1));
             if (!strcasecmp(*attr, "x"))
-                pos.cx = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cx = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             if (!strcasecmp(*attr, "y"))
-                pos.cy = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cy = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             attr += 2;
         }
         World_place_fuel(world, pos, team);
@@ -270,9 +278,9 @@ static void tagstart(void *data, const char *el, const char **attr)
             if (!strcasecmp(*attr, "team"))
                 team = atoi(*(attr + 1));
             if (!strcasecmp(*attr, "x"))
-                pos.cx = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cx = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             if (!strcasecmp(*attr, "y"))
-                pos.cy = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cy = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             if (!strcasecmp(*attr, "dir"))
                 dir = atoi(*(attr + 1));
             if (!strcasecmp(*attr, "order"))
@@ -300,9 +308,9 @@ static void tagstart(void *data, const char *el, const char **attr)
             if (!strcasecmp(*attr, "team"))
                 team = atoi(*(attr + 1));
             if (!strcasecmp(*attr, "x"))
-                pos.cx = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cx = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             if (!strcasecmp(*attr, "y"))
-                pos.cy = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cy = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             if (!strcasecmp(*attr, "style"))
                 style = P_get_poly_id(*(attr + 1));
             attr += 2;
@@ -321,9 +329,9 @@ static void tagstart(void *data, const char *el, const char **attr)
             if (!strcasecmp(*attr, "team"))
                 team = atoi(*(attr + 1));
             else if (!strcasecmp(*attr, "x"))
-                pos.cx = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cx = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             else if (!strcasecmp(*attr, "y"))
-                pos.cy = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cy = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             else if (!strcasecmp(*attr, "dir"))
                 dir = atoi(*(attr + 1));
             attr += 2;
@@ -344,9 +352,9 @@ static void tagstart(void *data, const char *el, const char **attr)
             if (!strcasecmp(*attr, "team"))
                 team = atoi(*(attr + 1));
             else if (!strcasecmp(*attr, "x"))
-                pos.cx = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cx = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             else if (!strcasecmp(*attr, "y"))
-                pos.cy = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cy = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             attr += 2;
         }
         target_ind = World_place_target(world, pos, team);
@@ -361,9 +369,9 @@ static void tagstart(void *data, const char *el, const char **attr)
         while (*attr)
         {
             if (!strcasecmp(*attr, "x"))
-                pos.cx = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cx = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             if (!strcasecmp(*attr, "y"))
-                pos.cy = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cy = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             attr += 2;
         }
         World_place_item_concentrator(world, pos);
@@ -377,9 +385,9 @@ static void tagstart(void *data, const char *el, const char **attr)
         while (*attr)
         {
             if (!strcasecmp(*attr, "x"))
-                pos.cx = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cx = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             if (!strcasecmp(*attr, "y"))
-                pos.cy = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cy = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             attr += 2;
         }
         World_place_asteroid_concentrator(world, pos);
@@ -395,9 +403,9 @@ static void tagstart(void *data, const char *el, const char **attr)
         while (*attr)
         {
             if (!strcasecmp(*attr, "x"))
-                pos.cx = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cx = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             else if (!strcasecmp(*attr, "y"))
-                pos.cy = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cy = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             else if (!strcasecmp(*attr, "force"))
                 force = atof(*(attr + 1));
             else if (!strcasecmp(*attr, "type"))
@@ -442,9 +450,9 @@ static void tagstart(void *data, const char *el, const char **attr)
         while (*attr)
         {
             if (!strcasecmp(*attr, "x"))
-                pos.cx = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cx = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             else if (!strcasecmp(*attr, "y"))
-                pos.cy = (click_t)(atoi(*(attr + 1)) * scale);
+                pos.cy = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             else if (!strcasecmp(*attr, "type"))
             {
                 const char *s = *(attr + 1);
@@ -517,9 +525,9 @@ static void tagstart(void *data, const char *el, const char **attr)
         while (*attr)
         {
             if (!strcasecmp(*attr, "x"))
-                offset.cx = (click_t)(atoi(*(attr + 1)) * scale);
+                offset.cx = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             if (!strcasecmp(*attr, "y"))
-                offset.cy = (click_t)(atoi(*(attr + 1)) * scale);
+                offset.cy = (click_t)(atoi(*(attr + 1)) * scale * clMultiplier);
             if (!strcasecmp(*attr, "style"))
                 edgestyle = P_get_edge_id(*(attr + 1));
             attr += 2;
