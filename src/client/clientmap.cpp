@@ -1023,7 +1023,7 @@ homebase_t *Homebase_by_id(int id)
 
 int Handle_leave(int id)
 {
-    other_t *other;
+    Other *other;
     char msg[MSG_LEN];
 
     if ((other = Other_by_id(id)) != nullptr)
@@ -1060,7 +1060,7 @@ int Handle_player(int id, int player_team, int mychar,
 {
     // warn("Handle_player: id %d, nick %s, myself = %d", id, nick_name, myself);
 
-    other_t *other;
+    Other *other;
 
     if (BIT(Setup->mode, TEAM_PLAY) && (player_team < 0 || player_team >= MAX_TEAMS))
     {
@@ -1073,9 +1073,9 @@ int Handle_player(int id, int player_team, int mychar,
         {
             max_others += 5;
             if (num_others == 0)
-                Others = XMALLOC(other_t, max_others);
+                Others = XMALLOC(Other, max_others);
             else
-                Others = XREALLOC(other_t, Others, max_others);
+                Others = XREALLOC(Other, Others, max_others);
             if (Others == nullptr)
                 fatal("Not enough memory for player info");
             if (self != nullptr)
@@ -1098,7 +1098,7 @@ int Handle_player(int id, int player_team, int mychar,
         self = other;
     }
     // warn("Handle_player: self = %p", self);
-    memset(other, 0, sizeof(other_t));
+    memset(other, 0, sizeof(Other));
     other->id = id;
     other->team = player_team;
     other->mychar = mychar;
@@ -1117,7 +1117,7 @@ int Handle_player(int id, int player_team, int mychar,
 
 int Handle_team(int id, int pl_team)
 {
-    other_t *other;
+    Other *other;
 
     other = Other_by_id(id);
     if (other == nullptr)
@@ -1138,7 +1138,7 @@ int Handle_team(int id, int pl_team)
 
 int Handle_score(int id, double score, int life, int mychar, int alliance)
 {
-    other_t *other;
+    Other *other;
 
     if ((other = Other_by_id(id)) == nullptr)
     {
@@ -1166,7 +1166,7 @@ int Handle_team_score(int team, double score)
 
 int Handle_timing(int id, int check, int round, long tloops)
 {
-    other_t *other;
+    Other *other;
 
     if ((other = Other_by_id(id)) == nullptr)
     {
@@ -1813,7 +1813,7 @@ int Handle_message(char *msg)
 {
     int i;
     char ignoree[MAX_CHARS];
-    other_t *other;
+    Other *other;
 
     if (msg[strlen(msg) - 1] == ']')
     {

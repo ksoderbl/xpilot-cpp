@@ -68,7 +68,7 @@ static message_t *MsgBlock_pending = nullptr;
  */
 static bool Msg_is_from_our_team(const char *message, const char **msg2)
 {
-    other_t *other;
+    Other *other;
     static char buf[MAX_CHARS + 8];
     size_t bufstrlen, len;
     int i;

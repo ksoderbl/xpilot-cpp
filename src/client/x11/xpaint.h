@@ -101,7 +101,7 @@ static inline void SET_FG(unsigned long fg)
 
 #define MAX_LINE_WIDTH 4
 
-static inline void Check_name_string(other_t *other)
+static inline void Check_name_string(Other *other)
 {
     if (other && other->max_chars_in_names != maxCharsInNames)
     {

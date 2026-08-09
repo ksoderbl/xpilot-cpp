@@ -389,7 +389,7 @@ void Paint_score_start(void)
     Paint_clock(true);
 }
 
-void Paint_score_entry(int entry_num, other_t *other, bool is_team)
+void Paint_score_entry(int entry_num, Other *other, bool is_team)
 {
     static char raceStr[8], teamStr[4], lifeStr[8], label[MSG_LEN];
     static int lineSpacing = -1, firstLine;

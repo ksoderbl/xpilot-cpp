@@ -95,9 +95,9 @@ short lock_id;   /* Id of player locked onto */
 short lock_dir;  /* Direction of lock */
 short lock_dist; /* Distance to player locked onto */
 
-int eyesId;              /* Player we get frame updates for */
-other_t *eyes = nullptr; /* Player we get frame updates for */
-bool snooping;           /* are we snooping on someone else? */
+int eyesId;            /* Player we get frame updates for */
+Other *eyes = nullptr; /* Player we get frame updates for */
+bool snooping;         /* are we snooping on someone else? */
 int eyeTeam = TEAM_NOT_SET;
 
 short selfVisible; /* Are we alive and playing? */
@@ -313,7 +313,7 @@ void Client_cleanup(void)
     {
         for (i = 0; i < num_others; i++)
         {
-            other_t *other = &Others[i];
+            Other *other = &Others[i];
             Free_ship_shape(other->ship);
         }
         free(Others);

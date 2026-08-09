@@ -572,7 +572,7 @@ void Gui_paint_paused(int x, int y, int count)
 void Gui_paint_appearing(int x, int y, int id, int count)
 {
     const unsigned hsize = 3 * BLOCK_SZ / 7;
-    other_t *other = Other_by_id(id);
+    Other *other = Other_by_id(id);
     int color = other ? Life_color(other) : 0;
 
     if (!color)
@@ -702,7 +702,7 @@ static void Gui_paint_rounddelay(int x, int y)
 }
 
 /*  Here starts the paint functions for ships  (MM) */
-static void Gui_paint_ship_name(int x, int y, other_t *other)
+static void Gui_paint_ship_name(int x, int y, Other *other)
 {
     int shipNameColor = BLUE;
     FIND_NAME_WIDTH(other);
@@ -724,7 +724,7 @@ static void Gui_paint_ship_name(int x, int y, other_t *other)
     }
 }
 
-static int Gui_is_my_tank(other_t *other)
+static int Gui_is_my_tank(Other *other)
 {
     char tank_name[MAX_NAME_LEN];
 
@@ -742,7 +742,7 @@ static int Gui_is_my_tank(other_t *other)
     return 1;
 }
 
-static int Gui_calculate_ship_color(int id, other_t *other)
+static int Gui_calculate_ship_color(int id, Other *other)
 {
     int ship_color = WHITE;
 
@@ -964,7 +964,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
                     int shield, int deflector, int eshield)
 {
     int cnt, ship_color;
-    other_t *other;
+    Other *other;
     ShipShape *ship;
     XPoint points[64];
     int ship_shape;
@@ -1080,7 +1080,7 @@ int Team_color(int team)
     return 0;
 }
 
-int Life_color(other_t *other)
+int Life_color(Other *other)
 {
     int color = 0; /* default is 'no special color' */
 

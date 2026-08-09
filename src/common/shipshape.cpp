@@ -41,6 +41,16 @@ static bool debugShapeParsing = false;
 static bool verboseShapeParsing = true;
 static bool shapeLimits = true;
 
+ShipShape::ShipShape()
+{
+    warn("ShipShape::ShipShape: Hello world!");
+}
+
+ShipShape::~ShipShape()
+{
+    warn("ShipShape::~ShipShape: Goodbye cruel world!");
+}
+
 static int Get_shape_keyword(char *keyw);
 
 static void Ship_set_point_ipos(ShipShape *ship, int i, ipos_t pos)

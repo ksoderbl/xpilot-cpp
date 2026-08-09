@@ -173,7 +173,7 @@ static void print_help(const char *arg)
 
 static void ignorePlayer(const char *name, int level)
 {
-    other_t *other = Other_by_name(name, true);
+    Other *other = Other_by_name(name, true);
     char buf[64 + MAX_NAME_LEN];
 
     if (other != nullptr)
@@ -198,7 +198,7 @@ static void ignorePlayer(const char *name, int level)
 
 static void unignorePlayer(const char *name)
 {
-    other_t *other = Other_by_name(name, true);
+    Other *other = Other_by_name(name, true);
     char buf[64 + MAX_NAME_LEN];
 
     if (other != nullptr)

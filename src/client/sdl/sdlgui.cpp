@@ -473,7 +473,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
 {
     Uint32 color;
     homebase_t *base = nullptr;
-    other_t *other;
+    Other *other;
     bool do_basewarning = false;
 
     switch (type)
@@ -1217,7 +1217,7 @@ void Gui_paint_appearing(int x, int y, int id, int count)
     const unsigned hsize = 3 * BLOCK_SZ / 7;
     int minx, miny, maxx, maxy;
     Uint32 color;
-    other_t *other = Other_by_id(id);
+    Other *other = Other_by_id(id);
 
     /* Make a note we are doing the base warning */
     if (version >= 0x4F12)
@@ -1352,7 +1352,7 @@ int Life_color_by_life(int life)
     return color;
 }
 
-int Life_color(other_t *other)
+int Life_color(Other *other)
 {
     int color = 0; /* default is 'no special color' */
 
@@ -1361,7 +1361,7 @@ int Life_color(other_t *other)
     return color;
 }
 
-static int Gui_is_my_tank(other_t *other)
+static int Gui_is_my_tank(Other *other)
 {
     char tank_name[MAX_NAME_LEN];
 
@@ -1379,7 +1379,7 @@ static int Gui_is_my_tank(other_t *other)
     return 1;
 }
 
-static int Gui_calculate_ship_color(int id, other_t *other)
+static int Gui_calculate_ship_color(int id, Other *other)
 {
     Uint32 ship_color = whiteRGBA;
 
@@ -1436,7 +1436,7 @@ static int Gui_calculate_ship_color(int id, other_t *other)
     return ship_color;
 }
 
-static void Gui_paint_ship_name(int x, int y, other_t *other)
+static void Gui_paint_ship_name(int x, int y, Other *other)
 {
     int color = Life_color(other);
 
@@ -1468,7 +1468,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
     int i, color, img;
     ShipShape *ship;
     position_t point;
-    other_t *other;
+    Other *other;
 
     if (!(other = Other_by_id(id)))
         return;
@@ -1790,7 +1790,7 @@ void Paint_meters(void)
 
 static void Paint_lock(int hud_pos_x, int hud_pos_y)
 {
-    other_t *target;
+    Other *target;
     const int BORDER = 2;
 
     if ((target = Other_by_id(lock_id)) == nullptr)

@@ -170,7 +170,7 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos,
     char *tmpptr3 = 0;
     char *nextpos;
     char *filename;
-    other_t *player = nullptr;
+    Other *player = nullptr;
 
     while (!done && (c = *inbuf++) != '\0')
     {

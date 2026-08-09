@@ -27,8 +27,9 @@
 
 #include "shipshape.h"
 
-typedef struct
+class Other
 {
+public:
     double ratio;
     double score;
     short id;
@@ -50,12 +51,12 @@ typedef struct
     char user_name[MAX_CHARS];
     char host_name[MAX_CHARS];
     char id_string[MAX_CHARS];
-} other_t;
+};
 
-extern other_t *self; /* Player info */
-extern other_t *Others;
+extern Other *self; /* Player info */
+extern Other *Others;
 extern int num_others, max_others;
 
-other_t *Other_by_id(int id);
-other_t *Other_by_name(const char *name, bool show_error_msg);
+Other *Other_by_id(int id);
+Other *Other_by_name(const char *name, bool show_error_msg);
 ShipShape *Ship_by_id(int id);

@@ -312,9 +312,9 @@ static void Determine_team_order(struct team_score *team_order[],
     }
 }
 
-static void Determine_order(other_t **order, struct team_score team[])
+static void Determine_order(Other **order, struct team_score team[])
 {
-    other_t *other;
+    Other *other;
     int i, j, k;
 
     for (i = 0; i < num_others; i++)
@@ -386,7 +386,7 @@ static void Determine_order(other_t **order, struct team_score team[])
 static int Team_heading(int entrynum, int teamnum,
                         int teamlives, double teamscore)
 {
-    other_t tmp;
+    Other tmp;
     tmp.id = -1;
     tmp.team = teamnum;
     tmp.name_width = 0;
@@ -413,9 +413,9 @@ static int Team_heading(int entrynum, int teamnum,
 }
 
 static int Team_score_table(int entrynum, int teamnum,
-                            struct team_score team, other_t **order)
+                            struct team_score team, Other **order)
 {
-    other_t *other;
+    Other *other;
     int i, j;
     bool drawn = false;
 
@@ -451,7 +451,7 @@ void Paint_score_table(void)
     struct team_score team[MAX_TEAMS],
         pausers,
         *team_order[MAX_TEAMS];
-    other_t *other,
+    Other *other,
         **order;
     int entrynum = 0;
 
@@ -465,7 +465,7 @@ void Paint_score_table(void)
         return;
     }
 
-    if ((order = (other_t **)malloc(num_others * sizeof(other_t *))) == nullptr)
+    if ((order = (Other **)malloc(num_others * sizeof(Other *))) == nullptr)
     {
         error("No memory for score");
         return;

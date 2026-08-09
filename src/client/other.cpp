@@ -26,11 +26,11 @@
 #include "other.h"
 #include "messages.h"
 
-other_t *self = nullptr; /* player info */
-other_t *Others = nullptr;
+Other *self = nullptr; /* player info */
+Other *Others = nullptr;
 int num_others = 0, max_others = 0;
 
-other_t *Other_by_id(int id)
+Other *Other_by_id(int id)
 {
     int i;
 
@@ -45,10 +45,10 @@ other_t *Other_by_id(int id)
     return nullptr;
 }
 
-other_t *Other_by_name(const char *name, bool show_error_msg)
+Other *Other_by_name(const char *name, bool show_error_msg)
 {
     int i;
-    other_t *found_other = nullptr, *other;
+    Other *found_other = nullptr, *other;
     size_t len;
 
     if (name == nullptr || (len = strlen(name)) == 0)
@@ -116,7 +116,7 @@ match_several:
 
 ShipShape *Ship_by_id(int id)
 {
-    other_t *other;
+    Other *other;
 
     if ((other = Other_by_id(id)) == nullptr)
         return Parse_shape_str(nullptr);

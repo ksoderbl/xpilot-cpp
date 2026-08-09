@@ -323,7 +323,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
     int color = -1;
     const int BORDER = 4; /* in pixels */
     int size = 0, size2 = 0;
-    other_t *other;
+    Other *other;
     char s[3];
     char info[6];
     homebase_t *base = nullptr;
@@ -481,7 +481,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
     {
         const int BORDER = 4; /* in pixels */
         int size;
-        other_t *other;
+        Other *other;
         char s[3];
 
         SET_FG(colors[WHITE].pixel);

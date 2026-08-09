@@ -164,7 +164,7 @@ static void Paint_mines(void)
                 name = nullptr;
                 if (mine.id != 0)
                 {
-                    other_t *other;
+                    Other *other;
                     if (mine.id == EXPIRED_MINE_ID)
                     {
                         static char expired_name[] = "Expired";

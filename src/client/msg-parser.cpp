@@ -212,7 +212,7 @@ bool Msg_match_fmt(const char *msg, const char *fmt, msgnames_t *mn)
 bool Want_scan(void)
 {
     int i;
-    other_t *other;
+    Other *other;
     int num_playing = 0;
 
     /* if only player on server, let's not bother */
@@ -334,7 +334,7 @@ void Msg_scan_death(int id)
 {
     // warn("Msg_scan_death: id: %d", id);
 
-    other_t *other;
+    Other *other;
 
     if (version >= 0x4F12)
         return;
@@ -378,7 +378,7 @@ void Msg_scan_game_msg(const char *message)
     bool i_am_killer = false;
     bool i_am_victim = false;
     bool i_am_victim2 = false;
-    other_t *other = nullptr;
+    Other *other = nullptr;
 
     DP(printf("MESSAGE: \"%s\"\n", message));
 
@@ -691,7 +691,7 @@ void Roundend(void)
     Bms_set_state(BmsNone);
 }
 
-void Add_roundend_messages(other_t **order)
+void Add_roundend_messages(Other **order)
 {
     static char hackbuf[MSG_LEN];
     static char hackbuf2[MSG_LEN];
@@ -699,7 +699,7 @@ void Add_roundend_messages(other_t **order)
     static char killsperround[16];
     char *s;
     int i;
-    other_t *other;
+    Other *other;
 
     Roundend();
 

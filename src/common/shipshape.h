@@ -23,6 +23,9 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include "types.h"
 #include "click.h"
 #include "const.h"
@@ -49,9 +52,13 @@ typedef struct
     int cashed_dir;
 } shape_t;
 
+/* Defines wire-obj, i.e. ship */
 class ShipShape
 {
-public:                               /* Defines wire-obj, i.e. ship */
+public:
+    ShipShape();
+    ~ShipShape();
+
     clpos_t *pts[MAX_SHIP_PTS];       /* the shape rotated many ways */
     int num_points;                   /* total points in object */
     clpos_t engine[ANGLE_RESOLUTION]; /* Engine position */

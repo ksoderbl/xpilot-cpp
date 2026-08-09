@@ -206,7 +206,7 @@ extern short lock_dir;  /* Direction of lock */
 extern short lock_dist; /* Distance to player locked onto */
 
 extern int eyesId;    /* Player we get frame updates for */
-extern other_t *eyes; /* Player we get frame updates for */
+extern Other *eyes;   /* Player we get frame updates for */
 extern bool snooping; /* are we snooping on someone else? */
 extern int eyeTeam;   /* Team of player we get updates for */
 
