@@ -930,12 +930,14 @@ static void Frame_ships(Connection *conn, Player *pl)
             Player *t = Player_by_id(cannon->tractor_target_id);
             if (clpos_inview(cv, t->pos))
             {
-                int j;
-                for (j = 0; j < 3; j++)
+                std::vector<clpos_t> &points = t->ship->getPoints(t->dir);
+
+                for (int j = 0; j < 3; j++)
                 {
                     clpos_t pts, pos;
 
-                    pts = Ship_get_point_clpos(t->ship, j, t->dir);
+                    // pts = Ship_get_point_clpos(t->ship, j, t->dir);
+                    pts = points[j];
                     pos.cx = t->pos.cx + pts.cx;
                     pos.cy = t->pos.cy + pts.cy;
                     Send_connector(conn, pos, cannon->pos, 1);
@@ -1029,13 +1031,14 @@ static void Frame_ships(Connection *conn, Player *pl)
 
             if (clpos_inview(cv, t->pos))
             {
-                int j;
+                std::vector<clpos_t> &points = t->ship->getPoints(t->dir);
 
-                for (j = 0; j < 3; j++)
+                for (int j = 0; j < 3; j++)
                 {
                     clpos_t pts, pos;
 
-                    pts = Ship_get_point_clpos(t->ship, j, t->dir);
+                    // pts = Ship_get_point_clpos(t->ship, j, t->dir);
+                    pts = points[j];
                     pos.cx = t->pos.cx + pts.cx;
                     pos.cy = t->pos.cy + pts.cy;
                     Send_connector(conn, pos, pl_i->pos, 1);

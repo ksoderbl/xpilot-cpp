@@ -1879,9 +1879,8 @@ void Move_object1(object_t *obj)
                 if (obj->type != OBJ_BALL)
                     obj->obj_life = (long)(obj->obj_life * options.objectWallBounceLifeFactor);
                 if (obj->obj_life <= 0.0)
-                {
                     break;
-                }
+
                 /*
                  * Any bouncing sparks are no longer owner immune to give
                  * "reactive" thrust.  This is exactly like ground effect
@@ -1921,6 +1920,7 @@ void Move_object1(object_t *obj)
             break;
         }
     }
+    // TODO: Use some WRAP function
     if (mi.edge_wrap)
     {
         if (ms.pos.cx < 0)
@@ -2122,6 +2122,7 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
 
 void Move_player1(Player *pl)
 {
+    world_t *world = &theWorld;
     int nothing_done = 0;
     int i;
     int dist;
@@ -2142,7 +2143,6 @@ void Move_player1(Player *pl)
     bool pos_update = false;
     double fric;
     double oldvx, oldvy;
-    world_t *world = &theWorld;
 
     if (!Player_is_alive(pl))
     {
@@ -2164,9 +2164,7 @@ void Move_player1(Player *pl)
 
     /* Figure out which friction to use. */
     if (Player_is_phasing(pl))
-    {
         fric = options.frictionSetting;
-    }
     else
     {
         switch (world->block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)])
@@ -2219,13 +2217,20 @@ void Move_player1(Player *pl)
     todo.cx = FLOAT_TO_CLICK(vel.x);
     todo.cy = FLOAT_TO_CLICK(vel.y);
 
-    for (i = 0; i < pl->ship->num_points; i++)
+    std::vector<clpos_t> &points1 = pl->ship->getPoints(pl->dir);
+    int num_points = points1.size(); // == pl->ship->num_points
+
+    warn("Move_player1: num_points: %d, pl->ship->num_points: %d", num_points, pl->ship->num_points);
+
+    i = 0;
+    for (auto &p : points1)
+    // for (i = 0; i < pl->ship->num_points; i++)
     {
         // double x = pl->ship->pts[i][pl->dir].x;
         // double y = pl->ship->pts[i][pl->dir].y;
         // ms[i].pos.cx = pl->pos.cx + FLOAT_TO_CLICK(x);
         // ms[i].pos.cy = pl->pos.cy + FLOAT_TO_CLICK(y);
-        clpos_t p = Ship_get_point_clpos(pl->ship, i, pl->dir);
+        // clpos_t p = Ship_get_point_clpos(pl->ship, i, pl->dir);
         ms[i].pos.cx = pl->pos.cx + p.cx;
         ms[i].pos.cy = pl->pos.cy + p.cy;
         ms[i].vel = vel;
@@ -2233,13 +2238,19 @@ void Move_player1(Player *pl)
         ms[i].dir = pl->dir;
         ms[i].mip = &mi;
         ms[i].target_ptr = nullptr;
+        i++;
     }
+
+    warn("Move_player1: pl->dir = %d, ms[0].dir = %d", pl->dir, ms[0].dir);
+
+    std::vector<clpos_t> &points2 = pl->ship->getPoints(ms[0].dir);
 
     for (;; moves_made++)
     {
         // pos.cx = ms[0].pos.cx - FLOAT_TO_CLICK(pl->ship->pts[0][ms[0].dir].x);
         // pos.cy = ms[0].pos.cy - FLOAT_TO_CLICK(pl->ship->pts[0][ms[0].dir].y);
-        clpos_t p = Ship_get_point_clpos(pl->ship, 0, ms[0].dir);
+        // clpos_t p = Ship_get_point_clpos(pl->ship, 0, ms[0].dir);
+        clpos_t p = points2[0];
         pos.cx = ms[0].pos.cx - p.cx;
         pos.cy = ms[0].pos.cy - p.cy;
         pos.cx = WORLD_WRAP_XCLICK(world, pos.cx);
@@ -2273,13 +2284,14 @@ void Move_player1(Player *pl)
             }
             todo.cx -= done.cx;
             todo.cy -= done.cy;
-            for (i = 0; i < pl->ship->num_points; i++)
+            for (i = 0; i < num_points; i++)
             {
                 ms[i].pos.cx += done.cx;
                 ms[i].pos.cy += done.cy;
                 ms[i].todo = todo;
                 ms[i].crash = NotACrash;
                 ms[i].bounce = NotABounce;
+                // TODO: Use some WRAP function
                 if (mi.edge_wrap)
                 {
                     if (ms[i].pos.cx < 0)
@@ -2294,18 +2306,14 @@ void Move_player1(Player *pl)
             }
             nothing_done = 0;
             if (!(todo.cx | todo.cy))
-            {
                 break;
-            }
             else
-            {
                 continue;
-            }
         }
 
         bounce = -1;
         crash = -1;
-        for (i = 0; i < pl->ship->num_points; i++)
+        for (i = 0; i < num_points; i++)
         {
             Move_segment1(&ms[i]);
 
@@ -2321,19 +2329,13 @@ void Move_player1(Player *pl)
             if (ms[i].bounce)
             {
                 if (bounce == -1)
-                {
                     bounce = i;
-                }
                 else if (ms[bounce].bounce != BounceEdge && ms[i].bounce == BounceEdge)
-                {
                     bounce = i;
-                }
                 else if ((ms[bounce].bounce == BounceEdge) == (ms[i].bounce == BounceEdge))
                 {
-                    if ((int)(rfrac() * (pl->ship->num_points - bounce)) == i)
-                    {
+                    if ((int)(rfrac() * (num_points - bounce)) == i)
                         bounce = i;
-                    }
                 }
                 worst = bounce;
             }
@@ -2420,17 +2422,14 @@ void Move_player1(Player *pl)
                     break;
                 }
                 if (pl->dir >= wall_dir)
-                {
                     delta_dir = (pl->dir - wall_dir <= ANGLE_RESOLUTION / 2)
                                     ? -(pl->dir - wall_dir)
                                     : (wall_dir + ANGLE_RESOLUTION - pl->dir);
-                }
                 else
-                {
                     delta_dir = (wall_dir - pl->dir <= ANGLE_RESOLUTION / 2)
                                     ? (wall_dir - pl->dir)
                                     : -(pl->dir + ANGLE_RESOLUTION - wall_dir);
-                }
+
                 abs_delta_dir = ABS(delta_dir);
                 /* only use armor if neccessary */
                 if (abs_delta_dir > max_angle &&
@@ -2506,7 +2505,7 @@ void Move_player1(Player *pl)
         }
         else
         {
-            for (i = 0; i < pl->ship->num_points; i++)
+            for (i = 0; i < num_points; i++)
             {
                 r[i].x = (vel.x) ? (double)ms[i].todo.cx / vel.x : 0;
                 r[i].y = (vel.y) ? (double)ms[i].todo.cy / vel.y : 0;
@@ -2514,12 +2513,10 @@ void Move_player1(Player *pl)
                 r[i].y = ABS(r[i].y);
             }
             worst = 0;
-            for (i = 1; i < pl->ship->num_points; i++)
+            for (i = 1; i < num_points; i++)
             {
                 if (r[i].x > r[worst].x || r[i].y > r[worst].y)
-                {
                     worst = i;
-                }
             }
         }
 
@@ -2538,12 +2535,10 @@ void Move_player1(Player *pl)
             ms[worst].pos.cy += ms[worst].done.cy;
         }
         if (!(ms[worst].todo.cx | ms[worst].todo.cy))
-        {
             break;
-        }
 
         vel = ms[worst].vel;
-        for (i = 0; i < pl->ship->num_points; i++)
+        for (i = 0; i < num_points; i++)
         {
             if (i != worst)
             {
@@ -2556,9 +2551,12 @@ void Move_player1(Player *pl)
         }
     }
 
-    clpos_t p = Ship_get_point_clpos(pl->ship, worst, pl->dir);
+    // clpos_t p = Ship_get_point_clpos(pl->ship, worst, pl->dir);
     // pos.cx = ms[worst].pos.cx - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].x);
     // pos.cy = ms[worst].pos.cy - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].y);
+    std::vector<clpos_t> &points3 = pl->ship->getPoints(pl->dir);
+    clpos_t p = points3[worst];
+
     pos.cx = ms[worst].pos.cx - p.cx;
     pos.cy = ms[worst].pos.cy - p.cy;
     pos.cx = WORLD_WRAP_XCLICK(world, pos.cx);
@@ -2636,70 +2634,80 @@ void Turn_player1(Player *pl)
     for (; pl->dir != new_dir; turns_done++)
     {
         dir = MOD2(pl->dir + sign, ANGLE_RESOLUTION);
+        std::vector<clpos_t> &points2 = pl->ship->getPoints(dir);
+
         if (!mi.edge_wrap)
         {
             if (pos.cx <= 22 * CLICK)
             {
-                for (i = 0; i < pl->ship->num_points; i++)
+                // for (i = 0; i < pl->ship->num_points; i++)
+                for (auto &p : points2)
                 {
                     // if (pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) < 0)
                     // {
                     //     pos.cx = -FLOAT_TO_CLICK(pl->ship->pts[i][dir].x);
                     // }
-                    clpos_t p = Ship_get_point_clpos(pl->ship, i, dir);
+                    // clpos_t p = Ship_get_point_clpos(pl->ship, i, dir);
                     if (pos.cx + p.cx < 0)
                         pos.cx = -p.cx;
                 }
             }
             if (pos.cx >= mp.click_width - 22 * CLICK)
             {
-                for (i = 0; i < pl->ship->num_points; i++)
+                // for (i = 0; i < pl->ship->num_points; i++)
+                for (auto &p : points2)
                 {
                     // if (pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) >= mp.click_width)
                     // {
                     //     pos.cx = mp.click_width - 1 - FLOAT_TO_CLICK(pl->ship->pts[i][dir].x);
                     // }
-                    clpos_t p = Ship_get_point_clpos(pl->ship, i, dir);
+                    // clpos_t p = Ship_get_point_clpos(pl->ship, i, dir);
                     if (pos.cx + p.cx >= mp.click_width)
                         pos.cx = mp.click_width - 1 - p.cx;
                 }
             }
             if (pos.cy <= 22 * CLICK)
             {
-                for (i = 0; i < pl->ship->num_points; i++)
+                // for (i = 0; i < pl->ship->num_points; i++)
+                for (auto &p : points2)
                 {
                     // if (pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) < 0)
                     // {
                     //     pos.cy = -FLOAT_TO_CLICK(pl->ship->pts[i][dir].y);
                     // }
-                    clpos_t p = Ship_get_point_clpos(pl->ship, i, dir);
+                    // clpos_t p = Ship_get_point_clpos(pl->ship, i, dir);
                     if (pos.cy + p.cy < 0)
                         pos.cy = -p.cy;
                 }
             }
             if (pos.cy >= mp.click_height - 22 * CLICK)
             {
-                for (i = 0; i < pl->ship->num_points; i++)
+                // for (i = 0; i < pl->ship->num_points; i++)
+                for (auto &p : points2)
                 {
                     // if (pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) >= mp.click_height)
                     // {
                     //     pos.cy = mp.click_height - 1 - FLOAT_TO_CLICK(pl->ship->pts[i][dir].y);
                     // }
-                    clpos_t p = Ship_get_point_clpos(pl->ship, i, dir);
+                    // clpos_t p = Ship_get_point_clpos(pl->ship, i, dir);
                     if (pos.cy + p.cy >= mp.click_height)
                         pos.cy = mp.click_height - 1 - p.cy;
                 }
             }
             if (pos.cx != pl->pos.cx || pos.cy != pl->pos.cy)
-            {
                 Player_position_set_clicks(pl, pos);
-            }
         }
 
-        for (i = 0; i < pl->ship->num_points; i++)
+        std::vector<clpos_t> &points1 = pl->ship->getPoints(pl->dir);
+        // std::vector<clpos_t> &points2 = pl->ship->getPoints(dir);
+        int num_points = points1.size(); // pl->ship->num_points;
+
+        for (i = 0; i < points1.size(); i++)
         {
-            clpos_t p1 = Ship_get_point_clpos(pl->ship, i, pl->dir);
-            clpos_t p2 = Ship_get_point_clpos(pl->ship, i, dir);
+            // clpos_t p1 = Ship_get_point_clpos(pl->ship, i, pl->dir);
+            // clpos_t p2 = Ship_get_point_clpos(pl->ship, i, dir);
+            clpos_t p1 = points1[i];
+            clpos_t p2 = points2[i];
 
             ms[i].mip = &mi;
             // ms[i].pos.cx = pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][pl->dir].x);
@@ -2726,9 +2734,7 @@ void Turn_player1(Player *pl)
                     if (ms[i].crash)
                     {
                         if (ms[i].crash != CrashUniverse)
-                        {
                             crash = i;
-                        }
                         blocked = 1;
                         break;
                     }
@@ -2752,15 +2758,13 @@ void Turn_player1(Player *pl)
                     nothing_done = 0;
                 }
             } while (ms[i].todo.cx | ms[i].todo.cy);
+
             if (blocked)
-            {
                 break;
-            }
         }
         if (blocked)
-        {
             break;
-        }
+
         pl->dir = dir;
     }
 
@@ -2771,7 +2775,5 @@ void Turn_player1(Player *pl)
     }
 
     if (crash != -1)
-    {
         Player_crash1(&ms[crash], crash, true);
-    }
 }
