@@ -800,7 +800,9 @@ int Net_start(void)
              * Therefore we don't transmit the shipshape when
              * we have had 5 unsuccesful attempts.
              */
-            if ((retries < 5 && Send_shape(shipShape) == -1) || Packet_printf(&wbuf, "%c", PKT_PLAY) <= 0 || Client_power() == -1
+            if ((retries < 5 && Send_shipshape(shipShape) == -1) ||
+                Packet_printf(&wbuf, "%c", PKT_PLAY) <= 0 ||
+                Client_power() == -1
 #ifdef SOUND
                 || Send_audio_request(1) == -1
 #endif
@@ -2588,14 +2590,14 @@ int Send_keyboard(uint8_t *keyboard_vector)
     return 0;
 }
 
-int Send_shape(char *str)
+int Send_shipshape(char *str)
 {
-    shipshape_t *w;
+    ShipShape *ship;
     char buf[MSG_LEN], ext[MSG_LEN];
 
-    w = Convert_shape_str(str);
-    Convert_ship_2_string(w, buf, ext, 0x3200);
-    Free_ship_shape(w);
+    ship = Convert_shape_str(str);
+    Convert_ship_2_string(ship, buf, ext, 0x3200);
+    Free_ship_shape(ship);
     if (Packet_printf(&wbuf, "%c%S", PKT_SHAPE, buf) <= 0)
         return -1;
     if (Packet_printf(&wbuf, "%S", ext) <= 0)

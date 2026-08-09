@@ -113,7 +113,7 @@ public:
     std::string user;                    /* username of player */
     std::string nick;                    /* nickname of player */
     std::string dpy;                     /* display of player */
-    shipshape_t *ship = nullptr;         /* ship shape of player */
+    ShipShape *ship = nullptr;           /* ship shape of player */
     std::string addr;                    /* address of players host */
     std::string host;                    /* hostname of players host */
     int features = 0;                    /* supported features */

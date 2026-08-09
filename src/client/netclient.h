@@ -125,7 +125,7 @@ int Receive_string(void);
 int Receive_reply(int *replyto, int *result);
 int Send_ack(long rel_loops);
 int Send_keyboard(uint8_t *);
-int Send_shape(char *);
+int Send_shipshape(char *);
 int Send_power(double pwr);
 int Send_power_s(double pwr_s);
 int Send_turnspeed(double turnspd);

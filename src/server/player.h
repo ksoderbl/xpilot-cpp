@@ -178,7 +178,7 @@ public:
     double turnacc;                        /* Current acceleration of turn */
     int score;                             /* Current score of player */
     bool update_score;                     /* score table info needs to be sent */
-    shipshape_t *ship;                     /* wire model of ship shape */
+    ShipShape *ship;                       /* wire model of ship shape */
     double power;                          /* Force of thrust */
     double power_s;                        /* Saved power fiks */
     double turnspeed_s;                    /* Saved turnspeed */
@@ -802,7 +802,7 @@ void Player_hit_armor(Player *pl);
 void Player_used_kill(Player *pl);
 void Player_set_mass(Player *pl);
 void Player_init_items(Player *pl);
-int Init_player(int ind, shipshape_t *ship, int type);
+int Init_player(int ind, ShipShape *ship, int type);
 void Alloc_players(int number);
 void Free_players(void);
 void Update_score_table(void);

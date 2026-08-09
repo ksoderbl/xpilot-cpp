@@ -501,7 +501,7 @@ void Player_init_items(Player *pl)
         pl->initial_item[i] = pl->item[i];
 }
 
-int Init_player(int ind, shipshape_t *ship, int type)
+int Init_player(int ind, ShipShape *ship, int type)
 {
     world_t *world = &theWorld;
     Player *pl = Player_by_index(ind);
@@ -531,7 +531,7 @@ int Init_player(int ind, shipshape_t *ship, int type)
         pl->ship = ship;
     else
     {
-        shipshape_t *tryship = Parse_shape_str(options.defaultShipShape);
+        ShipShape *tryship = Parse_shape_str(options.defaultShipShape);
 
         if (tryship)
             pl->ship = tryship;

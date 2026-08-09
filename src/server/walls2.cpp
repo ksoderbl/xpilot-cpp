@@ -1275,8 +1275,8 @@ static int Shape_morph(shape_t *shape1, int dir1,
 
           ptx1 = pts1[i];
           ptx2 = pts2[i];*/
-        pt1 = Ship_get_point_clpos((shipshape_t *)shape1, i, dir1);
-        pt2 = Ship_get_point_clpos((shipshape_t *)shape2, i, dir2);
+        pt1 = Ship_get_point_clpos((ShipShape *)shape1, i, dir1);
+        pt2 = Ship_get_point_clpos((ShipShape *)shape2, i, dir2);
 
         /*assert(ptx1.cx == pt1.cx);
           assert(ptx1.cy == pt1.cy);
@@ -1321,8 +1321,8 @@ static int Shape_morph(shape_t *shape1, int dir1,
 
         /*pto1 = pts1[num_points - 1];
           ptn1 = pts2[num_points - 1];*/
-        pto1 = Ship_get_point_clpos((shipshape_t *)shape1, num_points - 1, dir1);
-        ptn1 = Ship_get_point_clpos((shipshape_t *)shape2, num_points - 1, dir2);
+        pto1 = Ship_get_point_clpos((ShipShape *)shape1, num_points - 1, dir1);
+        ptn1 = Ship_get_point_clpos((ShipShape *)shape2, num_points - 1, dir2);
 
         xo1 = pto1.cx - xp;
         yo1 = pto1.cy - yp;
@@ -1336,8 +1336,8 @@ static int Shape_morph(shape_t *shape1, int dir1,
 
             /*pto2 = pts1[i];
               ptn2 = pts2[i];*/
-            pto2 = Ship_get_point_clpos((shipshape_t *)shape1, i, dir1);
-            ptn2 = Ship_get_point_clpos((shipshape_t *)shape2, i, dir2);
+            pto2 = Ship_get_point_clpos((ShipShape *)shape1, i, dir1);
+            ptn2 = Ship_get_point_clpos((ShipShape *)shape2, i, dir2);
 
             xo2 = pto2.cx - xp;
             yo2 = pto2.cy - yp;
@@ -3156,8 +3156,8 @@ void Turn_player2(Player *pl, bool push)
             length = 0;
             l = 0.0;
 
-            p = Ship_get_point_clpos((shipshape_t *)pl->ship, ans.point, pl->dir);
-            p2 = Ship_get_point_clpos((shipshape_t *)pl->ship, (ans.point + 1) % (((shape_t *)pl->ship)->num_points), pl->dir);
+            p = Ship_get_point_clpos((ShipShape *)pl->ship, ans.point, pl->dir);
+            p2 = Ship_get_point_clpos((ShipShape *)pl->ship, (ans.point + 1) % (((shape_t *)pl->ship)->num_points), pl->dir);
 
             /* x,y defines the direction of the line that prevented turning */
             if (ans.line != -1)

@@ -89,7 +89,7 @@ void Get_display_parameters(Connection *connp, int *width, int *height,
 int Get_player_id(Connection *connp);
 std::string Player_get_addr(Player *pl);
 std::string Player_get_dpy(Player *pl);
-int Send_shape(Connection *connp, int shape);
+int Send_shipshape(Connection *connp, int shape);
 int Check_max_clients_per_IP(std::string host_addr);
 
 #define FEATURE(connp, feature) ((connp)->features & (feature))

@@ -114,7 +114,7 @@ match_several:
 }
 }
 
-shipshape_t *Ship_by_id(int id)
+ShipShape *Ship_by_id(int id)
 {
     other_t *other;
 

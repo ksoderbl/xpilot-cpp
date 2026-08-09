@@ -1466,7 +1466,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
                     int shield, int deflector, int eshield)
 {
     int i, color, img;
-    shipshape_t *ship;
+    ShipShape *ship;
     position_t point;
     other_t *other;
 

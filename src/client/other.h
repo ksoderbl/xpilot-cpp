@@ -45,7 +45,7 @@ typedef struct
     short max_chars_in_names; /* name_width was calculated
                      for this value of maxCharsInNames */
     short ignorelevel;
-    shipshape_t *ship;
+    ShipShape *ship;
     char nick_name[MAX_CHARS];
     char user_name[MAX_CHARS];
     char host_name[MAX_CHARS];
@@ -58,4 +58,4 @@ extern int num_others, max_others;
 
 other_t *Other_by_id(int id);
 other_t *Other_by_name(const char *name, bool show_error_msg);
-shipshape_t *Ship_by_id(int id);
+ShipShape *Ship_by_id(int id);
