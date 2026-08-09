@@ -172,7 +172,7 @@ void Rotate_ship(ShipShape *ship)
  */
 ShipShape *Default_ship(void)
 {
-    static ShipShape sh;
+    static ShipShape sh{};
     static clpos_t pts[6][ANGLE_RESOLUTION];
 
     if (!sh.num_points)
@@ -1258,22 +1258,18 @@ static int shape2wire(char *ship_shape_str, ShipShape *ship)
 
 static ShipShape *do_parse_shape(char *str)
 {
-    ShipShape *ship;
-
     if (!str || !*str)
     {
         if (debugShapeParsing)
             warn("shape str not set");
         return Default_ship();
     }
-    if (!(ship = XMALLOC(ShipShape, 1)))
-    {
-        error("No mem for ship shape");
-        return Default_ship();
-    }
+
+    ShipShape *ship = new ShipShape{};
     if (shape2wire(str, ship) != 0)
     {
-        free(ship);
+        delete ship;
+
         if (debugShapeParsing)
             warn("shape2wire failed");
         return Default_ship();
@@ -1310,7 +1306,7 @@ void Free_ship_shape(ShipShape *ship)
         if (ship->author)
             free(ship->author);
 #endif
-        free(ship);
+        delete ship;
     }
 }
 
