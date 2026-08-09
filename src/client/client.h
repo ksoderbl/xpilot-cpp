@@ -167,7 +167,6 @@ typedef struct
 
 extern client_data_t clData;
 
-extern bool newbie;
 extern char *geometry;
 extern xp_args_t xpArgs;
 extern Connect_param_t connectParam;
@@ -325,8 +324,6 @@ extern int protocolVersion;
  */
 std::string Program_name(void);
 int Bitmap_add(std::string filename, int count, bool scalable);
-
-void Pointer_control_newbie_message(void);
 
 /*
  * Platform specific code needs to implement these.

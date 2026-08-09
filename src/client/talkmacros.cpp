@@ -456,7 +456,7 @@ static const char *Get_talk_macro(xp_option_t *opt)
 
 xp_option_t talk_macro_options[] = {
     /*
-     * Default warning macros for newbies.
+     * Default warning macros.
      */
     XP_CONST_CHAR_STAR_OPTION(
         "msg1",

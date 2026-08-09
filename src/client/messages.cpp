@@ -320,18 +320,6 @@ void Add_message(const char *message)
         printf("%s\n", message);
 }
 
-void Add_newbie_message(const char *message)
-{
-    char msg[MSG_LEN];
-
-    if (!newbie)
-        return;
-
-    snprintf(msg, sizeof(msg), "%s [*Newbie help*]", message);
-
-    Add_alert_message(msg, 10.0);
-}
-
 /*
  * clear the buffer for the pending messages
  */

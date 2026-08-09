@@ -1061,17 +1061,6 @@ void Paint_messages(void)
             }
         }
 
-        /* kps ugly hack */
-        if (newbie && msg->txt)
-        {
-            const char *help = "[*Newbie help*]";
-            size_t sz = strlen(msg->txt);
-            size_t hsz = strlen(help);
-
-            if (sz > hsz && !strcmp(help, &msg->txt[sz - hsz]))
-                msg_color = WHITE;
-        }
-
         if (msg_color == 0)
             continue;
 

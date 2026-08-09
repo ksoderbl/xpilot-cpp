@@ -61,43 +61,12 @@ static int Key_get_count(keys_t key);
 static bool Key_inc_count(keys_t key);
 static bool Key_dec_count(keys_t key);
 
-void Pointer_control_newbie_message(void)
-{
-    xp_option_t *opt = Find_option("keyExit");
-    char msg[MSG_LEN];
-    const char *val;
-
-    if (!newbie)
-        return;
-
-    if (!opt)
-        return;
-
-    val = Option_value_to_string(opt);
-    if (strlen(val) == 0)
-        return;
-
-    if (clData.pointerControl)
-        snprintf(msg, sizeof(msg),
-                 "Mouse steering enabled. "
-                 "Key(s) to disable it: %s.",
-                 val);
-    else
-        snprintf(msg, sizeof(msg),
-                 "Mouse steering disabled. "
-                 "Click background with left mouse button to enable it.");
-
-    Add_newbie_message(msg);
-}
-
 void Pointer_control_set_state(bool on)
 {
     if (clData.pointerControl == on)
         return;
     Platform_specific_pointer_control_set_state(on);
     clData.pointerControl = on;
-    if (!clData.restorePointerControl)
-        Pointer_control_newbie_message();
 }
 
 void Talk_set_state(bool on)
