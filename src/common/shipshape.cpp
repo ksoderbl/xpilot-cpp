@@ -53,43 +53,71 @@ ShipShape::~ShipShape()
     warn("ShipShape::~ShipShape: Goodbye cruel world!");
 }
 
-std::vector<position_t> &ShipShape::getPoints(int dir)
+static inline clpos_t My_rotate_clpos(clpos_t pos, int dir)
 {
-    // warn("getPoints, dir %d", dir);
-    rotate(dir);
-    return points;
-}
+    clpos_t ret;
 
-static inline position_t My_rotate(position_t pos, int dir)
-{
-    position_t ret;
-
-    ret.x = tcos(dir) * pos.x - tsin(dir) * pos.y;
-    ret.y = tsin(dir) * pos.x + tcos(dir) * pos.y;
+    ret.cx = tcos(dir) * pos.cx - tsin(dir) * pos.cy;
+    ret.cy = tsin(dir) * pos.cx + tcos(dir) * pos.cy;
 
     return ret;
 }
 
-void ShipShape::rotate(int dir)
+void ShipShape::rotateShip(int dir)
 {
     if (dir == currentDir)
     {
+        currentDirCacheHits++;
         // warn("rotate, dir is already %d", dir);
         return;
     }
 
     points.clear();
+    leftGunClickPositions.clear();
+    rightGunClickPositions.clear();
 
+    clpos_t pos;
+
+    // pts
     for (int i = 0; i < this->num_points; i++)
     {
-        position_t pos = Ship_get_point_position(this, i, 0);
-        pos = My_rotate(pos, dir);
+        pos = this->pts[i][0];
+        pos = My_rotate_clpos(pos, dir);
         points.push_back(pos);
+    }
+
+    // engine
+    pos = this->engine[0];
+    engineClickPosition = My_rotate_clpos(pos, dir);
+
+    // main gun
+    pos = this->m_gun[0];
+    mainGunClickPosition = My_rotate_clpos(pos, dir);
+
+    // left guns
+    for (int i = 0; i < this->num_l_gun; i++)
+    {
+        pos = this->l_gun[i][0];
+        pos = My_rotate_clpos(pos, dir);
+        leftGunClickPositions.push_back(pos);
+    }
+
+    // right guns
+    for (int i = 0; i < this->num_r_gun; i++)
+    {
+        pos = this->r_gun[i][0];
+        pos = My_rotate_clpos(pos, dir);
+        rightGunClickPositions.push_back(pos);
     }
 
     currentDir = dir;
 
-    // warn("rotate, new dir is %d", dir);
+    currentDirCacheMisses++;
+
+    double cacheHitRatio = 100.0 * (double)currentDirCacheHits / (double)(currentDirCacheMisses + currentDirCacheHits);
+
+    warn("rotate, new dir is %d (cache hits %d/%d =  %f%%)",
+         dir, currentDirCacheHits, (currentDirCacheMisses + currentDirCacheHits), cacheHitRatio);
 }
 
 static int Get_shape_keyword(char *keyw);
@@ -1400,8 +1428,9 @@ void Convert_ship_2_string(ShipShape *ship, char *buf, char *ext,
             sprintf(&buf[buflen], " %d,%d", (int)pt.x, (int)pt.y);
             buflen += strlen(&buf[buflen]);
         }
-        engine = Ship_get_engine_position(ship, 0);
-        m_gun = Ship_get_m_gun_position(ship, 0);
+        // engine = Ship_get_engine_position(ship, 0);
+        engine = clpos2position(ship->getEngineClickPosition(0));
+        m_gun = clpos2position(ship->getMainGunClickPosition(0));
         sprintf(&buf[buflen], ")(EN: %d,%d)(MG: %d,%d)",
                 (int)engine.x, (int)engine.y,
                 (int)m_gun.x, (int)m_gun.y);
@@ -1422,9 +1451,10 @@ void Convert_ship_2_string(ShipShape *ship, char *buf, char *ext,
         {
             strcpy(&tmp[0], "(LG:");
             tmplen = strlen(&tmp[0]);
-            for (i = 0; i < ship->num_l_gun && i < MAX_GUN_PTS; i++)
+            std::vector<clpos_t> l_guns = ship->getLeftGunClickPositions(0);
+            for (i = 0; i < l_guns.size() && i < MAX_GUN_PTS; i++)
             {
-                position_t l_gun = Ship_get_l_gun_position(ship, i, 0);
+                position_t l_gun = clpos2position(l_guns[i]);
 
                 sprintf(&tmp[tmplen], " %d,%d",
                         (int)l_gun.x, (int)l_gun.y);
@@ -1447,9 +1477,10 @@ void Convert_ship_2_string(ShipShape *ship, char *buf, char *ext,
         {
             strcpy(&tmp[0], "(RG:");
             tmplen = strlen(&tmp[0]);
-            for (i = 0; i < ship->num_r_gun && i < MAX_GUN_PTS; i++)
+            std::vector<clpos_t> r_guns = ship->getRightGunClickPositions(0);
+            for (i = 0; i < r_guns.size() && i < MAX_GUN_PTS; i++)
             {
-                position_t r_gun = Ship_get_r_gun_position(ship, i, 0);
+                position_t r_gun = clpos2position(r_guns[i]);
 
                 sprintf(&tmp[tmplen], " %d,%d",
                         (int)r_gun.x, (int)r_gun.y);

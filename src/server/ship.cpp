@@ -63,7 +63,7 @@ void Make_thrust_sparks(Player *pl)
                      0x03);
     int tot_sparks = (int)((pl->power * 0.15) + this_rand + 1);
     clpos_t pos;
-    clpos_t engine_pos = Ship_get_engine_clpos(pl->ship, pl->dir);
+    clpos_t engine_pos = pl->ship->getEngineClickPosition(pl->dir);
     pos.cx = pl->pos.cx + engine_pos.cx;
     pos.cy = pl->pos.cy + engine_pos.cy;
     int afterburners, alt_sparks;

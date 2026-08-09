@@ -66,7 +66,7 @@ void Fire_laser(Player *pl)
         else
         {
             clpos_t pos;
-            clpos_t m_gun = Ship_get_m_gun_clpos(pl->ship, pl->dir);
+            clpos_t m_gun = pl->ship->getMainGunClickPosition(pl->dir);
             pos.cx = pl->pos.cx + m_gun.cx + FLOAT_TO_CLICK(pl->vel.x);
             pos.cy = pl->pos.cy + m_gun.cy + FLOAT_TO_CLICK(pl->vel.y);
             pos.cx = WORLD_WRAP_XCLICK(world, pos.cx);

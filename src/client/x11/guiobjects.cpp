@@ -949,11 +949,12 @@ static int set_shipshape(int world_x, int world_y,
     int window_y;
     double x, y;
 
-    std::vector<position_t> &p = ship->getPoints(dir);
+    std::vector<clpos_t> &p = ship->getPoints(dir);
 
     // for (cnt = 0; cnt < ship->num_points; cnt++)
-    for (position_t &ship_point_pos : p)
+    for (clpos_t &pos : p)
     {
+        position_t ship_point_pos = clpos2position(pos);
         // ship_point_pos = Ship_get_point_position(ship, cnt, dir);
         window_x = X(world_x + ship_point_pos.x);
         window_y = Y(world_y + ship_point_pos.y);

@@ -59,12 +59,45 @@ public:
     ShipShape();
     ~ShipShape();
 
-    std::vector<position_t> &getPoints(int dir);
+    std::vector<clpos_t> &getPoints(int dir)
+    {
+        // warn("getPoints, dir %d", dir);
+        rotateShip(dir);
+        return points;
+    }
 
-    void rotate(int dir);
+    clpos_t getEngineClickPosition(int dir)
+    {
+        rotateShip(dir);
+        return engineClickPosition;
+    }
+    clpos_t getMainGunClickPosition(int dir)
+    {
+        rotateShip(dir);
+        return mainGunClickPosition;
+    }
+    std::vector<clpos_t> &getLeftGunClickPositions(int dir)
+    {
+        rotateShip(dir);
+        return leftGunClickPositions;
+    }
+    std::vector<clpos_t> &getRightGunClickPositions(int dir)
+    {
+        rotateShip(dir);
+        return rightGunClickPositions;
+    }
 
-    std::vector<position_t> points;
-    int currentDir; // current rotated direction
+    void rotateShip(int dir);
+
+    std::vector<clpos_t> points;
+    clpos_t engineClickPosition;
+    clpos_t mainGunClickPosition;
+    std::vector<clpos_t> leftGunClickPositions;
+    std::vector<clpos_t> rightGunClickPositions;
+
+    int currentDir = -1; // current rotated direction
+    int currentDirCacheHits = 0;
+    int currentDirCacheMisses = 0;
 
     clpos_t *pts[MAX_SHIP_PTS];       /* the shape rotated many ways */
     int num_points;                   /* total points in object */
@@ -114,26 +147,26 @@ Ship_get_point_clpos(ShipShape *ship, int i, int dir)
     // return pos;
     return ship->pts[i][dir];
 }
-static inline clpos_t
-Ship_get_engine_clpos(ShipShape *ship, int dir)
-{
-    return ship->engine[dir];
-}
-static inline clpos_t
-Ship_get_m_gun_clpos(ShipShape *ship, int dir)
-{
-    return ship->m_gun[dir];
-}
-static inline clpos_t
-Ship_get_l_gun_clpos(ShipShape *ship, int gun, int dir)
-{
-    return ship->l_gun[gun][dir];
-}
-static inline clpos_t
-Ship_get_r_gun_clpos(ShipShape *ship, int gun, int dir)
-{
-    return ship->r_gun[gun][dir];
-}
+// static inline clpos_t
+// Ship_get_engine_clpos(ShipShape *ship, int dir)
+// {
+//     return ship->engine[dir];
+// }
+// static inline clpos_t
+// Ship_get_m_gun_clpos(ShipShape *ship, int dir)
+// {
+//     return ship->m_gun[dir];
+// }
+// static inline clpos_t
+// Ship_get_l_gun_clpos(ShipShape *ship, int gun, int dir)
+// {
+//     return ship->l_gun[gun][dir];
+// }
+// static inline clpos_t
+// Ship_get_r_gun_clpos(ShipShape *ship, int gun, int dir)
+// {
+//     return ship->r_gun[gun][dir];
+// }
 static inline clpos_t
 Ship_get_l_rgun_clpos(ShipShape *ship, int gun, int dir)
 {
@@ -165,26 +198,26 @@ Ship_get_point_position(ShipShape *ship, int i, int dir)
 {
     return clpos2position(Ship_get_point_clpos(ship, i, dir));
 }
-static inline position_t
-Ship_get_engine_position(ShipShape *ship, int dir)
-{
-    return clpos2position(Ship_get_engine_clpos(ship, dir));
-}
-static inline position_t
-Ship_get_m_gun_position(ShipShape *ship, int dir)
-{
-    return clpos2position(Ship_get_m_gun_clpos(ship, dir));
-}
-static inline position_t
-Ship_get_l_gun_position(ShipShape *ship, int gun, int dir)
-{
-    return clpos2position(Ship_get_l_gun_clpos(ship, gun, dir));
-}
-static inline position_t
-Ship_get_r_gun_position(ShipShape *ship, int gun, int dir)
-{
-    return clpos2position(Ship_get_r_gun_clpos(ship, gun, dir));
-}
+// static inline position_t
+// Ship_get_engine_position(ShipShape *ship, int dir)
+// {
+//     return clpos2position(Ship_get_engine_clpos(ship, dir));
+// }
+// static inline position_t
+// Ship_get_m_gun_position(ShipShape *ship, int dir)
+// {
+//     return clpos2position(Ship_get_m_gun_clpos(ship, dir));
+// }
+// static inline position_t
+// Ship_get_l_gun_position(ShipShape *ship, int gun, int dir)
+// {
+//     return clpos2position(Ship_get_l_gun_clpos(ship, gun, dir));
+// }
+// static inline position_t
+// Ship_get_r_gun_position(ShipShape *ship, int gun, int dir)
+// {
+//     return clpos2position(Ship_get_r_gun_clpos(ship, gun, dir));
+// }
 static inline position_t
 Ship_get_l_rgun_position(ShipShape *ship, int gun, int dir)
 {

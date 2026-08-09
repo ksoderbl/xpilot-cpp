@@ -422,7 +422,7 @@ void Fire_main_shot(Player *pl, int type, int dir)
     if (!Player_can_fire_shot(pl))
         return;
 
-    m_gun = Ship_get_m_gun_clpos(pl->ship, pl->dir);
+    m_gun = pl->ship->getMainGunClickPosition(pl->dir);
     pos.cx = pl->pos.cx + m_gun.cx;
     pos.cy = pl->pos.cy + m_gun.cy;
 
@@ -446,7 +446,15 @@ void Fire_left_shot(Player *pl, int type, int dir, int gun)
     if (!Player_can_fire_shot(pl))
         return;
 
-    l_gun = Ship_get_l_gun_clpos(pl->ship, gun, pl->dir);
+    // l_gun = Ship_get_l_gun_clpos(pl->ship, gun, pl->dir);
+    std::vector<clpos_t> &l_guns = pl->ship->getLeftGunClickPositions(pl->dir);
+
+    warn("Fire_left_shot: l_guns.size() = %d, gun = %d", l_guns.size(), gun);
+
+    if (l_guns.size() <= gun)
+        return;
+    l_gun = l_guns[gun];
+
     pos.cx = pl->pos.cx + l_gun.cx;
     pos.cy = pl->pos.cy + l_gun.cy;
 
@@ -461,7 +469,15 @@ void Fire_right_shot(Player *pl, int type, int dir, int gun)
     if (!Player_can_fire_shot(pl))
         return;
 
-    r_gun = Ship_get_r_gun_clpos(pl->ship, gun, pl->dir);
+    // r_gun = Ship_get_r_gun_clpos(pl->ship, gun, pl->dir);
+    std::vector<clpos_t> &r_guns = pl->ship->getRightGunClickPositions(pl->dir);
+
+    warn("Fire_right_shot: r_guns.size() = %d, gun = %d", r_guns.size(), gun);
+
+    if (r_guns.size() <= gun)
+        return;
+    r_gun = r_guns[gun];
+
     pos.cx = pl->pos.cx + r_gun.cx;
     pos.cy = pl->pos.cy + r_gun.cy;
 
@@ -1562,7 +1578,7 @@ void Update_missile(missileobject_t *missile)
             pl = Player_by_id(heat->heat_lock_id);
             if (!pl)
                 return;
-            engine = Ship_get_engine_clpos(pl->ship, pl->dir);
+            engine = pl->ship->getEngineClickPosition(pl->dir);
             range = World_wrap_length(
                         world,
                         pl->pos.cx + engine.cx - heat->pos.cx,
@@ -1608,10 +1624,11 @@ void Update_missile(missileobject_t *missile)
                     if (!Player_is_thrusting(pl_i))
                         continue;
 
-                    engine = Ship_get_engine_clpos(pl_i->ship, pl_i->dir);
-                    l = World_wrap_length(world,
-                                          pl_i->pos.cx + engine.cx - heat->pos.cx,
-                                          pl_i->pos.cy + engine.cy - heat->pos.cy) /
+                    engine = pl_i->ship->getEngineClickPosition(pl_i->dir);
+                    l = World_wrap_length(
+                            world,
+                            pl_i->pos.cx + engine.cx - heat->pos.cx,
+                            pl_i->pos.cy + engine.cy - heat->pos.cy) /
                         CLICK;
                     /*
                      * After burners can be detected easier;

@@ -951,7 +951,7 @@ static void Robotdef_fire_laser(Player *pl)
     if (!Player_is_active(ship))
         return;
 
-    m_gun = Ship_get_m_gun_clpos(pl->ship, pl->dir);
+    m_gun = pl->ship->getMainGunClickPosition(pl->dir);
     x2 = CLICK_TO_PIXEL(pl->pos.cx) + pl->vel.x + CLICK_TO_PIXEL(m_gun.cx);
     y2 = CLICK_TO_PIXEL(pl->pos.cy) + pl->vel.y + CLICK_TO_PIXEL(m_gun.cy);
     x3 = CLICK_TO_PIXEL(ship->pos.cx) + ship->vel.x;
