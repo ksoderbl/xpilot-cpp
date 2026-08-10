@@ -2127,6 +2127,8 @@ void Move_player1(Player *pl)
     int i;
     int dist;
     move_info_t mi;
+    // TODO: ANGLE_RESOLUTION (128) is misleading here, because in ms[i] 'i' refers to the index of a
+    // ship point, not an angle.
     move_state_t ms[ANGLE_RESOLUTION];
     int worst = 0;
     int crash;
@@ -2163,6 +2165,8 @@ void Move_player1(Player *pl)
     }
 
     /* Figure out which friction to use. */
+    // TODO: Use some World_get_friction function here
+
     if (Player_is_phasing(pl))
         fric = options.frictionSetting;
     else
@@ -2218,9 +2222,12 @@ void Move_player1(Player *pl)
     todo.cy = FLOAT_TO_CLICK(vel.y);
 
     std::vector<clpos_t> &points1 = pl->ship->getPoints(pl->dir);
-    int num_points = points1.size(); // == pl->ship->num_points
+    int num_ship_points = points1.size(); // == pl->ship->num_points
 
-    warn("Move_player1: num_points: %d, pl->ship->num_points: %d", num_points, pl->ship->num_points);
+    warn("Move_player1: num_ship_points: %d, pl->ship->num_points: %d",
+         num_ship_points, pl->ship->num_points);
+
+    warn("Move_player1: (%s) dir (points1) = %d\n", pl->name.c_str(), pl->dir);
 
     i = 0;
     for (auto &p : points1)
@@ -2241,9 +2248,11 @@ void Move_player1(Player *pl)
         i++;
     }
 
-    warn("Move_player1: pl->dir = %d, ms[0].dir = %d", pl->dir, ms[0].dir);
+    // warn("Move_player1: pl->dir = %d, ms[0].dir = %d", pl->dir, ms[0].dir);
 
     std::vector<clpos_t> &points2 = pl->ship->getPoints(ms[0].dir);
+
+    warn("Move_player1: (%s) dir (points2) = %d\n", pl->name.c_str(), ms[0].dir);
 
     for (;; moves_made++)
     {
@@ -2284,7 +2293,7 @@ void Move_player1(Player *pl)
             }
             todo.cx -= done.cx;
             todo.cy -= done.cy;
-            for (i = 0; i < num_points; i++)
+            for (i = 0; i < num_ship_points; i++)
             {
                 ms[i].pos.cx += done.cx;
                 ms[i].pos.cy += done.cy;
@@ -2313,7 +2322,7 @@ void Move_player1(Player *pl)
 
         bounce = -1;
         crash = -1;
-        for (i = 0; i < num_points; i++)
+        for (i = 0; i < num_ship_points; i++)
         {
             Move_segment1(&ms[i]);
 
@@ -2334,7 +2343,7 @@ void Move_player1(Player *pl)
                     bounce = i;
                 else if ((ms[bounce].bounce == BounceEdge) == (ms[i].bounce == BounceEdge))
                 {
-                    if ((int)(rfrac() * (num_points - bounce)) == i)
+                    if ((int)(rfrac() * (num_ship_points - bounce)) == i)
                         bounce = i;
                 }
                 worst = bounce;
@@ -2505,7 +2514,7 @@ void Move_player1(Player *pl)
         }
         else
         {
-            for (i = 0; i < num_points; i++)
+            for (i = 0; i < num_ship_points; i++)
             {
                 r[i].x = (vel.x) ? (double)ms[i].todo.cx / vel.x : 0;
                 r[i].y = (vel.y) ? (double)ms[i].todo.cy / vel.y : 0;
@@ -2513,7 +2522,7 @@ void Move_player1(Player *pl)
                 r[i].y = ABS(r[i].y);
             }
             worst = 0;
-            for (i = 1; i < num_points; i++)
+            for (i = 1; i < num_ship_points; i++)
             {
                 if (r[i].x > r[worst].x || r[i].y > r[worst].y)
                     worst = i;
@@ -2538,7 +2547,7 @@ void Move_player1(Player *pl)
             break;
 
         vel = ms[worst].vel;
-        for (i = 0; i < num_points; i++)
+        for (i = 0; i < num_ship_points; i++)
         {
             if (i != worst)
             {
@@ -2552,11 +2561,13 @@ void Move_player1(Player *pl)
     }
 
     // clpos_t p = Ship_get_point_clpos(pl->ship, worst, pl->dir);
-    // pos.cx = ms[worst].pos.cx - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].x);
-    // pos.cy = ms[worst].pos.cy - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].y);
     std::vector<clpos_t> &points3 = pl->ship->getPoints(pl->dir);
     clpos_t p = points3[worst];
 
+    warn("Move_player1: (%s) dir (points2) = %d\n", pl->name.c_str(), pl->dir);
+
+    // pos.cx = ms[worst].pos.cx - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].x);
+    // pos.cy = ms[worst].pos.cy - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].y);
     pos.cx = ms[worst].pos.cx - p.cx;
     pos.cy = ms[worst].pos.cy - p.cy;
     pos.cx = WORLD_WRAP_XCLICK(world, pos.cx);
@@ -2634,10 +2645,11 @@ void Turn_player1(Player *pl)
     for (; pl->dir != new_dir; turns_done++)
     {
         dir = MOD2(pl->dir + sign, ANGLE_RESOLUTION);
-        std::vector<clpos_t> &points = pl->ship->getPoints(dir);
 
         if (!mi.edge_wrap)
         {
+            std::vector<clpos_t> &points = pl->ship->getPoints(dir);
+
             if (pos.cx <= 22 * CLICK)
             {
                 // for (i = 0; i < pl->ship->num_points; i++)
@@ -2698,16 +2710,20 @@ void Turn_player1(Player *pl)
                 Player_position_set_clicks(pl, pos);
         }
 
-        std::vector<clpos_t> &points1 = pl->ship->getPoints(pl->dir);
-        std::vector<clpos_t> &points2 = pl->ship->getPoints(dir);
-        int num_points = points1.size(); // pl->ship->num_points;
+        // Using vector references here fail, because the loop below alters the
+        // referred cached vector in shipshape when accessing pl->dir and dir,
+        // assuming these are different.
+        // std::vector<clpos_t> &points1 = pl->ship->getPoints(pl->dir);
+        // std::vector<clpos_t> &points2 = pl->ship->getPoints(dir);
+        std::vector<clpos_t> points1 = pl->ship->getPoints(pl->dir);
+        std::vector<clpos_t> points2 = pl->ship->getPoints(dir);
 
-        for (i = 0; i < pl->ship->num_points; i++)
+        for (i = 0; i < points1.size(); i++)
         {
-            clpos_t p1 = Ship_get_point_clpos(pl->ship, i, pl->dir);
-            clpos_t p2 = Ship_get_point_clpos(pl->ship, i, dir);
-            // clpos_t p1 = points1[i];
-            // clpos_t p2 = points2[i];
+            // clpos_t p1 = Ship_get_point_clpos(pl->ship, i, pl->dir);
+            // clpos_t p2 = Ship_get_point_clpos(pl->ship, i, dir);
+            clpos_t p1 = points1[i];
+            clpos_t p2 = points2[i];
 
             ms[i].mip = &mi;
             // ms[i].pos.cx = pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][pl->dir].x);
