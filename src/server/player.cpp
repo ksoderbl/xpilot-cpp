@@ -1738,9 +1738,8 @@ void Detach_ball(Player *pl, ballobject_t *ball)
 
 void Kill_player(Player *pl, bool add_rank_death)
 {
-    // warn("Kill_player: player: %s", pl->name.c_str());
-
-    Explode_fighter(pl);
+    if (Player_is_killed(pl))
+        Explode_fighter(pl);
     Player_death_reset(pl, add_rank_death);
 }
 
@@ -1843,8 +1842,6 @@ void Player_death_reset(Player *pl, bool add_rank_death)
                 }
             }
             Player_set_life(pl, 0);
-            // SET_BIT(pl->obj_status, LEGACY_GAME_OVER);
-            // pl->mychar = 'D';
             if (waiting)
                 Player_set_state(pl, PL_STATE_WAITING);
             else

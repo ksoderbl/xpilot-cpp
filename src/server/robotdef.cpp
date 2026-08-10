@@ -787,7 +787,6 @@ static void Choose_weapon_modifier(Player *pl, int weapon_type)
         if ((my_data->robot_count % 2) == 0)
         {
             if ((my_data->robot_count % 8) == 0)
-                // mods.velocity = (int)(rfrac() * MODS_VELOCITY_MAX) + 1;
                 Mods_set(&mods, ModsVelocity,
                          (int)(rfrac() * MODS_VELOCITY_MAX) + 1);
             Mods_set(&mods, ModsCluster, 1);
@@ -801,7 +800,6 @@ static void Choose_weapon_modifier(Player *pl, int weapon_type)
      */
     if ((my_data->robot_count % 10) == 0)
     {
-        // mods.mini = (int)(rfrac() * (MODS_MINI_MAX + 1));
         Mods_set(&mods, ModsMini, (int)(rfrac() * (MODS_MINI_MAX + 1)));
         Mods_set(&mods, ModsSpread,
                  (int)(rfrac() * (MODS_SPREAD_MAX + 1)));

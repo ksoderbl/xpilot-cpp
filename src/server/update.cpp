@@ -784,9 +784,10 @@ static void Do_repair(Player *pl)
     world_t *world = &theWorld;
     target_t *targ = Target_by_index(world, pl->repair_target);
 
-    if ((World_wrap_length(world,
-                           pl->pos.cx - targ->pos.cx,
-                           pl->pos.cy - targ->pos.cy) > 90.0 * CLICK) ||
+    if ((World_wrap_length(
+             world,
+             pl->pos.cx - targ->pos.cx,
+             pl->pos.cy - targ->pos.cy) > 90.0 * CLICK) ||
         targ->damage >= TARGET_DAMAGE ||
         targ->dead_ticks > 0 ||
         Player_is_phasing(pl))

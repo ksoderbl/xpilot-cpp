@@ -369,8 +369,10 @@ static void PlayerCollision(void)
                 pl->ball = nullptr;
             else
             {
-                double distance = World_wrap_length(world, pl->pos.cx - ball->pos.cx,
-                                                    pl->pos.cy - ball->pos.cy);
+                double distance = World_wrap_length(
+                    world,
+                    pl->pos.cx - ball->pos.cx,
+                    pl->pos.cy - ball->pos.cy);
                 int group;
 
                 if (distance >= options.ballConnectorLength * CLICK)
@@ -1406,8 +1408,10 @@ static void BallCollision(void)
             {
                 clpos_t cpos = Check_by_index(world, owner->check)->pos;
 
-                if (World_wrap_length(world, ball->pos.cx - cpos.cx,
-                                      ball->pos.cy - cpos.cy) < options.checkpointRadius * BLOCK_CLICKS)
+                if (World_wrap_length(
+                        world,
+                        ball->pos.cx - cpos.cx,
+                        ball->pos.cy - cpos.cy) < options.checkpointRadius * BLOCK_CLICKS)
                     Player_pass_checkpoint(owner);
             }
         }

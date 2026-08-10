@@ -835,7 +835,10 @@ int Find_closest_team(clpos_t pos)
         if (base->team == TEAM_NOT_SET)
             continue;
 
-        l = World_wrap_length(world, pos.cx - base->pos.cx, pos.cy - base->pos.cy);
+        l = World_wrap_length(
+            world,
+            pos.cx - base->pos.cx,
+            pos.cy - base->pos.cy);
         if (l < closest)
         {
             team = world->bases[i].team;

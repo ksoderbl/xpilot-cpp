@@ -643,9 +643,10 @@ void Do_transporter(Player *pl)
             Player_is_tank(pl_i) ||
             Player_is_phasing(pl_i))
             continue;
-        dist = World_wrap_length(world,
-                                 pl->pos.cx - pl_i->pos.cx,
-                                 pl->pos.cy - pl_i->pos.cy);
+        dist = World_wrap_length(
+            world,
+            pl->pos.cx - pl_i->pos.cx,
+            pl->pos.cy - pl_i->pos.cy);
         if (dist < closest)
         {
             closest = dist;

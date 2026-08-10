@@ -369,9 +369,10 @@ static void Player_repair(Player *pl)
 
         if (targ->team == pl->team && targ->dead_ticks <= 0)
         {
-            l = World_wrap_length(world,
-                                  pl->pos.cx - targ->pos.cx,
-                                  pl->pos.cy - targ->pos.cy);
+            l = World_wrap_length(
+                world,
+                pl->pos.cx - targ->pos.cx,
+                pl->pos.cy - targ->pos.cy);
             if (!Player_is_repairing(pl) || l < dist)
             {
                 SET_BIT(pl->used, USES_REPAIR);

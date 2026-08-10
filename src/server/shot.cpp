@@ -200,9 +200,10 @@ void Place_general_mine(int id, int team, int status,
 
                 if (pl_i->id != pl->id && !Team_immune(pl_i->id, pl->id) && !Player_is_tank(pl_i))
                 {
-                    double len = World_wrap_length(world,
-                                                   pos.cx - pl_i->home_base->pos.cx,
-                                                   pos.cy - pl_i->home_base->pos.cy) /
+                    double len = World_wrap_length(
+                                     world,
+                                     pos.cx - pl_i->home_base->pos.cx,
+                                     pos.cy - pl_i->home_base->pos.cy) /
                                  BLOCK_CLICKS;
 
                     if (len <= options.baseMineRange)

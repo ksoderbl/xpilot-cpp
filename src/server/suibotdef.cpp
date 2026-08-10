@@ -746,8 +746,8 @@ double Robot_ram_object(Player *pl, object_t *object)
 
         velx=( object->vel.x -  pl->vel.x );
         vely=( object->vel.y -  pl->vel.y );
-        x=   WRAP_DCX( object->pos.cx - pl->pos.cx );
-        y=   WRAP_DCY( object->pos.cy - pl->pos.cy );
+        x=   WORLD_WRAP_DCX(world,  object->pos.cx - pl->pos.cx );
+        y=   WORLD_WRAP_DCY(world,  object->pos.cy - pl->pos.cy );
     */
     /* prevent possible division by 0 */
     /*    if(velx == 0 || vely == 0)
@@ -963,9 +963,8 @@ static void Robotdef_fire_laser(Player *pl)
                     PIXEL_TO_CLICK(y3 - y2)) /
                 CLICK;
 
-    // TODO: uncomment when we have options.pulseSpeed and options.pulseLife
-    // if (ship_dist >= options.pulseSpeed * options.pulseLife + SHIP_SZ)
-    //     return;
+    if (ship_dist >= options.pulseSpeed * options.pulseLife + SHIP_SZ)
+        return;
 
     dir3 = World_wrap_findDir(world, x3 - x2, y3 - y2);
     Robot_set_pointing_direction(pl, dir3);
@@ -1100,7 +1099,11 @@ static void Robot_suibot_play(Player *pl)
             Player_is_alive(ship) &&
             ship_dist < ship_dist_closest &&
             (pl->team != ship->team) &&
-            ((!BIT(ship->used, HAS_SHIELD)) || World_wrap_length(world, ship->pos.cx - pl->pos.cx, ship->pos.cy - pl->pos.cy) < 8000))
+            ((!BIT(ship->used, HAS_SHIELD)) ||
+             World_wrap_length(
+                 world,
+                 ship->pos.cx - pl->pos.cx,
+                 ship->pos.cy - pl->pos.cy) < 8000))
         {
             ship_dist_closest = ship_dist;
             closest_opponent = ship;
@@ -1181,9 +1184,10 @@ static void Robot_suibot_play(Player *pl)
 
     if (ball &&
         ball_dist < maxdist &&
-        World_wrap_length(world,
-                          ball->pos.cx - ball->ball_treasure->pos.cx,
-                          ball->pos.cy - ball->ball_treasure->pos.cy) > 10000)
+        World_wrap_length(
+            world,
+            ball->pos.cx - ball->ball_treasure->pos.cx,
+            ball->pos.cy - ball->ball_treasure->pos.cy) > 10000)
     {
         Robot_ram_object(pl, OBJ_PTR(ball));
         return;
