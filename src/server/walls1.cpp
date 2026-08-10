@@ -2634,14 +2634,14 @@ void Turn_player1(Player *pl)
     for (; pl->dir != new_dir; turns_done++)
     {
         dir = MOD2(pl->dir + sign, ANGLE_RESOLUTION);
-        std::vector<clpos_t> &points2 = pl->ship->getPoints(dir);
+        std::vector<clpos_t> &points = pl->ship->getPoints(dir);
 
         if (!mi.edge_wrap)
         {
             if (pos.cx <= 22 * CLICK)
             {
                 // for (i = 0; i < pl->ship->num_points; i++)
-                for (auto &p : points2)
+                for (auto &p : points)
                 {
                     // if (pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) < 0)
                     // {
@@ -2655,7 +2655,7 @@ void Turn_player1(Player *pl)
             if (pos.cx >= mp.click_width - 22 * CLICK)
             {
                 // for (i = 0; i < pl->ship->num_points; i++)
-                for (auto &p : points2)
+                for (auto &p : points)
                 {
                     // if (pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) >= mp.click_width)
                     // {
@@ -2669,7 +2669,7 @@ void Turn_player1(Player *pl)
             if (pos.cy <= 22 * CLICK)
             {
                 // for (i = 0; i < pl->ship->num_points; i++)
-                for (auto &p : points2)
+                for (auto &p : points)
                 {
                     // if (pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) < 0)
                     // {
@@ -2683,7 +2683,7 @@ void Turn_player1(Player *pl)
             if (pos.cy >= mp.click_height - 22 * CLICK)
             {
                 // for (i = 0; i < pl->ship->num_points; i++)
-                for (auto &p : points2)
+                for (auto &p : points)
                 {
                     // if (pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) >= mp.click_height)
                     // {
@@ -2699,15 +2699,15 @@ void Turn_player1(Player *pl)
         }
 
         std::vector<clpos_t> &points1 = pl->ship->getPoints(pl->dir);
-        // std::vector<clpos_t> &points2 = pl->ship->getPoints(dir);
+        std::vector<clpos_t> &points2 = pl->ship->getPoints(dir);
         int num_points = points1.size(); // pl->ship->num_points;
 
-        for (i = 0; i < points1.size(); i++)
+        for (i = 0; i < pl->ship->num_points; i++)
         {
-            // clpos_t p1 = Ship_get_point_clpos(pl->ship, i, pl->dir);
-            // clpos_t p2 = Ship_get_point_clpos(pl->ship, i, dir);
-            clpos_t p1 = points1[i];
-            clpos_t p2 = points2[i];
+            clpos_t p1 = Ship_get_point_clpos(pl->ship, i, pl->dir);
+            clpos_t p2 = Ship_get_point_clpos(pl->ship, i, dir);
+            // clpos_t p1 = points1[i];
+            // clpos_t p2 = points2[i];
 
             ms[i].mip = &mi;
             // ms[i].pos.cx = pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][pl->dir].x);
