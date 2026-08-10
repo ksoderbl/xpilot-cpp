@@ -241,15 +241,13 @@ static void Walldist_init(void)
         x = q[qfront].x;
         y = q[qfront].y;
         if (++qfront == world->x * world->y)
-        {
             qfront = 0;
-        }
+
         dist = walldist[x][y];
         mindist = dist + 2;
         if (mindist >= 255)
-        {
             continue;
-        }
+
         for (dx = -1; dx <= 1; dx++)
         {
             if (Wrap_play(world) || (x + dx >= 0 && x + dx < world->x))
@@ -268,30 +266,22 @@ static void Walldist_init(void)
                                 if (world->block[x][y] == REC_LD)
                                 {
                                     if (dx == +1 && dy == +1)
-                                    {
                                         newdist = mindist + 1;
-                                    }
                                 }
                                 else if (world->block[x][y] == REC_RD)
                                 {
                                     if (dx == -1 && dy == +1)
-                                    {
                                         newdist = mindist + 1;
-                                    }
                                 }
                                 else if (world->block[x][y] == REC_LU)
                                 {
                                     if (dx == +1 && dy == -1)
-                                    {
                                         newdist = mindist + 1;
-                                    }
                                 }
                                 else if (world->block[x][y] == REC_RU)
                                 {
                                     if (dx == -1 && dy == -1)
-                                    {
                                         newdist = mindist + 1;
-                                    }
                                 }
                             }
                             if (newdist < walldist[wx][wy])
@@ -300,9 +290,7 @@ static void Walldist_init(void)
                                 q[qback].x = wx;
                                 q[qback].y = wy;
                                 if (++qback == world->x * world->y)
-                                {
                                     qback = 0;
-                                }
                             }
                         }
                     }
@@ -329,18 +317,14 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
             ms->todo.cx = -ms->todo.cx;
             ms->vel.x = -ms->vel.x;
             if (!ms->mip->pl)
-            {
                 ms->dir = MOD2(ANGLE_RESOLUTION / 2 - ms->dir, ANGLE_RESOLUTION);
-            }
         }
         else
         {
             ms->todo.cx = 0;
             ms->vel.x = 0;
             if (!ms->mip->pl)
-            {
                 ms->dir = (ms->vel.y < 0) ? (3 * ANGLE_RESOLUTION / 4) : ANGLE_RESOLUTION / 4;
-            }
         }
     }
     else if (bounce == BounceHorHi)
@@ -350,18 +334,14 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
             ms->todo.cx = -ms->todo.cx;
             ms->vel.x = -ms->vel.x;
             if (!ms->mip->pl)
-            {
                 ms->dir = MOD2(ANGLE_RESOLUTION / 2 - ms->dir, ANGLE_RESOLUTION);
-            }
         }
         else
         {
             ms->todo.cx = 0;
             ms->vel.x = 0;
             if (!ms->mip->pl)
-            {
                 ms->dir = (ms->vel.y < 0) ? (3 * ANGLE_RESOLUTION / 4) : ANGLE_RESOLUTION / 4;
-            }
         }
     }
     else if (bounce == BounceVerLo)
@@ -371,18 +351,14 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
             ms->todo.cy = -ms->todo.cy;
             ms->vel.y = -ms->vel.y;
             if (!ms->mip->pl)
-            {
                 ms->dir = MOD2(ANGLE_RESOLUTION - ms->dir, ANGLE_RESOLUTION);
-            }
         }
         else
         {
             ms->todo.cy = 0;
             ms->vel.y = 0;
             if (!ms->mip->pl)
-            {
                 ms->dir = (ms->vel.x < 0) ? (ANGLE_RESOLUTION / 2) : 0;
-            }
         }
     }
     else if (bounce == BounceVerHi)
@@ -392,18 +368,14 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
             ms->todo.cy = -ms->todo.cy;
             ms->vel.y = -ms->vel.y;
             if (!ms->mip->pl)
-            {
                 ms->dir = MOD2(ANGLE_RESOLUTION - ms->dir, ANGLE_RESOLUTION);
-            }
         }
         else
         {
             ms->todo.cy = 0;
             ms->vel.y = 0;
             if (!ms->mip->pl)
-            {
                 ms->dir = (ms->vel.x < 0) ? (ANGLE_RESOLUTION / 2) : 0;
-            }
         }
     }
     ms->bounce = BounceEdge;
@@ -421,36 +393,28 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
         ms->todo.cx = -ms->todo.cx;
         ms->vel.x = -ms->vel.x;
         if (!ms->mip->pl)
-        {
             ms->dir = MOD2(ANGLE_RESOLUTION / 2 - ms->dir, ANGLE_RESOLUTION);
-        }
     }
     else if (bounce == BounceHorHi)
     {
         ms->todo.cx = -ms->todo.cx;
         ms->vel.x = -ms->vel.x;
         if (!ms->mip->pl)
-        {
             ms->dir = MOD2(ANGLE_RESOLUTION / 2 - ms->dir, ANGLE_RESOLUTION);
-        }
     }
     else if (bounce == BounceVerLo)
     {
         ms->todo.cy = -ms->todo.cy;
         ms->vel.y = -ms->vel.y;
         if (!ms->mip->pl)
-        {
             ms->dir = MOD2(ANGLE_RESOLUTION - ms->dir, ANGLE_RESOLUTION);
-        }
     }
     else if (bounce == BounceVerHi)
     {
         ms->todo.cy = -ms->todo.cy;
         ms->vel.y = -ms->vel.y;
         if (!ms->mip->pl)
-        {
             ms->dir = MOD2(ANGLE_RESOLUTION - ms->dir, ANGLE_RESOLUTION);
-        }
     }
     else
     {
@@ -463,9 +427,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
             ms->vel.x = -v.y;
             ms->vel.y = -v.x;
             if (!ms->mip->pl)
-            {
                 ms->dir = MOD2(3 * ANGLE_RESOLUTION / 4 - ms->dir, ANGLE_RESOLUTION);
-            }
         }
         else if (bounce == BounceLeftUp)
         {
@@ -474,9 +436,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
             ms->vel.x = v.y;
             ms->vel.y = v.x;
             if (!ms->mip->pl)
-            {
                 ms->dir = MOD2(ANGLE_RESOLUTION / 4 - ms->dir, ANGLE_RESOLUTION);
-            }
         }
         else if (bounce == BounceRightDown)
         {
@@ -485,9 +445,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
             ms->vel.x = v.y;
             ms->vel.y = v.x;
             if (!ms->mip->pl)
-            {
                 ms->dir = MOD2(ANGLE_RESOLUTION / 4 - ms->dir, ANGLE_RESOLUTION);
-            }
         }
         else if (bounce == BounceRightUp)
         {
@@ -496,9 +454,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
             ms->vel.x = -v.y;
             ms->vel.y = -v.x;
             if (!ms->mip->pl)
-            {
                 ms->dir = MOD2(3 * ANGLE_RESOLUTION / 4 - ms->dir, ANGLE_RESOLUTION);
-            }
         }
     }
     ms->bounce = bounce;
