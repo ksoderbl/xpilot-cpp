@@ -129,24 +129,24 @@ public:
     // int currentDirCacheHits = 0;
     // int currentDirCacheMisses = 0;
 
-    clpos_t *pts[MAX_SHIP_PTS];       /* the shape rotated many ways */
-    int num_points;                   /* total points in object */
-    clpos_t engine[ANGLE_RESOLUTION]; /* Engine position */
-    clpos_t m_gun[ANGLE_RESOLUTION];  /* Main gun position */
+    clpos_t *pts[MAX_SHIP_PTS]; /* the shape rotated many ways */
+    int num_points;             /* total points in object */
+    clpos_t engine;             /* Engine position */
+    clpos_t mainGun;            /* Main gun position */
     int num_l_gun,
         num_r_gun,
         num_l_rgun,
-        num_r_rgun;              /* number of additional cannons */
-    clpos_t *l_gun[MAX_GUN_PTS], /* Additional cannon positions, left*/
-        *r_gun[MAX_GUN_PTS],     /* Additional cannon positions, right*/
-        *l_rgun[MAX_GUN_PTS],    /* Additional rear cannon positions, left*/
-        *r_rgun[MAX_GUN_PTS];    /* Additional rear cannon positions, right*/
-    int num_l_light,             /* Number of lights */
+        num_r_rgun;                     /* number of additional cannons */
+    clpos_t leftGuns[MAX_GUN_PTS];      /* Additional cannon positions, left*/
+    clpos_t rightGuns[MAX_GUN_PTS];     /* Additional cannon positions, right*/
+    clpos_t leftRearGuns[MAX_GUN_PTS];  /* Additional rear cannon positions, left*/
+    clpos_t rightRearGuns[MAX_GUN_PTS]; /* Additional rear cannon positions, right*/
+    int num_l_light,                    /* Number of lights */
         num_r_light;
-    clpos_t *l_light[MAX_LIGHT_PTS], /* Left and right light positions */
-        *r_light[MAX_LIGHT_PTS];
+    clpos_t leftLights[MAX_LIGHT_PTS]; /* Left and right light positions */
+    clpos_t rightLights[MAX_LIGHT_PTS];
     int num_m_rack; /* Number of missile racks */
-    clpos_t *m_rack[MAX_RACK_PTS];
+    clpos_t missileRacks[MAX_RACK_PTS];
     int shield_radius; /* Radius of shield used by client. */
 
 #ifdef _NAMEDSHIPS

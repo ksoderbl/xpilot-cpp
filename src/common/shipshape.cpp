@@ -87,18 +87,18 @@ void ShipShape::rotateShip(int dir)
     }
 
     // engine
-    pos = this->engine[0];
+    pos = this->engine;
     engineClickPosition = My_rotate_clpos(pos, dir);
 
     // main gun
-    pos = this->m_gun[0];
+    pos = this->mainGun;
     mainGunClickPosition = My_rotate_clpos(pos, dir);
 
     // left guns
     leftGunClickPositions.clear();
     for (int i = 0; i < this->num_l_gun; i++)
     {
-        pos = this->l_gun[i][0];
+        pos = this->leftGuns[i];
         pos = My_rotate_clpos(pos, dir);
         leftGunClickPositions.push_back(pos);
     }
@@ -107,7 +107,7 @@ void ShipShape::rotateShip(int dir)
     rightGunClickPositions.clear();
     for (int i = 0; i < this->num_r_gun; i++)
     {
-        pos = this->r_gun[i][0];
+        pos = this->rightGuns[i];
         pos = My_rotate_clpos(pos, dir);
         rightGunClickPositions.push_back(pos);
     }
@@ -116,7 +116,7 @@ void ShipShape::rotateShip(int dir)
     leftRearGunClickPositions.clear();
     for (int i = 0; i < this->num_l_rgun; i++)
     {
-        pos = this->l_rgun[i][0];
+        pos = this->leftRearGuns[i];
         pos = My_rotate_clpos(pos, dir);
         leftRearGunClickPositions.push_back(pos);
     }
@@ -125,7 +125,7 @@ void ShipShape::rotateShip(int dir)
     rightRearGunClickPositions.clear();
     for (int i = 0; i < this->num_r_rgun; i++)
     {
-        pos = this->r_rgun[i][0];
+        pos = this->rightRearGuns[i];
         pos = My_rotate_clpos(pos, dir);
         rightRearGunClickPositions.push_back(pos);
     }
@@ -134,7 +134,7 @@ void ShipShape::rotateShip(int dir)
     leftLightClickPositions.clear();
     for (int i = 0; i < this->num_l_light; i++)
     {
-        pos = this->l_light[i][0];
+        pos = this->leftLights[i];
         pos = My_rotate_clpos(pos, dir);
         leftLightClickPositions.push_back(pos);
     }
@@ -143,7 +143,7 @@ void ShipShape::rotateShip(int dir)
     rightLightClickPositions.clear();
     for (int i = 0; i < this->num_r_light; i++)
     {
-        pos = this->r_light[i][0];
+        pos = this->rightLights[i];
         pos = My_rotate_clpos(pos, dir);
         rightLightClickPositions.push_back(pos);
     }
@@ -152,7 +152,7 @@ void ShipShape::rotateShip(int dir)
     missileRackClickPositions.clear();
     for (int i = 0; i < this->num_m_rack; i++)
     {
-        pos = this->m_rack[i][0];
+        pos = this->missileRacks[i];
         pos = My_rotate_clpos(pos, dir);
         missileRackClickPositions.push_back(pos);
     }
@@ -174,47 +174,47 @@ static void Ship_set_point_ipos(ShipShape *ship, int i, ipos_t pos)
 
 static void Ship_set_engine_ipos(ShipShape *ship, ipos_t pos)
 {
-    ship->engine[0] = ipos2clpos(pos);
+    ship->engine = ipos2clpos(pos);
 }
 
 static void Ship_set_m_gun_ipos(ShipShape *ship, ipos_t pos)
 {
-    ship->m_gun[0] = ipos2clpos(pos);
+    ship->mainGun = ipos2clpos(pos);
 }
 
 static void Ship_set_l_gun_ipos(ShipShape *ship, int i, ipos_t pos)
 {
-    ship->l_gun[i][0] = ipos2clpos(pos);
+    ship->leftGuns[i] = ipos2clpos(pos);
 }
 
 static void Ship_set_r_gun_ipos(ShipShape *ship, int i, ipos_t pos)
 {
-    ship->r_gun[i][0] = ipos2clpos(pos);
+    ship->rightGuns[i] = ipos2clpos(pos);
 }
 
 static void Ship_set_l_rgun_ipos(ShipShape *ship, int i, ipos_t pos)
 {
-    ship->l_rgun[i][0] = ipos2clpos(pos);
+    ship->leftRearGuns[i] = ipos2clpos(pos);
 }
 
 static void Ship_set_r_rgun_ipos(ShipShape *ship, int i, ipos_t pos)
 {
-    ship->r_rgun[i][0] = ipos2clpos(pos);
+    ship->rightRearGuns[i] = ipos2clpos(pos);
 }
 
 static void Ship_set_l_light_ipos(ShipShape *ship, int i, ipos_t pos)
 {
-    ship->l_light[i][0] = ipos2clpos(pos);
+    ship->leftLights[i] = ipos2clpos(pos);
 }
 
 static void Ship_set_r_light_ipos(ShipShape *ship, int i, ipos_t pos)
 {
-    ship->r_light[i][0] = ipos2clpos(pos);
+    ship->rightLights[i] = ipos2clpos(pos);
 }
 
 static void Ship_set_m_rack_ipos(ShipShape *ship, int i, ipos_t pos)
 {
-    ship->m_rack[i][0] = ipos2clpos(pos);
+    ship->missileRacks[i] = ipos2clpos(pos);
 }
 
 clpos_t *Shape_get_points(shape_t *s, int dir)
@@ -260,23 +260,6 @@ void Rotate_ship(ShipShape *ship)
 
     for (i = 0; i < ship->num_points; i++)
         Rotate_point(&ship->pts[i][0]);
-
-    Rotate_point(&ship->engine[0]);
-    Rotate_point(&ship->m_gun[0]);
-    for (i = 0; i < ship->num_l_gun; i++)
-        Rotate_point(&ship->l_gun[i][0]);
-    for (i = 0; i < ship->num_r_gun; i++)
-        Rotate_point(&ship->r_gun[i][0]);
-    for (i = 0; i < ship->num_l_rgun; i++)
-        Rotate_point(&ship->l_rgun[i][0]);
-    for (i = 0; i < ship->num_r_rgun; i++)
-        Rotate_point(&ship->r_rgun[i][0]);
-    for (i = 0; i < ship->num_l_light; i++)
-        Rotate_point(&ship->l_light[i][0]);
-    for (i = 0; i < ship->num_r_light; i++)
-        Rotate_point(&ship->r_light[i][0]);
-    for (i = 0; i < ship->num_m_rack; i++)
-        Rotate_point(&ship->m_rack[i][0]);
 }
 
 /*
@@ -319,19 +302,16 @@ ShipShape *Default_ship(void)
         Ship_set_m_gun_ipos(&sh, pos);
 
         sh.num_l_light = 1;
-        sh.l_light[0] = &pts[3][0];
         pos.x = -8;
         pos.y = 8;
         Ship_set_l_light_ipos(&sh, 0, pos);
 
         sh.num_r_light = 1;
-        sh.r_light[0] = &pts[4][0];
         pos.x = -8;
         pos.y = -8;
         Ship_set_r_light_ipos(&sh, 0, pos);
 
         sh.num_m_rack = 1;
-        sh.m_rack[0] = &pts[5][0];
         pos.x = 14;
         pos.y = 0;
         Ship_set_m_rack_ipos(&sh, 0, pos);
@@ -1257,83 +1237,9 @@ static int shape2wire(char *ship_shape_str, ShipShape *ship)
 
     i = sizeof(position_t) * ANGLE_RESOLUTION;
     ship->pts[0] = (clpos_t *)malloc(ship->num_points * i);
-    if (ship->num_l_gun)
-    {
-        ship->l_gun[0] = (clpos_t *)malloc(ship->num_l_gun * i);
-    }
-    if (ship->num_r_gun)
-    {
-        ship->r_gun[0] = (clpos_t *)malloc(ship->num_r_gun * i);
-    }
-    if (ship->num_l_rgun)
-    {
-        ship->l_rgun[0] = (clpos_t *)malloc(ship->num_l_rgun * i);
-    }
-    if (ship->num_r_rgun)
-    {
-        ship->r_rgun[0] = (clpos_t *)malloc(ship->num_r_rgun * i);
-    }
-    if (ship->num_l_light)
-    {
-        ship->l_light[0] = (clpos_t *)malloc(ship->num_l_light * i);
-    }
-    if (ship->num_r_light)
-    {
-        ship->r_light[0] = (clpos_t *)malloc(ship->num_r_light * i);
-    }
-    if (ship->num_m_rack)
-    {
-        ship->m_rack[0] = (clpos_t *)malloc(ship->num_m_rack * i);
-    }
-
-    // if (!(ship->pts[0] = (position_t *)malloc(ship->num_points * i)) ||
-    //     (ship->num_l_gun && !(ship->l_gun[0] = (position_t *)malloc(ship->num_l_gun * i))) ||
-    //     (ship->num_r_gun && !(ship->r_gun[0] = (position_t *)malloc(ship->num_r_gun * i))) ||
-    //     (ship->num_l_rgun && !(ship->l_rgun[0] = (position_t *)malloc(ship->num_l_rgun * i))) ||
-    //     (ship->num_r_rgun && !(ship->r_rgun[0] = (position_t *)malloc(ship->num_r_rgun * i))) ||
-    //     (ship->num_l_light && !(ship->l_light[0] = (position_t *)malloc(ship->num_l_light * i))) ||
-    //     (ship->num_r_light && !(ship->r_light[0] = (position_t *)malloc(ship->num_r_light * i))) ||
-    //     (ship->num_m_rack && !(ship->m_rack[0] = (position_t *)malloc(ship->num_m_rack * i))))
-
-    // TODO: here we assume mallocs above succeed.
-    // This code will go away later, so let's not bother checking.
-    if (false)
-    {
-        error("Not enough memory for ship shape");
-        XFREE(ship->pts[0]);
-        XFREE(ship->l_gun[0]);
-        XFREE(ship->r_gun[0]);
-        XFREE(ship->l_rgun[0]);
-        XFREE(ship->r_rgun[0]);
-        XFREE(ship->l_light[0]);
-        XFREE(ship->r_light[0]);
-        XFREE(ship->m_rack[0]);
-        return -1;
-    }
 
     for (i = 1; i < ship->num_points; i++)
         ship->pts[i] = &ship->pts[i - 1][ANGLE_RESOLUTION];
-
-    for (i = 1; i < ship->num_l_gun; i++)
-        ship->l_gun[i] = &ship->l_gun[i - 1][ANGLE_RESOLUTION];
-
-    for (i = 1; i < ship->num_r_gun; i++)
-        ship->r_gun[i] = &ship->r_gun[i - 1][ANGLE_RESOLUTION];
-
-    for (i = 1; i < ship->num_l_rgun; i++)
-        ship->l_rgun[i] = &ship->l_rgun[i - 1][ANGLE_RESOLUTION];
-
-    for (i = 1; i < ship->num_r_rgun; i++)
-        ship->r_rgun[i] = &ship->r_rgun[i - 1][ANGLE_RESOLUTION];
-
-    for (i = 1; i < ship->num_l_light; i++)
-        ship->l_light[i] = &ship->l_light[i - 1][ANGLE_RESOLUTION];
-
-    for (i = 1; i < ship->num_r_light; i++)
-        ship->r_light[i] = &ship->r_light[i - 1][ANGLE_RESOLUTION];
-
-    for (i = 1; i < ship->num_m_rack; i++)
-        ship->m_rack[i] = &ship->m_rack[i - 1][ANGLE_RESOLUTION];
 
     for (i = 0; i < ship->num_points; i++)
         Ship_set_point_ipos(ship, i, pt[i]);
@@ -1400,26 +1306,6 @@ void Free_ship_shape(ShipShape *ship)
     {
         if (ship->num_points > 0)
             XFREE(ship->pts[0]);
-        if (ship->num_l_gun > 0)
-            XFREE(ship->l_gun[0]);
-        if (ship->num_r_gun > 0)
-            XFREE(ship->r_gun[0]);
-        if (ship->num_l_rgun > 0)
-            XFREE(ship->l_rgun[0]);
-        if (ship->num_r_rgun > 0)
-            XFREE(ship->r_rgun[0]);
-        if (ship->num_l_light > 0)
-            XFREE(ship->l_light[0]);
-        if (ship->num_r_light > 0)
-            XFREE(ship->r_light[0]);
-        if (ship->num_m_rack > 0)
-            XFREE(ship->m_rack[0]);
-#ifdef _NAMEDSHIPS
-        if (ship->name)
-            free(ship->name);
-        if (ship->author)
-            free(ship->author);
-#endif
         delete ship;
     }
 }
