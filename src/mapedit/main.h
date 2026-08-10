@@ -147,7 +147,6 @@ typedef struct
     int cannonFlak;
     char cannonDeadTime[20];
     int keepShots;
-    int teamAssign;
     int teamImmunity;
     int ecmsReprogramMines;
     int ecmsReprogramRobots;

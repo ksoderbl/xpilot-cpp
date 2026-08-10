@@ -500,9 +500,6 @@ typedef struct options
     // Are players allowed to watch others?
     bool allowViewing;
 
-    // Assign player to team if not set?
-    bool teamAssign;
-
     // Is team immune from player action
     bool teamImmunity;
 
