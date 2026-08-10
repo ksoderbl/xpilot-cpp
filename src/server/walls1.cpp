@@ -1793,7 +1793,7 @@ static void Object_crash1(move_state_t *ms)
         }
         else
         {
-            warn("walls: CrashCannon line 2128!");
+            // warn("walls: CrashCannon line 2128!");
             cannon_t *cannon = ms->cannon_ptr;
             if (!BIT(cannon->used, USES_EMERGENCY_SHIELD))
             {
@@ -2003,7 +2003,7 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
         break;
 
     case CrashCannon:
-        warn("walls: case CrashCannon line 2337");
+        // warn("walls: case CrashCannon line 2337");
         if (!Player_uses_emergency_shield(pl))
         {
             howfmt = "%s smashed%s against a cannon";
@@ -2224,10 +2224,9 @@ void Move_player1(Player *pl)
     std::vector<clpos_t> &points1 = pl->ship->getPoints(pl->dir);
     int num_ship_points = points1.size(); // == pl->ship->num_points
 
-    warn("Move_player1: num_ship_points: %d, pl->ship->num_points: %d",
-         num_ship_points, pl->ship->num_points);
-
-    warn("Move_player1: (%s) dir (points1) = %d\n", pl->name.c_str(), pl->dir);
+    // warn("Move_player1: num_ship_points: %d, pl->ship->num_points: %d",
+    //      num_ship_points, pl->ship->num_points);
+    // warn("Move_player1: (%s) dir (points1) = %d\n", pl->name.c_str(), pl->dir);
 
     i = 0;
     for (auto &p : points1)
@@ -2252,7 +2251,7 @@ void Move_player1(Player *pl)
 
     std::vector<clpos_t> &points2 = pl->ship->getPoints(ms[0].dir);
 
-    warn("Move_player1: (%s) dir (points2) = %d\n", pl->name.c_str(), ms[0].dir);
+    // warn("Move_player1: (%s) dir (points2) = %d\n", pl->name.c_str(), ms[0].dir);
 
     for (;; moves_made++)
     {
@@ -2564,7 +2563,7 @@ void Move_player1(Player *pl)
     std::vector<clpos_t> &points3 = pl->ship->getPoints(pl->dir);
     clpos_t p = points3[worst];
 
-    warn("Move_player1: (%s) dir (points2) = %d\n", pl->name.c_str(), pl->dir);
+    // warn("Move_player1: (%s) dir (points3) = %d\n", pl->name.c_str(), pl->dir);
 
     // pos.cx = ms[worst].pos.cx - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].x);
     // pos.cy = ms[worst].pos.cy - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].y);
@@ -2717,6 +2716,8 @@ void Turn_player1(Player *pl)
         // std::vector<clpos_t> &points2 = pl->ship->getPoints(dir);
         std::vector<clpos_t> points1 = pl->ship->getPoints(pl->dir);
         std::vector<clpos_t> points2 = pl->ship->getPoints(dir);
+
+        // warn("Turn_player1: (%s) pl->dir = %d, dir = %d\n", pl->name.c_str(), pl->dir, dir);
 
         for (i = 0; i < points1.size(); i++)
         {

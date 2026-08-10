@@ -126,8 +126,8 @@ public:
     std::vector<clpos_t> missileRackClickPositions;
 
     int currentDir = -1; // current rotated direction
-    int currentDirCacheHits = 0;
-    int currentDirCacheMisses = 0;
+    // int currentDirCacheHits = 0;
+    // int currentDirCacheMisses = 0;
 
     clpos_t *pts[MAX_SHIP_PTS];       /* the shape rotated many ways */
     int num_points;                   /* total points in object */

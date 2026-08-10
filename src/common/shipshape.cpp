@@ -43,14 +43,14 @@ static bool shapeLimits = true;
 
 ShipShape::ShipShape()
 {
-    warn("ShipShape::ShipShape: Hello world!");
+    // warn("ShipShape::ShipShape: Hello world!");
     // Assume rotate never gets negative angles like this.
     currentDir = INT_MIN;
 }
 
 ShipShape::~ShipShape()
 {
-    warn("ShipShape::~ShipShape: Goodbye cruel world!");
+    // warn("ShipShape::~ShipShape: Goodbye cruel world!");
 }
 
 static inline clpos_t My_rotate_clpos(clpos_t pos, int dir)
@@ -67,11 +67,10 @@ void ShipShape::rotateShip(int dir)
 {
     if (dir == currentDir)
     {
-        currentDirCacheHits++;
-        // warn("rotate, dir is already %d", dir);
-        double cacheHitRatio = 100.0 * (double)currentDirCacheHits / (double)(currentDirCacheMisses + currentDirCacheHits);
-        warn("rotate, dir is already %d (cache hits %d/%d =  %f%%)",
-             dir, currentDirCacheHits, (currentDirCacheMisses + currentDirCacheHits), cacheHitRatio);
+        // currentDirCacheHits++;
+        // double cacheHitRatio = 100.0 * (double)currentDirCacheHits / (double)(currentDirCacheMisses + currentDirCacheHits);
+        // warn("rotate, dir is already %d (cache hits %d/%d =  %f%%)",
+        //      dir, currentDirCacheHits, (currentDirCacheMisses + currentDirCacheHits), cacheHitRatio);
 
         return;
     }
@@ -160,12 +159,10 @@ void ShipShape::rotateShip(int dir)
 
     currentDir = dir;
 
-    currentDirCacheMisses++;
-
-    double cacheHitRatio = 100.0 * (double)currentDirCacheHits / (double)(currentDirCacheMisses + currentDirCacheHits);
-
-    warn("rotate, new dir is %d (cache hits %d/%d =  %f%%)",
-         dir, currentDirCacheHits, (currentDirCacheMisses + currentDirCacheHits), cacheHitRatio);
+    // currentDirCacheMisses++;
+    // double cacheHitRatio = 100.0 * (double)currentDirCacheHits / (double)(currentDirCacheMisses + currentDirCacheHits);
+    // warn("rotate, new dir is %d (cache hits %d/%d =  %f%%)",
+    //      dir, currentDirCacheHits, (currentDirCacheMisses + currentDirCacheHits), cacheHitRatio);
 }
 
 static int Get_shape_keyword(char *keyw);
