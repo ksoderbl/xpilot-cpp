@@ -115,8 +115,6 @@ enum
     MAX_SOUNDS
 };
 
-#ifdef _CAUDIO_C_
-
 static const char *soundNames[] =
     {
         "start",
@@ -203,8 +201,6 @@ static const char *soundNames[] =
         "asteroid_hit",
         "asteroid_break",
 };
-
-#endif /* _CAUDIO_C_ */
 
 extern void audioInit(char *display);
 extern void audioCleanup(void);

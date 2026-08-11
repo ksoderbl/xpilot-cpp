@@ -48,7 +48,6 @@
 
 #include "client.h"
 
-#define _CAUDIO_C_
 #include "audio.h"
 
 /* options */
@@ -84,7 +83,8 @@ void audioInit(char *display)
 
 #if 0
     /* kps - let's not do this, otherwise sounds can't be enabled ingame */
-    if (!maxVolume) {
+    if (!maxVolume)
+    {
         xpinfo("maxVolume is 0: no sound.\n");
         return;
     }
