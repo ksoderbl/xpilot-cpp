@@ -59,6 +59,32 @@ public:
     ShipShape();
     ~ShipShape();
 
+    clpos_t *pts[MAX_SHIP_PTS2]; /* the shape rotated many ways */
+    int num_points = 0;          /* total points in object */
+    int num_orig_points = 0;     /* points before SSHACK */
+    clpos_t engine;              /* Engine position */
+    clpos_t mainGun;             /* Main gun position */
+    int num_l_gun = 0,
+        num_r_gun = 0,
+        num_l_rgun = 0,
+        num_r_rgun = 0;                 /* number of additional cannons */
+    clpos_t leftGuns[MAX_GUN_PTS];      /* Additional cannon positions, left*/
+    clpos_t rightGuns[MAX_GUN_PTS];     /* Additional cannon positions, right*/
+    clpos_t leftRearGuns[MAX_GUN_PTS];  /* Additional rear cannon positions, left*/
+    clpos_t rightRearGuns[MAX_GUN_PTS]; /* Additional rear cannon positions, right*/
+    int num_l_light = 0,                /* Number of lights */
+        num_r_light = 0;
+    clpos_t leftLights[MAX_LIGHT_PTS]; /* Left and right light positions */
+    clpos_t rightLights[MAX_LIGHT_PTS];
+    int num_m_rack = 0; /* Number of missile racks */
+    clpos_t missileRacks[MAX_RACK_PTS];
+    int shield_radius = 0; /* Radius of shield used by client. */
+
+#ifdef _NAMEDSHIPS
+    char *name;
+    char *author;
+#endif
+
     std::vector<clpos_t> &getPoints(int dir)
     {
         // warn("getPoints, dir %d", dir);
@@ -126,33 +152,8 @@ public:
     std::vector<clpos_t> missileRackClickPositions;
 
     int currentDir = -1; // current rotated direction
-    // int currentDirCacheHits = 0;
-    // int currentDirCacheMisses = 0;
-
-    clpos_t *pts[MAX_SHIP_PTS]; /* the shape rotated many ways */
-    int num_points;             /* total points in object */
-    clpos_t engine;             /* Engine position */
-    clpos_t mainGun;            /* Main gun position */
-    int num_l_gun,
-        num_r_gun,
-        num_l_rgun,
-        num_r_rgun;                     /* number of additional cannons */
-    clpos_t leftGuns[MAX_GUN_PTS];      /* Additional cannon positions, left*/
-    clpos_t rightGuns[MAX_GUN_PTS];     /* Additional cannon positions, right*/
-    clpos_t leftRearGuns[MAX_GUN_PTS];  /* Additional rear cannon positions, left*/
-    clpos_t rightRearGuns[MAX_GUN_PTS]; /* Additional rear cannon positions, right*/
-    int num_l_light,                    /* Number of lights */
-        num_r_light;
-    clpos_t leftLights[MAX_LIGHT_PTS]; /* Left and right light positions */
-    clpos_t rightLights[MAX_LIGHT_PTS];
-    int num_m_rack; /* Number of missile racks */
-    clpos_t missileRacks[MAX_RACK_PTS];
-    int shield_radius; /* Radius of shield used by client. */
-
-#ifdef _NAMEDSHIPS
-    char *name;
-    char *author;
-#endif
+    int currentDirCacheHits = 0;
+    int currentDirCacheMisses = 0;
 };
 
 extern ShipShape *Default_ship(void);

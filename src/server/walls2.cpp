@@ -1268,21 +1268,24 @@ static int Shape_morph(shape_t *shape1, int dir1,
 
     num_points = shape1->num_points;
 
-    // TODO: Possibly ShipShape should be a subclass of Shape
-    ShipShape *ship1 = (ShipShape *)shape1;
-    ShipShape *ship2 = (ShipShape *)shape2;
-    auto &shipPoints1 = ship1->getPoints(dir1);
-    auto &shipPoints2 = ship2->getPoints(dir2);
+    // // TODO: Possibly ShipShape should be a subclass of Shape
+    // ShipShape *ship1 = (ShipShape *)shape1;
+    // ShipShape *ship2 = (ShipShape *)shape2;
+    // auto &shipPoints1 = ship1->getPoints(dir1);
+    // auto &shipPoints2 = ship2->getPoints(dir2);
 
-    for (i = 0; i < shipPoints1.size() && i < shipPoints2.size(); i++)
+    // for (i = 0; i < shipPoints1.size() && i < shipPoints2.size(); i++)
+    for (i = 0; i < num_points; i++)
     {
         clpos_t pt1, pt2;
         /*clpos_t ptx1, ptx2;
 
           ptx1 = pts1[i];
           ptx2 = pts2[i];*/
-        pt1 = shipPoints1[i];
-        pt2 = shipPoints2[i];
+        // pt1 = shipPoints1[i];
+        // pt2 = shipPoints2[i];
+        pt1 = Ship_get_point_clpos((ShipShape *)shape1, i, dir1);
+        pt2 = Ship_get_point_clpos((ShipShape *)shape2, i, dir2);
 
         /*assert(ptx1.cx == pt1.cx);
           assert(ptx1.cy == pt1.cy);
@@ -1327,10 +1330,10 @@ static int Shape_morph(shape_t *shape1, int dir1,
 
         /*pto1 = pts1[num_points - 1];
           ptn1 = pts2[num_points - 1];*/
-        // pto1 = Ship_get_point_clpos((ShipShape *)shape1, num_points - 1, dir1);
-        // ptn1 = Ship_get_point_clpos((ShipShape *)shape2, num_points - 1, dir2);
-        pto1 = shipPoints1[num_points - 1];
-        ptn1 = shipPoints2[num_points - 1];
+        pto1 = Ship_get_point_clpos((ShipShape *)shape1, num_points - 1, dir1);
+        ptn1 = Ship_get_point_clpos((ShipShape *)shape2, num_points - 1, dir2);
+        // pto1 = shipPoints1[num_points - 1];
+        // ptn1 = shipPoints2[num_points - 1];
 
         xo1 = pto1.cx - xp;
         yo1 = pto1.cy - yp;
@@ -1344,10 +1347,10 @@ static int Shape_morph(shape_t *shape1, int dir1,
 
             /*pto2 = pts1[i];
               ptn2 = pts2[i];*/
-            // pto2 = Ship_get_point_clpos((ShipShape *)shape1, i, dir1);
-            // ptn2 = Ship_get_point_clpos((ShipShape *)shape2, i, dir2);
-            pto2 = shipPoints1[i];
-            ptn2 = shipPoints2[i];
+            pto2 = Ship_get_point_clpos((ShipShape *)shape1, i, dir1);
+            ptn2 = Ship_get_point_clpos((ShipShape *)shape2, i, dir2);
+            // pto2 = shipPoints1[i];
+            // ptn2 = shipPoints2[i];
 
             xo2 = pto2.cx - xp;
             yo2 = pto2.cy - yp;
@@ -2696,18 +2699,17 @@ void Walls_init2(void)
         linet[i].s = 2 * x * y / l2;
     }
 
-    // TODO: 2026-08-10: This segfaults, so let's comment it out for now.
-    // warn("Walls_init2: create blockmap");
+    warn("Walls_init2: create blockmap");
 
-    // if (is_polygon_map)
-    // {
-    //     if (options.mapData)
-    //     {
-    //         warn("Option mapData is not supported on polygon maps.");
-    //         warn("Server automatically creates block map from polygons.");
-    //     }
-    //     Create_blockmap_from_polygons();
-    // }
+    if (is_polygon_map)
+    {
+        if (options.mapData)
+        {
+            warn("Option mapData is not supported on polygon maps.");
+            warn("Server automatically creates block map from polygons.");
+        }
+        Create_blockmap_from_polygons();
+    }
 
     warn("Walls_init2: DONE");
 }
@@ -3167,18 +3169,21 @@ void Turn_player2(Player *pl, bool push)
             length = 0;
             l = 0.0;
 
-            int num_ship_points = ((shape_t *)pl->ship)->num_points;
-            int i1 = ans.point;
-            int i2 = (ans.point + 1) % num_ship_points;
+            // int num_ship_points = ((shape_t *)pl->ship)->num_points;
+            // int i1 = ans.point;
+            // int i2 = (ans.point + 1) % num_ship_points;
 
-            assert(i1 < num_ship_points);
-            assert(i2 < num_ship_points);
+            // assert(i1 < num_ship_points);
+            // assert(i2 < num_ship_points);
 
-            std::vector<clpos_t> &shipPoints = pl->ship->getPoints(pl->dir);
-            // p1 = Ship_get_point_clpos((ShipShape *)pl->ship, i1, pl->dir);
-            // p2 = Ship_get_point_clpos((ShipShape *)pl->ship, i2, pl->dir);
-            p1 = shipPoints[i1];
-            p2 = shipPoints[i2];
+            // std::vector<clpos_t> &shipPoints = pl->ship->getPoints(pl->dir);
+            // // p1 = Ship_get_point_clpos((ShipShape *)pl->ship, i1, pl->dir);
+            // // p2 = Ship_get_point_clpos((ShipShape *)pl->ship, i2, pl->dir);
+            // p1 = shipPoints[i1];
+            // p2 = shipPoints[i2];
+
+            p1 = Ship_get_point_clpos((ShipShape *)pl->ship, ans.point, pl->dir);
+            p2 = Ship_get_point_clpos((ShipShape *)pl->ship, (ans.point + 1) % (((shape_t *)pl->ship)->num_points), pl->dir);
 
             /* x,y defines the direction of the line that prevented turning */
             if (ans.line != -1)
