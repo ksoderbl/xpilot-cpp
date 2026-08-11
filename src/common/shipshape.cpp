@@ -374,7 +374,7 @@ static bool Grid_point_is_outside_ship(grid_t *grid_p, ipos_t pt)
     return is_outside;
 }
 
-static int shape2wire(char *ship_shape_str, ShipShape *ship)
+static int shape2wire(std::string ship_shape_str, ShipShape *ship)
 {
     int i, j, x, y, dx, dy, max, shape_version = 0;
     ipos_t pt[MAX_SHIP_PTS2], in, engine, m_gun;
@@ -401,9 +401,8 @@ static int shape2wire(char *ship_shape_str, ShipShape *ship)
     if (debugShapeParsing)
         warn("parsing shape: %s", ship_shape_str);
 
-    for (str = ship_shape_str; (str = strchr(str, '(')) != nullptr;)
+    for (str = const_cast<char *>(ship_shape_str.c_str()); (str = strchr(str, '(')) != nullptr;)
     {
-
         str++;
 
         if (shape_version == 0)
@@ -745,7 +744,7 @@ static int shape2wire(char *ship_shape_str, ShipShape *ship)
     {
         int ofNum, ofLeft, ofRight; /* old format */
 
-        str = ship_shape_str;
+        str = const_cast<char *>(ship_shape_str.c_str());
 
         if (sscanf(str, "(%d,%d,%d)", &ofNum, &ofLeft, &ofRight) != 3 || ofNum < MIN_SHIP_PTS || ofNum > MAX_SHIP_PTS || ofLeft < 0 || ofLeft >= ofNum || ofRight < 0 || ofRight >= ofNum)
         {
@@ -1276,9 +1275,9 @@ static int shape2wire(char *ship_shape_str, ShipShape *ship)
     return 0;
 }
 
-static ShipShape *do_parse_shape(char *str)
+static ShipShape *do_parse_shape(std::string str)
 {
-    if (!str || !*str)
+    if (str.empty())
     {
         if (debugShapeParsing)
             warn("shape str not set");
@@ -1310,14 +1309,14 @@ void Free_ship_shape(ShipShape *ship)
     }
 }
 
-ShipShape *Parse_shape_str(char *str)
+ShipShape *Parse_shape_str(std::string str)
 {
     verboseShapeParsing = debugShapeParsing;
     shapeLimits = true;
     return do_parse_shape(str);
 }
 
-ShipShape *Convert_shape_str(char *str)
+ShipShape *Convert_shape_str(std::string str)
 {
     verboseShapeParsing = debugShapeParsing;
     shapeLimits = debugShapeParsing;
@@ -1327,7 +1326,7 @@ ShipShape *Convert_shape_str(char *str)
 /*
  * Returns 0 if ships is not valid, 1 if valid.
  */
-int Validate_shape_str(char *str)
+int Validate_shape_str(std::string str)
 {
     ShipShape *ship;
 

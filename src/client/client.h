@@ -110,14 +110,6 @@ typedef struct
                 than this */
 #define MAX_POINTER_BUTTONS 5
 
-#define FIND_NAME_WIDTH(other)                                             \
-    if ((other)->name_width == 0)                                          \
-    {                                                                      \
-        (other)->name_len = strlen((other)->nick_name);                    \
-        (other)->name_width = 2 + XTextWidth(gameFont, (other)->nick_name, \
-                                             (other)->name_len);           \
-    }
-
 /*
  * is a selection pending (in progress), done, drawn emphasized?
  */

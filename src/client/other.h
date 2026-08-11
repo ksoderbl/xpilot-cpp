@@ -23,6 +23,9 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include <cstdint>
 
 #include "shipshape.h"
@@ -30,32 +33,36 @@
 class Other
 {
 public:
+    Other();
+    ~Other();
+
     double ratio;
     double score;
-    short id;
+    int id;
     uint16_t team;
-    short check;
-    short round;
+    int check;
+    int round;
     long timing_loops;
-    short timing;
-    short life;
-    short mychar;
-    short alliance;
-    short name_width;         /* In pixels */
-    short name_len;           /* In bytes */
-    short max_chars_in_names; /* name_width was calculated
+    int timing;
+    int life;
+    int mychar;
+    int alliance;
+    int name_width;         /* In pixels */
+    int name_len;           /* In bytes */
+    int max_chars_in_names; /* name_width was calculated
                      for this value of maxCharsInNames */
-    short ignorelevel;
+    int ignorelevel;
     ShipShape *ship;
-    char nick_name[MAX_CHARS];
-    char user_name[MAX_CHARS];
-    char host_name[MAX_CHARS];
-    char id_string[MAX_CHARS];
+    std::string nick_name;
+    std::string user_name;
+    std::string host_name;
+    std::string id_string;
 };
 
 extern Other *self; /* Player info */
-extern Other *Others;
-extern int num_others, max_others;
+// extern Other *others;
+// extern int num_others, max_others;
+extern std::vector<Other *> others;
 
 Other *Other_by_id(int id);
 Other *Other_by_name(const char *name, bool show_error_msg);

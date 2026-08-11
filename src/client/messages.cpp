@@ -77,9 +77,9 @@ static bool Msg_is_from_our_team(const char *message, const char **msg2)
         return false;
 
     len = strlen(message);
-    for (i = 0; i < num_others; i++)
+    for (i = 0; i < others.size(); i++)
     {
-        other = &Others[i];
+        other = others[i];
         if (other->team != self->team)
             continue;
 

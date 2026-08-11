@@ -1025,17 +1025,17 @@ void Gui_paint_ball_connector(int x1, int y1, int x2, int y2)
         glDisable(GL_LINE_SMOOTH);
 }
 
-void Gui_paint_mine(int x, int y, int teammine, char *name)
+void Gui_paint_mine(int x, int y, int teammine, std::string name)
 {
     Image_paint(teammine ? IMG_MINE_TEAM : IMG_MINE_OTHER,
                 x - 10, y - 7, 0, whiteRGBA);
-    if (name)
+    if (!name.empty())
     {
         mapnprint(&mapfont,
                   teammine ? blueRGBA : whiteRGBA,
                   CENTER, DOWN,
                   x, y - 15,
-                  maxCharsInNames, "%s", name);
+                  maxCharsInNames, "%s", name.c_str());
     }
 }
 
@@ -1361,22 +1361,22 @@ int Life_color(Other *other)
     return color;
 }
 
-static int Gui_is_my_tank(Other *other)
+static bool Gui_is_my_tank(Other *other)
 {
-    char tank_name[MAX_NAME_LEN];
+    std::string tank_name;
 
-    if (self == nullptr || other == nullptr || other->mychar != 'T' || (BIT(Setup->mode, TEAM_PLAY) && self->team != other->team))
-    {
-        return 0;
-    }
+    if (self == nullptr ||
+        other == nullptr ||
+        other->mychar != 'T' ||
+        (BIT(Setup->mode, TEAM_PLAY) && self->team != other->team))
+        return false;
 
-    if (strlcpy(tank_name, self->nick_name, MAX_NAME_LEN) < MAX_NAME_LEN)
-        strlcat(tank_name, "'s tank", MAX_NAME_LEN);
+    tank_name = self->nick_name + "'s tank";
 
-    if (strcmp(tank_name, other->nick_name))
-        return 0;
+    if (tank_name != other->nick_name)
+        return false;
 
-    return 1;
+    return true;
 }
 
 static int Gui_calculate_ship_color(int id, Other *other)
@@ -1810,7 +1810,7 @@ static void Paint_lock(int hud_pos_x, int hud_pos_y)
                   color, CENTER, CENTER,
                   hud_pos_x,
                   hud_pos_y - (-hudSize + HUD_OFFSET - BORDER),
-                  strlen(target->id_string), "%s", target->id_string);
+                  target->id_string.length(), "%s", target->id_string.c_str());
     }
 }
 

@@ -26,9 +26,20 @@
 #include "other.h"
 #include "messages.h"
 
+Other::Other()
+{
+    warn("Other::Other: Hello world!");
+}
+Other::~Other()
+{
+    warn("Other::Other: Goodbye cruel world! (%s)", nick_name.c_str());
+}
+
 Other *self = nullptr; /* player info */
-Other *Others = nullptr;
-int num_others = 0, max_others = 0;
+// Other *others = nullptr;
+// int num_others = 0, max_others = 0;
+
+std::vector<Other *> others;
 
 Other *Other_by_id(int id)
 {
@@ -36,10 +47,10 @@ Other *Other_by_id(int id)
 
     if (id != -1)
     {
-        for (i = 0; i < num_others; i++)
+        for (i = 0; i < others.size(); i++)
         {
-            if (Others[i].id == id)
-                return &Others[i];
+            if (others[i]->id == id)
+                return others[i];
         }
     }
     return nullptr;
@@ -55,19 +66,19 @@ Other *Other_by_name(const char *name, bool show_error_msg)
         goto match_none;
 
     /* Look for an exact match on player nickname. */
-    for (i = 0; i < num_others; i++)
+    for (i = 0; i < others.size(); i++)
     {
-        other = &Others[i];
-        if (!strcasecmp(other->nick_name, name))
+        other = others[i];
+        if (!strcasecmp(other->nick_name.c_str(), name))
             return other;
     }
 
     /* Look if 'name' matches beginning of only one nick. */
-    for (i = 0; i < num_others; i++)
+    for (i = 0; i < others.size(); i++)
     {
-        other = &Others[i];
+        other = others[i];
 
-        if (!strncasecmp(other->nick_name, name, len))
+        if (!strncasecmp(other->nick_name.c_str(), name, len))
         {
             if (found_other)
                 goto match_several;
@@ -81,14 +92,14 @@ Other *Other_by_name(const char *name, bool show_error_msg)
     /*
      * Check what players' name 'name' is a substring of (case insensitively).
      */
-    for (i = 0; i < num_others; i++)
+    for (i = 0; i < others.size(); i++)
     {
         int j;
-        other = &Others[i];
+        other = others[i];
 
-        for (j = 0; j < 1 + (int)strlen(other->nick_name) - (int)len; j++)
+        for (j = 0; j < 1 + (int)other->nick_name.length() - (int)len; j++)
         {
-            if (!strncasecmp(other->nick_name + j, name, len))
+            if (!strncasecmp(other->nick_name.c_str() + j, name, len))
             {
                 if (found_other)
                     goto match_several;
@@ -119,6 +130,6 @@ ShipShape *Ship_by_id(int id)
     Other *other;
 
     if ((other = Other_by_id(id)) == nullptr)
-        return Parse_shape_str(nullptr);
+        return Parse_shape_str("");
     return other->ship;
 }

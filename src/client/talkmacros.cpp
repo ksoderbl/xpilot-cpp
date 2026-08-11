@@ -196,7 +196,7 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos,
                     outbuf[pos++] = player->life + '0';
                 break;
             case 'n':
-                tmpptr = player->nick_name;
+                tmpptr = const_cast<char *>(player->nick_name.c_str());
                 for (i = 0; tmpptr[i] != '\0' && pos < max - 2; ++i)
                     outbuf[pos++] = tmpptr[i];
                 break;

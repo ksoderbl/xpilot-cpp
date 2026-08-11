@@ -101,19 +101,29 @@ static inline void SET_FG(unsigned long fg)
 
 #define MAX_LINE_WIDTH 4
 
-static inline void Check_name_string(Other *other)
-{
-    if (other && other->max_chars_in_names != maxCharsInNames)
-    {
-        int len;
+// static inline void Check_name_string(Other *other)
+// {
+//     if (other && other->max_chars_in_names != maxCharsInNames)
+//     {
+//         int len;
 
-        strlcpy(other->id_string, other->nick_name, sizeof(other->id_string));
-        len = strlen(other->id_string);
-        if (maxCharsInNames >= 0 && maxCharsInNames < len)
-            other->id_string[maxCharsInNames] = '\0';
-        other->name_len = strlen(other->id_string);
-        other->name_width = 2 + XTextWidth(gameFont, other->id_string, other->name_len);
-        other->max_chars_in_names = maxCharsInNames;
+//         strlcpy(other->id_string, other->nick_name, sizeof(other->id_string));
+//         len = strlen(other->id_string);
+//         if (maxCharsInNames >= 0 && maxCharsInNames < len)
+//             other->id_string[maxCharsInNames] = '\0';
+//         other->name_len = strlen(other->id_string);
+//         other->name_width = 2 + XTextWidth(gameFont, other->id_string, other->name_len);
+//         other->max_chars_in_names = maxCharsInNames;
+//     }
+// }
+
+static inline void FIND_NAME_WIDTH(Other *other)
+{
+    if ((other)->name_width == 0)
+    {
+        (other)->name_len = ((other)->nick_name.length());
+        (other)->name_width = 2 + XTextWidth(gameFont, (other)->nick_name.c_str(),
+                                             (other)->name_len);
     }
 }
 

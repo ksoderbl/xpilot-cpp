@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "other.h"
 
 /* typedefs begin */
@@ -39,7 +41,7 @@ bool Msg_is_game_msg(const char *message);
 void Msg_scan_game_msg(const char *message);
 void Msg_scan_angle_bracketed_msg(const char *message);
 msg_bms_t Msg_do_bms(const char *message);
-void Add_roundend_messages(Other **order);
+void Add_roundend_messages(std::vector<Other *> &order);
 
 bool Bms_test_state(msg_bms_t bms);
 void Bms_set_state(msg_bms_t bms);

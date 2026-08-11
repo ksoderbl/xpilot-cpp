@@ -23,6 +23,10 @@
 
 #include "clientmap.h"
 
+#include <algorithm>
+#include <vector>
+#include <string>
+
 #include <climits>
 #include <cstdio>
 #include <cstring>
@@ -1023,10 +1027,10 @@ homebase_t *Homebase_by_id(int id)
 
 int Handle_leave(int id)
 {
-    Other *other;
+    Other *other = Other_by_id(id);
     char msg[MSG_LEN];
 
-    if ((other = Other_by_id(id)) != nullptr)
+    if (other != nullptr)
     {
         if (other == self)
         {
@@ -1040,86 +1044,120 @@ int Handle_leave(int id)
          */
         if (other->mychar != 'T' && other->mychar != 'R')
         {
-            sprintf(msg, "%s left this world.", other->nick_name);
+            sprintf(msg, "%s left this world.", other->nick_name.c_str());
             Add_message(msg);
         }
-        num_others--;
-        while (other < &Others[num_others])
+        // TODO: how do I fix this?
+        // num_others--;
+        // while (other < &others[num_others])
+        // {
+        //     *other = other[1];
+        //     other++;
+        // }
+        // const auto it = std::find(others.begin(), others.end(), *other);
+        // if (it != others.end())
+        //     others.erase(it);
+        const auto it = std::find(others.begin(), others.end(), other);
+        if (it != others.end())
         {
-            *other = other[1];
-            other++;
+            others.erase(it);
+
+            warn("FOUND!");
+
+            delete other;
         }
+        else
+        {
+            warn("NOT FOUND!");
+        }
+
         scoresChanged = true;
     }
     return 0;
 }
 
 int Handle_player(int id, int player_team, int mychar,
-                  char *nick_name, char *user_name, char *host_name,
-                  char *shape, int myself)
+                  std::string nick_name, std::string user_name, std::string host_name,
+                  std::string shape, int myself)
 {
-    // warn("Handle_player: id %d, nick %s, myself = %d", id, nick_name, myself);
+    warn("Handle_player: id %d, nick %s, myself = %d", id, nick_name.c_str(), myself);
 
     Other *other;
 
-    if (BIT(Setup->mode, TEAM_PLAY) && (player_team < 0 || player_team >= MAX_TEAMS))
+    if (BIT(Setup->mode, TEAM_PLAY) &&
+        (player_team < 0 || player_team >= MAX_TEAMS))
     {
         warn("Illegal team %d for received player, setting to 0", player_team);
         player_team = 0;
     }
     if ((other = Other_by_id(id)) == nullptr)
     {
-        if (num_others >= max_others)
-        {
-            max_others += 5;
-            if (num_others == 0)
-                Others = XMALLOC(Other, max_others);
-            else
-                Others = XREALLOC(Other, Others, max_others);
-            if (Others == nullptr)
-                fatal("Not enough memory for player info");
-            if (self != nullptr)
-                /* We've made 'self' the first member of Others[]. */
-                self = &Others[0];
-        }
-        other = &Others[num_others++];
+        other = new Other{};
+        others.push_back(other);
+        int num_others = others.size();
+        // other = &others[num_others];
+        // if (num_others >= max_others)
+        // {
+        //     max_others += 5;
+        //     if (num_others == 0)
+        //         others = XMALLOC(Other, max_others);
+        //     else
+        //         others = XREALLOC(Other, others, max_others);
+        //     if (others == nullptr)
+        //         fatal("Not enough memory for player info");
+        //     if (self != nullptr)
+        //         /* We've made 'self' the first member of others[]. */
+        //         self = &others[0];
+        // }
+        // other = &others[num_others++];
     }
 
     // warn("Handle_player: id %d, connectParam.nick_name '%s'", id, connectParam.nick_name);
 
-    if (self == nullptr && (myself || (version < 0x4F10 && strcmp(connectParam.nick_name, nick_name) == 0)))
+    if (self == nullptr && (myself || (version < 0x4F10 && strcmp(connectParam.nick_name, nick_name.c_str()) == 0)))
     {
-        if (other != &Others[0])
+        if (other != others[0])
         {
-            /* Make 'self' the first member of Others[]. */
-            *other = Others[0];
-            other = &Others[0];
+            /* Make 'self' the first member of others[]. */
+            other = others[0];
         }
         self = other;
     }
     // warn("Handle_player: self = %p", self);
-    memset(other, 0, sizeof(Other));
+    // memset(other, 0, sizeof(Other));
+
+    other->ratio = 0.0;
+    other->score = 0.0;
     other->id = id;
     other->team = player_team;
+    other->check = 0;
+    other->round = 0;
+    other->timing_loops = 0;
+    other->timing = 0;
+    other->life = 0;
     other->mychar = mychar;
-    strlcpy(other->nick_name, nick_name, sizeof(other->nick_name));
-    strlcpy(other->user_name, user_name, sizeof(other->user_name));
-    strlcpy(other->host_name, host_name, sizeof(other->host_name));
-    strlcpy(other->id_string, nick_name, sizeof(other->id_string));
+    other->alliance = 0;
+    other->name_width = 0;
+    other->name_len = 0;
     other->max_chars_in_names = -1;
-    scoresChanged = true;
-    other->ship = Convert_shape_str(shape);
+    other->nick_name = nick_name;
+    other->user_name = user_name;
+    other->host_name = host_name;
+    other->id_string = nick_name;
+    other->ignorelevel = 0;
+    other->ship = Convert_shape_str(shape.c_str());
     int radius = Calculate_shield_radius(other->ship);
     other->ship->shield_radius = radius;
+
+    scoresChanged = true;
 
     return 0;
 }
 
 int Handle_team(int id, int pl_team)
 {
-    Other *other;
+    Other *other = Other_by_id(id);
 
-    other = Other_by_id(id);
     if (other == nullptr)
     {
         warn("Received packet to change team for nonexistent id %d", id);
@@ -1138,9 +1176,9 @@ int Handle_team(int id, int pl_team)
 
 int Handle_score(int id, double score, int life, int mychar, int alliance)
 {
-    Other *other;
+    Other *other = Other_by_id(id);
 
-    if ((other = Other_by_id(id)) == nullptr)
+    if (other == nullptr)
     {
         warn("Can't update score for non-existing player %d,%d,%d",
              id, (int)score, life);
@@ -1166,9 +1204,9 @@ int Handle_team_score(int team, double score)
 
 int Handle_timing(int id, int check, int round, long tloops)
 {
-    Other *other;
+    Other *other = Other_by_id(id);
 
-    if ((other = Other_by_id(id)) == nullptr)
+    if (other == nullptr)
     {
         warn("Can't update timing for non-existing player %d,%d,%d",
              id, check, round);

@@ -171,7 +171,7 @@ static void Paint_mines(void)
                         name = expired_name;
                     }
                     else if ((other = Other_by_id(mine.id)) != nullptr)
-                        name = other->nick_name;
+                        name = const_cast<char *>(other->nick_name.c_str());
                     else
                     {
                         static char unknown_name[] = "Not of this world!";

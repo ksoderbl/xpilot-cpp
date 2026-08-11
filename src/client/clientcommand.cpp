@@ -57,24 +57,24 @@ static void print_ignorelist(void)
     int i;
     uint16_t check = 0;
 
-    for (i = 0; i < num_others; i++)
+    for (i = 0; i < others.size(); i++)
     {
-        if (Others[i].ignorelevel == 1)
+        if (others[i]->ignorelevel == 1)
         {
-            if (strlen(buffer) + strlen(Others[i].nick_name) + 17 > MAX_CHARS)
+            if (strlen(buffer) + strlen(others[i]->nick_name.c_str()) + 17 > MAX_CHARS)
             {
                 strcat(buffer, "[*Client reply*]");
                 Add_message(buffer);
                 buffer[0] = '\0';
             }
 
-            strcat(buffer, Others[i].nick_name);
+            strcat(buffer, others[i]->nick_name.c_str());
             strcat(buffer, " ");
             check = 1;
         }
-        else if (Others[i].ignorelevel == 2)
+        else if (others[i]->ignorelevel == 2)
         {
-            if (strlen(buffer) + strlen(Others[i].nick_name) + 18 > MAX_CHARS)
+            if (strlen(buffer) + strlen(others[i]->nick_name.c_str()) + 18 > MAX_CHARS)
             {
                 strcat(buffer, "[*Client reply*]");
                 Add_message(buffer);
@@ -82,7 +82,7 @@ static void print_ignorelist(void)
             }
 
             strcat(buffer, "!");
-            strcat(buffer, Others[i].nick_name);
+            strcat(buffer, others[i]->nick_name.c_str());
             strcat(buffer, " ");
 
             check = 1;

@@ -23,9 +23,11 @@
 
 #pragma once
 
-#include "const.h"
+#include <vector>
 
+#include "const.h"
 #include "client.h"
+#include "other.h"
 
 #define MAX_MSGS 15       /* Max. messages displayed ever */
 #define MAX_HIST_MSGS 128 /* maximum */
@@ -101,5 +103,4 @@ void Add_message(const char *message);
 extern void Add_alert_message(const char *message, double timeout);
 extern void Clear_alert_messages(void);
 void Add_pending_messages(void);
-void Add_roundend_messages(Other **order);
 void Print_messages_to_stdout(void);

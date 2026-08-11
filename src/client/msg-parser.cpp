@@ -135,9 +135,9 @@ bool Msg_match_fmt(const char *msg, const char *fmt, msgnames_t *mn)
     {
         const char *nick;
     case 'n': /* nick */
-        for (i = 0; i < num_others; i++)
+        for (i = 0; i < others.size(); i++)
         {
-            nick = Others[i].nick_name;
+            nick = others[i]->nick_name.c_str();
             len = strlen(nick);
             if ((strncmp(msg, nick, len) == 0) && Msg_match_fmt(msg + len, fmt, mn))
             {
@@ -216,16 +216,16 @@ bool Want_scan(void)
     int num_playing = 0;
 
     /* if only player on server, let's not bother */
-    if (num_others < 2)
+    if (others.size() < 2)
         return false;
 
     /* if not playing, don't bother */
     if (!self || strchr("PW", self->mychar))
         return false;
 
-    for (i = 0; i < num_others; i++)
+    for (i = 0; i < others.size(); i++)
     {
-        other = &Others[i];
+        other = others[i];
         /* alive and dead ships and robots are considered playing */
         if (strchr(" DR", other->mychar))
             num_playing++;
@@ -280,7 +280,7 @@ bool Msg_scan_for_replace_treasure(const char *message)
         if (replacer_team == self->team)
         {
             Bms_set_state(BmsSafe);
-            if (!strcmp(replacer, self->nick_name))
+            if (!strcmp(replacer, self->nick_name.c_str()))
                 ballstats_replaces++;
             return true;
         }
@@ -319,7 +319,7 @@ bool Msg_scan_for_ball_destruction(const char *message)
         if (destroyer_team == self->team)
         {
             ballstats_teamcashes++;
-            if (!strcmp(destroyer, self->nick_name))
+            if (!strcmp(destroyer, self->nick_name.c_str()))
                 ballstats_cashes++;
         }
         if (destroyed_team == self->team)
@@ -499,21 +499,21 @@ void Msg_scan_game_msg(const char *message)
     if (killer != nullptr)
     {
         DP(printf("Killer is %s.\n", killer));
-        if (strcmp(killer, self->nick_name) == 0)
+        if (strcmp(killer, self->nick_name.c_str()) == 0)
             i_am_killer = true;
     }
 
     if (victim != nullptr)
     {
         DP(printf("Victim is %s.\n", victim));
-        if (strcmp(victim, self->nick_name) == 0)
+        if (strcmp(victim, self->nick_name.c_str()) == 0)
             i_am_victim = true;
     }
 
     if (victim2 != nullptr)
     {
         DP(printf("Second victim is %s.\n", victim2));
-        if (strcmp(victim2, self->nick_name) == 0)
+        if (strcmp(victim2, self->nick_name.c_str()) == 0)
             i_am_victim2 = true;
     }
 
@@ -691,7 +691,7 @@ void Roundend(void)
     Bms_set_state(BmsNone);
 }
 
-void Add_roundend_messages(Other **order)
+void Add_roundend_messages(std::vector<Other *> &order)
 {
     static char hackbuf[MSG_LEN];
     static char hackbuf2[MSG_LEN];
@@ -737,7 +737,7 @@ void Add_roundend_messages(Other **order)
     /*
      * Scores are nice to see e.g. in cup recordings.
      */
-    for (i = 0; i < num_others; i++)
+    for (i = 0; i < others.size(); i++)
     {
         other = order[i];
         if (other->mychar == 'P')
@@ -745,7 +745,7 @@ void Add_roundend_messages(Other **order)
 
         double score = other->score;
         int sc = (int)(score >= 0.0 ? score + 0.5 : score - 0.5);
-        sprintf(hackbuf2, "%s: %d ", other->nick_name, sc);
+        sprintf(hackbuf2, "%s: %d ", other->nick_name.c_str(), sc);
         if ((s - hackbuf) + strlen(hackbuf2) > MSG_LEN)
         {
             Add_message(hackbuf);

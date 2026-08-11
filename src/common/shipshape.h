@@ -158,10 +158,10 @@ public:
 
 extern ShipShape *Default_ship(void);
 extern void Free_ship_shape(ShipShape *ship);
-extern ShipShape *Parse_shape_str(char *str);
-extern ShipShape *Convert_shape_str(char *str);
+extern ShipShape *Parse_shape_str(std::string str);
+extern ShipShape *Convert_shape_str(std::string str);
 extern int Calculate_shield_radius(ShipShape *ship);
-extern int Validate_shape_str(char *str);
+extern int Validate_shape_str(std::string str);
 extern void Convert_ship_2_string(ShipShape *ship, char *buf, char *ext,
                                   unsigned shape_version);
 extern void Rotate_point(clpos_t pt[ANGLE_RESOLUTION]);

@@ -23,11 +23,13 @@
 
 #pragma once
 
+#include <string>
+
 void Gui_paint_item_object(int type, int x, int y);
 void Gui_paint_ball(int x, int y, int style);
 void Gui_paint_ball_connector(int x1, int y1, int x2, int y2);
 
-void Gui_paint_mine(int x, int y, int teammine, char *name);
+void Gui_paint_mine(int x, int y, int teammine, std::string name);
 
 void Gui_paint_spark(int color, int x, int y);
 

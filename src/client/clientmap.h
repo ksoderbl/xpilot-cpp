@@ -311,8 +311,8 @@ int Check_index_by_pos(int x, int y);
 homebase_t *Homebase_by_id(int id);
 int Handle_leave(int id);
 int Handle_player(int id, int team, int mychar,
-                  char *nick_name, char *user_name, char *host_name,
-                  char *shape, int myself);
+                  std::string nick_name, std::string user_name, std::string host_name,
+                  std::string shape, int myself);
 int Handle_team(int id, int pl_team);
 int Handle_score(int id, double score, int life, int mychar, int alliance);
 int Handle_score_object(double score, int x, int y, char *msg);

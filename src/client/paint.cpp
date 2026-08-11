@@ -21,6 +21,9 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include <format>
+#include <string>
+
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
@@ -312,14 +315,13 @@ static void Determine_team_order(struct team_score *team_order[],
     }
 }
 
-static void Determine_order(Other **order, struct team_score team[])
+static void Determine_order(std::vector<Other *> &order, struct team_score team[])
 {
-    Other *other;
     int i, j, k;
 
-    for (i = 0; i < num_others; i++)
+    for (i = 0; i < others.size(); i++)
     {
-        other = &Others[i];
+        Other *other = others[i];
         if (BIT(Setup->mode, TIMING))
         {
             /*
@@ -392,11 +394,11 @@ static int Team_heading(int entrynum, int teamnum,
     tmp.name_width = 0;
     tmp.ship = nullptr;
     if (teamnum != TEAM_PAUSEHACK)
-        sprintf(tmp.nick_name, "TEAM %d", tmp.team);
+        tmp.nick_name = "TEAM " + std::to_string(tmp.team);
     else
-        sprintf(tmp.nick_name, "Pause Wusses");
-    strcpy(tmp.user_name, tmp.nick_name);
-    strcpy(tmp.host_name, "");
+        tmp.nick_name = "Pause Wusses";
+    tmp.user_name = tmp.nick_name;
+    tmp.host_name = "";
 #if 0
     if (BIT(Setup->mode, LIMITED_LIVES) && teamlives == 0)
     tmp.mychar = 'D';
@@ -413,13 +415,13 @@ static int Team_heading(int entrynum, int teamnum,
 }
 
 static int Team_score_table(int entrynum, int teamnum,
-                            struct team_score team, Other **order)
+                            struct team_score team, std::vector<Other *> &order)
 {
     Other *other;
     int i, j;
     bool drawn = false;
 
-    for (i = 0; i < num_others; i++)
+    for (i = 0; i < others.size(); i++)
     {
         other = order[i];
 
@@ -436,7 +438,7 @@ static int Team_score_table(int entrynum, int teamnum,
 
         if (!drawn)
             entrynum = Team_heading(entrynum, teamnum, team.life, team.score);
-        j = other - Others;
+        // j = other - others;
         Paint_score_entry(entrynum++, other, false);
         drawn = true;
     }
@@ -451,25 +453,26 @@ void Paint_score_table(void)
     struct team_score team[MAX_TEAMS],
         pausers,
         *team_order[MAX_TEAMS];
-    Other *other,
-        **order;
+    Other *other;
+    std::vector<Other *> order; // TODO: Don't use Other here
     int entrynum = 0;
 
     if (!scoresChanged || !players_exposed)
         return;
 
-    if (num_others < 1)
+    if (others.size() < 1)
     {
         Paint_score_start();
         scoresChanged = false;
         return;
     }
 
-    if ((order = (Other **)malloc(num_others * sizeof(Other *))) == nullptr)
-    {
-        error("No memory for score");
-        return;
-    }
+    // if ((order = (Other **)malloc(num_others * sizeof(Other *))) == nullptr)
+    // {
+    //     error("No memory for score");
+    //     return;
+    // }
+    order.resize(others.size());
     if (BIT(Setup->mode, TEAM_PLAY | TIMING) == TEAM_PLAY)
     {
         memset(&team[0], 0, sizeof team);
@@ -479,10 +482,10 @@ void Paint_score_table(void)
     Paint_score_start();
     if (!(BIT(Setup->mode, TEAM_PLAY | TIMING) == TEAM_PLAY))
     {
-        for (int i = 0; i < num_others; i++)
+        for (int i = 0; i < others.size(); i++)
         {
             other = order[i];
-            int j = other - Others;
+            // int j = other - others;
             Paint_score_entry(i, other, false);
         }
     }
@@ -509,7 +512,7 @@ void Paint_score_table(void)
     if (roundend)
         Add_roundend_messages(order);
 
-    free(order);
+    // free(order);
 
     scoresChanged = false;
 }

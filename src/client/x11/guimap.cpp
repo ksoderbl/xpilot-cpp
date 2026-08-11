@@ -420,8 +420,8 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
         {
             if (other->name_width == 0)
             {
-                other->name_len = strlen(other->nick_name);
-                other->name_width = 2 + XTextWidth(gameFont, other->nick_name,
+                other->name_len = other->nick_name.length();
+                other->name_width = 2 + XTextWidth(gameFont, other->nick_name.c_str(),
                                                    other->name_len);
             }
         }
@@ -472,10 +472,8 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
             x += size;
         }
         if (other)
-        {
             rd.drawString(dpy, drawPixmap, gameGC, x, y,
-                          other->nick_name, other->name_len);
-        }
+                          other->nick_name.c_str(), other->name_len);
     }
     else
     {
@@ -519,8 +517,8 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
         {
             if (other->name_width == 0)
             {
-                other->name_len = strlen(other->nick_name);
-                other->name_width = 2 + XTextWidth(gameFont, other->nick_name,
+                other->name_len = other->nick_name.length();
+                other->name_width = 2 + XTextWidth(gameFont, other->nick_name.c_str(),
                                                    other->name_len);
             }
         }
@@ -589,9 +587,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
             x += size;
         }
         if (other)
-        {
-            rd.drawString(dpy, drawPixmap, gameGC, x, y, other->nick_name, other->name_len);
-        }
+            rd.drawString(dpy, drawPixmap, gameGC, x, y, other->nick_name.c_str(), other->name_len);
     }
 }
 
