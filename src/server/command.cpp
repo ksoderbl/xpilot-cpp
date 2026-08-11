@@ -196,8 +196,8 @@ void Set_swapper_state(Player *pl)
                  */
                 Player_set_state(pl, PL_STATE_WAITING);
                 Player_self_destruct(pl, false);
-                pl->pause_count = 0;
-                pl->recovery_count = 0;
+                pl->pause_count = 0.0;
+                pl->recovery_count = 0.0;
                 break;
             }
         }

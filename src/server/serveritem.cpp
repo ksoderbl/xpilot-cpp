@@ -1148,7 +1148,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
             damage = (ECM_DISTANCE - range) / ECM_DISTANCE;
             if (c->item[ITEM_LASER])
                 c->item[ITEM_LASER] -= (int)(damage * c->item[ITEM_LASER] + 0.5);
-            c->damaged += (int)(24 * range * pow(0.75, c->item[ITEM_SENSOR]));
+            c->damaged += 24 * range * pow(0.75, (double)c->item[ITEM_SENSOR]);
         }
     }
 

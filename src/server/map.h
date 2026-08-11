@@ -150,15 +150,16 @@ typedef struct cannon
     uint32_t conn_mask;
     long last_change;
     int item[NUM_ITEMS];
-    int damaged;
     int tractor_target_id;
-    int tractor_count;
     bool tractor_is_pressor;
     uint16_t team;
     long used;
     int emergency_shield_left;
     int phasing_left;
     // short id;
+
+    double damaged;
+    double tractor_count;
 
     int group;
 

@@ -912,7 +912,7 @@ static void Update_players(void)
             pl->pause_count -= timeStep;
             // warn("Player %s pause count is %f", pl->name.c_str(), pl->pause_count);
             if (pl->pause_count <= 0)
-                pl->pause_count = 0;
+                pl->pause_count = 0.0;
         }
 
         if (pl->recovery_count > 0)
@@ -923,7 +923,7 @@ static void Update_players(void)
             {
                 // warn("Player %s recovered!", pl->name.c_str());
                 /* Player has recovered (unless he is already dead). */
-                pl->recovery_count = 0;
+                pl->recovery_count = 0.0;
                 if (Limited_lives(world))
                 {
                     if (!Player_is_dead(pl))

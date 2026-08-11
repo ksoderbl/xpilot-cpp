@@ -568,7 +568,7 @@ void Pause_player(Player *pl, bool on)
         /* Minimum pause time is 10 seconds at gamespeed 12. */
         pl->pause_count = 10 * 12;
         /* player might have paused when recovering */
-        pl->recovery_count = 0;
+        pl->recovery_count = 0.0;
         pl->updateVisibility = true;
         Player_self_destruct(pl, false);
         Player_set_state(pl, PL_STATE_PAUSED);
