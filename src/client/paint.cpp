@@ -388,7 +388,10 @@ static void Determine_order(std::vector<Other *> &order, struct team_score team[
 static int Team_heading(int entrynum, int teamnum,
                         int teamlives, double teamscore)
 {
-    Other tmp;
+    // This is static so the Other constructor is not called every
+    // time this function is called.
+    static Other tmp;
+
     tmp.id = -1;
     tmp.team = teamnum;
     tmp.name_width = 0;

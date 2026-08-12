@@ -28,8 +28,20 @@
 
 Other::Other()
 {
-    warn("Other::Other: Hello world!");
+    // warn("Other::Other: Hello world!");
+    ratio = 0.0;
+    score = 0.0;
+    check = 0;
+    round = 0;
+    timing_loops = 0;
+    timing = 0;
+    life = 0;
+    alliance = 0;
+    name_width = 0;
+    name_len = 0;
+    ignorelevel = 0;
 }
+
 Other::~Other()
 {
     warn("Other::Other: Goodbye cruel world! (%s)", nick_name.c_str());

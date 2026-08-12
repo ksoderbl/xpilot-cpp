@@ -1080,7 +1080,7 @@ int Handle_player(int id, int player_team, int mychar,
                   std::string nick_name, std::string user_name, std::string host_name,
                   std::string shape, int myself)
 {
-    warn("Handle_player: id %d, nick %s, myself = %d", id, nick_name.c_str(), myself);
+    // warn("Handle_player: id %d, nick %s, myself = %d", id, nick_name.c_str(), myself);
 
     Other *other;
 
@@ -1124,28 +1124,21 @@ int Handle_player(int id, int player_team, int mychar,
         self = other;
     }
     // warn("Handle_player: self = %p", self);
-    // memset(other, 0, sizeof(Other));
 
-    other->ratio = 0.0;
-    other->score = 0.0;
     other->id = id;
     other->team = player_team;
-    other->check = 0;
-    other->round = 0;
-    other->timing_loops = 0;
-    other->timing = 0;
-    other->life = 0;
     other->mychar = mychar;
-    other->alliance = 0;
-    other->name_width = 0;
-    other->name_len = 0;
     other->max_chars_in_names = -1;
     other->nick_name = nick_name;
     other->user_name = user_name;
     other->host_name = host_name;
     other->id_string = nick_name;
-    other->ignorelevel = 0;
-    other->ship = Convert_shape_str(shape.c_str());
+    // warn("other: %s / %s / %s / %s",
+    //      other->nick_name.c_str(),
+    //      other->user_name.c_str(),
+    //      other->host_name.c_str(),
+    //      other->id_string.c_str());
+    other->ship = Convert_shape_str(shape);
     int radius = Calculate_shield_radius(other->ship);
     other->ship->shield_radius = radius;
 
