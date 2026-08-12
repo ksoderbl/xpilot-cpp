@@ -907,7 +907,7 @@ static void Update_players(void)
         //         Go_home(pl);
         //     }
         // }
-        if (pl->pause_count > 0)
+        if (pl->pause_count > 0.0)
         {
             pl->pause_count -= timeStep;
             // warn("Player %s pause count is %f", pl->name.c_str(), pl->pause_count);
@@ -915,7 +915,7 @@ static void Update_players(void)
                 pl->pause_count = 0.0;
         }
 
-        if (pl->recovery_count > 0)
+        if (pl->recovery_count > 0.0)
         {
             pl->recovery_count -= timeStep;
             // warn("Player %s recovery count is %f", pl->name.c_str(), pl->recovery_count);
