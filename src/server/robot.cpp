@@ -153,7 +153,8 @@ static robot_t DefaultRobots[] = {
      "Droidion",
      "60 30",
      0,
-     "(6,2,4)(9,0)(4,8)(-5,8)(-10,0)(-5,-8)(4,-8)"},
+     "(SH: 10,0 5,9 -6,9 -11,0 -6,-9 5,-9 10,0)"
+     "(EN: -6,0)(MG: 10,0)(LL: -6,9)(RL: -6,-9)(MR: 10,0)"},
     {DEFAULT_ROBOT_TYPE,
      "Terminator",
      "80 40",
@@ -171,9 +172,9 @@ static robot_t DefaultRobots[] = {
      "Slugger",
      "40 40",
      0,
-     "(15,8,7)(13,0)(11,1)(3,2)(-1,8)(-3,8)"
-     "(-3,2)(-5,2)(-8,5)(-8,-5)(-5,-2)(-3,-2)"
-     "(-3,-8)(-1,-8)(3,-2)(11,-1)"},
+     "(SH: 15,0 13,1 3,2 -1,8 -3,8 -3,2 -5,2 -8,5 -8,-5 -5,-2 -3,-2 "
+     "-3,-8 -1,-8 3,-2 13,-1 15,0)"
+     "(EN: -8,0)(MG: 15,0)(LL: -8,-5)(RL: -8,5)(MR: 15,0)"},
     {DEFAULT_ROBOT_TYPE,
      "Uzi",
      "95 5",
@@ -199,7 +200,8 @@ static robot_t DefaultRobots[] = {
      "Chrome Star",
      "60 60",
      0,
-     "(5,1,4)(8,0)(-8,5)(2,-8)(2,8)(-8,-5)"},
+     "(SH: 10,0 -10,6 2,-10 2,10 -10,-6 10,0)"
+     "(EN: -6,0)(MG: 10,0)(LL: -10,6)(RL: -10,-6)(MR: 10,0)"},
     {DEFAULT_ROBOT_TYPE,
      "Bully",
      "80 10",
@@ -225,8 +227,8 @@ static robot_t DefaultRobots[] = {
      "Dalt Wisney",
      "30 75",
      0,
-     "(SH: 14,0 7,-4 0,-1 -5,-4 2,-8 0,-10 -14,-10 -5,-7 "
-     "-14,0 -5,7 -14,10 0,10 2,8 -5,4 0,1 7,4)"
+     "(SH: 14,0 7,-4 0,-1 -5,-4 2,-8 0,-10 -14,-10 -5,-7 -14,0 -5,7 "
+     "-14,10 0,10 2,8 -5,4 0,1 7,4)"
      "(EN: -14,0)(MG: 14,0)(LL: -14,10)(RL: -14,-10)(MR: 14,0)"},
     {DEFAULT_ROBOT_TYPE,
      "Psycho",
@@ -259,16 +261,16 @@ static robot_t DefaultRobots[] = {
      "Sparky",
      "20 40",
      0,
-     "(SH: 15,-8 6,-5 7,-4 1,-2 2,-1 -4,0 -3,2 -15,8 -15,2 -8,0 -9,-2 "
-     "-3,-3 -4,-4 3,-5 2,-7)"
+     "(SH: 15,-8 6,-5 7,-4 1,-2 2,-1 -4,0 -3,2 -9,5 -8,9 -9,5 -15,8 "
+     "-15,2 -8,0 -9,-2 -3,-3 -4,-4 3,-5 2,-7 15,-8)"
      "(EN: -15,5)(MG: 15,-8)(LL: -15,2)(RL: -15,8)(MR: 15,-8)"},
     {DEFAULT_ROBOT_TYPE,
      "Cobra",
      "85 60",
      0,
-     "(16,5,11)(8,0)(8,-6)(6,-8)(0,-7)(5,-6)"
-     "(-8,-4)(5,-2)(0,-1)(5,0)(0,1)(5,2)(-8,4)"
-     "(5,6)(0,7)(6,8)(8,6)"},
+     "(SH: 8,0 8,-6 6,-8 0,-7 5,-6 -14,-4 5,-2 0,-1 5,0 0,1 5,2 "
+     "-14,4 5,6 0,7 6,8 8,6 8,0)"
+     "(EN: 5,0)(MG: 8,0)(LL: -14,-4)(RL: -14,4)(MR: 8,0)"},
     {DEFAULT_ROBOT_TYPE,
      "Falcon",
      "70 20",
@@ -308,9 +310,9 @@ static robot_t DefaultRobots[] = {
      "Bonnie",
      "30 40",
      0,
-     "(16,9,6)(13,3)(5,3)(5,1)(4,-1)(0,-1)"
-     "(-2,-8)(-8,-8)(-5,3)(-6,6)(-8,7)(-7,8)"
-     "(-4,7)(8,7)(10,8)(12,8)(13,7)"},
+     "(SH: 15,3 5,3 5,1 4,-1 0,-1 -2,-8 -8,-8 -5,3 -6,6 -8,7 -7,8 -4,7 "
+     "10,7 12,8 14,8 15,7 15,3)"
+     "(EN: -6,0)(MG: 15,3)(LL: -8,7)(RL: -8,-8)(MR: 15,3)"},
     {DEFAULT_ROBOT_TYPE,
      "Clyde",
      "40 45",
@@ -542,32 +544,35 @@ void Robot_init(void)
 
     Parse_robot_file();
 
-    {
-        printf("===============================\n");
-        int i;
-        for (i = 0; i < NELEM(DefaultRobots); i++)
-        {
-            ShipShape *ship = Parse_shape_str(DefaultRobots[i].shape);
-            char buf[MSG_LEN], ext[MSG_LEN];
+    // {
+    //     printf("===============================\n");
 
-            Convert_ship_2_string(ship, buf, ext, 0x3200);
-            if (strcmp(buf, DefaultRobots[i].shape))
-            {
-                printf("===============================\n");
-                printf("type:\t%s\n"
-                       "para:\t%s\n"
-                       "ship:\t%s\n"
-                       "ship2:\t%s\n"
-                       "name:\t%s\n"
-                       "\n",
-                       DefaultRobots[i].driver,
-                       DefaultRobots[i].config,
-                       DefaultRobots[i].shape,
-                       buf,
-                       DefaultRobots[i].name);
-            }
-        }
-    }
+    //     int i;
+    //     for (i = 0; i < NELEM(DefaultRobots); i++)
+    //     {
+    //         printf("===============================\n");
+    //         printf("ROBOT: %s\n", DefaultRobots[i].name);
+
+    //         ShipShape *ship = Parse_shape_str(DefaultRobots[i].shape);
+    //         char buf[MSG_LEN], ext[MSG_LEN];
+
+    //         Convert_ship_2_string(ship, buf, ext, 0x3200);
+    //         // if (strcmp(buf, DefaultRobots[i].shape))
+    //         {
+    //             printf("type:\t%s\n"
+    //                    "para:\t%s\n"
+    //                    "ship:\t%s\n"
+    //                    "ship2:\t%s\n"
+    //                    "name:\t%s\n"
+    //                    "\n",
+    //                    DefaultRobots[i].driver,
+    //                    DefaultRobots[i].config,
+    //                    DefaultRobots[i].shape,
+    //                    buf,
+    //                    DefaultRobots[i].name);
+    //         }
+    //     }
+    // }
 
     if (options.robotTeam < 0 || options.robotTeam >= MAX_TEAMS)
         options.robotTeam = 0;
