@@ -326,7 +326,7 @@ static void Paint_lock(int hud_pos_x, int hud_pos_y)
      */
     if ((target = Other_by_id(lock_id)) == nullptr)
         return;
-    FIND_NAME_WIDTH(target);
+    Check_name_string(target);
     rd.drawString(dpy, drawPixmap, gameGC,
                   WINSCALE(hud_pos_x) - target->name_width / 2,
                   WINSCALE(hud_pos_y - hudSize + HUD_OFFSET - BORDER) - gameFont->descent,

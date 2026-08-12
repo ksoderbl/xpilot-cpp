@@ -703,7 +703,7 @@ static void Gui_paint_rounddelay(int x, int y)
 static void Gui_paint_ship_name(int x, int y, Other *other)
 {
     int shipNameColor = BLUE;
-    FIND_NAME_WIDTH(other);
+    Check_name_string(other);
     SET_FG(colors[shipNameColor].pixel);
     rd.drawString(dpy, drawPixmap, gameGC,
                   WINSCALE(X(x)) - other->name_width / 2,

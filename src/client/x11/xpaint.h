@@ -29,6 +29,7 @@
 
 #include "commonproto.h"
 
+#include "other.h"
 #include "paint.h"
 
 #include "types.h"
@@ -72,12 +73,11 @@ extern XGCValues gcv;
 extern Window topWindow, drawWindow, keyboardWindow;
 extern Window radarWindow, playersWindow;
 
-extern Pixmap drawPixmap;   /* Drawing area pixmap */
-extern Pixmap radarPixmap;  /* Radar drawing pixmap */
-extern Pixmap radarPixmap2; /* Second radar drawing pixmap */
-extern long dpl_1[2];       /* Used by radar hack */
-extern long dpl_2[2];       /* Used by radar hack */
-
+extern Pixmap drawPixmap;         /* Drawing area pixmap */
+extern Pixmap radarPixmap;        /* Radar drawing pixmap */
+extern Pixmap radarPixmap2;       /* Second radar drawing pixmap */
+extern long dpl_1[2];             /* Used by radar hack */
+extern long dpl_2[2];             /* Used by radar hack */
 extern Window aboutWindow;        /* The About window */
 extern Window about_close_b;      /* About close button */
 extern Window about_next_b;       /* About next page button */
@@ -101,31 +101,34 @@ static inline void SET_FG(unsigned long fg)
 
 #define MAX_LINE_WIDTH 4
 
-// static inline void Check_name_string(Other *other)
-// {
-//     if (other && other->max_chars_in_names != maxCharsInNames)
-//     {
-//         int len;
-
-//         strlcpy(other->id_string, other->nick_name, sizeof(other->id_string));
-//         len = strlen(other->id_string);
-//         if (maxCharsInNames >= 0 && maxCharsInNames < len)
-//             other->id_string[maxCharsInNames] = '\0';
-//         other->name_len = strlen(other->id_string);
-//         other->name_width = 2 + XTextWidth(gameFont, other->id_string, other->name_len);
-//         other->max_chars_in_names = maxCharsInNames;
-//     }
-// }
-
-static inline void FIND_NAME_WIDTH(Other *other)
+static inline void Check_name_string(Other *other)
 {
-    if ((other)->name_width == 0)
+    if (other && other->max_chars_in_names != maxCharsInNames)
     {
-        (other)->name_len = ((other)->nick_name.length());
-        (other)->name_width = 2 + XTextWidth(gameFont, (other)->nick_name.c_str(),
-                                             (other)->name_len);
+        int len;
+
+        other->id_string = other->nick_name;
+        len = other->id_string.length();
+        if (maxCharsInNames >= 0 && maxCharsInNames < len)
+        {
+            std::string s = other->id_string.substr(0, maxCharsInNames);
+            other->id_string = s;
+        }
+        other->name_len = other->id_string.length();
+        other->name_width = 2 + XTextWidth(gameFont, other->id_string.c_str(), other->name_len);
+        other->max_chars_in_names = maxCharsInNames;
     }
 }
+
+// static inline void FIND_NAME_WIDTH(Other *other)
+// {
+//     if ((other)->name_width == 0)
+//     {
+//         (other)->name_len = ((other)->nick_name.length());
+//         (other)->name_width = 2 + XTextWidth(gameFont, (other)->nick_name.c_str(),
+//                                              (other)->name_len);
+//     }
+// }
 
 extern void Paint_item_symbol(int type, Drawable d, GC mygc,
                               int x, int y, int color);
