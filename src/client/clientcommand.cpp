@@ -182,14 +182,14 @@ static void ignorePlayer(const char *name, int level)
         {
             snprintf(buf, sizeof(buf),
                      "Ignoring %s (textmask). [*Client reply*]",
-                     other->nick_name);
+                     other->nick_name.c_str());
             Add_message(buf);
         }
         else
         {
             snprintf(buf, sizeof(buf),
                      "Ignoring %s (completely). [*Client reply*]",
-                     other->nick_name);
+                     other->nick_name.c_str());
             Add_message(buf);
         }
         other->ignorelevel = level;
@@ -204,7 +204,7 @@ static void unignorePlayer(const char *name)
     if (other != nullptr)
     {
         snprintf(buf, sizeof(buf),
-                 "Stopped ignoring %s. [*Client reply*]", other->nick_name);
+                 "Stopped ignoring %s. [*Client reply*]", other->nick_name.c_str());
         Add_message(buf);
         other->ignorelevel = 0;
     }

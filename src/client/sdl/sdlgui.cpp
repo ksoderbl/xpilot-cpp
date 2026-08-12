@@ -549,16 +549,16 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
     switch (type)
     {
     case SETUP_BASE_UP:
-        mapnprint(&mapfont, color, CENTER, DOWN, (x), (y - BLOCK_SZ / 2), maxCharsInNames, "%s", other->nick_name);
+        mapnprint(&mapfont, color, CENTER, DOWN, (x), (y - BLOCK_SZ / 2), maxCharsInNames, "%s", other->nick_name.c_str());
         break;
     case SETUP_BASE_DOWN:
-        mapnprint(&mapfont, color, CENTER, UP, (x), (int)(y + BLOCK_SZ / 1.5), maxCharsInNames, "%s", other->nick_name);
+        mapnprint(&mapfont, color, CENTER, UP, (x), (int)(y + BLOCK_SZ / 1.5), maxCharsInNames, "%s", other->nick_name.c_str());
         break;
     case SETUP_BASE_LEFT:
-        mapnprint(&mapfont, color, RIGHT, UP, (x + BLOCK_SZ / 2), (y), maxCharsInNames, "%s", other->nick_name);
+        mapnprint(&mapfont, color, RIGHT, UP, (x + BLOCK_SZ / 2), (y), maxCharsInNames, "%s", other->nick_name.c_str());
         break;
     case SETUP_BASE_RIGHT:
-        mapnprint(&mapfont, color, LEFT, UP, (x - BLOCK_SZ / 2), (y), maxCharsInNames, "%s", other->nick_name);
+        mapnprint(&mapfont, color, LEFT, UP, (x - BLOCK_SZ / 2), (y), maxCharsInNames, "%s", other->nick_name.c_str());
         break;
     default:
         errno = 0;
@@ -1448,7 +1448,7 @@ static void Gui_paint_ship_name(int x, int y, Other *other)
         if (!color)
             color = shipNameColorRGBA;
 
-        mapnprint(&mapfont, color, CENTER, DOWN, x, y - SHIP_SZ, maxCharsInNames, "%s", other->id_string);
+        mapnprint(&mapfont, color, CENTER, DOWN, x, y - SHIP_SZ, maxCharsInNames, "%s", other->id_string.c_str());
     }
     else
         color = blueRGBA;

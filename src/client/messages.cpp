@@ -84,7 +84,7 @@ static bool Msg_is_from_our_team(const char *message, const char **msg2)
             continue;
 
         /* first check if someone in your team sent the message for all */
-        sprintf(buf, "[%s]", other->nick_name);
+        sprintf(buf, "[%s]", other->nick_name.c_str());
         bufstrlen = strlen(buf);
         if (len < bufstrlen)
             continue;
@@ -96,7 +96,7 @@ static bool Msg_is_from_our_team(const char *message, const char **msg2)
         }
 
         /* if not, check if it was sent to your team only */
-        sprintf(buf, "[%s]:[%d]", other->nick_name, other->team);
+        sprintf(buf, "[%s]:[%d]", other->nick_name.c_str(), other->team);
         bufstrlen = strlen(buf);
         if (len < bufstrlen)
             continue;

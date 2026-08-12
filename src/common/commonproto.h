@@ -1,8 +1,6 @@
 /*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
- * Copyright (C) 1991-2001 by
- *
  *      Bjørn Stabell
  *      Ken Ronny Schouten
  *      Bert Gijsbers
