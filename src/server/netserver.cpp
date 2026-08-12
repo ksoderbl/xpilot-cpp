@@ -1622,7 +1622,7 @@ int Send_player(Connection *connp, int id)
                       "%S",
                       PKT_PLAYER, pl->id,
                       pl->team, pl->mychar,
-                      pl->name.c_str(), pl->username.c_str(), pl->hostname,
+                      pl->name.c_str(), pl->username.c_str(), pl->hostname.c_str(),
                       buf);
     if (n > 0)
     {
