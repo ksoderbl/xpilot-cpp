@@ -45,10 +45,7 @@
 #include "client.h"
 #include "guimap.h"
 
-// int wallColor = BLUE; /* Color index for wall drawing */
-// int decorColor = 6;   /* Color index for decoration drawing */
-
-extern setup_t *Setup;
+static double hrLimitTime = 0.0;
 
 void Paint_vcannon(void)
 {
@@ -80,7 +77,6 @@ void Paint_vbase(void)
         for (const auto &vbase : clMap.vbases)
         {
             Base_info_by_pos(vbase.xi, vbase.yi, &id, &team);
-            // warn("Paint_vbase: id %d, team %d", id, team);
             Gui_paint_base(vbase.x, vbase.y, id, team,
                            vbase.type);
         }
@@ -269,10 +265,10 @@ void Paint_objects(void)
  *     Hence the line indicated above would be drawn with 3 filled polygons.
  *
  */
+
 void Paint_world(void)
 {
     int xi, yi, xb, yb, xe, ye;
-    double fuel;
     int rxb, ryb;
     int x, y;
     int type;
@@ -282,6 +278,7 @@ void Paint_world(void)
         fill_bottom_left = -1,
         fill_bottom_right = -1;
     uint8_t *mapptr, *mapbase;
+    static double oldHRLimit = -1.0;
 
     if (!BIT(Setup->mode, WRAP_PLAY))
     {
@@ -293,6 +290,39 @@ void Paint_world(void)
             Gui_paint_border(0, 0, Setup->width, 0);
         if (world.y + ext_view_height >= Setup->height)
             Gui_paint_border(0, Setup->height, Setup->width, Setup->height);
+    }
+
+    if ((ext_view_width > MAX_VIEW_SIZE || ext_view_height > MAX_VIEW_SIZE))
+    {
+        Gui_paint_visible_border(world.x + ext_view_width / 2 - MAX_VIEW_SIZE / 2,
+                                 world.y + ext_view_height / 2 - MAX_VIEW_SIZE / 2,
+                                 world.x + ext_view_width / 2 + MAX_VIEW_SIZE / 2,
+                                 world.y + ext_view_height / 2 + MAX_VIEW_SIZE / 2);
+    }
+
+    /* Paint a rectangle showing the HUD radar limit. */
+    if (hrLimitTime > 0.0)
+    {
+        hrLimitTime -= timePerFrame;
+        if (hrLimitTime <= 0.0)
+            hrLimitTime = 0.0;
+    }
+
+    if (oldHRLimit < 0.0)
+        oldHRLimit = hudRadarLimit;
+    if (oldHRLimit != hudRadarLimit)
+    {
+        oldHRLimit = hudRadarLimit;
+        hrLimitTime = 1.0;
+    }
+
+    if (hrLimitTime > 0.0)
+    {
+        Gui_paint_hudradar_limit(
+            (int)(world.x + ext_view_width / 2 - hudRadarLimit * MAX_VIEW_SIZE / 2),
+            (int)(world.y + ext_view_height / 2 - hudRadarLimit * MAX_VIEW_SIZE / 2),
+            (int)(world.x + ext_view_width / 2 + hudRadarLimit * MAX_VIEW_SIZE / 2),
+            (int)(world.y + ext_view_height / 2 + hudRadarLimit * MAX_VIEW_SIZE / 2));
     }
 
     if (!oldServer)
@@ -320,11 +350,6 @@ void Paint_world(void)
     y = yb * BLOCK_SZ;
     yi = mod(yb, Setup->y);
     mapbase = Setup->map_data + yi;
-    if (ext_view_width > MAX_VIEW_SIZE || ext_view_height > MAX_VIEW_SIZE)
-        Gui_paint_visible_border(world.x + ext_view_width / 2 - MAX_VIEW_SIZE / 2,
-                                 world.y + ext_view_height / 2 - MAX_VIEW_SIZE / 2,
-                                 world.x + ext_view_width / 2 + MAX_VIEW_SIZE / 2,
-                                 world.y + ext_view_height / 2 + MAX_VIEW_SIZE / 2);
 
     for (ryb = yb; ryb <= ye; ryb++, yi++, y += BLOCK_SZ, mapbase++)
     {

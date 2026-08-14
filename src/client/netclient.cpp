@@ -1711,6 +1711,21 @@ int Receive_self(void)
      * structure members are not of the type that Packet_scanf()
      * expects, which breaks things on big endian architectures.
      */
+    server_display.view_width = sViewWidth;
+    LIMIT(server_display.view_width, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+    if (sViewWidth != server_display.view_width)
+        warn("unsupported view width from server");
+
+    server_display.view_height = sViewHeight;
+    LIMIT(server_display.view_height, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+    if (sViewHeight != server_display.view_height)
+        warn("unsupported view height from server");
+
+    server_display.num_spark_colors = sNumSparkColors;
+
+    // warn("server_display.view_width: %d", server_display.view_width);
+    // warn("server_display.view_height: %d", server_display.view_height);
+    // warn("server_display.num_spark_colors: %d", server_display.num_spark_colors);
 
     Handle_self(x, y, vx, vy, sHeading,
                 (double)sPower,
@@ -2565,8 +2580,6 @@ int Receive_reply(int *replyto, int *result)
 
 int Send_keyboard(uint8_t *keyboard_vector)
 {
-    // warn("Send_keyboard");
-
     int size = KEYBOARD_SIZE;
 
     if (wbuf.size - wbuf.len < size + 1 + 4)
@@ -2576,8 +2589,6 @@ int Send_keyboard(uint8_t *keyboard_vector)
     memcpy(&wbuf.buf[wbuf.len], keyboard_vector, (size_t)size);
     wbuf.len += size;
     last_keyboard_update = last_loops;
-
-    // warn("Send_keyboard, last_keyboard_update = %ld", last_keyboard_update);
 
     Net_keyboard_track();
     Send_talk();
@@ -2846,10 +2857,7 @@ int Send_pointer_move(int movement)
         return -1;
 
     if (dirPrediction)
-    {
-        warn("dirPred calling Net_key_change");
         Net_key_change();
-    }
 
     return 0;
 }

@@ -186,9 +186,6 @@ static void Paint_mines(void)
 }
 
 /* adjusted for "sparkColors" option: */
-#define DEBRIS_COLOR(color) \
-    ((num_spark_colors > 4) ? ((((color & 1) << 2) | (color >> 1))) : (color))
-
 static inline int Debris_color(int color)
 {
     return ((num_spark_colors > 4) ? ((((color & 1) << 2) | (color >> 1))) : (color));
@@ -431,15 +428,13 @@ static void Paint_appearing(void)
 
 static void Paint_ecm(void)
 {
-    int size;
-
     if (clMap.ecms.size() > 0)
     {
         for (const auto &ecm : clMap.ecms)
         {
             int size = ecm.size;
 
-            if (ecm.size > 0)
+            if (size > 0)
             {
                 int x = ecm.x;
                 int y = ecm.y;
@@ -537,7 +532,6 @@ static void Paint_transporters(void)
 
 static void Paint_all_connectors(void)
 {
-
     if (clMap.refuels.size() > 0 ||
         clMap.connectors.size() > 0 ||
         clMap.transporters.size() > 0)

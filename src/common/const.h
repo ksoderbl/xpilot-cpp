@@ -130,19 +130,19 @@ constexpr std::size_t DEBRIS_TYPES = (8 * 4 * 4);
  * The server supports only 4 colors, except for spark/debris, which
  * may have 8 different colors.
  */
-#define NUM_COLORS 4
+constexpr int NUM_COLORS = 4;
 
-#define BLACK 0
-#define WHITE 1
-#define BLUE 2
-#define RED 3
+constexpr int BLACK = 0;
+constexpr int WHITE = 1;
+constexpr int BLUE = 2;
+constexpr int RED = 3;
 
 /*
  * The minimum and maximum playing window sizes supported by the server.
  */
-#define MIN_VIEW_SIZE 384
-#define MAX_VIEW_SIZE 1024
-#define DEF_VIEW_SIZE 1024
+constexpr int MIN_VIEW_SIZE = 384;
+constexpr int MAX_VIEW_SIZE = 1024;
+constexpr int DEF_VIEW_SIZE = 1024;
 
 /*
  * Spark rand limits.
