@@ -21,6 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "shot.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>

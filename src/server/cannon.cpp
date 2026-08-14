@@ -45,6 +45,8 @@
 #include "cannon.h"
 #include "saudio.h"
 #include "polygon.h"
+#include "shot.h"
+#include "serveritem.h"
 
 #ifdef SOUND
 #define IFSOUND(__x) __x

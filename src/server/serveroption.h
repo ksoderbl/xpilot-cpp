@@ -623,7 +623,11 @@ typedef struct options
 
     // Max. time you can stay paused for
     int maxPauseTime;
-    int maxClientsPerIP; /* Max. number of clients that can login from the same IP */
+
+    int maxIdleTime;
+
+    // Max. number of clients that can login from the same IP
+    int maxClientsPerIP;
 
     int recordMode;
     int recordFlushInterval;

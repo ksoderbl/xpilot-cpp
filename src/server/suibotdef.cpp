@@ -56,6 +56,7 @@
 #include "xperror.h"
 #include "server.h"
 #include "walls2.h"
+#include "shot.h"
 
 #define ROB_LOOK_AH 2
 
@@ -870,9 +871,7 @@ void Robot_attack_player(Player *pl, Player *opponent)
         Robot_ram_object(pl, OBJ_PTR(opponent));
 
         if (rfrac() > 0.5)
-        {
             Fire_normal_shots(pl);
-        }
         return;
     }
 

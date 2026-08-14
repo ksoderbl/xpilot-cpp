@@ -37,6 +37,7 @@
 #include "ship.h"
 
 #include "cannon.h"
+#include "shot.h"
 
 #define MAX_FUEL 10000
 #define MAX_WIDEANGLE 99

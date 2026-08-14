@@ -72,3 +72,10 @@ static inline int timeval_sub(struct timeval *tv2,
 
     return 1000000 * s + us;
 }
+
+#define SWAP_DOUBLES(a, b) \
+    {                      \
+        double tmp = a;    \
+        a = b;             \
+        b = tmp;           \
+    }

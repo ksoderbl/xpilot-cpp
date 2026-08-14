@@ -57,6 +57,7 @@
 #include "walls.h"
 #include "wormhole.h"
 #include "serveritem.h"
+#include "shot.h"
 
 #define ROB_LOOK_AH 2
 

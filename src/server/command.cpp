@@ -56,6 +56,7 @@
 
 #include "teamcup.h"
 #include "srecord.h"
+#include "shot.h"
 
 /*
  * Look if any player's name is exactly 'str',

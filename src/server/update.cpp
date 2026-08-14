@@ -48,6 +48,7 @@
 #include "robot.h"
 #include "walls.h"
 #include "wormhole.h"
+#include "shot.h"
 
 int roundtime = -1;                  /* time left this round */
 static double time_to_tick = 1.0;    /* game time till next tick */
@@ -69,7 +70,7 @@ static inline void update_object_speed(world_t *world, object_t *obj)
     }
 }
 
-static char msg[MSG_LEN];
+static char static_msg[MSG_LEN];
 
 static void Transport_to_home(Player *pl)
 {
@@ -1118,26 +1119,18 @@ void Update_objects(void)
 
     Fuel_update();
     Misc_object_update();
-
     Asteroid_update();
     if (Num_ecms(world) > 0)
         Ecm_update();
     if (Num_transporters(world) > 0)
         Transporter_update();
-
     if (Num_cannons(world) > 0)
         Cannon_update(tick_this_frame);
-
     if (Num_targets(world) > 0)
         Target_update();
 
     // xpinfo("player loop");
 
-    /* * * * * *
-     *
-     * Player loop. Computes miscellaneous updates.
-     *
-     */
     Update_players();
 
     for (int i = Num_wormholes(world) - 1; i >= 0; i--)
@@ -1179,7 +1172,7 @@ void Update_objects(void)
     }
 
     /*
-     * Checking for collision, updating score etc. (see collision.c)
+     * Checking for collision, updating score etc. (see collision2.cpp)
      */
     if (is_polygon_map)
         Check_collision2();
@@ -1212,14 +1205,31 @@ void Update_objects(void)
             }
         }
 
-        if (options.maxPauseTime > 0 &&
-            Player_is_human(pl) &&
-            Player_is_paused(pl) &&
-            frame_loops - pl->frame_last_busy > options.maxPauseTime)
         {
-            Set_message_f("%s was auto-kicked for pausing too long [*Server notice*]", pl->name.c_str());
-            Set_message(msg);
-            Destroy_connection(pl->conn, "auto-kicked: paused too long");
+            if (options.maxPauseTime > 0 &&
+                Player_is_human(pl) &&
+                Player_is_paused(pl) &&
+                frame_loops - pl->frame_last_busy > options.maxPauseTime)
+            {
+                Set_message_f("%s was auto-kicked for pausing too long. "
+                              "[*Server notice*]",
+                              pl->name.c_str());
+                Destroy_connection(pl->conn, "auto-kicked: paused too long");
+            }
+        }
+
+        if (Player_is_alive(pl) && !Player_is_waiting(pl) && !Player_is_appearing(pl))
+        {
+            pl->idleTime += timePerFrame;
+            if (Player_is_human(pl) &&
+                options.maxIdleTime > 0 &&
+                pl->idleTime > options.maxIdleTime &&
+                (NumPlayers - NumRobots - NumPseudoPlayers) > 1)
+            {
+                Set_message_f("%s was paused for idling. [*Server notice*]",
+                              pl->name.c_str());
+                Pause_player(pl, true);
+            }
         }
     }
 

@@ -46,6 +46,7 @@
 #include "xperror.h"
 #include "commonproto.h"
 #include "robot.h"
+#include "shot.h"
 
 static void Item_update_flags(Player *pl)
 {

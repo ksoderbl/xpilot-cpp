@@ -67,6 +67,7 @@
 
 #include "walls2.h"
 #include "treasure.h"
+#include "shot.h"
 
 /* new acd functions */
 /* doubles because the multiplies might overflow ints */
@@ -955,7 +956,7 @@ static void Player_collides_with_mine(Player *pl, mineobject_t *mine)
         if (mine->id != NO_ID)
         {
             kp = Player_by_id(mine->id);
-            reprogrammer_name = kp->name.c_str();
+            reprogrammer_name = kp->name;
         }
         Set_message_f("%s hit %s reprogrammed by %s.",
                       pl->name.c_str(),
@@ -969,7 +970,7 @@ static void Player_collides_with_mine(Player *pl, mineobject_t *mine)
         if (mine->id != NO_ID)
         {
             kp = Player_by_id(mine->id);
-            reprogrammer_name = kp->name.c_str();
+            reprogrammer_name = kp->name;
         }
         Set_message_f("%s hit %s %s by %s and reprogrammed by %s.",
                       pl->name.c_str(),

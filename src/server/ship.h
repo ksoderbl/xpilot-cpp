@@ -43,30 +43,30 @@ int Choose_random_item(void);
 void Tractor_beam(Player *pl);
 void General_tractor_beam(int id, clpos_t pos,
                           int items, Player *victim, bool pressor);
-void Place_mine(Player *pl);
-void Place_moving_mine(Player *pl);
-void Place_general_mine(int id, int team, int status,
-                        clpos_t pos, vector_t vel, modifiers_t mods);
-void Detonate_mines(Player *pl);
-char *Describe_shot(int type, int status, modifiers_t mods, int hit);
-void Fire_ecm(Player *pl);
-void Fire_general_ecm(int id, int team, clpos_t pos);
-void Update_connector_force(ballobject_t *ball);
-void Fire_shot(Player *pl, int type, int dir);
-void Fire_general_shot(int id, int team, bool cannon,
-                       clpos_t pos, int type, int dir,
-                       modifiers_t mods, int target_id);
-void Fire_normal_shots(Player *pl);
-void Fire_main_shot(Player *pl, int type, int dir);
-void Fire_left_shot(Player *pl, int type, int dir, int gun);
-void Fire_right_shot(Player *pl, int type, int dir, int gun);
-void Fire_left_rshot(Player *pl, int type, int dir, int gun);
-void Fire_right_rshot(Player *pl, int type, int dir, int gun);
+// void Place_mine(Player *pl);
+// void Place_moving_mine(Player *pl);
+// void Place_general_mine(int id, int team, int status,
+//                         clpos_t pos, vector_t vel, modifiers_t mods);
+// void Detonate_mines(Player *pl);
+// char *Describe_shot(int type, int status, modifiers_t mods, int hit);
+// void Fire_ecm(Player *pl);
+// void Fire_general_ecm(int id, int team, clpos_t pos);
+// void Update_connector_force(ballobject_t *ball);
+// void Fire_shot(Player *pl, int type, int dir);
+// void Fire_general_shot(int id, int team, bool cannon,
+//                        clpos_t pos, int type, int dir,
+//                        modifiers_t mods, int target_id);
+// void Fire_normal_shots(Player *pl);
+// void Fire_main_shot(Player *pl, int type, int dir);
+// void Fire_left_shot(Player *pl, int type, int dir, int gun);
+// void Fire_right_shot(Player *pl, int type, int dir, int gun);
+// void Fire_left_rshot(Player *pl, int type, int dir, int gun);
+// void Fire_right_rshot(Player *pl, int type, int dir, int gun);
 
 void Team_immunity_init(void);
 void Hitmasks_init(void);
 
-void Delete_shot(int ind);
+// void Delete_shot(int ind);
 void Fire_laser(Player *pl);
 void Fire_general_laser(int id, int team, clpos_t pos, int dir, modifiers_t mods);
 void Do_deflector(Player *pl);

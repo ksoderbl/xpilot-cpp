@@ -189,12 +189,9 @@ static bool Key_press_fuel(void)
 
 static bool Key_press_swap_settings(void)
 {
-    double tmp;
-#define SWAP(a, b) (tmp = (a), (a) = (b), (b) = tmp)
-
-    SWAP(power, power_s);
-    SWAP(turnspeed, turnspeed_s);
-    SWAP(turnresistance, turnresistance_s);
+    SWAP_DOUBLES(power, power_s);
+    SWAP_DOUBLES(turnspeed, turnspeed_s);
+    SWAP_DOUBLES(turnresistance, turnresistance_s);
     controlTime = CONTROL_TIME;
     Config_redraw();
 

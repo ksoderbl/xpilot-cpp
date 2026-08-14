@@ -765,16 +765,6 @@ static option_desc opts[] = {
      "List of network addresses of computers which are denied service.\n"
      "Each address may optionally be followed by a slash and a network mask.\n",
      OPT_COMMAND | OPT_DEFAULTS | OPT_VISIBLE},
-    {"maxClientsPerIP",
-     "maxPerIP",
-     "2",
-     &options.maxClientsPerIP,
-     valInt,
-     tuner_dummy,
-     "Maximum number of clients per IP address that are allowed to connect.\n"
-     "This prevents unfriendly players from occupying all the bases"
-     ", effectively \"kicking\" paused players and denying other players to join.\n",
-     OPT_COMMAND | OPT_DEFAULTS | OPT_VISIBLE},
     {"limitedVisibility",
      "limitedVisibility",
      "false",
@@ -2832,6 +2822,97 @@ static option_desc opts[] = {
      "After being paused this long, the player will be kicked off.\n"
      "Setting this option to 0 disables the feature.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
+    {"maxIdleTime",
+     "maxIdleTime",
+     "60", /* can idle 1 minute by default */
+     &options.maxIdleTime,
+     valInt,
+     tuner_dummy,
+     "The maximum time a player can stay idle, in seconds.\n"
+     "After having idled this long, the player will be paused.\n"
+     "Setting this option to 0 disables the feature.\n",
+     OPT_ORIGIN_ANY | OPT_VISIBLE},
+    {"maxClientsPerIP",
+     "maxPerIP",
+     "4", /* if more try to join they get "game locked" */
+     &options.maxClientsPerIP,
+     valInt,
+     tuner_dummy,
+     "Maximum number of clients per IP address allowed to connect.\n"
+     "This prevents unfriendly players from occupying all the bases, \n"
+     "effectively \"kicking\" paused players and denying other players\n"
+     "to join.\n"
+     "Setting this to 0 means any number of clients from the same IP\n"
+     "address can join.\n",
+     OPT_COMMAND | OPT_DEFAULTS | OPT_VISIBLE},
+    // {"playerLimit",
+    //  "playerLimit",
+    //  "0",
+    //  &options.playerLimit,
+    //  valInt,
+    //  Check_playerlimit,
+    //  "Allow playerLimit players to enter at once.\n"
+    //  "If set to 0, allow 10 more players than there are bases.\n"
+    //  "(If baselessPausing is off, more than bases cannot enter.)\n"
+    //  "During game, cannot be set higher than the starting value.\n",
+    //  OPT_ORIGIN_ANY | OPT_VISIBLE},
+    // {"recordMode",
+    //  "recordMode",
+    //  "0",
+    //  &options.recordMode,
+    //  valInt,
+    //  Init_recording,
+    //  "If this is set to 1 when the server starts, the game is saved\n"
+    //  "in the file specified by recordFileName. If set to 2 at startup,\n"
+    //  "the server replays the recorded game. Joining players are\n"
+    //  "spectators who can watch the recorded game from anyone's\n"
+    //  "viewpoint. Can be set to 0 in the middle of a game to stop"
+    //  "recording.\n",
+    //  OPT_COMMAND | OPT_DEFAULTS},
+    // {"recordFileName",
+    //  "recordFile",
+    //  nullptr,
+    //  &options.recordFileName,
+    //  valString,
+    //  tuner_none,
+    //  "Name of the file where server recordings are saved.\n",
+    //  OPT_COMMAND | OPT_DEFAULTS},
+    // {"recordFlushInterval",
+    //  "recordWait",
+    //  "0",
+    //  &options.recordFlushInterval,
+    //  valInt,
+    //  tuner_dummy,
+    //  "If set to a nonzero value x, the server will flush all recording\n"
+    //  "data in memory to the record file at least once every x seconds.\n"
+    //  "This is useful if you want to replay the game on another server\n"
+    //  "while it is still being played. There is a small overhead\n"
+    //  "(some dozens of bytes extra recording file size) for each flush.\n",
+    //  OPT_ORIGIN_ANY | OPT_VISIBLE},
+    // {"constantScoring",
+    //  "constantScoring",
+    //  "false",
+    //  &options.constantScoring,
+    //  valBool,
+    //  tuner_dummy,
+    //  "Whether the scores given from various things are fixed.\n",
+    //  OPT_ORIGIN_ANY | OPT_VISIBLE},
+    // {"zeroSumScoring",
+    //  "zeroSum",
+    //  "false",
+    //  &options.zeroSumScoring,
+    //  valBool,
+    //  tuner_dummy,
+    //  "Use Zero sum scoring?\n",
+    //  OPT_COMMAND | OPT_VISIBLE},
+    // {"elimination",
+    //  "elimination",
+    //  "false",
+    //  &options.eliminationRace,
+    //  valBool,
+    //  tuner_dummy,
+    //  "Race mode where the last player drops out each lap.\n",
+    //  OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"dataURL",
      "dataURL",
      "",

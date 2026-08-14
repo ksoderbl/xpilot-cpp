@@ -121,10 +121,9 @@ int backgroundPointSize; /* size of navigation points */
 int sparkSize;           /* size of debris and spark */
 int shotSize;            /* size of shot */
 int teamShotSize;        /* size of team shot */
-
-double controlTime;     /* Display control for how long? */
-uint8_t spark_rand;     /* Sparkling effect */
-uint8_t old_spark_rand; /* previous value of spark_rand */
+double controlTime;      /* Display control for how long? */
+uint8_t spark_rand;      /* Sparkling effect */
+uint8_t old_spark_rand;  /* previous value of spark_rand */
 
 double fuelSum;      /* Sum of fuel in all tanks */
 double fuelMax;      /* How much fuel can you take? */

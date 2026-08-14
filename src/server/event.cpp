@@ -31,7 +31,9 @@
 #include <cstdio>
 #include <cmath>
 
+#include "bit.h"
 #include "click.h"
+#include "commonmacros.h"
 #include "xperror.h"
 
 #include "frame.h"
@@ -46,17 +48,11 @@
 #include "score.h"
 #include "map.h"
 #include "saudio.h"
-#include "bit.h"
 #include "netserver.h"
 #include "modifiers.h"
 #include "wormhole.h"
-
-#define SWAP(_a, _b)      \
-    {                     \
-        double _tmp = _a; \
-        _a = _b;          \
-        _b = _tmp;        \
-    }
+#include "serveritem.h"
+#include "shot.h"
 
 /*
  * Globals.
@@ -506,13 +502,6 @@ static void Player_toggle_pause(Player *pl)
     }
 }
 
-#define FOOBARSWAP(a, b) \
-    {                    \
-        double tmp = a;  \
-        a = b;           \
-        b = tmp;         \
-    }
-
 static void Player_swap_settings(Player *pl)
 {
     if (Player_is_hoverpaused(pl) || Player_uses_autopilot(pl))
@@ -521,13 +510,11 @@ static void Player_swap_settings(Player *pl)
     /* kps - turnacc == 0.0 ? */
     if (pl->turnacc == 0.0)
     {
-        FOOBARSWAP(pl->power, pl->power_s);
-        FOOBARSWAP(pl->turnspeed, pl->turnspeed_s);
-        FOOBARSWAP(pl->turnresistance, pl->turnresistance_s);
+        SWAP_DOUBLES(pl->power, pl->power_s);
+        SWAP_DOUBLES(pl->turnspeed, pl->turnspeed_s);
+        SWAP_DOUBLES(pl->turnresistance, pl->turnresistance_s);
     }
 }
-
-#undef FOOBARSWAP
 
 static void Player_toggle_compass(Player *pl)
 {
