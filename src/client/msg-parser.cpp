@@ -565,32 +565,31 @@ void Msg_scan_game_msg(const char *message)
     if (i_am_victim || i_am_victim2)
         killratio_deaths++;
 
-    // TODO
-    // if (instruments.clientRanker)
-    // {
-    //     /*static char tauntstr[MAX_CHARS];
-    //       int kills, deaths; */
+    if (instruments.clientRanker)
+    {
+        /*static char tauntstr[MAX_CHARS];
+          int kills, deaths; */
 
-    //     /* handle case where there is a victim and a killer */
-    //     if (killer != nullptr && victim != nullptr)
-    //     {
-    //         if (i_am_killer && !i_am_victim)
-    //         {
-    //             Add_rank_Death(victim);
-    //             /*if (BIT(instruments, TAUNT)) {
-    //               kills = Get_kills(victim);
-    //               deaths = Get_deaths(victim);
-    //               if (deaths > kills) {
-    //               sprintf(tauntstr, "%s: %i-%i HEHEHEHE\0",
-    //               victim, deaths, kills);
-    //               Net_talk(tauntstr);
-    //               }
-    //               } */
-    //         }
-    //         if (!i_am_killer && i_am_victim)
-    //             Add_rank_Kill(killer);
-    //     }
-    // }
+        /* handle case where there is a victim and a killer */
+        if (killer != nullptr && victim != nullptr)
+        {
+            if (i_am_killer && !i_am_victim)
+            {
+                Add_rank_Death(victim);
+                /*if (BIT(instruments, TAUNT)) {
+                  kills = Get_kills(victim);
+                  deaths = Get_deaths(victim);
+                  if (deaths > kills) {
+                  sprintf(tauntstr, "%s: %i-%i HEHEHEHE\0",
+                  victim, deaths, kills);
+                  Net_talk(tauntstr);
+                  }
+                  } */
+            }
+            if (!i_am_killer && i_am_victim)
+                Add_rank_Kill(killer);
+        }
+    }
 }
 
 /*

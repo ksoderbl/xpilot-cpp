@@ -27,8 +27,9 @@
 
 void Gui_paint_cannon(int x, int y, int type);
 void Gui_paint_fuel(int x, int y, double fuel);
-void Gui_paint_base(int x, int y, int xi, int yi, int type);
-void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool more_y);
+void Gui_paint_base(int x, int y, int id, int team, int type);
+void Gui_paint_decor(int x, int y, int xi, int yi, int type,
+                     bool last, bool more_y);
 
 void Gui_paint_border(int x, int y, int xi, int yi);
 void Gui_paint_visible_border(int x, int y, int xi, int yi);

@@ -41,6 +41,7 @@
 #include "netclient.h"
 #include "paint.h"
 #include "clientoption.h"
+#include "clientrank.h"
 
 static double hudScale; /* Scale for HUD drawing */
 
@@ -475,10 +476,8 @@ static bool Set_texturedWalls(xp_option_t *opt, bool val)
             Map_restore(0, 0, Setup->x, Setup->y);
             Map_blue(0, 0, Setup->x, Setup->y);
         }
-        // TODO: Curretnly I get:
-        // ... default.cpp:475: undefined reference to `Mapdata_setup(char const*)'
-        // else
-        //     Mapdata_setup(Setup->data_url);
+        else
+            Mapdata_setup(Setup->data_url);
     }
     return true;
 }
@@ -1306,34 +1305,34 @@ xp_option_t default_options[] = {
     "Specifies how many frames between radar window updates.\n"),
 #endif
 
-// XP_CONST_CHAR_STAR_OPTION(
-//     "clientRankFile",
-//     "",
-//     clientRankFile,
-//     sizeof clientRankFile,
-//     nullptr, nullptr, nullptr,
-//     XP_OPTFLAG_DEFAULT,
-//     "An optional file where clientside kill/death rank is stored.\n"),
+    XP_CONST_CHAR_STAR_OPTION(
+        "clientRankFile",
+        "",
+        clientRankFile,
+        sizeof clientRankFile,
+        nullptr, nullptr, nullptr,
+        XP_OPTFLAG_DEFAULT,
+        "An optional file where clientside kill/death rank is stored.\n"),
 
-// XP_CONST_CHAR_STAR_OPTION(
-//     "clientRankHTMLFile",
-//     "",
-//     clientRankHTMLFile,
-//     sizeof clientRankHTMLFile,
-//     nullptr, nullptr, nullptr,
-//     XP_OPTFLAG_DEFAULT,
-//     "An optional file where clientside kill/death rank is\n"
-//     "published in HTML format.\n"),
+    XP_CONST_CHAR_STAR_OPTION(
+        "clientRankHTMLFile",
+        "",
+        clientRankHTMLFile,
+        sizeof clientRankHTMLFile,
+        nullptr, nullptr, nullptr,
+        XP_OPTFLAG_DEFAULT,
+        "An optional file where clientside kill/death rank is\n"
+        "published in HTML format.\n"),
 
-// XP_CONST_CHAR_STAR_OPTION(
-//     "clientRankHTMLNOJSFile",
-//     "",
-//     clientRankHTMLNOJSFile,
-//     sizeof clientRankHTMLNOJSFile,
-//     nullptr, nullptr, nullptr,
-//     XP_OPTFLAG_DEFAULT,
-//     "An optional file where clientside kill/death rank is\n"
-//     "published in HTML format, w/o JavaScript.\n"),
+    XP_CONST_CHAR_STAR_OPTION(
+        "clientRankHTMLNOJSFile",
+        "",
+        clientRankHTMLNOJSFile,
+        sizeof clientRankHTMLNOJSFile,
+        nullptr, nullptr, nullptr,
+        XP_OPTFLAG_DEFAULT,
+        "An optional file where clientside kill/death rank is\n"
+        "published in HTML format, w/o JavaScript.\n"),
 
 #ifdef SOUND
     XP_CONST_CHAR_STAR_OPTION(

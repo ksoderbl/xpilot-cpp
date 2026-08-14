@@ -55,6 +55,7 @@
 #include "guiobjects.h"
 #include "record.h"
 #include "talk.h"
+#include "clientrank.h"
 
 #include "xinit.h"
 #include "xpaint.h"
@@ -206,8 +207,8 @@ int main(int argc, char *argv[])
         retval = Join(conpar);
     }
 
-    // if (instruments.clientRanker)
-    //     Print_saved_scores();
+    if (instruments.clientRanker)
+        Print_saved_scores();
 
     warn("main => RETURNING %d", retval);
 
