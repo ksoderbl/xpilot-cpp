@@ -27,6 +27,37 @@
 
 #include "keys.h"
 
+class XPOption
+{
+public:
+    // virtual base class
+};
+
+class XPBoolOption : XPOption
+{
+public:
+};
+
+class XPIntOption : XPOption
+{
+public:
+};
+
+class XPDoubleOption : XPOption
+{
+public:
+};
+
+class XPStringOption : XPOption
+{
+public:
+};
+
+class XPKeyOption : XPOption
+{
+public:
+};
+
 typedef enum
 {
     xp_noarg_option,

@@ -295,8 +295,8 @@ struct world
     int bheight_floor;   /* Height of world in blocks, rounded down */
     double diagonal;     /* Diagonal length in blocks */
     int width, height;   /* Size of world in pixels (optimization) */
-    double hypotenuse;   /* Diagonal length in pixels (optimization) */
     int cwidth, cheight; /* Size of world in clicks */
+    double hypotenuse;   /* Diagonal length in pixels (optimization) */
 
     rules_t rules;
 
@@ -305,13 +305,9 @@ struct world
     char dataURL[MAX_CHARS];
 
     uint8_t **block; /* type of item in each block */
-
     vector_t **gravity;
-
     item_t items[NUM_ITEMS];
-
     asteroid_t asteroids;
-
     team_t teams[MAX_TEAMS];
 
     int NumTeamBases; /* How many 'different' teams are allowed */
