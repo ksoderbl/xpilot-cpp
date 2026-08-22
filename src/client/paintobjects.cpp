@@ -142,7 +142,7 @@ static void Paint_balls(void)
 
 static void Paint_mines(void)
 {
-    char *name = nullptr;
+    std::string name;
 
     if (clMap.mines.size() > 0)
     {
@@ -159,22 +159,15 @@ static void Paint_mines(void)
                  * Mines unsafe to all players have the name "Expired"
                  * We do not know who is safe for mines sent with id==0
                  */
-                name = nullptr;
                 if (mine.id != 0)
                 {
                     Other *other;
                     if (mine.id == EXPIRED_MINE_ID)
-                    {
-                        static char expired_name[] = "Expired";
-                        name = expired_name;
-                    }
+                        name = "Expired";
                     else if ((other = Other_by_id(mine.id)) != nullptr)
-                        name = const_cast<char *>(other->nick_name.c_str());
+                        name = other->nick_name;
                     else
-                    {
-                        static char unknown_name[] = "Not of this world!";
-                        name = unknown_name;
-                    }
+                        name = "Not of this world!";
                 }
                 Gui_paint_mine(x, y, mine.teammine, name);
             }
