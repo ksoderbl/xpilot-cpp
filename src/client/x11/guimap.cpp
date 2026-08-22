@@ -63,7 +63,7 @@ extern setup_t *Setup;
 
 static int baseNameColor = BLUE;      /* Color index for base name drawing */
 static int backgroundPointColor = 4;  /* background point drawing */
-static int fuelColor = RED;           /* fuel station drawing */
+static int fuelColor = BLUE;          // RED;           /* fuel station drawing */
 static int visibilityBorderColor = 0; /* visibility border drawing */
 
 void Gui_paint_walls(int x, int y, int type)
@@ -1443,7 +1443,7 @@ xp_option_t guimap_options[] = {
 
     COLOR_INDEX_OPTION(
         "fuelColor",
-        3,
+        BLUE, // 3,
         &fuelColor,
         "Which color number to use for drawing fuel stations.\n"),
 

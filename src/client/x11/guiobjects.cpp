@@ -745,6 +745,7 @@ static bool Gui_is_my_tank(Other *other)
 static int Gui_calculate_ship_color(int id, Other *other)
 {
     int ship_color = WHITE;
+    // int ship_color = 11; // xpyellow
 
 #ifndef NO_BLUE_TEAM
     if (BIT(Setup->mode, TEAM_PLAY) && self != nullptr && self->id != id && other != nullptr && self->team == other->team)
@@ -1128,19 +1129,19 @@ static xp_option_t guiobject_options[] = {
 
     COLOR_INDEX_OPTION(
         "ballColor",
-        1,
+        WHITE, // RED,
         &ballColor,
         "Which color number to use for drawing balls.\n"),
 
     COLOR_INDEX_OPTION(
         "connColor",
-        2,
+        4,
         &connColor,
         "Which color number to use for drawing connectors.\n"),
 
     COLOR_INDEX_OPTION(
         "zeroLivesColor",
-        5,
+        RED, // 5,
         &zeroLivesColor,
         "Which color to associate with ships with zero lives left.\n"
         "This can be used to paint for example ship and base names.\n"),
@@ -1154,7 +1155,7 @@ static xp_option_t guiobject_options[] = {
 
     COLOR_INDEX_OPTION(
         "twoLivesColor",
-        4,
+        0,
         &twoLivesColor,
         "Which color to associate with ships with two lives left.\n"
         "This can be used to paint for example ship and base names.\n"),
@@ -1168,41 +1169,41 @@ static xp_option_t guiobject_options[] = {
 
     COLOR_INDEX_OPTION(
         "selfLWColor",
-        3,
+        RED,
         &selfLWColor,
         "Which color to use to paint your ship in when on last life.\n"
         "Original color for this is red.\n"),
 
     COLOR_INDEX_OPTION(
         "enemyLWColor",
-        3,
+        RED,
         &enemyLWColor,
         "Which color to use to paint enemy ships in when on last life.\n"
         "Original color for this is red.\n"),
 
     COLOR_INDEX_OPTION(
         "teamLWColor",
-        2,
+        4, // 2
         &teamLWColor,
         "Which color to use to paint teammate ships in when on last life.\n"
         "Original color for this is green.\n"),
 
     COLOR_INDEX_OPTION(
         "shipNameColor",
-        2,
+        BLUE,
         &shipNameColor,
         "Which color number to use for drawing names of ships\n"
         "(unless drawn in one of the life colors).\n"),
 
     COLOR_INDEX_OPTION(
         "mineNameColor",
-        2,
+        BLUE,
         &mineNameColor,
         "Which color number to use for drawing names of mines.\n"),
 
     COLOR_INDEX_OPTION(
         "teamShipColor",
-        2,
+        BLUE,
         &teamShipColor,
         "Which color number to use for drawing your teammates.\n"),
 
