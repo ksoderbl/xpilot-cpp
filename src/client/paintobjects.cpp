@@ -335,6 +335,7 @@ static void Paint_fastshots(int i, int x_areas, int y_areas, int areas)
     fastshotList.clear();
 }
 
+// TODO: With 8 sparkColors, this can crash
 static void Paint_teamshots(int i, int x_areas, int y_areas, int areas)
 {
     auto &teamshotList = clMap.teamshotTypes[i];

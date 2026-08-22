@@ -194,94 +194,172 @@ static void debris_end(Connection *conn)
     }
 }
 
+#define DEBRIS_STORE(world, xd, yd, color, offset)                                                                      \
+    int i;                                                                                                              \
+    if (xd < 0)                                                                                                         \
+    {                                                                                                                   \
+        xd += world->width;                                                                                             \
+    }                                                                                                                   \
+    if (yd < 0)                                                                                                         \
+    {                                                                                                                   \
+        yd += world->height;                                                                                            \
+    }                                                                                                                   \
+    if ((unsigned)xd >= (unsigned)view_width || (unsigned)yd >= (unsigned)view_height)                                  \
+    {                                                                                                                   \
+        /*                                                                                                              \
+         * There's some rounding error or so somewhere.                                                                 \
+         * Should be possible to resolve it.                                                                            \
+         */                                                                                                             \
+        return;                                                                                                         \
+    }                                                                                                                   \
+                                                                                                                        \
+    i = offset + color * debris_areas + (((yd >> 8) % debris_y_areas) * debris_x_areas) + ((xd >> 8) % debris_x_areas); \
+                                                                                                                        \
+    if (num_ >= 255)                                                                                                    \
+    {                                                                                                                   \
+        return;                                                                                                         \
+    }                                                                                                                   \
+    if (num_ >= max_)                                                                                                   \
+    {                                                                                                                   \
+        if (num_ == 0)                                                                                                  \
+        {                                                                                                               \
+            ptr_ = (debris_t *)malloc((max_ = 16) * sizeof(*ptr_));                                                     \
+        }                                                                                                               \
+        else                                                                                                            \
+        {                                                                                                               \
+            ptr_ = (debris_t *)realloc(ptr_, (max_ += max_) * sizeof(*ptr_));                                           \
+        }                                                                                                               \
+        if (ptr_ == 0)                                                                                                  \
+        {                                                                                                               \
+            error("No memory for debris");                                                                              \
+            num_ = 0;                                                                                                   \
+            return;                                                                                                     \
+        }                                                                                                               \
+    }                                                                                                                   \
+    ptr_[num_].x = (unsigned char)xd;                                                                                   \
+    ptr_[num_].y = (unsigned char)yd;                                                                                   \
+    num_++;
+
 static void fastshot_store(int cx, int cy, int color, int offset)
 {
     world_t *world = &theWorld;
     int xf = CLICK_TO_PIXEL(cx),
         yf = CLICK_TO_PIXEL(cy);
-    int i;
-
-    if (xf < 0)
-        xf += world->width;
-
-    if (yf < 0)
-        yf += world->height;
-
-    if ((unsigned)xf >= (unsigned)view_width || (unsigned)yf >= (unsigned)view_height)
-        /*
-         * There's some rounding error or so somewhere.
-         * Should be possible to resolve it.
-         */
-        return;
-
-    i = offset + color * debris_areas + (((yf >> 8) % debris_y_areas) * debris_x_areas) + ((xf >> 8) % debris_x_areas);
-
-    if ((fastshot_num[i]) >= 255)
-        return;
-
-    if ((fastshot_num[i]) >= (fastshot_max[i]))
-    {
-        if ((fastshot_num[i]) == 0)
-            (fastshot_ptr[i]) = (debris_t *)malloc(((fastshot_max[i]) = 16) * sizeof(*(fastshot_ptr[i])));
-        else
-            (fastshot_ptr[i]) = (debris_t *)realloc((fastshot_ptr[i]), ((fastshot_max[i]) += (fastshot_max[i])) * sizeof(*(fastshot_ptr[i])));
-
-        if ((fastshot_ptr[i]) == 0)
-        {
-            error("No memory for debris");
-            (fastshot_num[i]) = 0;
-            return;
-        }
-    }
-    (fastshot_ptr[i])[(fastshot_num[i])].x = (uint8_t)xf;
-    (fastshot_ptr[i])[(fastshot_num[i])].y = (uint8_t)yf;
-    (fastshot_num[i])++;
+#define ptr_ (fastshot_ptr[i])
+#define num_ (fastshot_num[i])
+#define max_ (fastshot_max[i])
+    DEBRIS_STORE(world, xf, yf, color, offset);
+#undef ptr_
+#undef num_
+#undef max_
 }
 
 static void debris_store(int cx, int cy, int color)
 {
+    // warn("debris_store: %d, %d, color %d", cx, cy, color);
     world_t *world = &theWorld;
     int xf = CLICK_TO_PIXEL(cx),
         yf = CLICK_TO_PIXEL(cy);
-    int i;
-    int offset = 0;
-
-    if (xf < 0)
-        xf += world->width;
-
-    if (yf < 0)
-        yf += world->height;
-
-    if ((unsigned)xf >= (unsigned)view_width || (unsigned)yf >= (unsigned)view_height)
-        /*
-         * There's some rounding error or so somewhere.
-         * Should be possible to resolve it.
-         */
-        return;
-
-    i = offset + color * debris_areas + (((yf >> 8) % debris_y_areas) * debris_x_areas) + ((xf >> 8) % debris_x_areas);
-
-    if ((debris_num[i]) >= 255)
-        return;
-
-    if ((debris_num[i]) >= (debris_max[i]))
-    {
-        if ((debris_num[i]) == 0)
-            (debris_ptr[i]) = (debris_t *)malloc(((debris_max[i]) = 16) * sizeof(*(debris_ptr[i])));
-        else
-            (debris_ptr[i]) = (debris_t *)realloc((debris_ptr[i]), ((debris_max[i]) += (debris_max[i])) * sizeof(*(debris_ptr[i])));
-
-        if ((debris_ptr[i]) == 0)
-        {
-            error("No memory for debris");
-            (debris_num[i]) = 0;
-            return;
-        }
-    }
-    (debris_ptr[i])[(debris_num[i])].x = (uint8_t)xf;
-    (debris_ptr[i])[(debris_num[i])].y = (uint8_t)yf;
-    (debris_num[i])++;
+#define ptr_ (debris_ptr[i])
+#define num_ (debris_num[i])
+#define max_ (debris_max[i])
+    DEBRIS_STORE(world, xf, yf, color, 0);
+#undef ptr_
+#undef num_
+#undef max_
 }
+
+// static void fastshot_store(int cx, int cy, int color, int offset)
+// {
+//     world_t *world = &theWorld;
+//     int xf = CLICK_TO_PIXEL(cx),
+//         yf = CLICK_TO_PIXEL(cy);
+//     int i;
+
+//     if (xf < 0)
+//         xf += world->width;
+
+//     if (yf < 0)
+//         yf += world->height;
+
+//     if ((unsigned)xf >= (unsigned)view_width || (unsigned)yf >= (unsigned)view_height)
+//         /*
+//          * There's some rounding error or so somewhere.
+//          * Should be possible to resolve it.
+//          */
+//         return;
+
+//     i = offset + color * debris_areas + (((yf >> 8) % debris_y_areas) * debris_x_areas) + ((xf >> 8) % debris_x_areas);
+
+//     if ((fastshot_num[i]) >= 255)
+//         return;
+
+//     if ((fastshot_num[i]) >= (fastshot_max[i]))
+//     {
+//         if ((fastshot_num[i]) == 0)
+//             (fastshot_ptr[i]) = (debris_t *)malloc(((fastshot_max[i]) = 16) * sizeof(*(fastshot_ptr[i])));
+//         else
+//             (fastshot_ptr[i]) = (debris_t *)realloc((fastshot_ptr[i]), ((fastshot_max[i]) += (fastshot_max[i])) * sizeof(*(fastshot_ptr[i])));
+
+//         if ((fastshot_ptr[i]) == 0)
+//         {
+//             error("No memory for debris");
+//             (fastshot_num[i]) = 0;
+//             return;
+//         }
+//     }
+//     (fastshot_ptr[i])[(fastshot_num[i])].x = (uint8_t)xf;
+//     (fastshot_ptr[i])[(fastshot_num[i])].y = (uint8_t)yf;
+//     (fastshot_num[i])++;
+// }
+
+// 9 client sparkcolors causes this to be called with color 8, which is problematic.
+// static void debris_store(int cx, int cy, int color)
+// {
+//     // warn("debris_store: %d, %d, color %d", cx, cy, color);
+
+//     world_t *world = &theWorld;
+//     int xf = CLICK_TO_PIXEL(cx),
+//         yf = CLICK_TO_PIXEL(cy);
+//     int i;
+//     int offset = 0;
+
+//     if (xf < 0)
+//         xf += world->width;
+
+//     if (yf < 0)
+//         yf += world->height;
+
+//     if ((unsigned)xf >= (unsigned)view_width || (unsigned)yf >= (unsigned)view_height)
+//         /*
+//          * There's some rounding error or so somewhere.
+//          * Should be possible to resolve it.
+//          */
+//         return;
+
+//     i = offset + color * debris_areas + (((yf >> 8) % debris_y_areas) * debris_x_areas) + ((xf >> 8) % debris_x_areas);
+
+//     if ((debris_num[i]) >= 255)
+//         return;
+
+//     if ((debris_num[i]) >= (debris_max[i]))
+//     {
+//         if ((debris_num[i]) == 0)
+//             (debris_ptr[i]) = (debris_t *)malloc(((debris_max[i]) = 16) * sizeof(*(debris_ptr[i])));
+//         else
+//             (debris_ptr[i]) = (debris_t *)realloc((debris_ptr[i]), ((debris_max[i]) += (debris_max[i])) * sizeof(*(debris_ptr[i])));
+
+//         if ((debris_ptr[i]) == 0)
+//         {
+//             error("No memory for debris");
+//             (debris_num[i]) = 0;
+//             return;
+//         }
+//     }
+//     (debris_ptr[i])[(debris_num[i])].x = (uint8_t)xf;
+//     (debris_ptr[i])[(debris_num[i])].y = (uint8_t)yf;
+//     (debris_num[i])++;
+// }
 
 static void Frame_radar_buffer_reset(void)
 {

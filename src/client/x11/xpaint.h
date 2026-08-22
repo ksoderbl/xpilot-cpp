@@ -86,7 +86,6 @@ extern Window about_prev_b;       /* About prev page button */
 extern Window talkWindow;         /* Talk window */
 extern XColor colors[MAX_COLORS]; /* Colors */
 extern Colormap colormap;         /* Private colormap */
-extern int maxColors;             /* Max. number of colors to use */
 extern bool gotFocus;             /* Do we have the mouse pointer */
 
 extern int spaceColor;

@@ -825,7 +825,7 @@ static void Gui_paint_marking_lights(int id, int x, int y,
         // for (lcnt = 0; lcnt < ship->num_r_light; lcnt++)
         for (auto &pos : r_lights)
         {
-            int rightLightColor = maxColors > 4 ? 4 : BLUE;
+            int rightLightColor = 4; // maxColors > 4 ? 4 : BLUE;
             // position_t r_light = Ship_get_r_light_position(ship, lcnt, dir);
             position_t r_light = clpos2position(pos);
             Rectangle_add(rightLightColor,

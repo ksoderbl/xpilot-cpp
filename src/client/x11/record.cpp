@@ -135,7 +135,7 @@ static void WriteHeader(void)
     hdr.recorddate = std::string(buf);
 
     /* Write info about graphics setup. */
-    for (i = 0; i < maxColors; i++)
+    for (i = 0; i < clientOptions.maxColors; i++)
     {
         XPRColor color;
         color.pixel = colors[i].pixel;
@@ -156,15 +156,15 @@ static int RGetPixelIndex(unsigned long pixel)
 {
     int i;
 
-    for (i = 0; i < maxColors; i++)
+    for (i = 0; i < clientOptions.maxColors; i++)
     {
         if (pixel == colors[i].pixel)
             return i;
     }
-    for (i = 1; i < maxColors; i++)
+    for (i = 1; i < clientOptions.maxColors; i++)
     {
         if (pixel == (colors[BLACK].pixel ^ colors[i].pixel))
-            return i + maxColors;
+            return i + clientOptions.maxColors;
     }
 
     return WHITE;
@@ -252,7 +252,7 @@ static void RWriteTile(Pixmap tile)
         for (x = 0; x < img->width; x++)
         {
             unsigned long pixel = XGetPixel(img, x, y);
-            for (i = 0; i < maxColors - 1; i++)
+            for (i = 0; i < clientOptions.maxColors - 1; i++)
             {
                 if (pixel == colors[i].pixel)
                     break;

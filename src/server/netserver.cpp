@@ -752,31 +752,31 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
 
     Feature_init(connp);
     if (FEATURE(connp, F_POLY))
-        printf("Have F_POLY\n");
+        debuglog("Have F_POLY\n");
     if (FEATURE(connp, F_FLOATSCORE))
-        printf("Have F_FLOATSCORE\n");
+        debuglog("Have F_FLOATSCORE\n");
     if (FEATURE(connp, F_EXPLICITSELF))
-        printf("Have F_EXPLICITSELF\n");
+        debuglog("Have F_EXPLICITSELF\n");
     if (FEATURE(connp, F_ASTEROID))
-        printf("Have F_ASTEROID\n");
+        debuglog("Have F_ASTEROID\n");
     if (FEATURE(connp, F_TEMPWORM))
-        printf("Have F_TEMPWORM\n");
+        debuglog("Have F_TEMPWORM\n");
     if (FEATURE(connp, F_FASTRADAR))
-        printf("Have F_FASTRADAR\n");
+        debuglog("Have F_FASTRADAR\n");
     if (FEATURE(connp, F_SEPARATEPHASING))
-        printf("Have F_SEPARATEPHASING\n");
+        debuglog("Have F_SEPARATEPHASING\n");
     if (FEATURE(connp, F_TEAMRADAR))
-        printf("Have F_TEAMRADAR\n");
+        debuglog("Have F_TEAMRADAR\n");
     if (FEATURE(connp, F_SHOW_APPEARING))
-        printf("Have F_SHOW_APPEARING\n");
+        debuglog("Have F_SHOW_APPEARING\n");
     if (FEATURE(connp, F_SENDTEAM))
-        printf("Have F_SENDTEAM\n");
+        debuglog("Have F_SENDTEAM\n");
     if (FEATURE(connp, F_CUMULATIVETURN))
-        printf("Have F_CUMULATIVETURN\n");
+        debuglog("Have F_CUMULATIVETURN\n");
     if (FEATURE(connp, F_BALLSTYLE))
-        printf("Have F_BALLSTYLE\n");
+        debuglog("Have F_BALLSTYLE\n");
     if (FEATURE(connp, F_POLYSTYLE))
-        printf("Have F_POLYSTYLE\n");
+        debuglog("Have F_POLYSTYLE\n");
 
     connp->start = main_loops;
     connp->magic = randomMT() + my_port + sock.fd + team + main_loops;
@@ -1798,7 +1798,7 @@ int Send_debris(Connection *connp, int type, uint8_t *p, unsigned n)
 
     if ((n & 0xFF) != n)
     {
-        warn("Bad number of debris %d", n);
+        warn("Send_debris: Bad number of debris %d", n);
         return 0;
     }
     avail = w->size - w->len - SOCKBUF_WRITE_SPARE - 2;
@@ -2826,6 +2826,11 @@ static int Receive_display(Connection *connp)
     }
     LIMIT(width, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
     LIMIT(height, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+
+    // 2026: It seems 9 spark colors messes up debris_store, so let's not allow that
+    debuglog("Receive_display: orig.    debris_colors: %d", debris_colors);
+    LIMIT(debris_colors, 0, 8);
+    debuglog("Receive_display: limited. debris_colors: %d", debris_colors);
 
     connp->view_width = width;
     connp->view_height = height;

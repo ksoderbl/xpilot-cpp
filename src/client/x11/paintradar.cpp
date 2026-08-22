@@ -164,8 +164,9 @@ static void Paint_objects_radar(void)
         /* draw players from the same team in a different color. */
         if ((s & 0x80) != 0)
         {
-            if (maxColors > 4)
-                XSetForeground(dpy, radarGC, colors[4].pixel);
+            // if (maxColors > 4)
+            // GREEN
+            XSetForeground(dpy, radarGC, colors[4].pixel);
             s &= ~0x80;
         }
 
@@ -188,20 +189,17 @@ static void Paint_objects_radar(void)
             yw = (y < 0) ? -RadarHeight : (y + s >= RadarHeight) ? RadarHeight
                                                                  : 0;
             if (xw != 0)
-            {
                 XFillRectangle(dpy, radarPixmap, radarGC,
                                x - xw, y, s, s);
-            }
+
             if (yw != 0)
             {
                 XFillRectangle(dpy, radarPixmap, radarGC,
                                x, y - yw, s, s);
 
                 if (xw != 0)
-                {
                     XFillRectangle(dpy, radarPixmap, radarGC,
                                    x - xw, y - yw, s, s);
-                }
             }
         }
         XSetForeground(dpy, radarGC, colors[WHITE].pixel);

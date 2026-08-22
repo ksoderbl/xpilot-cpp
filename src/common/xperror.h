@@ -41,4 +41,6 @@ extern void error(const char *fmt, ...);
 extern void fatal(const char *fmt, ...);
 extern void dumpcore(const char *fmt, ...);
 
+extern void debuglog(const char *fmt, ...);
+
 extern void init_error(const char *prog);

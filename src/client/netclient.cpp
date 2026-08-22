@@ -2856,7 +2856,7 @@ int Send_pointer_move(int movement)
 
 int Send_audio_request(bool on)
 {
-    printf("Send_audio_request %d\n", on ? 1 : 0);
+    debuglog("Send_audio_request %d\n", on ? 1 : 0);
 
     if (Packet_printf(&wbuf, "%c%c", PKT_REQUEST_AUDIO, (on ? 1 : 0)) == -1)
         return -1;

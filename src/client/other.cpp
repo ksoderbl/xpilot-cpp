@@ -44,7 +44,7 @@ Other::Other()
 
 Other::~Other()
 {
-    warn("Other::Other: Goodbye cruel world! (%s)", nick_name.c_str());
+    debuglog("Other::Other: Goodbye cruel world! (%s)", nick_name.c_str());
 }
 
 Other *self = nullptr; /* player info */

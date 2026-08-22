@@ -159,7 +159,7 @@ static bool Key_press_id_mode(void)
 
 static bool Key_press_autoshield_hack(void)
 {
-    warn("Key_press_autoshield_hack");
+    debuglog("Key_press_autoshield_hack");
     if (clientOptions.autoShield && BITV_ISSET(keyv, KEY_SHIELD))
         BITV_CLR(keyv, KEY_SHIELD);
     return false;
@@ -442,7 +442,7 @@ static bool Quit_mode_key_press(keys_t key)
 
 bool Key_press(keys_t key)
 {
-    warn("Key_press: key %d: %s", key, keyToStr((keys_t)key).c_str());
+    debuglog("Key_press: key %d: %s", key, keyToStr((keys_t)key).c_str());
 
     bool countchange;
     int keycount, i;
@@ -579,7 +579,7 @@ bool Key_press(keys_t key)
 
 bool Key_release(keys_t key)
 {
-    warn("Key_release: key %d: %s", key, keyToStr((keys_t)key).c_str());
+    debuglog("Key_release: key %d: %s", key, keyToStr((keys_t)key).c_str());
 
     bool countchange;
     int keycount;
@@ -691,7 +691,7 @@ void Reset_shields(void)
                 BITV_ISSET(keyv, KEY_DETACH_MINE))
                 BITV_CLR(keyv, KEY_SHIELD);
         }
-        warn("Reset_shields: calling Net_key_change");
+        debuglog("Reset_shields: calling Net_key_change");
         Net_key_change();
     }
 }
@@ -755,7 +755,7 @@ void Pointer_button_released(int button)
 
 void Keyboard_button_pressed(xp_keysym_t ks)
 {
-    warn("Keyboard_button_pressed: ks = %d", ks);
+    debuglog("Keyboard_button_pressed: ks = %d", ks);
 
     bool change = false;
     keys_t key;
@@ -783,7 +783,7 @@ void Keyboard_button_pressed(xp_keysym_t ks)
 
 void Keyboard_button_released(xp_keysym_t ks)
 {
-    warn("Keyboard_button_released: ks = %d", ks);
+    debuglog("Keyboard_button_released: ks = %d", ks);
 
     bool change = false;
     keys_t key;
@@ -831,7 +831,7 @@ static bool setPointerButtonBinding(xp_option_t *opt, const char *value)
     assert(value);
     XFREE(pointerButtonBindings[ind]);
 
-    warn("setPointerButtonBinding: option = %s, value = %s, ind = %d", opt->name, value, ind);
+    debuglog("setPointerButtonBinding: option = %s, value = %s, ind = %d", opt->name, value, ind);
 
     Clear_buttonDefs(ind);
 
@@ -859,11 +859,11 @@ static bool setPointerButtonBinding(xp_option_t *opt, const char *value)
             opt_j_name = Option_get_name(opt_j);
             opt_j_key = Option_get_key(opt_j);
 
-            warn("setPointerButtonBinding: name = %s, key = %d", opt_j_name, opt_j_key);
+            debuglog("setPointerButtonBinding: name = %s, key = %d", opt_j_name, opt_j_key);
 
             if (opt_j_key != KEY_DUMMY && (!strcasecmp(ptr, opt_j_name + 3)))
             {
-                warn("setPointerButtonBinding: call Bind_key_to_pointer_button for key = %d, ind = %d", opt_j_key, ind);
+                debuglog("setPointerButtonBinding: call Bind_key_to_pointer_button for key = %d, ind = %d", opt_j_key, ind);
                 Bind_key_to_pointer_button(opt_j_key, ind);
                 break;
             }

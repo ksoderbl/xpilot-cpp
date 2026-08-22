@@ -35,35 +35,37 @@
 
 #include "audio.h"
 
+#include "xperror.h"
+
 int audioDeviceInit(char *display)
 {
-    printf("debug audio: init\n");
+    debuglog("debug audio: init\n");
 
     return 0;
 }
 
 void audioDevicePlay(char *filename, int type, int volume, void **private_data)
 {
-    printf("debug audio: play file %s, type %d, vol %d, priv %p\n",
-           filename, type, volume, private_data);
+    debuglog("debug audio: play file %s, type %d, vol %d, priv %p\n",
+             filename, type, volume, private_data);
 }
 
 void audioDeviceEvents(void)
 {
-    /* printf("debug audio: events\n"); */
+    /* debuglog("debug audio: events\n"); */
 }
 
 void audioDeviceUpdate(void)
 {
-    /* printf("debug audio: update\n"); */
+    /* debuglog("debug audio: update\n"); */
 }
 
 void audioDeviceFree(void *private_data)
 {
-    printf("debug audio: audioDeviceFree\n");
+    debuglog("debug audio: audioDeviceFree\n");
 }
 
 void audioDeviceClose()
 {
-    printf("debug audio: audioDeviceClose\n");
+    debuglog("debug audio: audioDeviceClose\n");
 }

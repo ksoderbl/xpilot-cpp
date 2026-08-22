@@ -85,7 +85,7 @@ static void Input_loop(void)
         error("Bad socket filedescriptor");
         return;
     }
-    warn("Input_loop: calling Net_key_change");
+    debuglog("Input_loop: calling Net_key_change");
     Net_key_change();
     FD_ZERO(&rfds);
     FD_SET(clientfd, &rfds);

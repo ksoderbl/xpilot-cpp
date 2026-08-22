@@ -98,6 +98,7 @@ struct ClientOptions
     int maxVolume = 100;                // maximum volume (in percent)
     int meterWidth = 60;                // Width of drawn meters
     int meterHeight = 10;               // Height of drawn meters
+    int maxColors = 16;                 // Max. number of colors to use
 
     // From X11 client
     bool ignoreWindowManager = false;
@@ -118,6 +119,8 @@ struct ClientOptions
     int hudRadarEnemyShape = 2;  // The shape of enemy ships on hud radar
     int hudRadarOtherShape = 2;  // The shape of friendly ships on hud radar
     int hudRadarObjectShape = 0; // The shape of small objects on hud radar
+    int gameFontSize = 16;
+    int mapFontSize = 16;
 };
 
 extern ClientOptions clientOptions;

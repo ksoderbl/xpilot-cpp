@@ -187,3 +187,27 @@ void dumpcore(const char *fmt, ...)
 
     abort();
 }
+
+void debuglog(const char *fmt, ...)
+{
+#if 0
+    int len;
+    va_list ap;
+
+    va_start(ap, fmt);
+
+    char *s = showtime();
+
+    fprintf(stderr, "%s DEBUG %s: ", s, progname);
+
+    vfprintf(stderr, fmt, ap);
+
+    len = strlen(fmt);
+    if (len == 0 || fmt[len - 1] != '\n')
+    {
+        fprintf(stderr, "\n");
+    }
+
+    va_end(ap);
+#endif
+}

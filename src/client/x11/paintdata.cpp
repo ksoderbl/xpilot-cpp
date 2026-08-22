@@ -51,7 +51,7 @@ void Rectangle_start(void)
 {
     int i;
 
-    for (i = 0; i < maxColors; i++)
+    for (i = 0; i < clientOptions.maxColors; i++)
         rectanglesArray[i].clear();
 }
 
@@ -59,7 +59,7 @@ void Rectangle_end(void)
 {
     int i;
 
-    for (i = 0; i < maxColors; i++)
+    for (i = 0; i < clientOptions.maxColors; i++)
     {
         if (rectanglesArray[i].size() > 0)
         {
@@ -89,7 +89,7 @@ void Arc_start(void)
 {
     int i;
 
-    for (i = 0; i < maxColors; i++)
+    for (i = 0; i < clientOptions.maxColors; i++)
         arcsArray[i].clear();
     rgbArcsVector.clear();
 }
@@ -98,7 +98,7 @@ void Arc_end(void)
 {
     int i;
 
-    for (i = 0; i < maxColors; i++)
+    for (i = 0; i < clientOptions.maxColors; i++)
     {
         if (arcsArray[i].size() > 0)
         {
@@ -170,7 +170,7 @@ void Segment_start(void)
 {
     int i;
 
-    for (i = 0; i < maxColors; i++)
+    for (i = 0; i < clientOptions.maxColors; i++)
         segmentsArray[i].clear();
 }
 
@@ -178,7 +178,7 @@ void Segment_end(void)
 {
     int i;
 
-    for (i = 0; i < maxColors; i++)
+    for (i = 0; i < clientOptions.maxColors; i++)
     {
         if (segmentsArray[i].size() > 0)
         {

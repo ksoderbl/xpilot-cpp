@@ -146,9 +146,6 @@ void free_string_texture(string_tex_t *string_tex);
 extern font_data gamefont;
 extern font_data mapfont;
 
-extern int gameFontSize;
-extern int mapFontSize;
-
 extern char *gamefontname;
 
 extern string_tex_t score_object_texs[];

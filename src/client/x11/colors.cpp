@@ -89,7 +89,6 @@ static const char *color_defaults[MAX_COLORS] = {
 char visualName[MAX_VISUAL_NAME];
 Visual *visualPtr;
 unsigned dispDepth;
-int maxColors = 16; /* Max. number of colors to use */
 XColor colors[MAX_COLORS];
 Colormap colormap; /* Private colormap */
 
@@ -368,7 +367,7 @@ static int Parse_colors(Colormap cmap)
     /*
      * Get the color definitions.
      */
-    for (i = 0; i < maxColors; i++)
+    for (i = 0; i < clientOptions.maxColors; i++)
     {
         if (strlen(color_names[i]) > 0)
         {
@@ -413,10 +412,9 @@ static void Fill_colormap(void)
         warn("Fill_colormap: returning early\n");
         return;
     }
-    cells_needed = (maxColors == 16)  ? 256
-                   : (maxColors == 8) ? 64
-                                      : 16;
+    cells_needed = 256; // because of maxColors = 16
     max_fill = MAX(256, visualPtr->map_entries) - cells_needed;
+    warn("Fill_colormap: max_fill = %d\n", max_fill);
     if (max_fill <= 0)
         return;
 
@@ -460,28 +458,28 @@ int Colors_init(void)
 
     colormap = 0;
 
-    // warn("Colors_init: maxColors 0: %d\n", maxColors);
-
     Choose_visual();
 
-    // warn("Colors_init: Using visual %s\n", Visual_class_name(visualPtr->c_class));
+    warn("Colors_init: Using visual %s\n", Visual_class_name(visualPtr->c_class));
 
     /*
      * Get misc. display info.
      */
     {
-        // warn("Colors_init: maxColors 1: %d\n", maxColors);
-        // warn("Colors_init: visualPtr->map_entries: %d\n", visualPtr->map_entries);
-        maxColors = (maxColors >= 16 && visualPtr->map_entries >= 16) ? 16
-                    : (maxColors >= 8 && visualPtr->map_entries >= 8) ? 8
-                                                                      : 4;
-        // warn("Colors_init: maxColors 2: %d\n", maxColors);
+        warn("Colors_init: maxColors 1: %d\n", clientOptions.maxColors);
+        warn("Colors_init: visualPtr->map_entries: %d\n", visualPtr->map_entries);
+        // maxColors = (maxColors >= 16 && visualPtr->map_entries >= 16) ? 16
+        //             : (maxColors >= 8 && visualPtr->map_entries >= 8) ? 8
+        //                                                               : 4;
+        clientOptions.maxColors = 16;
+        warn("Colors_init: maxColors 2: %d\n", clientOptions.maxColors);
     }
 
-    num_planes = (maxColors == 16)  ? 4
-                 : (maxColors == 8) ? 3
-                                    : 2;
-    // warn("Colors_init: num_planes: %d\n", num_planes);
+    // num_planes = (maxColors == 16)  ? 4
+    //              : (maxColors == 8) ? 3
+    //                                 : 2;
+    num_planes = 4;
+    warn("Colors_init: num_planes: %d\n", num_planes);
 
     if (Parse_colors(DefaultColormap(dpy, DefaultScreen(dpy))) == -1)
     {
@@ -540,8 +538,9 @@ int Colors_init(void)
         fatal("Unknown dbuf state %d.", dbuf_state->type);
     }
 
-    for (i = maxColors; i < MAX_COLORS; i++)
-        colors[i] = colors[i % maxColors];
+    // maxColors == MAX_COLORS, so this loop doesn't do anything
+    // for (i = maxColors; i < MAX_COLORS; i++)
+    //     colors[i] = colors[i % maxColors];
 
     Colors_init_radar_hack();
 
@@ -1034,9 +1033,18 @@ void Init_spark_colors(void)
     unsigned col;
     int i;
 
-    // warn("Init_spark_colors: original sparkColors %s", sparkColors);
-    // strlcpy(sparkColors, "8,5,3,10", sizeof sparkColors);
-    // warn("Init_spark_colors: changed  sparkColors %s", sparkColors);
+    // debuglog("Init_spark_colors: original sparkColors %s", sparkColors);
+    // strlcpy(sparkColors, "", sizeof sparkColors);
+    // strlcpy(sparkColors, "1", sizeof sparkColors);
+    // strlcpy(sparkColors, "1,2", sizeof sparkColors);
+    // strlcpy(sparkColors, "1,2,3", sizeof sparkColors);
+    // strlcpy(sparkColors, "1,2,3,4", sizeof sparkColors);
+    // strlcpy(sparkColors, "1,2,3,4,5", sizeof sparkColors);
+    // strlcpy(sparkColors, "1,2,3,4,5,6", sizeof sparkColors);
+    // strlcpy(sparkColors, "1,2,3,4,5,6,7", sizeof sparkColors);
+    // strlcpy(sparkColors, "1,2,3,4,5,6,7,8", sizeof sparkColors);
+    // strlcpy(sparkColors, "1,2,3,4,5,6,7,8,9", sizeof sparkColors);
+    // debuglog("Init_spark_colors: changed  sparkColors %s", sparkColors);
 
     num_spark_colors = 0;
     /*
@@ -1061,31 +1069,32 @@ void Init_spark_colors(void)
             src--;
 
             int ret = sscanf(buf, "%u", &col);
-            // warn("buf %s, col %d, ret %d", buf, col, ret);
+            debuglog("buf %s, col %d, ret %d", buf, col, ret);
             if (ret == 1)
             {
-                if (col < (unsigned)maxColors)
+                if (col < (unsigned)clientOptions.maxColors)
                 {
-                    // warn("color: %d", col);
+                    debuglog("col < maxcolors: %d < %d", col, clientOptions.maxColors);
                     spark_color[num_spark_colors++] = col;
                 }
             }
         }
     }
+    debuglog("num_spark_colors: %d", num_spark_colors);
     if (num_spark_colors == 0)
     {
-        if (maxColors <= 8)
-        {
-            /* 3 colors ranging from 5 up to 7 */
-            for (i = 5; i < maxColors; i++)
-                spark_color[num_spark_colors++] = i;
-        }
-        else
-        {
-            /* 7 colors ranging from 5 till 11 */
-            for (i = 5; i < 12; i++)
-                spark_color[num_spark_colors++] = i;
-        }
+        // if (maxColors <= 8)
+        // {
+        //     /* 3 colors ranging from 5 up to 7 */
+        //     for (i = 5; i < maxColors; i++)
+        //         spark_color[num_spark_colors++] = i;
+        // }
+        // else
+        // {
+        /* 7 colors ranging from 5 till 11 */
+        for (i = 5; i < 12; i++)
+            spark_color[num_spark_colors++] = i;
+        // }
         /* default spark colors always include RED. */
         spark_color[num_spark_colors++] = RED;
     }
@@ -1104,14 +1113,15 @@ static bool Set_sparkColors(xp_option_t *opt, const char *val)
 
 static bool Set_maxColors(xp_option_t *opt, int val)
 {
-    if (val == 4 || val == 8)
-    {
-        warn("Values 4 or 8 for maxColors are not actively "
-             "supported. Use at own risk.");
-        maxColors = val;
-    }
-    else
-        maxColors = MAX_COLORS;
+    warn("Set_maxColors: Value: %d", val);
+    // if (val == 4 || val == 8)
+    // {
+    //     warn("Values 4 or 8 for maxColors are not actively "
+    //          "supported. Use at own risk.");
+    //     maxColors = val;
+    // }
+    // else
+    clientOptions.maxColors = MAX_COLORS;
     return true;
 }
 
@@ -1133,7 +1143,7 @@ static xp_option_t color_options[] = {
         MAX_COLORS,
         MAX_COLORS,
         MAX_COLORS,
-        &maxColors,
+        &clientOptions.maxColors,
         Set_maxColors,
         XP_OPTFLAG_DEFAULT,
         "The number of colors to use.\n"

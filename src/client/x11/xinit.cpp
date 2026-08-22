@@ -520,7 +520,7 @@ int Init_playing_windows(void)
     /* Create buttons */
     // BUTTON_WIDTH was defined as 84 when RadarWidth was 256.
     int BUTTON_WIDTH = (RadarWidth / 3) - 1;
-    warn("BUTTON_WIDTH = %d", BUTTON_WIDTH);
+    // warn("BUTTON_WIDTH = %d", BUTTON_WIDTH);
 
     ButtonHeight = buttonFont->ascent + buttonFont->descent + 2 * BTN_BORDER;
 
