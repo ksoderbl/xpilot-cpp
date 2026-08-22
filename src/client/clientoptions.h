@@ -101,18 +101,22 @@ struct ClientOptions
 
     // From X11 client
     bool ignoreWindowManager = false;
-    bool fullColor = false;       // Whether to try using colors as close to
-                                  // the specified ones as possible, or just
-                                  // use a few standard colors for everything.
-    bool texturedObjects = false; // Whether to draw bitmaps for some objects.
-                                  // Previously this variable determined
-                                  // fullColor too.
-    int maxColors = 16;           // Max. number of colors to use
-    int buttonColor = BLUE;       // Color index for button drawing
-    int windowColor = 8;          // Color index for window drawing
-    int borderColor = WHITE;      // Color index for border drawing
-    int wallColor = BLUE;         // Color index for wall drawing
-    int decorColor = 6;           // Color index for decoration drawing
+    bool fullColor = false;            // Whether to try using colors as close to
+                                       // the specified ones as possible, or just
+                                       // use a few standard colors for everything.
+    bool texturedObjects = false;      // Whether to draw bitmaps for some objects.
+                                       // Previously this variable determined
+                                       // fullColor too.
+    int maxColors = 16;                // Max. number of colors to use
+    int buttonColor = BLUE;            // Color index for button drawing
+    int windowColor = 8;               // Color index for window drawing
+    int borderColor = WHITE;           // Color index for border drawing
+    int wallColor = BLUE;              // Color index for wall drawing
+    int decorColor = 6;                // Color index for decoration drawing
+    int baseNameColor = BLUE;          // Color index for base name drawing
+    int backgroundPointColor = BLUE;   // background point drawing
+    int fuelColor = BLUE;              // fuel station drawing, legacy value was RED
+    int visibilityBorderColor = BLACK; // visibility border drawing
 
     // From SDL/OpenGL client
     bool smoothLines = true;     // Use antialized smooth lines

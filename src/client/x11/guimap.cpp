@@ -57,11 +57,6 @@
 
 extern setup_t *Setup;
 
-static int baseNameColor = BLUE;          /* Color index for base name drawing */
-static int backgroundPointColor = 4;      /* background point drawing */
-static int fuelColor = BLUE;              // RED;           /* fuel station drawing */
-static int visibilityBorderColor = BLACK; /* visibility border drawing */
-
 void Gui_paint_walls(int x, int y, int type)
 {
     if (!clientOptions.texturedObjects)
@@ -234,7 +229,7 @@ void Gui_paint_fuel(int x, int y, double fuel)
     // warn("Gui_paint_fuel: x: %d, y: %d, fuel: %f", x, y, fuel);
 
     /* fuel box drawing can be disabled */
-    if (fuelColor == BLACK)
+    if (clientOptions.fuelColor == BLACK)
         return;
 
     if (!clientOptions.texturedObjects)
@@ -253,7 +248,7 @@ void Gui_paint_fuel(int x, int y, double fuel)
             text_width = XTextWidth(gameFont, s, 1);
             text_is_bigger = (text_width + 4 > WINSCALE(BLOCK_SZ) + 1) || (gameFont->ascent + gameFont->descent) > WINSCALE(BLOCK_SZ) + 2;
         }
-        SET_FG(colors[fuelColor].pixel);
+        SET_FG(colors[clientOptions.fuelColor].pixel);
         size = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * fuel / MAX_STATION_FUEL);
         rd.fillRectangle(dpy, drawPixmap, gameGC,
                          SCALEX(x + FUEL_BORDER),
@@ -263,7 +258,7 @@ void Gui_paint_fuel(int x, int y, double fuel)
 
         /* Draw F in fuel cells */
         XSetFunction(dpy, gameGC, GXxor);
-        SET_FG(colors[BLACK].pixel ^ colors[fuelColor].pixel);
+        SET_FG(colors[BLACK].pixel ^ colors[clientOptions.fuelColor].pixel);
         x = SCALEX(x + BLOCK_SZ / 2) - text_width / 2,
         y = SCALEY(y + BLOCK_SZ / 2) + gameFont->ascent / 2,
         rd.drawString(dpy, drawPixmap, gameGC, x, y, s, 1);
@@ -329,10 +324,10 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
     other = Other_by_id(id);
     base = Homebase_by_id(id);
 
-    if (baseNameColor >= BLACK)
+    if (clientOptions.baseNameColor > BLACK)
     {
         if (!(color = Life_color(other)))
-            color = baseNameColor;
+            color = clientOptions.baseNameColor;
     }
     else
         color = WHITE; // TODO
@@ -829,8 +824,8 @@ static void Gui_paint_rectangle(int x, int y, int xi, int yi, int color)
 
 void Gui_paint_visible_border(int x, int y, int xi, int yi)
 {
-    if (visibilityBorderColor)
-        Gui_paint_rectangle(x, y, xi, yi, visibilityBorderColor);
+    if (clientOptions.visibilityBorderColor > BLACK)
+        Gui_paint_rectangle(x, y, xi, yi, clientOptions.visibilityBorderColor);
 }
 
 void Gui_paint_hudradar_limit(int x, int y, int xi, int yi)
@@ -1163,9 +1158,9 @@ void Gui_paint_setup_asteroid_concentrator(int x, int y)
 
 void Gui_paint_decor_dot(int x, int y, int size)
 {
-    if (!backgroundPointColor)
+    if (!clientOptions.backgroundPointColor)
         return;
-    Rectangle_add(backgroundPointColor,
+    Rectangle_add(clientOptions.backgroundPointColor,
                   X(x + BLOCK_SZ / 2) - (clientOptions.backgroundPointSize >> 1),
                   Y(y + BLOCK_SZ / 2) - (clientOptions.backgroundPointSize >> 1),
                   size, size);
@@ -1427,26 +1422,26 @@ xp_option_t guimap_options[] = {
     COLOR_INDEX_OPTION(
         "baseNameColor",
         2,
-        &baseNameColor,
+        &clientOptions.baseNameColor,
         "Which color number to use for drawing names of bases\n"
         "(unless drawn in one of the life colors).\n"),
 
     COLOR_INDEX_OPTION(
         "backgroundPointColor",
         2,
-        &backgroundPointColor,
+        &clientOptions.backgroundPointColor,
         "Which color number to use for drawing background points.\n"),
 
     COLOR_INDEX_OPTION(
         "fuelColor",
         BLUE, // 3,
-        &fuelColor,
+        &clientOptions.fuelColor,
         "Which color number to use for drawing fuel stations.\n"),
 
     COLOR_INDEX_OPTION(
         "visibilityBorderColor",
         BLACK,
-        &visibilityBorderColor,
+        &clientOptions.visibilityBorderColor,
         "Which color number to use for drawing the visibility border.\n"),
 };
 
