@@ -1111,19 +1111,19 @@ static bool Set_sparkColors(xp_option_t *opt, const char *val)
     return true;
 }
 
-static bool Set_maxColors(xp_option_t *opt, int val)
-{
-    warn("Set_maxColors: Value: %d", val);
-    // if (val == 4 || val == 8)
-    // {
-    //     warn("Values 4 or 8 for maxColors are not actively "
-    //          "supported. Use at own risk.");
-    //     maxColors = val;
-    // }
-    // else
-    clientOptions.maxColors = MAX_COLORS;
-    return true;
-}
+// static bool Set_maxColors(xp_option_t *opt, int val)
+// {
+//     warn("Set_maxColors: Value: %d", val);
+//     // if (val == 4 || val == 8)
+//     // {
+//     //     warn("Values 4 or 8 for maxColors are not actively "
+//     //          "supported. Use at own risk.");
+//     //     maxColors = val;
+//     // }
+//     // else
+//     clientOptions.maxColors = MAX_COLORS;
+//     return true;
+// }
 
 static bool Set_color(xp_option_t *opt, const char *val)
 {
@@ -1138,16 +1138,16 @@ static bool Set_color(xp_option_t *opt, const char *val)
 
 static xp_option_t color_options[] = {
 
-    XP_INT_OPTION(
-        "maxColors",
-        MAX_COLORS,
-        MAX_COLORS,
-        MAX_COLORS,
-        &clientOptions.maxColors,
-        Set_maxColors,
-        XP_OPTFLAG_DEFAULT,
-        "The number of colors to use.\n"
-        "Use value 16. Other values are not actively supported.\n"),
+    // XP_INT_OPTION(
+    //     "maxColors",
+    //     MAX_COLORS,
+    //     MAX_COLORS,
+    //     MAX_COLORS,
+    //     &clientOptions.maxColors,
+    //     Set_maxColors,
+    //     XP_OPTFLAG_DEFAULT,
+    //     "The number of colors to use.\n"
+    //     "Use value 16. Other values are not actively supported.\n"),
 
     /* 16 user definable color values */
     XP_CONST_CHAR_STAR_OPTION(
