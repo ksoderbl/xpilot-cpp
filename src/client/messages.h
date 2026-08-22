@@ -29,11 +29,12 @@
 #include "client.h"
 #include "other.h"
 
-#define MAX_MSGS 15       /* Max. messages displayed ever */
-#define MAX_HIST_MSGS 128 /* maximum */
+// #define MAX_MSGS 15       /* Max. messages displayed ever */
+constexpr int MAX_MSGS = 63;       /* Max. messages displayed ever */
+constexpr int MAX_HIST_MSGS = 128; /* maximum */
 
-#define MSG_DURATION 1024
-#define MSG_FLASH 892
+constexpr int MSG_DURATION = 1024;
+constexpr int MSG_FLASH = 892;
 
 // /*
 //  * is a selection pending (in progress), done, drawn emphasized?

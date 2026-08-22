@@ -1261,7 +1261,7 @@ bool Talk_cut_area_hit(XButtonEvent *xbutton)
     else
         y /= SPACING;
 
-    if (y < maxMessages)
+    if (y < clientOptions.maxMessages)
         return true;
 
     return false;
@@ -1333,7 +1333,7 @@ void Talk_cut_from_messages(XButtonEvent *xbutton)
     {
         /* how many messages? */
         last_msg_index = 0;
-        while (last_msg_index < maxMessages && TalkMsg[last_msg_index]->len != 0)
+        while (last_msg_index < clientOptions.maxMessages && TalkMsg[last_msg_index]->len != 0)
         {
             last_msg_index++;
         }

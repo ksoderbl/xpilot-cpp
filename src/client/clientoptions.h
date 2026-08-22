@@ -86,10 +86,12 @@ struct ClientOptions
     int hudRadarDotSize = 8;            // Size for hudradar dot drawing
     int baseWarningType = 3;            // Which type of base warning you prefer
     int maxCharsInNames = MAX_NAME_LEN; // Draw max this many chars for names
-    int shotSize = 6;                   // size of shot
-    int teamShotSize = 4;               // size of team shot
-    int backgroundPointDist = 20;       // spacing of navigation points
+    int shotSize = 3;                   // size of shot, legacy value was 3
+    int teamShotSize = 2;               // size of team shot, legacy default was 2
+    int backgroundPointDist = 20;       // spacing of navigation points, legacy default was 8
     int backgroundPointSize = 2;        // size of navigation points
+    int charsPerSecond = 100;           // Message output speed (configurable), legacy value was 50
+    int maxMessages = 16;               // Max. number of messages to display, legacy value was 8
 
     // From X11 client
     bool ignoreWindowManager = false;

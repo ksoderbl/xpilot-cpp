@@ -54,7 +54,6 @@ char *HistoryMsg[MAX_HIST_MSGS];
 /* provide cut&paste and message history */
 static char *HistoryBlock = nullptr;
 int maxLinesInHistory = 32;
-int maxMessages = 8;      /* Max. number of messages to display */
 int messagesToStdout = 0; /* Send messages to standard output */
 
 static message_t *MsgBlock = nullptr;
@@ -245,7 +244,7 @@ void Add_message(const char *message)
     {
         /* how many talk messages */
         last_msg_index = 0;
-        while (last_msg_index < maxMessages && TalkMsg[last_msg_index]->len != 0)
+        while (last_msg_index < clientOptions.maxMessages && TalkMsg[last_msg_index]->len != 0)
             last_msg_index++;
         last_msg_index--; /* make it an index */
 
@@ -262,8 +261,8 @@ void Add_message(const char *message)
         } /* talk window emphasized */
     } /* talk messages */
 
-    msg = msg_set[maxMessages - 1];
-    for (i = maxMessages - 1; i > 0; i--)
+    msg = msg_set[clientOptions.maxMessages - 1];
+    for (i = clientOptions.maxMessages - 1; i > 0; i--)
         msg_set[i] = msg_set[i - 1];
 
     msg_set[0] = msg;
@@ -282,7 +281,7 @@ void Add_message(const char *message)
     if (is_drawn_talk_message && selection.draw.state == SEL_EMPHASIZED)
     {
 
-        if ((scrolling && selection.draw.y2 == 0) || (selection.draw.y1 == maxMessages - 1))
+        if ((scrolling && selection.draw.y2 == 0) || (selection.draw.y1 == clientOptions.maxMessages - 1))
         {
             /*
              * the emphasizing vanishes, as it's 'last' line
@@ -303,7 +302,7 @@ void Add_message(const char *message)
             else
             {
                 selection.draw.y1++;
-                if (selection.draw.y2 == maxMessages - 1)
+                if (selection.draw.y2 == clientOptions.maxMessages - 1)
                     selection.draw.x2 = msg_set[selection.draw.y2]->len - 1;
                 else
                     selection.draw.y2++;
@@ -328,7 +327,7 @@ void Delete_pending_messages(void)
     message_t *msg;
     int i;
 
-    for (i = 0; i < maxMessages; i++)
+    for (i = 0; i < clientOptions.maxMessages; i++)
     {
         msg = TalkMsg_pending[i];
         if (msg->len > 0)
@@ -354,7 +353,7 @@ void Add_pending_messages(void)
     int i;
 
     /* just through all messages */
-    for (i = maxMessages - 1; i >= 0; i--)
+    for (i = clientOptions.maxMessages - 1; i >= 0; i--)
     {
         if (TalkMsg_pending[i]->len > 0)
             Add_message(TalkMsg_pending[i]->txt);
@@ -372,14 +371,14 @@ void Print_messages_to_stdout(void)
     int i;
 
     printf("[talk messages]\n");
-    for (i = 0; i < maxMessages; i++)
+    for (i = 0; i < clientOptions.maxMessages; i++)
     {
         if (TalkMsg[i] && TalkMsg[i]->len > 0)
             printf("  %s\n", TalkMsg[i]->txt);
     }
 
     printf("[server messages]\n");
-    for (i = maxMessages - 1; i >= 0; i--)
+    for (i = clientOptions.maxMessages - 1; i >= 0; i--)
     {
         if (GameMsg[i] && GameMsg[i]->len > 0)
             printf("  %s\n", GameMsg[i]->txt);

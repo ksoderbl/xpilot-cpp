@@ -967,7 +967,7 @@ xp_option_t default_options[] = {
 
     XP_INT_OPTION(
         "shotSize",
-        6,
+        3,
         MIN_SHOT_SIZE,
         MAX_SHOT_SIZE,
         &clientOptions.shotSize,
@@ -977,7 +977,7 @@ xp_option_t default_options[] = {
 
     XP_INT_OPTION(
         "teamShotSize",
-        4,
+        2,
         MIN_TEAMSHOT_SIZE,
         MAX_TEAMSHOT_SIZE,
         &clientOptions.teamShotSize,
@@ -1020,20 +1020,20 @@ xp_option_t default_options[] = {
 
     XP_INT_OPTION(
         "charsPerSecond",
-        100,
+        255,
         10,
         255,
-        &charsPerSecond,
+        &clientOptions.charsPerSecond,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Rate at which messages appear on screen in characters per second.\n"),
 
     XP_INT_OPTION(
         "maxMessages",
-        8,
+        16,
         1,
         MAX_MSGS,
-        &maxMessages,
+        &clientOptions.maxMessages,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The maximum number of messages to display at the same time.\n"),

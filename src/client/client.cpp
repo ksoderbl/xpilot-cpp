@@ -137,7 +137,6 @@ double displayedPower;          /* What the server is sending us */
 double displayedTurnspeed;      /* What the server is sending us */
 double displayedTurnresistance; /* What the server is sending us */
 double sparkProb;               /* Sparkling effect user configurable */
-int charsPerSecond;             /* Message output speed (configurable) */
 
 double hud_move_fact; /* scale the hud-movement (speed) */
 double ptr_move_fact; /* scale the speed pointer length */

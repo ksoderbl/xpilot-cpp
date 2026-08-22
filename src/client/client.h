@@ -82,8 +82,8 @@ typedef struct
 #define FUEL_NOTIFY_TIME 3.0
 #define CONTROL_TIME 8.0
 
-#define MAX_MSGS 15       /* Max. messages displayed ever */
-#define MAX_HIST_MSGS 128 /* Max. messages in history */
+// #define MAX_MSGS 15       /* Max. messages displayed ever */
+// #define MAX_HIST_MSGS 128 /* Max. messages in history */
 
 #define MSG_LIFE_TIME 120.0  /* Seconds */
 #define MSG_FLASH_TIME 105.0 /* Old messages have life time less \
@@ -150,7 +150,6 @@ extern char *HistoryMsg[];           /* talk window history */
 
 extern int maxLinesInHistory; /* lines to save in history */
 extern selection_t selection; /* in talk/draw window */
-extern int maxMessages;
 extern int messagesToStdout;
 
 extern char *talk_fast_msgs[]; /* talk macros */
@@ -226,7 +225,6 @@ extern double displayedPower;          /* What the server is sending us */
 extern double displayedTurnspeed;      /* What the server is sending us */
 extern double displayedTurnresistance; /* What the server is sending us */
 extern double sparkProb;               /* Sparkling effect configurable */
-extern int charsPerSecond;             /* Message output speed (config) */
 
 extern double hud_move_fact; /* scale the hud-movement (speed) */
 extern double ptr_move_fact; /* scale the speed pointer length */

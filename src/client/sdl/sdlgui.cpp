@@ -51,6 +51,7 @@
 #include "glwidgets.h"
 #include "text.h"
 #include "asteroid_data.h"
+#include "messages.h"
 
 Uint32 nullRGBA = 0x00000000;
 Uint32 blackRGBA = 0x000000ff;
@@ -2351,10 +2352,10 @@ void Paint_messages(void)
         showMessages = clientOptions.instruments.showMessages;
     }
 
-    if (maxMessages < old_maxMessages)
+    if (clientOptions.maxMessages < old_maxMessages)
     {
         for (i = 0; i < 2; ++i)
-            while ((tmp = ListWidget_GetItemByIndex(msg_list[i], maxMessages)) != nullptr)
+            while ((tmp = ListWidget_GetItemByIndex(msg_list[i], clientOptions.maxMessages)) != nullptr)
             {
                 ListWidget_Remove(msg_list[i], tmp);
                 Close_Widget(&tmp);
@@ -2385,7 +2386,7 @@ void Paint_messages(void)
      * For now this will have to do...
      */
     for (i = 0; i < 2; ++i)
-        for (j = 0; j <= maxMessages - 1; ++j)
+        for (j = 0; j <= clientOptions.maxMessages - 1; ++j)
         {
             msg = (msgs[i])[j];
             tmp = tmp2 = nullptr;
@@ -2410,9 +2411,9 @@ void Paint_messages(void)
                     {
                         tmp2 = Init_LabelWidget(msg->txt, &messagesColorRGBA, &nullRGBA, LEFT, CENTER);
                         ListWidget_Insert(msg_list[i], tmp, tmp2);
-                        if (ListWidget_NELEM(msg_list[i]) > maxMessages)
+                        if (ListWidget_NELEM(msg_list[i]) > clientOptions.maxMessages)
                         {
-                            tmp = ListWidget_GetItemByIndex(msg_list[i], maxMessages);
+                            tmp = ListWidget_GetItemByIndex(msg_list[i], clientOptions.maxMessages);
                             ListWidget_Remove(msg_list[i], tmp);
                             Close_Widget(&tmp);
                         }
@@ -2469,7 +2470,7 @@ void Paint_messages(void)
                 LabelWidget_SetColor(tmp2, msg_color, &nullRGBA);
         }
 
-    old_maxMessages = maxMessages;
+    old_maxMessages = clientOptions.maxMessages;
 }
 
 static bool set_rgba_color_option(xp_option_t *opt, const char *val)

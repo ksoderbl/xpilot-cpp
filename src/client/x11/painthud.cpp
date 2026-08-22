@@ -1003,16 +1003,16 @@ void Paint_messages(void)
     bot_y = WINSCALE(ext_view_height) - messageFont->descent - BORDER;
 
     /* get number of player messages */
-    while (last_msg_index < maxMessages && TalkMsg[last_msg_index]->len != 0)
+    while (last_msg_index < clientOptions.maxMessages && TalkMsg[last_msg_index]->len != 0)
         last_msg_index++;
     last_msg_index--; /* make it an index */
 
-    for (i = 0; i < 2 * maxMessages; i++)
+    for (i = 0; i < 2 * clientOptions.maxMessages; i++)
     {
-        if (i < maxMessages)
+        if (i < clientOptions.maxMessages)
             msg = TalkMsg[i];
         else
-            msg = GameMsg[i - maxMessages];
+            msg = GameMsg[i - clientOptions.maxMessages];
         if (msg->len == 0)
             continue;
 
@@ -1065,7 +1065,7 @@ void Paint_messages(void)
         if (msg_color == 0)
             continue;
 
-        if (i < maxMessages)
+        if (i < clientOptions.maxMessages)
         {
             x = BORDER;
             y = top_y;
@@ -1079,13 +1079,13 @@ void Paint_messages(void)
             y = bot_y;
             bot_y -= SPACING;
         }
-        len = (int)(charsPerSecond * (MSG_LIFE_TIME - msg->lifeTime));
+        len = (int)(clientOptions.charsPerSecond * (MSG_LIFE_TIME - msg->lifeTime));
         len = MIN(msg->len, len);
 
         /*
          * it's an emphasized talk message
          */
-        if (selection.draw.state == SEL_EMPHASIZED && i < maxMessages && i >= selection.draw.y1 && i <= selection.draw.y2)
+        if (selection.draw.state == SEL_EMPHASIZED && i < clientOptions.maxMessages && i >= selection.draw.y1 && i <= selection.draw.y2)
         {
 
             /*
@@ -1271,13 +1271,13 @@ xp_option_t hud_options[] = {
 
     COLOR_INDEX_OPTION(
         "hudHLineColor",
-        0,
+        -1,
         &hudHLineColor,
         "Which color number to use for drawing the horizontal lines\n"),
 
     COLOR_INDEX_OPTION(
         "hudVLineColor",
-        0,
+        -1,
         &hudVLineColor,
         "Which color number to use for drawing the vertical lines\n"
         "in the HUD.\n"),

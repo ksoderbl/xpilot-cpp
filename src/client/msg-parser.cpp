@@ -823,7 +823,7 @@ static void Bms_clear(msg_bms_t type)
 {
     int i;
 
-    for (i = 0; i < maxMessages && TalkMsg[i]->len > 0; i++)
+    for (i = 0; i < clientOptions.maxMessages && TalkMsg[i]->len > 0; i++)
         if (TalkMsg[i]->bmsinfo == type)
             TalkMsg[i]->bmsinfo = BmsNone;
 }

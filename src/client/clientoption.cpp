@@ -726,7 +726,9 @@ void Store_option(xp_option_t *opt)
     if (option.type == xp_int_option)
     {
         assert(option.int_ptr);
-        // option.int_defval = *option.int_ptr; // TODO
+        // warn("Option: name %s, int_defval %d, *int_ptr %d",
+        //      option.name, option.int_defval, *option.int_ptr);
+        // option.int_defval = *option.int_ptr;
 
         assert(option.int_defval >= option.int_minval);
         assert(option.int_defval <= option.int_maxval);

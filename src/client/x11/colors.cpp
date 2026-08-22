@@ -89,7 +89,7 @@ static const char *color_defaults[MAX_COLORS] = {
 char visualName[MAX_VISUAL_NAME];
 Visual *visualPtr;
 unsigned dispDepth;
-int maxColors; /* Max. number of colors to use */
+int maxColors = 16; /* Max. number of colors to use */
 XColor colors[MAX_COLORS];
 Colormap colormap; /* Private colormap */
 
