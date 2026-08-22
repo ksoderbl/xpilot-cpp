@@ -331,7 +331,6 @@ static bool Set_fontName(xp_option_t *opt, const char *val)
 xp_option_t xdefault_options[] = {
     XP_BOOL_OPTION(
         "fullColor",
-        false,
         &clientOptions.fullColor,
         Set_fullColor,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -341,7 +340,6 @@ xp_option_t xdefault_options[] = {
 
     XP_BOOL_OPTION(
         "texturedObjects",
-        false,
         &clientOptions.texturedObjects,
         Set_texturedObjects,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -391,7 +389,6 @@ xp_option_t xdefault_options[] = {
 
     XP_BOOL_OPTION(
         "ignoreWindowManager",
-        false,
         &clientOptions.ignoreWindowManager,
         nullptr,
         XP_OPTFLAG_DEFAULT,

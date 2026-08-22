@@ -702,7 +702,7 @@ void Get_command(const char *args)
  */
 void Store_option(xp_option_t *opt)
 {
-    xp_option_t option;
+    xp_option_t option = *opt;
 
     assert(opt->name);
     assert(strlen(opt->name) > 0);
@@ -727,7 +727,13 @@ void Store_option(xp_option_t *opt)
     assert(opt->dbl_defval >= opt->dbl_minval);
     assert(opt->dbl_defval <= opt->dbl_maxval);
 
-    memcpy(&option, opt, sizeof(xp_option_t));
+    // memcpy(&option, opt, sizeof(xp_option_t));
+
+    if (option.type == xp_bool_option)
+    {
+        assert(option.bool_ptr);
+        option.bool_defval = *option.bool_ptr;
+    }
 
     optionsVector.push_back(option);
 

@@ -821,7 +821,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "slidingRadar",
-        true,
         &clientOptions.instruments.slidingRadar,
         Set_slidingRadar,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -831,7 +830,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "dirPrediction",
-        false,
         &clientOptions.dirPrediction,
         Set_dirPrediction,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -841,7 +839,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "showShipShapes",
-        true,
         &clientOptions.instruments.showShipShapes,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -849,7 +846,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "showMyShipShape",
-        true,
         &clientOptions.instruments.showMyShipShape,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -857,7 +853,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "showShipShapesHack",
-        false,
         &clientOptions.instruments.showShipShapesHack,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -865,7 +860,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "showLivesByShip",
-        false,
         &clientOptions.instruments.showLivesByShip,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -873,7 +867,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "showMessages",
-        true,
         &clientOptions.instruments.showMessages,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -881,7 +874,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "showItems",
-        true,
         &clientOptions.instruments.showItems,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -900,7 +892,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "filledWorld",
-        false,
         &clientOptions.instruments.filledWorld,
         Set_filledWorld,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -910,7 +901,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "texturedWalls",
-        true,
         &clientOptions.instruments.texturedWalls,
         Set_texturedWalls,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -927,7 +917,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "outlineWorld",
-        false,
         &clientOptions.instruments.outlineWorld,
         Set_outlineWorld,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -936,7 +925,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "showDecor",
-        true,
         &clientOptions.instruments.showDecor,
         Set_showDecor,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -944,7 +932,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "outlineDecor",
-        false,
         &clientOptions.instruments.outlineDecor,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -952,7 +939,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "filledDecor",
-        false,
         &clientOptions.instruments.filledDecor,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -960,7 +946,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "texturedDecor",
-        false,
         &clientOptions.instruments.texturedDecor,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -968,7 +953,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "clientRanker",
-        false,
         &clientOptions.instruments.clientRanker,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -976,7 +960,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "clockAMPM",
-        false,
         &clientOptions.instruments.clockAMPM,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -1081,7 +1064,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "toggleShield",
-        false,
         &clientOptions.toggleShield,
         Set_toggleShield,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -1089,7 +1071,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "autoShield", /* Don auto-shield hack */
-        true,
         &clientOptions.autoShield,
         Set_autoShield,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -1203,7 +1184,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "markingLights",
-        false,
         &clientOptions.markingLights,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -1346,7 +1326,6 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "sound",
-        true,
         &clientOptions.sound,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,

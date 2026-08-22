@@ -2595,7 +2595,6 @@ static xp_option_t sdlgui_options[] = {
 
     XP_BOOL_OPTION(
         "smoothLines",
-        true,
         &clientOptions.smoothLines,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -2603,7 +2602,6 @@ static xp_option_t sdlgui_options[] = {
 
     XP_BOOL_OPTION(
         "texturedBalls",
-        true,
         &clientOptions.texturedBalls,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
@@ -2611,7 +2609,6 @@ static xp_option_t sdlgui_options[] = {
 
     XP_BOOL_OPTION(
         "texturedShips",
-        true,
         &clientOptions.texturedShips,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,

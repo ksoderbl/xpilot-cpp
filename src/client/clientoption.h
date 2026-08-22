@@ -301,23 +301,23 @@ static inline xp_option_t *Option_by_index(int ind)
         XP_KEY_OPTION_DUMMY,                       \
     }
 
-#define XP_BOOL_OPTION(name, defval, valptr, setfunc, flags, help) \
-    {                                                              \
-        xp_bool_option,                                            \
-        name,                                                      \
-        flags,                                                     \
-        xp_option_origin_default,                                  \
-        help,                                                      \
-        nullptr,                                                   \
-        XP_NOARG_OPTION_DUMMY,                                     \
-        defval,                                                    \
-        valptr,                                                    \
-        setfunc,                                                   \
-        XP_INT_OPTION_DUMMY,                                       \
-        XP_DOUBLE_OPTION_DUMMY,                                    \
-        XP_CONST_CHAR_STAR_OPTION_DUMMY,                           \
-        XP_STD_STRING_OPTION_DUMMY,                                \
-        XP_KEY_OPTION_DUMMY,                                       \
+#define XP_BOOL_OPTION(name, valptr, setfunc, flags, help) \
+    {                                                      \
+        xp_bool_option,                                    \
+        name,                                              \
+        flags,                                             \
+        xp_option_origin_default,                          \
+        help,                                              \
+        nullptr,                                           \
+        XP_NOARG_OPTION_DUMMY,                             \
+        false,                                             \
+        valptr,                                            \
+        setfunc,                                           \
+        XP_INT_OPTION_DUMMY,                               \
+        XP_DOUBLE_OPTION_DUMMY,                            \
+        XP_CONST_CHAR_STAR_OPTION_DUMMY,                   \
+        XP_STD_STRING_OPTION_DUMMY,                        \
+        XP_KEY_OPTION_DUMMY,                               \
     }
 
 #define XP_INT_OPTION(name, defval, minval, maxval, valptr, setfunc, flags, help) \
