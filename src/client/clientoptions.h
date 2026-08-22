@@ -82,12 +82,12 @@ struct ClientOptions
     int clientPortEnd = 0;              // Last one (these are for firewalls)
     int maxFPS = MAX_SUPPORTED_FPS;     // Max FPS player wants from server
     int maxMouseTurnsPS = 0;            // Write something intelligent here
-    int sparkSize = 2;                  // Size of debris and sparks
+    int sparkSize = 1;                  // Size of debris and sparks, legacy value was 2
     int hudRadarDotSize = 8;            // Size for hudradar dot drawing
-    int baseWarningType = 3;            // Which type of base warning you prefer
+    int baseWarningType = 1;            // Which type of base warning you prefer
     int maxCharsInNames = MAX_NAME_LEN; // Draw max this many chars for names
-    int shotSize = 3;                   // size of shot, legacy value was 3
-    int teamShotSize = 2;               // size of team shot, legacy default was 2
+    int shotSize = 5;                   // size of shot, legacy value was 3
+    int teamShotSize = 3;               // size of team shot, legacy default was 2
     int backgroundPointDist = 20;       // spacing of navigation points, legacy default was 8
     int backgroundPointSize = 2;        // size of navigation points
     int charsPerSecond = 100;           // Message output speed (configurable), legacy value was 50

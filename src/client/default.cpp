@@ -733,7 +733,7 @@ xp_option_t default_options[] = {
 
     XP_INT_OPTION(
         "sparkSize",
-        2,
+        MIN_SPARK_SIZE,
         MIN_SPARK_SIZE,
         MAX_SPARK_SIZE,
         &clientOptions.sparkSize,
@@ -797,7 +797,7 @@ xp_option_t default_options[] = {
 
     XP_INT_OPTION(
         "baseWarningType",
-        3,
+        1,
         0,
         3,
         &clientOptions.baseWarningType,
@@ -967,7 +967,7 @@ xp_option_t default_options[] = {
 
     XP_INT_OPTION(
         "shotSize",
-        3,
+        5,
         MIN_SHOT_SIZE,
         MAX_SHOT_SIZE,
         &clientOptions.shotSize,
@@ -977,7 +977,7 @@ xp_option_t default_options[] = {
 
     XP_INT_OPTION(
         "teamShotSize",
-        2,
+        3,
         MIN_TEAMSHOT_SIZE,
         MAX_TEAMSHOT_SIZE,
         &clientOptions.teamShotSize,

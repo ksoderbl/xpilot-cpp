@@ -1425,7 +1425,7 @@ xp_option_t hud_options[] = {
 
     COLOR_INDEX_OPTION(
         "scoreObjectColor",
-        BLUE,
+        11,
         &scoreObjectColor,
         "Which color number to use for drawing score objects.\n"),
 
