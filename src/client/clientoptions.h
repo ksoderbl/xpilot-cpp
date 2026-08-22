@@ -34,7 +34,7 @@ struct InstrumentsOptions
     bool showItems = true;
     bool showLivesByShip = true;
     bool showMessages = true;
-    bool showMyShipShape = false;
+    bool showMyShipShape = true;
     bool showShipShapes = true;
     bool showShipShapesHack = false;
     bool slidingRadar = true;
