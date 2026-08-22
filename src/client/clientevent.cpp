@@ -159,7 +159,7 @@ static bool Key_press_id_mode(void)
 static bool Key_press_autoshield_hack(void)
 {
     warn("Key_press_autoshield_hack");
-    if (auto_shield && BITV_ISSET(keyv, KEY_SHIELD))
+    if (clientOptions.autoShield && BITV_ISSET(keyv, KEY_SHIELD))
         BITV_CLR(keyv, KEY_SHIELD);
     return false;
 }
@@ -167,7 +167,7 @@ static bool Key_press_autoshield_hack(void)
 static bool Key_press_shield(keys_t key)
 {
     warn("Key_press_shield, key = %d, shields = %d", key, shields);
-    if (toggle_shield)
+    if (clientOptions.toggleShield)
     {
         shields = !shields;
         if (shields)
@@ -176,7 +176,7 @@ static bool Key_press_shield(keys_t key)
             BITV_CLR(keyv, key);
         return true;
     }
-    else if (auto_shield)
+    else if (clientOptions.autoShield)
         shields = true;
 
     return false;
@@ -630,7 +630,7 @@ bool Key_release(keys_t key)
     case KEY_FIRE_HEAT:
     case KEY_DROP_MINE:
     case KEY_DETACH_MINE:
-        if (auto_shield && shields && !BITV_ISSET(keyv, KEY_SHIELD))
+        if (clientOptions.autoShield && shields && !BITV_ISSET(keyv, KEY_SHIELD))
         {
             /* Here We need to know if any other weapons are still on */
             /*      before we turn shield back on   */
@@ -647,9 +647,9 @@ bool Key_release(keys_t key)
         break;
 
     case KEY_SHIELD:
-        if (toggle_shield)
+        if (clientOptions.toggleShield)
             return false;
-        else if (auto_shield)
+        else if (clientOptions.autoShield)
             shields = false;
         break;
 
@@ -677,11 +677,11 @@ bool Key_release(keys_t key)
 
 void Reset_shields(void)
 {
-    if (toggle_shield || auto_shield)
+    if (clientOptions.toggleShield || clientOptions.autoShield)
     {
         BITV_SET(keyv, KEY_SHIELD);
         shields = true;
-        if (auto_shield)
+        if (clientOptions.autoShield)
         {
             if (BITV_ISSET(keyv, KEY_FIRE_SHOT) ||
                 BITV_ISSET(keyv, KEY_FIRE_LASER) ||
@@ -699,15 +699,15 @@ void Reset_shields(void)
 
 void Set_auto_shield(bool on)
 {
-    auto_shield = on;
+    clientOptions.autoShield = on;
 }
 
 void Set_toggle_shield(bool on)
 {
-    toggle_shield = on;
-    if (toggle_shield)
+    clientOptions.toggleShield = on;
+    if (clientOptions.toggleShield)
     {
-        if (auto_shield)
+        if (clientOptions.autoShield)
             shields = true;
         else
             shields = (BITV_ISSET(keyv, KEY_SHIELD)) ? true : false;

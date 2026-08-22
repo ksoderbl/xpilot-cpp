@@ -46,6 +46,13 @@ struct ClientOptions
 {
     // Instruments on screen
     InstrumentsOptions instruments;
+
+    // TODO: make some substruct for these?
+    bool dirPrediction = false;
+    // Are shields toggled by a press?
+    bool toggleShield = false;
+    // shield drops for fire
+    bool autoShield = true;
 };
 
 extern ClientOptions clientOptions;

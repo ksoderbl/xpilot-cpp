@@ -161,9 +161,7 @@ long packet_loop;     /* start of measurement */
 bool showUserName = false;                /* Show user name instead of nick name */
 char servername[MAX_CHARS];               /* Name of server connecting to */
 unsigned version;                         /* Version of the server */
-bool toggle_shield;                       /* Are shields toggled by a press? */
 bool shields = true;                      /* When shields are considered up */
-bool auto_shield = true;                  /* shield drops for fire */
 char modBankStr[NUM_MODBANKS][MAX_CHARS]; /* modifier banks */
 
 int maxFPS; /* Max FPS player wants from server */

@@ -498,7 +498,7 @@ static bool Set_dirPrediction(xp_option_t *opt, bool val)
 {
     if (val)
     {
-        if (!dirPrediction)
+        if (!clientOptions.dirPrediction)
         {
             /* reset pointer movements */
             int m;
@@ -506,11 +506,11 @@ static bool Set_dirPrediction(xp_option_t *opt, bool val)
                 pointer_moves[m].id = -1;
             pointer_move_next = 0;
             last_keyboard_ack = 0;
-            dirPrediction = true;
+            clientOptions.dirPrediction = true;
         }
     }
     else
-        dirPrediction = false;
+        clientOptions.dirPrediction = false;
 
     return true;
 }
@@ -833,7 +833,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "dirPrediction",
         false,
-        &dirPrediction,
+        &clientOptions.dirPrediction,
         Set_dirPrediction,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Client paints the wanted direction of your ship instead of what\n"
@@ -1083,7 +1083,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "toggleShield",
         false,
-        &toggle_shield,
+        &clientOptions.toggleShield,
         Set_toggleShield,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Are shields toggled by a keypress only?\n"),
@@ -1091,7 +1091,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "autoShield", /* Don auto-shield hack */
         true,
-        &auto_shield,
+        &clientOptions.autoShield,
         Set_autoShield,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Are shields lowered automatically for weapon fire?\n"),

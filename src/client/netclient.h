@@ -59,7 +59,6 @@ typedef struct
 extern pointer_move_t pointer_moves[MAX_POINTER_MOVES];
 extern int pointer_move_next;
 extern long last_keyboard_ack;
-extern bool dirPrediction;
 
 int Net_setup(void);
 int Net_verify(char *real, char *nick, char *dpy);

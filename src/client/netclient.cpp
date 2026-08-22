@@ -57,6 +57,7 @@
 
 #include "client.h"
 #include "clientcommand.h"
+#include "clientoptions.h" // 2026
 #include "netclient.h"
 #include "paint.h"
 
@@ -89,7 +90,6 @@ bool packetMeasurement;
 pointer_move_t pointer_moves[MAX_POINTER_MOVES];
 int pointer_move_next;
 long last_keyboard_ack;
-bool dirPrediction;
 
 /*
  * Local variables.
@@ -2836,7 +2836,7 @@ int Send_pointer_move(int movement)
     old_tv = tv;
 #endif
 
-    if (dirPrediction)
+    if (clientOptions.dirPrediction)
     {
         pointer_moves[pointer_move_next].movement = movement;
         pointer_moves[pointer_move_next].turnspeed = turnspeed;
@@ -2856,7 +2856,7 @@ int Send_pointer_move(int movement)
     if (Packet_printf(&wbuf, "%c%hd", PKT_POINTER_MOVE, movement) == -1)
         return -1;
 
-    if (dirPrediction)
+    if (clientOptions.dirPrediction)
         Net_key_change();
 
     return 0;
