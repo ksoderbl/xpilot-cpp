@@ -98,7 +98,6 @@ struct ClientOptions
     int maxVolume = 100;                // maximum volume (in percent)
     int meterWidth = 60;                // Width of drawn meters
     int meterHeight = 10;               // Height of drawn meters
-    int maxColors = 16;                 // Max. number of colors to use
 
     // From X11 client
     bool ignoreWindowManager = false;
@@ -108,6 +107,12 @@ struct ClientOptions
     bool texturedObjects = false; // Whether to draw bitmaps for some objects.
                                   // Previously this variable determined
                                   // fullColor too.
+    int maxColors = 16;           // Max. number of colors to use
+    int buttonColor = BLUE;       // Color index for button drawing
+    int windowColor = 8;          // Color index for window drawing
+    int borderColor = WHITE;      // Color index for border drawing
+    int wallColor = BLUE;         // Color index for wall drawing
+    int decorColor = 6;           // Color index for decoration drawing
 
     // From SDL/OpenGL client
     bool smoothLines = true;     // Use antialized smooth lines

@@ -35,11 +35,6 @@
 #define DEF_TOP_HEIGHT 1024
 
 extern Atom ProtocolAtom, KillAtom;
-extern int buttonColor;
-extern int windowColor;
-extern int borderColor;
-extern int wallColor;  /* Color index for wall drawing */
-extern int decorColor; /* Color index for decor drawing */
 extern char sparkColors[MSG_LEN];
 extern int spark_color[MAX_COLORS];
 extern int ButtonHeight;

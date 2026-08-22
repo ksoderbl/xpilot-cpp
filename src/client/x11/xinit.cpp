@@ -563,7 +563,7 @@ int Init_playing_windows(void)
                                         0, (int)RadarHeight + ButtonHeight + 2,
                                         players_width, players_height,
                                         0, 0,
-                                        colors[windowColor].pixel);
+                                        colors[clientOptions.windowColor].pixel);
     /*
      * Selecting the events we can handle.
      */

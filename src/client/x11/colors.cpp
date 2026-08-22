@@ -95,12 +95,6 @@ Colormap colormap; /* Private colormap */
 char sparkColors[MSG_LEN];
 int spark_color[MAX_COLORS];
 
-int buttonColor; /* Color index for button drawing */
-int windowColor; /* Color index for window drawing */
-int borderColor; /* Color index for border drawing */
-int wallColor;   /* Color index for wall drawing */
-int decorColor;  /* Color index for decoration drawing */
-
 /*
  * Dimensions of color cubes in decreasing
  * total number of colors used.
@@ -652,9 +646,9 @@ void Colors_init_style_colors(void)
 {
     int i;
     for (i = 0; i < num_polygon_styles; i++)
-        polygon_styles[i].color = (clientOptions.fullColor && RGB) ? RGB2COLOR(polygon_styles[i].rgb) : (unsigned long)wallColor;
+        polygon_styles[i].color = (clientOptions.fullColor && RGB) ? RGB2COLOR(polygon_styles[i].rgb) : (unsigned long)clientOptions.wallColor;
     for (i = 0; i < num_edge_styles; i++)
-        edge_styles[i].color = (clientOptions.fullColor && RGB) ? RGB2COLOR(edge_styles[i].rgb) : (unsigned long)wallColor;
+        edge_styles[i].color = (clientOptions.fullColor && RGB) ? RGB2COLOR(edge_styles[i].rgb) : (unsigned long)clientOptions.wallColor;
 }
 
 /*
@@ -1328,31 +1322,31 @@ static xp_option_t color_options[] = {
     COLOR_INDEX_OPTION(
         "wallColor",
         2,
-        &wallColor,
+        &clientOptions.wallColor,
         "Which color number to use for drawing walls.\n"),
 
     COLOR_INDEX_OPTION(
         "decorColor",
         6,
-        &decorColor,
+        &clientOptions.decorColor,
         "Which color number to use for drawing decorations.\n"),
 
     COLOR_INDEX_OPTION(
         "windowColor",
         8,
-        &windowColor,
+        &clientOptions.windowColor,
         "Which color number to use for drawing windows.\n"),
 
     COLOR_INDEX_OPTION(
         "buttonColor",
         2,
-        &buttonColor,
+        &clientOptions.buttonColor,
         "Which color number to use for drawing buttons.\n"),
 
     COLOR_INDEX_OPTION(
         "borderColor",
         1,
-        &borderColor,
+        &clientOptions.borderColor,
         "Which color number to use for drawing borders.\n"),
 };
 

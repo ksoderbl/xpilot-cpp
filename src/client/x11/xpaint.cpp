@@ -336,7 +336,7 @@ static void Paint_score_background(void)
     }
     else
     {
-        XSetForeground(dpy, scoreListGC, colors[windowColor].pixel);
+        XSetForeground(dpy, scoreListGC, colors[clientOptions.windowColor].pixel);
         XFillRectangle(dpy,
                        playersWindow,
                        scoreListGC,
@@ -512,7 +512,7 @@ void Paint_score_entry(int entry_num, Other *other, bool is_team)
      */
     if (is_team)
     {
-        color = (windowColor != WHITE ? WHITE : BLACK);
+        color = (clientOptions.windowColor != WHITE ? WHITE : BLACK);
         XSetForeground(dpy, scoreListGC, colors[color].pixel);
         gcv.line_style = LineSolid;
         XChangeGC(dpy, scoreListGC, GCLineStyle, &gcv);
@@ -543,7 +543,7 @@ static void Paint_clock(bool redraw)
     {
         if (width != 0)
         {
-            XSetForeground(dpy, scoreListGC, colors[windowColor].pixel);
+            XSetForeground(dpy, scoreListGC, colors[clientOptions.windowColor].pixel);
             XFillRectangle(dpy,
                            playersWindow,
                            scoreListGC,
@@ -579,7 +579,7 @@ static void Paint_clock(bool redraw)
         sprintf(buf, "%2d:%02d%cM", hour, minute, tmpchar);
     }
     width = XTextWidth(scoreListFont, buf, (int)strlen(buf));
-    XSetForeground(dpy, scoreListGC, colors[windowColor].pixel);
+    XSetForeground(dpy, scoreListGC, colors[clientOptions.windowColor].pixel);
     XFillRectangle(dpy,
                    playersWindow,
                    scoreListGC,

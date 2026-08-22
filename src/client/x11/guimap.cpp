@@ -55,10 +55,6 @@
 #include "guimap.h"
 #include "guiobjects.h"
 
-/* XXX better include a header. */
-extern int wallColor;  /* Color index for wall drawing */
-extern int decorColor; /* Color index for decoration drawing */
-
 extern setup_t *Setup;
 
 static int baseNameColor = BLUE;          /* Color index for base name drawing */
@@ -71,25 +67,25 @@ void Gui_paint_walls(int x, int y, int type)
     if (!clientOptions.texturedObjects)
     {
         if (type & BLUE_LEFT)
-            Segment_add(wallColor,
+            Segment_add(clientOptions.wallColor,
                         X(x),
                         Y(y),
                         X(x),
                         Y(y + BLOCK_SZ));
         if (type & BLUE_DOWN)
-            Segment_add(wallColor,
+            Segment_add(clientOptions.wallColor,
                         X(x),
                         Y(y),
                         X(x + BLOCK_SZ),
                         Y(y));
         if (type & BLUE_RIGHT)
-            Segment_add(wallColor,
+            Segment_add(clientOptions.wallColor,
                         X(x + BLOCK_SZ),
                         Y(y),
                         X(x + BLOCK_SZ),
                         Y(y + BLOCK_SZ));
         if (type & BLUE_UP)
-            Segment_add(wallColor,
+            Segment_add(clientOptions.wallColor,
                         X(x),
                         Y(y + BLOCK_SZ),
                         X(x + BLOCK_SZ),
@@ -99,13 +95,13 @@ void Gui_paint_walls(int x, int y, int type)
         {
         }
         else if (type & BLUE_OPEN)
-            Segment_add(wallColor,
+            Segment_add(clientOptions.wallColor,
                         X(x),
                         Y(y),
                         X(x + BLOCK_SZ),
                         Y(y + BLOCK_SZ));
         else if (type & BLUE_CLOSED)
-            Segment_add(wallColor,
+            Segment_add(clientOptions.wallColor,
                         X(x),
                         Y(y + BLOCK_SZ),
                         X(x + BLOCK_SZ),
@@ -143,7 +139,7 @@ void Gui_paint_filled_slice(int bl, int tl, int tr, int br, int y)
 {
     XPoint points[5];
 
-    SET_FG(colors[wallColor].pixel);
+    SET_FG(colors[clientOptions.wallColor].pixel);
 
     points[0].x = WINSCALE(X(bl));
     points[0].y = WINSCALE(Y(y));
@@ -608,7 +604,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type,
     static uint8_t decor[256];
     static int decorReady = 0;
 
-    SET_FG(colors[decorColor].pixel);
+    SET_FG(colors[clientOptions.decorColor].pixel);
 
     if (!decorReady)
     {
@@ -644,7 +640,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type,
                        !(decor[Setup->map_data[(Setup->x - 1) * Setup->y + yi]] & DECOR_RIGHT))
                     : !(decor[Setup->map_data[(xi - 1) * Setup->y + yi]] & DECOR_RIGHT))
             {
-                Segment_add(decorColor,
+                Segment_add(clientOptions.decorColor,
                             X(x),
                             Y(y),
                             X(x),
@@ -658,7 +654,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type,
                        !(decor[Setup->map_data[xi * Setup->y + Setup->y - 1]] & DECOR_UP))
                     : !(decor[Setup->map_data[xi * Setup->y + (yi - 1)]] & DECOR_UP))
             {
-                Segment_add(decorColor,
+                Segment_add(clientOptions.decorColor,
                             X(x),
                             Y(y),
                             X(x + BLOCK_SZ),
@@ -671,7 +667,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type,
                                                                 ? (!BIT(Setup->mode, WRAP_PLAY) || !(decor[Setup->map_data[yi]] & DECOR_LEFT))
                                                                 : !(decor[Setup->map_data[(xi + 1) * Setup->y + yi]] & DECOR_LEFT)))
             {
-                Segment_add(decorColor,
+                Segment_add(clientOptions.decorColor,
                             X(x + BLOCK_SZ),
                             Y(y),
                             X(x + BLOCK_SZ),
@@ -684,7 +680,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type,
                                                                 ? (!BIT(Setup->mode, WRAP_PLAY) || !(decor[Setup->map_data[xi * Setup->y]] & DECOR_DOWN))
                                                                 : !(decor[Setup->map_data[xi * Setup->y + (yi + 1)]] & DECOR_DOWN)))
             {
-                Segment_add(decorColor,
+                Segment_add(clientOptions.decorColor,
                             X(x),
                             Y(y + BLOCK_SZ),
                             X(x + BLOCK_SZ),
@@ -693,7 +689,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type,
         }
         if (mask & DECOR_OPEN)
         {
-            Segment_add(decorColor,
+            Segment_add(clientOptions.decorColor,
                         X(x),
                         Y(y),
                         X(x + BLOCK_SZ),
@@ -701,7 +697,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type,
         }
         else if (mask & DECOR_CLOSED)
         {
-            Segment_add(decorColor,
+            Segment_add(clientOptions.decorColor,
                         X(x),
                         Y(y + BLOCK_SZ),
                         X(x + BLOCK_SZ),
@@ -807,7 +803,7 @@ void Gui_paint_setup_check(int x, int y, bool isNext)
 
 void Gui_paint_border(int x, int y, int xi, int yi)
 {
-    Segment_add(wallColor,
+    Segment_add(clientOptions.wallColor,
                 X(x), Y(y),
                 X(xi), Y(yi));
 }
@@ -1355,7 +1351,7 @@ void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff)
         {
         notexture:
             XSetFillStyle(dpy, gameGC, FillSolid);
-            SET_FG(clientOptions.fullColor ? style.color : colors[wallColor].pixel);
+            SET_FG(clientOptions.fullColor ? style.color : colors[clientOptions.wallColor].pixel);
         }
         did_fill = 1;
         rd.fillPolygon(dpy, drawPixmap, gameGC, points, polygon.num_points,
@@ -1381,7 +1377,7 @@ void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff)
             if (clientOptions.fullColor)
                 SET_FG(edge_styles[sindex].color);
             else
-                SET_FG(colors[wallColor].pixel);
+                SET_FG(colors[clientOptions.wallColor].pixel);
 
             rd.drawLines(dpy, drawPixmap, gameGC, points,
                          polygon.num_points + 1, CoordModeOrigin);
@@ -1416,7 +1412,7 @@ void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff)
                 if (clientOptions.fullColor)
                     SET_FG(edge_styles[sindex].color);
                 else
-                    SET_FG(colors[wallColor].pixel);
+                    SET_FG(colors[clientOptions.wallColor].pixel);
 
                 rd.drawLines(dpy, drawPixmap, gameGC,
                              points + begin, j + 1 - begin,

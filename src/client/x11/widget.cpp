@@ -548,18 +548,18 @@ static void Widget_draw_button(widget_t *widget, bool inverse, const char *label
 
     if (inverse)
     {
-        fg = colors[buttonColor].pixel;
+        fg = colors[clientOptions.buttonColor].pixel;
         bg = colors[BLACK].pixel;
     }
     else
     {
         fg = colors[BLACK].pixel;
-        bg = colors[buttonColor].pixel;
+        bg = colors[clientOptions.buttonColor].pixel;
     }
     XSetForeground(dpy, buttonGC, bg);
     XFillRectangle(dpy, widget->window, buttonGC,
                    0, 0, widget->width, widget->height);
-    XSetForeground(dpy, buttonGC, colors[buttonColor].pixel);
+    XSetForeground(dpy, buttonGC, colors[clientOptions.buttonColor].pixel);
 
     if (inverse)
     {
@@ -632,11 +632,11 @@ static void Widget_draw_arrow(widget_t *widget)
     if (arroww->pressed && arroww->inside)
     {
         fg = BLACK;
-        bg = buttonColor;
+        bg = clientOptions.buttonColor;
     }
     else
     {
-        fg = buttonColor;
+        fg = clientOptions.buttonColor;
         bg = BLACK;
     }
     XSetForeground(dpy, buttonGC, colors[bg].pixel);
@@ -670,7 +670,7 @@ static void Widget_draw_slider(widget_t *widget)
     widget_t *viewer_widget = Widget_pointer(sliderw->viewer_desc);
     widget_viewer_t *viewerw = (widget_viewer_t *)viewer_widget->sub;
 
-    XSetForeground(dpy, buttonGC, colors[buttonColor].pixel);
+    XSetForeground(dpy, buttonGC, colors[clientOptions.buttonColor].pixel);
     if (widget->type == WIDGET_SLIDER_HORI)
     {
         unit = widget->height;
@@ -1559,8 +1559,8 @@ int Widget_create_form(int parent_desc, Window parent_window,
     window =
         XCreateSimpleWindow(dpy, parent_window,
                             x, y, width, height,
-                            border, colors[borderColor].pixel,
-                            colors[windowColor].pixel);
+                            border, colors[clientOptions.borderColor].pixel,
+                            colors[clientOptions.windowColor].pixel);
     XSelectInput(dpy, window, 0);
     return Widget_form_window(window, parent_desc, width, height);
 }
@@ -1600,8 +1600,8 @@ int Widget_create_activate(int parent_desc,
     window =
         XCreateSimpleWindow(dpy, parent_widget->window,
                             x, y, width, height,
-                            border, colors[borderColor].pixel,
-                            colors[buttonColor].pixel);
+                            border, colors[clientOptions.borderColor].pixel,
+                            colors[clientOptions.buttonColor].pixel);
     XSelectInput(dpy, window,
                  ExposureMask | ButtonPressMask | ButtonReleaseMask | OwnerGrabButtonMask | EnterWindowMask | LeaveWindowMask);
     widget_desc = Widget_create(WIDGET_BUTTON_ACTIVATE, "activate", window,
@@ -1646,8 +1646,8 @@ int Widget_create_bool(int parent_desc,
     window =
         XCreateSimpleWindow(dpy, parent_widget->window,
                             x, y, width, height,
-                            border, colors[borderColor].pixel,
-                            colors[buttonColor].pixel);
+                            border, colors[clientOptions.borderColor].pixel,
+                            colors[clientOptions.buttonColor].pixel);
     XSelectInput(dpy, window,
                  ExposureMask | ButtonPressMask | ButtonReleaseMask | OwnerGrabButtonMask | EnterWindowMask | LeaveWindowMask);
     widget_desc = Widget_create(WIDGET_BUTTON_BOOL, "bool", window,
@@ -1692,9 +1692,9 @@ int Widget_add_pulldown_entry(int menu_desc, const char *str,
     if (pulldown_desc == NO_WIDGET)
     {
         mask = 0;
-        sattr.background_pixel = colors[windowColor].pixel;
+        sattr.background_pixel = colors[clientOptions.windowColor].pixel;
         mask |= CWBackPixel;
-        sattr.border_pixel = colors[borderColor].pixel;
+        sattr.border_pixel = colors[clientOptions.borderColor].pixel;
         mask |= CWBorderPixel;
         sattr.bit_gravity = NorthWestGravity;
         mask |= CWBitGravity;
@@ -1764,8 +1764,8 @@ int Widget_add_pulldown_entry(int menu_desc, const char *str,
         XCreateSimpleWindow(dpy, pulldown_widget->window,
                             0, pullw->num_children * (menu_widget->height + 1),
                             width, height,
-                            1, colors[borderColor].pixel,
-                            colors[buttonColor].pixel);
+                            1, colors[clientOptions.borderColor].pixel,
+                            colors[clientOptions.buttonColor].pixel);
     XSelectInput(dpy, window,
                  ExposureMask | EnterWindowMask | LeaveWindowMask);
     entry_desc = Widget_create(WIDGET_BUTTON_ENTRY, "entry", window,
@@ -1813,8 +1813,8 @@ int Widget_create_menu(int parent_desc,
     window =
         XCreateSimpleWindow(dpy, parent_widget->window,
                             x, y, width, height,
-                            border, colors[borderColor].pixel,
-                            colors[buttonColor].pixel);
+                            border, colors[clientOptions.borderColor].pixel,
+                            colors[clientOptions.buttonColor].pixel);
     XSelectInput(dpy, window,
                  ExposureMask | ButtonPressMask | ButtonReleaseMask | OwnerGrabButtonMask | EnterWindowMask | LeaveWindowMask);
     widget_desc = Widget_create(WIDGET_BUTTON_MENU, "menu", window,
@@ -1858,7 +1858,7 @@ int Widget_create_int(int parent_desc,
     window =
         XCreateSimpleWindow(dpy, parent_widget->window,
                             x, y, width, height,
-                            border, colors[borderColor].pixel,
+                            border, colors[clientOptions.borderColor].pixel,
                             colors[BLACK].pixel);
     XSelectInput(dpy, window, ExposureMask);
     widget_desc = Widget_create(WIDGET_INPUT_INT, "input_int", window,
@@ -1951,7 +1951,7 @@ int Widget_create_double(int parent_desc,
     window =
         XCreateSimpleWindow(dpy, parent_widget->window,
                             x, y, width, height,
-                            border, colors[borderColor].pixel,
+                            border, colors[clientOptions.borderColor].pixel,
                             colors[BLACK].pixel);
     XSelectInput(dpy, window, ExposureMask);
     widget_desc = Widget_create(WIDGET_INPUT_DOUBLE, "input_double", window,
@@ -2002,8 +2002,8 @@ int Widget_create_label(int parent_desc,
     window =
         XCreateSimpleWindow(dpy, parent_widget->window,
                             x, y, width, height,
-                            border, colors[borderColor].pixel,
-                            colors[windowColor].pixel);
+                            border, colors[clientOptions.borderColor].pixel,
+                            colors[clientOptions.windowColor].pixel);
     XSelectInput(dpy, window, ExposureMask);
     widget_desc = Widget_create(WIDGET_LABEL, "label", window,
                                 width, height, labelw);
@@ -2095,7 +2095,7 @@ static int Widget_create_arrow(widget_type_t type, int parent_desc,
     window =
         XCreateSimpleWindow(dpy, parent_widget->window,
                             x, y, width, height,
-                            border, colors[borderColor].pixel,
+                            border, colors[clientOptions.borderColor].pixel,
                             colors[BLACK].pixel);
     XSelectInput(dpy, window,
                  ExposureMask | ButtonPressMask | ButtonReleaseMask | OwnerGrabButtonMask | EnterWindowMask | LeaveWindowMask);
@@ -2144,9 +2144,9 @@ int Widget_create_popup(int width, int height, int border,
     x = (disp_width > width) ? (disp_width - width) / 2 : 0;
     y = (disp_height > height) ? (disp_height - height) / 2 : 0;
     mask = 0;
-    sattr.background_pixel = colors[windowColor].pixel;
+    sattr.background_pixel = colors[clientOptions.windowColor].pixel;
     mask |= CWBackPixel;
-    sattr.border_pixel = colors[borderColor].pixel;
+    sattr.border_pixel = colors[clientOptions.borderColor].pixel;
     mask |= CWBorderPixel;
     sattr.bit_gravity = NorthWestGravity;
     mask |= CWBitGravity;
@@ -2345,7 +2345,7 @@ static int Widget_create_slider(int parent_desc, widget_type_t slider_type,
     window =
         XCreateSimpleWindow(dpy, parent_widget->window,
                             x, y, width, height,
-                            border, colors[borderColor].pixel,
+                            border, colors[clientOptions.borderColor].pixel,
                             colors[BLACK].pixel);
     XSelectInput(dpy, window,
                  ExposureMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | OwnerGrabButtonMask);
@@ -2600,15 +2600,15 @@ int Widget_create_viewer(const char *buf, int len,
     viewerw->overlay =
         XCreateSimpleWindow(dpy, popup_widget->window,
                             0, 0, viewer_width, viewer_height,
-                            0, colors[borderColor].pixel,
-                            colors[windowColor].pixel);
+                            0, colors[clientOptions.borderColor].pixel,
+                            colors[clientOptions.windowColor].pixel);
     XSelectInput(dpy, viewerw->overlay, 0);
     Widget_bit_gravity(viewerw->overlay, NorthWestGravity);
     window =
         XCreateSimpleWindow(dpy, viewerw->overlay,
                             0, 0, viewer_width, viewer_height,
-                            0, colors[borderColor].pixel,
-                            colors[windowColor].pixel);
+                            0, colors[clientOptions.borderColor].pixel,
+                            colors[clientOptions.windowColor].pixel);
     XSelectInput(dpy, window, ExposureMask);
     Widget_bit_gravity(window, NorthWestGravity);
     Widget_window_gravity(window, NorthWestGravity);
