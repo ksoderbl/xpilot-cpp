@@ -53,6 +53,18 @@ struct ClientOptions
     bool autoShield = true;     // shield drops for fire
     bool markingLights = false; // Marking lights on ships
     bool sound = false;
+
+    // From X11 client
+    bool fullColor = false;       // Whether to try using colors as close to
+                                  // the specified ones as possible, or just
+                                  // use a few standard colors for everything.
+    bool texturedObjects = false; // Whether to draw bitmaps for some objects.
+                                  // Previously this variable determined
+                                  // fullColor too.
+
+    // From SDL/OpenGL client
+    bool smoothLines = true;    // Use antialized smooth lines
+    bool texturedBalls = false; // Draw balls with textures
 };
 
 extern ClientOptions clientOptions;

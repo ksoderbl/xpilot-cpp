@@ -133,8 +133,6 @@ int hudRadarObjectShape;
 float hudRadarDotScale;
 
 static double shipLineWidth;
-static bool smoothLines;
-static bool texturedBalls;
 static bool texturedShips;
 static GLuint polyListBase = 0;
 static GLuint polyEdgeListBase = 0;
@@ -177,14 +175,14 @@ int GL_Y(int y)
 /* remove this later maybe? to tedious for me to edit them all away now */
 void Segment_add(Uint32 color, int x1, int y1, int x2, int y2)
 {
-    if (smoothLines)
+    if (clientOptions.smoothLines)
         glEnable(GL_LINE_SMOOTH);
     set_alphacolor(color);
     glBegin(GL_LINE_LOOP);
     glVertex2i(x1, y1);
     glVertex2i(x2, y2);
     glEnd();
-    if (smoothLines)
+    if (clientOptions.smoothLines)
         glDisable(GL_LINE_SMOOTH);
 }
 
@@ -948,14 +946,14 @@ void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff)
     {
         set_alphacolor((e_style.rgb << 8) | 0xff);
         glLineWidth(width * clData.scale);
-        if (smoothLines)
+        if (clientOptions.smoothLines)
         {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glEnable(GL_LINE_SMOOTH);
         }
         glCallList(polyEdgeListBase + i);
-        if (smoothLines)
+        if (clientOptions.smoothLines)
         {
             glDisable(GL_LINE_SMOOTH);
             glDisable(GL_BLEND);
@@ -972,14 +970,14 @@ void Gui_paint_item_object(int type, int x, int y)
     int sz = 16;
     Image_paint(IMG_ALL_ITEMS, x - 8, y - 4, type, whiteRGBA);
     set_alphacolor(blueRGBA);
-    if (smoothLines)
+    if (clientOptions.smoothLines)
         glEnable(GL_LINE_SMOOTH);
     glBegin(GL_LINE_LOOP);
     glVertex2i(x + sz, y + sz);
     glVertex2i(x, y - sz);
     glVertex2i(x - sz, y + sz);
     glEnd();
-    if (smoothLines)
+    if (clientOptions.smoothLines)
         glDisable(GL_LINE_SMOOTH);
 }
 
@@ -990,7 +988,7 @@ void Gui_paint_ball(int x, int y, int style)
     if (style >= 0 && style < num_polygon_styles)
         rgba = (polygon_styles[style].rgb << 8) | 0xff;
 
-    if (texturedBalls)
+    if (clientOptions.texturedBalls)
         Image_paint(IMG_BALL, x - BALL_RADIUS, y - BALL_RADIUS, 0, rgba);
     else
     {
@@ -999,14 +997,14 @@ void Gui_paint_ball(int x, int y, int style)
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         set_alphacolor(ballColorRGBA);
-        if (smoothLines)
+        if (clientOptions.smoothLines)
             glEnable(GL_LINE_SMOOTH);
         glBegin(GL_LINE_LOOP);
         for (i = 0; i < numvert; i++)
             glVertex2d((double)x + tcos(i * ang) * BALL_RADIUS,
                        (double)y + tsin(i * ang) * BALL_RADIUS);
         glEnd();
-        if (smoothLines)
+        if (clientOptions.smoothLines)
             glDisable(GL_LINE_SMOOTH);
     }
 }
@@ -1016,13 +1014,13 @@ void Gui_paint_ball_connector(int x1, int y1, int x2, int y2)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     set_alphacolor(connColorRGBA);
-    if (smoothLines)
+    if (clientOptions.smoothLines)
         glEnable(GL_LINE_SMOOTH);
     glBegin(GL_LINES);
     glVertex2i(x1, y1);
     glVertex2i(x2, y2);
     glEnd();
-    if (smoothLines)
+    if (clientOptions.smoothLines)
         glDisable(GL_LINE_SMOOTH);
 }
 
@@ -1169,14 +1167,14 @@ void Gui_paint_lasers_begin(void)
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    if (smoothLines)
+    if (clientOptions.smoothLines)
         glEnable(GL_LINE_SMOOTH);
 }
 
 void Gui_paint_lasers_end(void)
 {
     glDisable(GL_BLEND);
-    if (smoothLines)
+    if (clientOptions.smoothLines)
         glDisable(GL_LINE_SMOOTH);
 }
 
@@ -1259,13 +1257,13 @@ void Gui_paint_refuel(int x0, int y0, int x1, int y1)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     glLineStipple(stipple, 0xAAAA);
     glEnable(GL_LINE_STIPPLE);
-    if (smoothLines)
+    if (clientOptions.smoothLines)
         glEnable(GL_LINE_SMOOTH);
     glBegin(GL_LINES);
     glVertex2i(x0, y0);
     glVertex2i(x1, y1);
     glEnd();
-    if (smoothLines)
+    if (clientOptions.smoothLines)
         glDisable(GL_LINE_SMOOTH);
     glDisable(GL_LINE_STIPPLE);
 }
@@ -1277,13 +1275,13 @@ void Gui_paint_connector(int x0, int y0, int x1, int y1, int tractor)
     set_alphacolor(connColorRGBA);
     glLineStipple(tractor ? 2 : 4, 0xAAAA);
     glEnable(GL_LINE_STIPPLE);
-    if (smoothLines)
+    if (clientOptions.smoothLines)
         glEnable(GL_LINE_SMOOTH);
     glBegin(GL_LINES);
     glVertex2i(x0, y0);
     glVertex2i(x1, y1);
     glEnd();
-    if (smoothLines)
+    if (clientOptions.smoothLines)
         glDisable(GL_LINE_SMOOTH);
     glDisable(GL_LINE_STIPPLE);
     /*glDisable(GL_BLEND);*/
@@ -2599,7 +2597,7 @@ static xp_option_t sdlgui_options[] = {
     XP_BOOL_OPTION(
         "smoothLines",
         true,
-        &smoothLines,
+        &clientOptions.smoothLines,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Use antialized smooth lines.\n"),
@@ -2607,7 +2605,7 @@ static xp_option_t sdlgui_options[] = {
     XP_BOOL_OPTION(
         "texturedBalls",
         true,
-        &texturedBalls,
+        &clientOptions.texturedBalls,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Draw balls with textures.\n"),

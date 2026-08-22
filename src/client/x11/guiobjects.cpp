@@ -136,7 +136,7 @@ int Init_asteroids(void)
 
 void Gui_paint_item_symbol(int type, Drawable d, GC mygc, int x, int y, int c)
 {
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
         gcv.stipple = itemBitmaps[type];
         gcv.fill_style = FillStippled;
@@ -192,7 +192,7 @@ void Gui_paint_item_object(int type, int x, int y)
 
 void Gui_paint_ball(int x, int y, int style)
 {
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
         static Pixmap ballTile = None;
 
@@ -266,7 +266,7 @@ static void Gui_paint_mine_name(int x, int y, std::string name)
 
 void Gui_paint_mine(int x, int y, int teammine, std::string name)
 {
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
         static double lastScaleFactor;
         static XPoint mine_points[21];
@@ -439,7 +439,7 @@ void Gui_paint_fastshot(int color, int x, int y)
     if (color == 0)
         return;
 
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
         int z = shotSize / 2;
         Rectangle_add(color,
@@ -464,7 +464,7 @@ void Gui_paint_teamshot(int x, int y)
     if (color == 0)
         return;
 
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
         Gui_paint_nastyshot(color, x, y, shotSize / 2);
     }
@@ -530,7 +530,7 @@ void Gui_paint_laser(int color, int x1, int y1, int len, int dir)
 
 void Gui_paint_paused(int x, int y, int count)
 {
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
         int x0, y0;
         static int pauseCharWidth = -1;
@@ -603,7 +603,7 @@ void Gui_paint_ecm(int x, int y, int size)
 
 void Gui_paint_refuel(int x0, int y0, int x1, int y1)
 {
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
         rd.drawLine(dpy, drawPixmap, gameGC,
                     WINSCALE(X(x0)), WINSCALE(Y(y0)),
@@ -1015,7 +1015,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
 
     if (cloak == 0 && phased == 0)
     {
-        if (!texturedObjects)
+        if (!clientOptions.texturedObjects)
         {
             Gui_paint_ship_uncloaked(id, points, ship_color, cnt);
             /* shipshapeshack by Mara */

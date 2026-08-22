@@ -37,6 +37,7 @@
 
 #include "paint.h"
 #include "clientoption.h"
+#include "clientoptions.h" // 2026
 
 #include "xpconfig.h"
 #include "types.h"
@@ -88,13 +89,7 @@ static const char *color_defaults[MAX_COLORS] = {
 char visualName[MAX_VISUAL_NAME];
 Visual *visualPtr;
 unsigned dispDepth;
-bool fullColor;       /* Whether to try using colors as close to
-                       * the specified ones as possible, or just
-                       * use a few standard colors for everything. */
-bool texturedObjects; /* Whether to draw bitmaps for some objects.
-                       * Previously this variable determined
-                       * fullColor too. */
-int maxColors;        /* Max. number of colors to use */
+int maxColors; /* Max. number of colors to use */
 XColor colors[MAX_COLORS];
 Colormap colormap; /* Private colormap */
 
@@ -623,8 +618,8 @@ static int Colors_init_bitmap_colors(void)
     default:
         warn("fullColor not implemented for visual \"%s\"",
              Visual_class_name(visualPtr->c_class));
-        fullColor = false;
-        texturedObjects = false;
+        clientOptions.fullColor = false;
+        clientOptions.texturedObjects = false;
         break;
     }
 
@@ -639,9 +634,9 @@ void Colors_init_style_colors(void)
 {
     int i;
     for (i = 0; i < num_polygon_styles; i++)
-        polygon_styles[i].color = (fullColor && RGB) ? RGB2COLOR(polygon_styles[i].rgb) : (unsigned long)wallColor;
+        polygon_styles[i].color = (clientOptions.fullColor && RGB) ? RGB2COLOR(polygon_styles[i].rgb) : (unsigned long)wallColor;
     for (i = 0; i < num_edge_styles; i++)
-        edge_styles[i].color = (fullColor && RGB) ? RGB2COLOR(edge_styles[i].rgb) : (unsigned long)wallColor;
+        edge_styles[i].color = (clientOptions.fullColor && RGB) ? RGB2COLOR(edge_styles[i].rgb) : (unsigned long)wallColor;
 }
 
 /*
@@ -660,14 +655,14 @@ int Colors_init_bitmaps(void)
     // if (dbuf_state == nullptr)
     //     return 0;
 
-    if (fullColor)
+    if (clientOptions.fullColor)
     {
         // warn("=> Colors_init_bitmaps, calling Colors_init_bitmap_colors");
 
         if (Colors_init_bitmap_colors() == -1)
         {
-            fullColor = false;
-            texturedObjects = false;
+            clientOptions.fullColor = false;
+            clientOptions.texturedObjects = false;
         }
     }
 
@@ -675,7 +670,7 @@ int Colors_init_bitmaps(void)
 
     Colors_init_style_colors();
 
-    int retval = (fullColor) ? 0 : -1;
+    int retval = (clientOptions.fullColor) ? 0 : -1;
 
     // warn("=> Colors_init_bitmaps, returning %d", retval);
 
@@ -951,8 +946,8 @@ void Colors_free_bitmaps(void)
     Colors_free_color_cube();
     Colors_free_true_color();
 
-    fullColor = false;
-    texturedObjects = false;
+    clientOptions.fullColor = false;
+    clientOptions.texturedObjects = false;
 }
 
 /*

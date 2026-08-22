@@ -26,6 +26,7 @@
 
 #include <X11/Xlib.h>
 
+#include "clientoptions.h" // 2026
 #include "paint.h"
 
 #include "paintdata.h"
@@ -149,7 +150,7 @@ int Arc_add_rgb(unsigned long color,
     rgb_arc_t t;
 
     /* hack */
-    if (!fullColor)
+    if (!clientOptions.fullColor)
         return Arc_add(fallback_color, x, y, width, height, angle1, angle2);
 
     t.color = color;

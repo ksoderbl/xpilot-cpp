@@ -46,8 +46,6 @@ extern int ButtonHeight;
 extern char visualName[MAX_VISUAL_NAME];
 extern Visual *visualPtr;
 extern unsigned dispDepth;
-extern bool texturedObjects;
-extern bool fullColor;
 extern int button_form;
 extern int top_width, top_height;
 extern int players_width, players_height;

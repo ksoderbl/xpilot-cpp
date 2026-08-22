@@ -311,7 +311,7 @@ static void Paint_score_background(void)
 {
     // warn("Paint_score_background: fullColor: %d", fullColor ? 1 : 0);
 
-    if (fullColor &&
+    if (clientOptions.fullColor &&
         Bitmap_get(playersWindow, BM_SCORE_BG, 0) != nullptr &&
         Bitmap_get(playersWindow, BM_LOGO, 0) != nullptr)
     {

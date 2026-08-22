@@ -68,7 +68,7 @@ static int visibilityBorderColor = 0; /* visibility border drawing */
 
 void Gui_paint_walls(int x, int y, int type)
 {
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
         if (type & BLUE_LEFT)
             Segment_add(wallColor,
@@ -160,7 +160,7 @@ void Gui_paint_filled_slice(int bl, int tl, int tr, int br, int y)
 
 void Gui_paint_cannon(int x, int y, int type)
 {
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
         XPoint points[5];
 
@@ -241,7 +241,7 @@ void Gui_paint_fuel(int x, int y, double fuel)
     if (fuelColor == BLACK)
         return;
 
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
 #define FUEL_BORDER 2
         int size;
@@ -379,7 +379,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
 
     SET_FG(colors[color].pixel);
 
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
         // int baseColor = BLUE;
         // SET_FG(colors[baseColor].pixel);
@@ -772,7 +772,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type,
 void Gui_paint_setup_check(int x, int y, bool isNext)
 {
     XPoint points[5];
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
         SET_FG(colors[BLUE].pixel);
         points[0].x = WINSCALE(X(x + (BLOCK_SZ / 2)));
@@ -878,7 +878,7 @@ void Gui_paint_setup_cwise_grav(int x, int y)
 void Gui_paint_setup_pos_grav(int x, int y)
 {
     static const int INSIDE_BL = BLOCK_SZ - 2;
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
 
         Arc_add(RED,
@@ -904,7 +904,7 @@ void Gui_paint_setup_neg_grav(int x, int y)
 {
     static const int INSIDE_BL = BLOCK_SZ - 2;
 
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
 
         Arc_add(RED,
@@ -1000,7 +1000,7 @@ void Gui_paint_setup_left_grav(int x, int y)
 void Gui_paint_setup_worm(int x, int y)
 {
     int wormDrawCount = loopsSlow & 7;
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
         static const int INSIDE_BL = BLOCK_SZ - 2;
         static int wormOffset[8][3] = {
@@ -1057,7 +1057,8 @@ void Gui_paint_setup_item_concentrator(int x, int y)
     unsigned rdir, tdir;
     int i, cx, cy;
     XPoint pts[4];
-    if (!texturedObjects)
+
+    if (!clientOptions.texturedObjects)
     {
         SET_FG(colors[RED].pixel);
         if (concentratorloop != loops)
@@ -1122,7 +1123,7 @@ void Gui_paint_setup_asteroid_concentrator(int x, int y)
     unsigned rdir, tdir;
     int i, cx, cy;
     XPoint pts[5];
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
         SET_FG(colors[RED].pixel);
         if (concentratorloop != loops)
@@ -1247,7 +1248,7 @@ void Gui_paint_setup_treasure(int x, int y, int team, bool own)
             color = team_color;
     }
 
-    if (!texturedObjects)
+    if (!clientOptions.texturedObjects)
     {
         char s[2];
         int size;
@@ -1315,7 +1316,7 @@ void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff)
     if (BIT(style.flags, STYLE_INVISIBLE))
         return;
 
-    textured = clientOptions.instruments.texturedWalls && fullColor;
+    textured = clientOptions.instruments.texturedWalls && clientOptions.fullColor;
     filled = clientOptions.instruments.filledWorld;
 
     x = xoff * Setup->width;
@@ -1354,7 +1355,7 @@ void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff)
         {
         notexture:
             XSetFillStyle(dpy, gameGC, FillSolid);
-            SET_FG(fullColor ? style.color : colors[wallColor].pixel);
+            SET_FG(clientOptions.fullColor ? style.color : colors[wallColor].pixel);
         }
         did_fill = 1;
         rd.fillPolygon(dpy, drawPixmap, gameGC, points, polygon.num_points,
@@ -1377,7 +1378,7 @@ void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff)
             XSetLineAttributes(dpy, gameGC, (unsigned)width,
                                edge_styles[sindex].style, CapButt, JoinMiter);
 
-            if (fullColor)
+            if (clientOptions.fullColor)
                 SET_FG(edge_styles[sindex].color);
             else
                 SET_FG(colors[wallColor].pixel);
@@ -1412,7 +1413,7 @@ void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff)
                 XSetLineAttributes(dpy, gameGC, (unsigned)width,
                                    edge_styles[sindex].style, CapButt, JoinMiter);
 
-                if (fullColor)
+                if (clientOptions.fullColor)
                     SET_FG(edge_styles[sindex].color);
                 else
                     SET_FG(colors[wallColor].pixel);

@@ -700,7 +700,7 @@ static void Paint_world_radar_new(void)
                     poly[j].y = (int)RadarHeight - ((y * (int)RadarHeight) / Setup->height);
                 }
 
-                XSetForeground(dpy, radarGC, fullColor ? polygon_styles[polygon.style].color : colors[wallRadarColor].pixel);
+                XSetForeground(dpy, radarGC, clientOptions.fullColor ? polygon_styles[polygon.style].color : colors[wallRadarColor].pixel);
                 XFillPolygon(dpy, radarPixmap2, radarGC, poly,
                              polygon.num_points,
                              Nonconvex, CoordModeOrigin);

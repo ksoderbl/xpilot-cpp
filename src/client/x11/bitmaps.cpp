@@ -32,6 +32,7 @@
 #include "commonmacros.h"
 #include "commonproto.h"
 
+#include "clientoptions.h" // 2026
 #include "paint.h"
 #include "paintdata.h"
 #include "gfx2d.h"
@@ -219,7 +220,7 @@ void Bitmap_update_scale(void)
  */
 xp_bitmap_t *Bitmap_get(Drawable d, int img, int bmp)
 {
-    if (!fullColor || img < 0 || img >= pixmaps.size())
+    if (!clientOptions.fullColor || img < 0 || img >= pixmaps.size())
         return nullptr;
 
     if (pixmaps[img].state != BMS_READY)
@@ -286,7 +287,7 @@ xp_bitmap_t *Bitmap_get_blended(Drawable d, int img, int rgb)
 {
     int i;
 
-    if (!fullColor || img < 0 || img >= pixmaps.size())
+    if (!clientOptions.fullColor || img < 0 || img >= pixmaps.size())
         return nullptr;
 
     if (pixmaps[img].state != BMS_READY)
