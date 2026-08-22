@@ -87,13 +87,6 @@ char *Conf_servermotdfile(void)
     return filename;
 }
 
-char *Conf_localmotdfile(void)
-{
-    static char conf[] = CONF_LOCALMOTDFILE;
-
-    return conf;
-}
-
 char conf_logfile_string[] = CONF_LOGFILE;
 
 char *Conf_logfile(void)
@@ -175,7 +168,6 @@ void Conf_print(void)
     warn("Conf_servermotdfile()     = %s", Conf_servermotdfile());
     warn("Conf_robotfile()          = %s", Conf_robotfile());
     warn("Conf_logfile()            = %s", Conf_logfile());
-    warn("Conf_localmotdfile()      = %s", Conf_localmotdfile());
     warn("Conf_ship_file()          = %s", Conf_ship_file());
     warn("Conf_texturedir()         = %s", Conf_texturedir());
     warn("Conf_fontdir()            = %s", Conf_fontdir());

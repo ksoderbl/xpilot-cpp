@@ -74,10 +74,6 @@
 #define CONF_SERVERMOTDFILE CONF_DATADIR "servermotd.txt"
 #endif
 
-#ifndef CONF_LOCALMOTDFILE
-#define CONF_LOCALMOTDFILE CONF_DATADIR "localmotd.txt"
-#endif
-
 #ifndef CONF_LOGFILE
 #define CONF_LOGFILE CONF_DATADIR "log.txt"
 #endif
@@ -111,7 +107,6 @@ char *Conf_password_file_name(void);
 char *Conf_mapdir(void);
 char *Conf_default_map(void);
 char *Conf_servermotdfile(void);
-char *Conf_localmotdfile(void);
 char *Conf_logfile(void);
 char *Conf_ship_file(void);
 char *Conf_mapdir(void);
