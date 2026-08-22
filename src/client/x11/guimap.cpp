@@ -61,10 +61,10 @@ extern int decorColor; /* Color index for decoration drawing */
 
 extern setup_t *Setup;
 
-static int baseNameColor = BLUE;      /* Color index for base name drawing */
-static int backgroundPointColor = 4;  /* background point drawing */
-static int fuelColor = BLUE;          // RED;           /* fuel station drawing */
-static int visibilityBorderColor = 0; /* visibility border drawing */
+static int baseNameColor = BLUE;          /* Color index for base name drawing */
+static int backgroundPointColor = 4;      /* background point drawing */
+static int fuelColor = BLUE;              // RED;           /* fuel station drawing */
+static int visibilityBorderColor = BLACK; /* visibility border drawing */
 
 void Gui_paint_walls(int x, int y, int type)
 {
@@ -1449,7 +1449,7 @@ xp_option_t guimap_options[] = {
 
     COLOR_INDEX_OPTION(
         "visibilityBorderColor",
-        2,
+        BLACK,
         &visibilityBorderColor,
         "Which color number to use for drawing the visibility border.\n"),
 };

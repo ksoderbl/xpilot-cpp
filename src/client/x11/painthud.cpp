@@ -60,10 +60,10 @@ extern score_object_t score_objects[MAX_SCORE_OBJECTS];
 extern int score_object;
 extern XGCValues gcv;
 
-int hudColor = BLUE;      /* Color index for HUD drawing */
-int hudHLineColor = -1;   /* Color index for horiz. HUD line drawing */
-int hudVLineColor = -1;   /* Color index for vert. HUD line drawing */
-int hudItemsColor = BLUE; /* Color index for HUD items drawing */
+int hudColor = BLUE;       /* Color index for HUD drawing */
+int hudHLineColor = BLACK; /* Color index for horiz. HUD line drawing */
+int hudVLineColor = BLACK; /* Color index for vert. HUD line drawing */
+int hudItemsColor = BLUE;  /* Color index for HUD items drawing */
 // int hudRadarEnemyColor = 3;      /* Color index for enemy hudradar dots */
 // int hudRadarOtherColor = BLUE;   /* Color index for other hudradar dots */
 int hudLockColor = BLUE;         /* Color index for lock on HUD drawing */
@@ -755,7 +755,7 @@ void Paint_HUD(void)
     gcv.line_style = LineOnOffDash;
     XChangeGC(dpy, gameGC, GCLineStyle | GCDashOffset, &gcv);
 
-    if (hudHLineColor >= BLACK)
+    if (hudHLineColor > BLACK)
     {
         SET_FG(colors[hudHLineColor].pixel);
         rd.drawLine(dpy, drawPixmap, gameGC,
@@ -769,7 +769,7 @@ void Paint_HUD(void)
                     WINSCALE(hud_pos_x + hudSize),
                     WINSCALE(hud_pos_y + hudSize - HUD_OFFSET));
     }
-    if (hudVLineColor >= BLACK)
+    if (hudVLineColor > BLACK)
     {
         SET_FG(colors[hudVLineColor].pixel);
         rd.drawLine(dpy, drawPixmap, gameGC,
@@ -1279,13 +1279,13 @@ xp_option_t hud_options[] = {
 
     COLOR_INDEX_OPTION(
         "hudHLineColor",
-        -1,
+        0,
         &hudHLineColor,
         "Which color number to use for drawing the horizontal lines\n"),
 
     COLOR_INDEX_OPTION(
         "hudVLineColor",
-        -1,
+        0,
         &hudVLineColor,
         "Which color number to use for drawing the vertical lines\n"
         "in the HUD.\n"),

@@ -25,11 +25,11 @@
 
 #include <string>
 
-#define SOCK_HOSTNAME_LENGTH 256
-#define SOCK_FD_INVALID (-1)
-#define SOCK_IS_ERROR (-1)
-#define SOCK_IS_OK (0)
-#define SOCK_TIMEOUT_SECONDS 3
+constexpr int SOCK_HOSTNAME_LENGTH = 256;
+constexpr int SOCK_FD_INVALID = -1;
+constexpr int SOCK_IS_ERROR = -1;
+constexpr int SOCK_IS_OK = 0;
+constexpr int SOCK_TIMEOUT_SECONDS = 3;
 
 enum sock_flags_e
 {

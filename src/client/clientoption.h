@@ -342,10 +342,10 @@ static inline xp_option_t *Option_by_index(int ind)
     }
 
 #define COLOR_INDEX_OPTION(name, defval, valptr, help) \
-    XP_INT_OPTION(name, defval, -1, MAX_COLORS - 1, valptr, nullptr, XP_OPTFLAG_CONFIG_COLORS, help)
+    XP_INT_OPTION(name, defval, 0, MAX_COLORS - 1, valptr, nullptr, XP_OPTFLAG_CONFIG_COLORS, help)
 
 #define COLOR_INDEX_OPTION_WITH_SETFUNC(name, defval, valptr, setfunc, help) \
-    XP_INT_OPTION(name, defval, -1, MAX_COLORS - 1, valptr, setfunc, XP_OPTFLAG_CONFIG_COLORS, help)
+    XP_INT_OPTION(name, defval, 0, MAX_COLORS - 1, valptr, setfunc, XP_OPTFLAG_CONFIG_COLORS, help)
 
 #define XP_DOUBLE_OPTION(name, defval, minval, maxval, valptr, setfunc, flags, help) \
     {                                                                                \
