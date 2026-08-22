@@ -50,7 +50,7 @@
 /*
  * The number of X11 visuals.
  */
-#define MAX_VISUAL_CLASS 6
+#define MAX_VISUAL_CLASS 4
 
 /*
  * Default colors.
@@ -542,6 +542,9 @@ int Colors_init(void)
     // for (i = maxColors; i < MAX_COLORS; i++)
     //     colors[i] = colors[i % maxColors];
 
+    if (visualPtr != nullptr)
+        warn("Colors_init: visual class name: \"%s\"", Visual_class_name(visualPtr->c_class));
+
     Colors_init_radar_hack();
 
     Colors_init_bitmaps();
@@ -594,6 +597,8 @@ static int Colors_init_bitmap_colors(void)
         warn("Colors_init_bitmap_colors: Need visual!");
         return -1;
     }
+
+    warn("Colors_init_bitmap_colors: visual class name: \"%s\"", Visual_class_name(visualPtr->c_class));
 
     switch (visualPtr->c_class)
     {
@@ -653,6 +658,9 @@ int Colors_init_bitmaps(void)
     /* kps hack */
     // if (dbuf_state == nullptr)
     //     return 0;
+
+    if (visualPtr != nullptr)
+        warn("Colors_init_bitmaps: visual class name: \"%s\"", Visual_class_name(visualPtr->c_class));
 
     if (clientOptions.fullColor)
     {
