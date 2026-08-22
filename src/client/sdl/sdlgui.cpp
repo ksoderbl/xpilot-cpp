@@ -125,9 +125,6 @@ Uint32 scoreEnemyTeamColorRGBA;
 Uint32 selectionColorRGBA;
 
 float hudRadarMapScale;
-int hudRadarEnemyShape;
-int hudRadarOtherShape;
-int hudRadarObjectShape;
 float hudRadarDotScale;
 
 static double shipLineWidth;
@@ -1873,12 +1870,12 @@ static void Paint_hudradar(double hrscale, double xlimit, double ylimit, int sz)
             if (radarObject.type == RadarEnemy)
             {
                 c = hudRadarEnemyColorRGBA;
-                shape = hudRadarEnemyShape;
+                shape = clientOptions.hudRadarEnemyShape;
             }
             else
             {
                 c = hudRadarOtherColorRGBA;
-                shape = hudRadarOtherShape;
+                shape = clientOptions.hudRadarOtherShape;
             }
             size = sz;
             if (radarObject.size == 0)
@@ -1886,8 +1883,8 @@ static void Paint_hudradar(double hrscale, double xlimit, double ylimit, int sz)
                 size >>= 1;
                 if (hudRadarObjectColorRGBA)
                     c = hudRadarObjectColorRGBA;
-                if (hudRadarObjectShape)
-                    shape = hudRadarObjectShape;
+                if (clientOptions.hudRadarObjectShape)
+                    shape = clientOptions.hudRadarObjectShape;
             }
             Paint_hudradar_dot(x, y, c, shape, size);
         }
@@ -2614,7 +2611,7 @@ static xp_option_t sdlgui_options[] = {
     XP_INT_OPTION(
         "hudRadarEnemyShape",
         2, 1, 7,
-        &hudRadarEnemyShape,
+        &clientOptions.hudRadarEnemyShape,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The shape of enemy ships on hud radar.\n"),
@@ -2622,7 +2619,7 @@ static xp_option_t sdlgui_options[] = {
     XP_INT_OPTION(
         "hudRadarOtherShape",
         2, 1, 7,
-        &hudRadarOtherShape,
+        &clientOptions.hudRadarOtherShape,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The shape of friendly ships on hud radar.\n"),
@@ -2630,7 +2627,7 @@ static xp_option_t sdlgui_options[] = {
     XP_INT_OPTION(
         "hudRadarObjectShape",
         0, 0, 7,
-        &hudRadarObjectShape,
+        &clientOptions.hudRadarObjectShape,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The shape of small objects on hud radar.\n")};

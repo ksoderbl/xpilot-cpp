@@ -109,12 +109,15 @@ struct ClientOptions
                                   // fullColor too.
 
     // From SDL/OpenGL client
-    bool smoothLines = true;    // Use antialized smooth lines
-    bool texturedBalls = false; // Draw balls with textures
-    bool texturedShips = false; // Draw ships with textures
-                                // Turned this off because the images drawn
-                                // don't match the actual shipshape used
-                                // for wall collisions by the server.
+    bool smoothLines = true;     // Use antialized smooth lines
+    bool texturedBalls = false;  // Draw balls with textures
+    bool texturedShips = false;  // Draw ships with textures
+                                 // Turned this off because the images drawn
+                                 // don't match the actual shipshape used
+                                 // for wall collisions by the server.
+    int hudRadarEnemyShape = 2;  // The shape of enemy ships on hud radar
+    int hudRadarOtherShape = 2;  // The shape of friendly ships on hud radar
+    int hudRadarObjectShape = 0; // The shape of small objects on hud radar
 };
 
 extern ClientOptions clientOptions;
