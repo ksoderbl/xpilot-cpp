@@ -69,8 +69,8 @@
 #define XP_COLOR5 "#992200"
 #define XP_COLOR6 "#BB7700"
 #define XP_COLOR7 "#EE9900"
-#define XP_COLOR8 "#770000"
-// #define XP_COLOR8 "#002299" // NG
+// #define XP_COLOR8 "#770000"
+#define XP_COLOR8 "#000022"
 #define XP_COLOR9 "#CC4400"
 #define XP_COLOR10 "#DD8800"
 #define XP_COLOR11 "#FFBB11" /* "xpyellow" */
@@ -1035,7 +1035,7 @@ void Init_spark_colors(void)
     int i;
 
     // warn("Init_spark_colors: original sparkColors %s", sparkColors);
-    strlcpy(sparkColors, "8,5,3,10", sizeof sparkColors);
+    // strlcpy(sparkColors, "8,5,3,10", sizeof sparkColors);
     // warn("Init_spark_colors: changed  sparkColors %s", sparkColors);
 
     num_spark_colors = 0;
@@ -1131,7 +1131,7 @@ static xp_option_t color_options[] = {
     XP_INT_OPTION(
         "maxColors",
         MAX_COLORS,
-        4,
+        MAX_COLORS,
         MAX_COLORS,
         &maxColors,
         Set_maxColors,

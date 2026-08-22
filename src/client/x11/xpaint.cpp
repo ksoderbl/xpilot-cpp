@@ -96,7 +96,7 @@ Window keys_close_b;  /* Help window's close button */
 Window talkWindow;
 bool gotFocus;
 
-int spaceColor = BLACK;        /* Space (background) color index */
+int spaceColor = 8;            /* Space (background) color index */
 static int clockColor;         /* Clock color index */
 static int scoreColor;         /* Score list color indices */
 static int scoreSelfColor;     /* Score list own score color index */
