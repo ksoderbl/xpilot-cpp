@@ -93,6 +93,10 @@ struct ClientOptions
                                 // Turned this off because the images drawn
                                 // don't match the actual shipshape used
                                 // for wall collisions by the server.
+
+    // Int options
+    int clientPortStart = 0; // First UDP port for clients
+    int clientPortEnd = 0;   // Last one (these are for firewalls)
 };
 
 extern ClientOptions clientOptions;

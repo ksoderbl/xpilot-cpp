@@ -637,7 +637,7 @@ xp_option_t default_options[] = {
         0,
         0,
         65535,
-        &clientPortStart,
+        &clientOptions.clientPortStart,
         nullptr,
         XP_OPTFLAG_KEEP,
         "Use UDP ports clientPortStart - clientPortEnd (for firewalls).\n"
@@ -648,7 +648,7 @@ xp_option_t default_options[] = {
         0,
         0,
         65535,
-        &clientPortEnd,
+        &clientOptions.clientPortEnd,
         nullptr,
         XP_OPTFLAG_KEEP,
         "Use UDP ports clientPortStart - clientPortEnd (for firewalls).\n"),

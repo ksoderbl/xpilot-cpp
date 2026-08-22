@@ -575,8 +575,8 @@ int Net_init(char *server, int port)
     server_display.num_spark_colors = 0;
 
     Receive_init();
-    if (!clientPortStart || !clientPortEnd ||
-        (clientPortStart > clientPortEnd))
+    if (!clientOptions.clientPortStart || !clientOptions.clientPortEnd ||
+        (clientOptions.clientPortStart > clientOptions.clientPortEnd))
     {
         if (sock_open_udp(&sock, nullptr, 0) == SOCK_IS_ERROR)
         {
@@ -587,7 +587,7 @@ int Net_init(char *server, int port)
     else
     {
         int found_socket = 0;
-        for (i = clientPortStart; i <= clientPortEnd; i++)
+        for (i = clientOptions.clientPortStart; i <= clientOptions.clientPortEnd; i++)
         {
             if (sock_open_udp(&sock, nullptr, i) != SOCK_IS_ERROR)
             {

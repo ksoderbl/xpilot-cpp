@@ -50,12 +50,12 @@ int create_dgram_addr_socket(sock_t *sock, char *dotaddr, int port)
 
     if (saved == 0)
     {
-        if (clientPortStart && (!clientPortEnd || clientPortEnd > 65535))
-            clientPortEnd = 65535;
-        if (clientPortEnd && (!clientPortStart || clientPortStart < 1024))
-            clientPortStart = 1024;
+        if (clientOptions.clientPortStart && (!clientOptions.clientPortEnd || clientOptions.clientPortEnd > 65535))
+            clientOptions.clientPortEnd = 65535;
+        if (clientOptions.clientPortEnd && (!clientOptions.clientPortStart || clientOptions.clientPortStart < 1024))
+            clientOptions.clientPortStart = 1024;
 
-        if (port || !clientPortStart || (clientPortStart > clientPortEnd))
+        if (port || !clientOptions.clientPortStart || (clientOptions.clientPortStart > clientOptions.clientPortEnd))
         {
             status = sock_open_udp(sock, dotaddr, port);
             if (status == SOCK_IS_ERROR)
@@ -67,7 +67,7 @@ int create_dgram_addr_socket(sock_t *sock, char *dotaddr, int port)
         else
         {
             int found_socket = 0;
-            for (i = clientPortStart; i <= clientPortEnd; i++)
+            for (i = clientOptions.clientPortStart; i <= clientOptions.clientPortEnd; i++)
             {
                 status = sock_open_udp(sock, dotaddr, i);
                 if (status != SOCK_IS_ERROR)
@@ -79,7 +79,7 @@ int create_dgram_addr_socket(sock_t *sock, char *dotaddr, int port)
             if (found_socket == 0)
             {
                 error("Could not find a usable port in port range [%d,%d]",
-                      clientPortStart, clientPortEnd);
+                      clientOptions.clientPortStart, clientOptions.clientPortEnd);
                 return -1;
             }
         }
