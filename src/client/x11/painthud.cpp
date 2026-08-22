@@ -187,10 +187,13 @@ void Paint_score_objects(void)
 {
     int i, x, y;
 
+    if (!scoreObjectColor)
+        return;
+
     for (i = 0; i < MAX_SCORE_OBJECTS; i++)
     {
         score_object_t *sobj = &score_objects[i];
-        if (sobj->count > 0)
+        if (sobj->life_time > 0)
         {
             if (loopsSlow % 3)
             {
@@ -198,7 +201,10 @@ void Paint_score_objects(void)
                 y = sobj->y * BLOCK_SZ + BLOCK_SZ / 2;
                 if (wrap(&x, &y))
                 {
-                    SET_FG(colors[hudColor].pixel);
+                    if (sobj->msg_width == -1)
+                        sobj->msg_width =
+                            XTextWidth(gameFont, sobj->msg, sobj->msg_len);
+                    SET_FG(colors[scoreObjectColor].pixel);
                     x = WINSCALE(X(x)) - sobj->msg_width / 2,
                     y = WINSCALE(Y(y)) + gameFont->ascent / 2,
                     rd.drawString(dpy, drawPixmap, gameGC,
@@ -207,10 +213,10 @@ void Paint_score_objects(void)
                                   sobj->msg_len);
                 }
             }
-            sobj->count++;
-            if (sobj->count > SCORE_OBJECT_COUNT)
+            sobj->life_time -= timePerFrame;
+            if (sobj->life_time <= 0.0)
             {
-                sobj->count = 0;
+                sobj->life_time = 0.0;
                 sobj->hud_msg_len = 0;
             }
         }
@@ -1419,7 +1425,7 @@ xp_option_t hud_options[] = {
 
     COLOR_INDEX_OPTION(
         "scoreObjectColor",
-        4,
+        BLUE,
         &scoreObjectColor,
         "Which color number to use for drawing score objects.\n"),
 

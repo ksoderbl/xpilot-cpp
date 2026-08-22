@@ -1223,15 +1223,22 @@ int Handle_score_object(double score, int x, int y, char *msg)
 {
     score_object_t *sobj = &score_objects[score_object];
 
-    sobj->score = (int)score;
+    sobj->score = score;
     sobj->x = x;
     sobj->y = y;
-    sobj->count = 1;
+    sobj->life_time = scoreObjectTime;
 
     /* Initialize sobj->hud_msg (is shown on the HUD) */
     if (msg[0] != '\0')
     {
-        sprintf(sobj->hud_msg, "%s %d", msg, (int)score);
+        // sprintf(sobj->hud_msg, "%s %d", msg, (int)score);
+        if (Using_score_decimals())
+            sprintf(sobj->hud_msg, "%s %.*f", msg, clientOptions.showScoreDecimals, score);
+        else
+        {
+            int sc = (int)(score >= 0.0 ? score + 0.5 : score - 0.5);
+            sprintf(sobj->hud_msg, "%s %d", msg, sc);
+        }
         sobj->hud_msg_len = strlen(sobj->hud_msg);
         // sobj->hud_msg_width = XTextWidth(gameFont,
         //                                  sobj->hud_msg, sobj->hud_msg_len);
@@ -1241,7 +1248,14 @@ int Handle_score_object(double score, int x, int y, char *msg)
         sobj->hud_msg_len = 0;
 
     /* Initialize sobj->msg data (is shown on game area) */
-    sprintf(sobj->msg, "%d", (int)score);
+    // sprintf(sobj->msg, "%d", (int)score);
+    if (Using_score_decimals())
+        sprintf(sobj->msg, "%.*f", clientOptions.showScoreDecimals, score);
+    else
+    {
+        int sc = (int)(score >= 0.0 ? score + 0.5 : score - 0.5);
+        sprintf(sobj->msg, "%d", sc);
+    }
 
     sobj->msg_len = strlen(sobj->msg);
     // sobj->msg_width = XTextWidth(gameFont, sobj->msg, sobj->msg_len);

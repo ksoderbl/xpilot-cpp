@@ -1010,9 +1010,9 @@ xp_option_t default_options[] = {
 
     XP_DOUBLE_OPTION(
         "scoreObjectTime",
-        4.0,
+        1.0,
         0.0,
-        10.0,
+        60.0,
         &scoreObjectTime,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,

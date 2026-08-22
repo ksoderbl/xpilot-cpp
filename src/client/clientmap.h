@@ -230,14 +230,12 @@ typedef struct
     short x, y;
 } wormhole_t;
 
-#define SCORE_OBJECT_COUNT 100
 typedef struct
 {
     double score,
         life_time;
     int x,
         y,
-        count,
         hud_msg_len,
         hud_msg_width,
         msg_width,
