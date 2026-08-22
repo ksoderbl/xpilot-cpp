@@ -201,10 +201,6 @@ extern bool UpdateRadar;
 constexpr int ServerRadarWidth = 256; /* radar width at the server */
 extern int RadarWidth;
 extern int RadarHeight;
-extern int backgroundPointDist; /* spacing of navigation points */
-extern int backgroundPointSize; /* size of navigation points */
-extern int shotSize;            /* size of shot */
-extern int teamShotSize;        /* size of team shot */
 
 extern double controlTime;     /* Display control for how long? */
 extern uint8_t spark_rand;     /* Sparkling effect */
@@ -264,7 +260,6 @@ extern int cumulativeMouseMovement;
 
 extern char modBankStr[][MAX_CHARS]; /* modifier banks strings */
 
-extern int maxCharsInNames;
 extern int lose_item;        /* flag and index to drop item */
 extern int lose_item_active; /* one of the lose keys is pressed */
 

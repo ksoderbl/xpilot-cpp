@@ -1170,8 +1170,8 @@ void Gui_paint_decor_dot(int x, int y, int size)
     if (!backgroundPointColor)
         return;
     Rectangle_add(backgroundPointColor,
-                  X(x + BLOCK_SZ / 2) - (backgroundPointSize >> 1),
-                  Y(y + BLOCK_SZ / 2) - (backgroundPointSize >> 1),
+                  X(x + BLOCK_SZ / 2) - (clientOptions.backgroundPointSize >> 1),
+                  Y(y + BLOCK_SZ / 2) - (clientOptions.backgroundPointSize >> 1),
                   size, size);
 }
 

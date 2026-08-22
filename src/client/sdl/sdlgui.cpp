@@ -547,20 +547,19 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
     switch (type)
     {
     case SETUP_BASE_UP:
-        mapnprint(&mapfont, color, CENTER, DOWN, (x), (y - BLOCK_SZ / 2), maxCharsInNames, "%s", other->nick_name.c_str());
+        mapnprint(&mapfont, color, CENTER, DOWN, (x), (y - BLOCK_SZ / 2), clientOptions.maxCharsInNames, "%s", other->nick_name.c_str());
         break;
     case SETUP_BASE_DOWN:
-        mapnprint(&mapfont, color, CENTER, UP, (x), (int)(y + BLOCK_SZ / 1.5), maxCharsInNames, "%s", other->nick_name.c_str());
+        mapnprint(&mapfont, color, CENTER, UP, (x), (int)(y + BLOCK_SZ / 1.5), clientOptions.maxCharsInNames, "%s", other->nick_name.c_str());
         break;
     case SETUP_BASE_LEFT:
-        mapnprint(&mapfont, color, RIGHT, UP, (x + BLOCK_SZ / 2), (y), maxCharsInNames, "%s", other->nick_name.c_str());
+        mapnprint(&mapfont, color, RIGHT, UP, (x + BLOCK_SZ / 2), (y), clientOptions.maxCharsInNames, "%s", other->nick_name.c_str());
         break;
     case SETUP_BASE_RIGHT:
-        mapnprint(&mapfont, color, LEFT, UP, (x - BLOCK_SZ / 2), (y), maxCharsInNames, "%s", other->nick_name.c_str());
+        mapnprint(&mapfont, color, LEFT, UP, (x - BLOCK_SZ / 2), (y), clientOptions.maxCharsInNames, "%s", other->nick_name.c_str());
         break;
     default:
-        errno = 0;
-        error("Bad base dir.");
+        warn("Bad base dir.");
     }
 }
 
@@ -1033,7 +1032,7 @@ void Gui_paint_mine(int x, int y, int teammine, std::string name)
                   teammine ? blueRGBA : whiteRGBA,
                   CENTER, DOWN,
                   x, y - 15,
-                  maxCharsInNames, "%s", name.c_str());
+                  clientOptions.maxCharsInNames, "%s", name.c_str());
     }
 }
 
@@ -1131,7 +1130,7 @@ void Gui_paint_asteroid(int x, int y, int type, int rot, int size)
  */
 void Gui_paint_fastshot(int color, int x, int y)
 {
-    int size = MIN(shotSize, 16);
+    int size = MIN(clientOptions.shotSize, 16);
 
     Image_paint(IMG_BULLET,
                 x + world.x - size / 2,
@@ -1141,7 +1140,7 @@ void Gui_paint_fastshot(int color, int x, int y)
 
 void Gui_paint_teamshot(int x, int y)
 {
-    int size = MIN(teamShotSize, 16);
+    int size = MIN(clientOptions.teamShotSize, 16);
 
     Image_paint(IMG_BULLET_OWN,
                 x + world.x - size / 2,
@@ -1446,7 +1445,7 @@ static void Gui_paint_ship_name(int x, int y, Other *other)
         if (!color)
             color = shipNameColorRGBA;
 
-        mapnprint(&mapfont, color, CENTER, DOWN, x, y - SHIP_SZ, maxCharsInNames, "%s", other->id_string.c_str());
+        mapnprint(&mapfont, color, CENTER, DOWN, x, y - SHIP_SZ, clientOptions.maxCharsInNames, "%s", other->id_string.c_str());
     }
     else
         color = blueRGBA;

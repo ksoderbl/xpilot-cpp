@@ -114,11 +114,11 @@ static void Paint_background_dots(void)
     int xi, yi;
     ipos_t min, max, count;
 
-    if (backgroundPointDist == 0)
+    if (clientOptions.backgroundPointDist == 0)
         return;
 
-    count.x = Setup->width / (BLOCK_SZ * backgroundPointDist);
-    count.y = Setup->height / (BLOCK_SZ * backgroundPointDist);
+    count.x = Setup->width / (BLOCK_SZ * clientOptions.backgroundPointDist);
+    count.y = Setup->height / (BLOCK_SZ * clientOptions.backgroundPointDist);
 
     dx = (double)Setup->width / count.x;
     dy = (double)Setup->height / count.y;
@@ -139,7 +139,7 @@ static void Paint_background_dots(void)
         {
             Gui_paint_decor_dot((int)(xi * dx - BLOCK_SZ / 2),
                                 (int)(yi * dy - BLOCK_SZ / 2),
-                                backgroundPointSize);
+                                clientOptions.backgroundPointSize);
         }
     }
 }
@@ -461,7 +461,7 @@ void Paint_world(void)
                 case SETUP_DECOR_DOT_RD:
                 case SETUP_DECOR_DOT_LU:
                 case SETUP_DECOR_DOT_LD:
-                    Gui_paint_decor_dot(x, y, backgroundPointSize);
+                    Gui_paint_decor_dot(x, y, clientOptions.backgroundPointSize);
                     break;
 
                 case SETUP_BASE_UP:

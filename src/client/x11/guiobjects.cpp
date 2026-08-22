@@ -440,15 +440,15 @@ void Gui_paint_fastshot(int color, int x, int y)
 
     if (!clientOptions.texturedObjects)
     {
-        int z = shotSize / 2;
+        int z = clientOptions.shotSize / 2;
         Rectangle_add(color,
                       x - z,
                       y - z,
-                      shotSize, shotSize);
+                      clientOptions.shotSize, clientOptions.shotSize);
     }
     else
     {
-        int s_size = MIN(shotSize, 16);
+        int s_size = MIN(clientOptions.shotSize, 16);
         int z = s_size / 2;
 
         Bitmap_paint(drawPixmap, BM_BULLET, WINSCALE(x) - z,
@@ -465,11 +465,11 @@ void Gui_paint_teamshot(int x, int y)
 
     if (!clientOptions.texturedObjects)
     {
-        Gui_paint_nastyshot(color, x, y, shotSize / 2);
+        Gui_paint_nastyshot(color, x, y, clientOptions.shotSize / 2);
     }
     else
     {
-        int s_size = MIN(teamShotSize, 16);
+        int s_size = MIN(clientOptions.teamShotSize, 16);
         int z = s_size / 2;
         Bitmap_paint(drawPixmap, BM_BULLET_OWN, WINSCALE(x) - z,
                      WINSCALE(y) - z, s_size - 1);

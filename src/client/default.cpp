@@ -421,7 +421,7 @@ static bool Set_hudScale(xp_option_t *opt, double value)
 
 static bool Set_backgroundPointDist(xp_option_t *opt, int val)
 {
-    backgroundPointDist = val;
+    clientOptions.backgroundPointDist = val;
     if (oldServer)
         Map_dots();
     return true;
@@ -429,7 +429,7 @@ static bool Set_backgroundPointDist(xp_option_t *opt, int val)
 
 static bool Set_backgroundPointSize(xp_option_t *opt, int val)
 {
-    backgroundPointSize = val;
+    clientOptions.backgroundPointSize = val;
     if (oldServer)
         Map_dots();
     return true;
@@ -814,7 +814,7 @@ xp_option_t default_options[] = {
         MAX_NAME_LEN,
         0,
         MAX_NAME_LEN,
-        &maxCharsInNames,
+        &clientOptions.maxCharsInNames,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Maximum number of characters to paint in names on game area.\n"),
@@ -970,7 +970,7 @@ xp_option_t default_options[] = {
         6,
         MIN_SHOT_SIZE,
         MAX_SHOT_SIZE,
-        &shotSize,
+        &clientOptions.shotSize,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The size of shots in pixels.\n"),
@@ -980,7 +980,7 @@ xp_option_t default_options[] = {
         4,
         MIN_TEAMSHOT_SIZE,
         MAX_TEAMSHOT_SIZE,
-        &teamShotSize,
+        &clientOptions.teamShotSize,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The size of team shots in pixels.\n"
@@ -988,10 +988,10 @@ xp_option_t default_options[] = {
 
     XP_INT_OPTION(
         "backgroundPointDist",
-        8,
+        20,
         0,
-        10,
-        &backgroundPointDist,
+        100,
+        &clientOptions.backgroundPointDist,
         Set_backgroundPointDist,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The distance between points in the background measured in blocks.\n"
@@ -999,11 +999,11 @@ xp_option_t default_options[] = {
         "direction the ship is moving to.\n"),
 
     XP_INT_OPTION(
-        "backgroundPointSize",
+        "clientOptions.backgroundPointSize",
         2,
         MIN_MAP_POINT_SIZE,
         MAX_MAP_POINT_SIZE,
-        &backgroundPointSize,
+        &clientOptions.backgroundPointSize,
         Set_backgroundPointSize,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Specifies the size of the background points.  0 means no points.\n"),

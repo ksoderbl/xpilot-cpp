@@ -58,9 +58,7 @@ client_data_t clData;
 
 char *geometry;
 xp_args_t xpArgs;
-// ConnectParam connectParam;
 
-int maxCharsInNames;
 double hudRadarScale = 3.0;     /* Scale for hudradar drawing */
 double hudRadarLimit = 0.05;    /* Hudradar dots are not drawn if closer to
                 your ship than this factor of visible
@@ -115,13 +113,9 @@ int roundDelay;    /* != 0 means we're in a delay */
 int roundDelayMax; /* (not yet) used for graph of time
                       remaining in delay */
 
-int backgroundPointDist; /* spacing of navigation points */
-int backgroundPointSize; /* size of navigation points */
-int shotSize;            /* size of shot */
-int teamShotSize;        /* size of team shot */
-double controlTime;      /* Display control for how long? */
-uint8_t spark_rand;      /* Sparkling effect */
-uint8_t old_spark_rand;  /* previous value of spark_rand */
+double controlTime;     /* Display control for how long? */
+uint8_t spark_rand;     /* Sparkling effect */
+uint8_t old_spark_rand; /* previous value of spark_rand */
 
 double fuelSum;      /* Sum of fuel in all tanks */
 double fuelMax;      /* How much fuel can you take? */

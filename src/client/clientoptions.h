@@ -78,13 +78,18 @@ struct ClientOptions
     bool markingLights = false; // Marking lights on ships
     bool sound = false;
 
-    int clientPortStart = 0;        // First UDP port for clients
-    int clientPortEnd = 0;          // Last one (these are for firewalls)
-    int maxFPS = MAX_SUPPORTED_FPS; // Max FPS player wants from server
-    int maxMouseTurnsPS = 0;        // Write something intelligent here
-    int sparkSize = 2;              // Size of debris and sparks
-    int hudRadarDotSize = 8;        // Size for hudradar dot drawing
-    int baseWarningType = 3;        // Which type of base warning you prefer
+    int clientPortStart = 0;            // First UDP port for clients
+    int clientPortEnd = 0;              // Last one (these are for firewalls)
+    int maxFPS = MAX_SUPPORTED_FPS;     // Max FPS player wants from server
+    int maxMouseTurnsPS = 0;            // Write something intelligent here
+    int sparkSize = 2;                  // Size of debris and sparks
+    int hudRadarDotSize = 8;            // Size for hudradar dot drawing
+    int baseWarningType = 3;            // Which type of base warning you prefer
+    int maxCharsInNames = MAX_NAME_LEN; // Draw max this many chars for names
+    int shotSize = 6;                   // size of shot
+    int teamShotSize = 4;               // size of team shot
+    int backgroundPointDist = 20;       // spacing of navigation points
+    int backgroundPointSize = 2;        // size of navigation points
 
     // From X11 client
     bool ignoreWindowManager = false;
