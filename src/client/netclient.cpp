@@ -798,7 +798,14 @@ int Net_start(void)
              * Therefore we don't transmit the shipshape when
              * we have had 5 unsuccesful attempts.
              */
-            if ((retries < 5 && Send_shipshape(shipShape) == -1) ||
+            std::string shipShapeStr;
+            if (shipShape != nullptr)
+            {
+                warn("shipShape: %s", shipShape);
+                shipShapeStr = shipShape;
+            }
+            warn("shipShapeStr: %s", shipShapeStr.c_str());
+            if ((retries < 5 && Send_shipshape(shipShapeStr) == -1) ||
                 Packet_printf(&wbuf, "%c", PKT_PLAY) <= 0 ||
                 Client_power() == -1 || Send_audio_request(1) == -1 || Client_fps_request() == -1 || Sockbuf_flush(&wbuf) == -1)
             {
@@ -2595,8 +2602,9 @@ int Send_keyboard(uint8_t *keyboard_vector)
     return 0;
 }
 
-int Send_shipshape(char *str)
+int Send_shipshape(std::string &str)
 {
+    warn("Send_shipshape: str = %s", str.c_str());
     ShipShape *ship;
     char buf[MSG_LEN], ext[MSG_LEN];
 
