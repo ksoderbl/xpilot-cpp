@@ -64,32 +64,29 @@
 #include "guiobjects.h"
 #include "clientpack.h"
 
-static bool texturedShips = false; /* Turned this off because the images drawn
-                                    * don't match the actual shipshape used
-                                    * for wall collisions by the server. */
-static int ballColor;              /* Color index for ball drawing */
-static int connColor;              /* Color index for connector drawing */
-static int teamShotColor;          /* Color index for harmless shot drawing */
-static int zeroLivesColor;         /* Color to associate with 0 lives */
-static int oneLifeColor;           /* Color to associate with 1 life */
-static int twoLivesColor;          /* Color to associate with 2 lives */
-static int manyLivesColor;         /* Color to associate with >2 lives */
-static int selfLWColor;            /* Color index for selfLifeWarning */
-static int enemyLWColor;           /* Color index for enemyLifeWarning */
-static int teamLWColor;            /* Color index for teamLifeWarning */
-static int shipNameColor;          /* Color index for ship name drawing */
-static int mineNameColor;          /* Color index for mine name drawing */
-static int teamShipColor;          /* Color index to associate with team 0 */
-static int team0Color;             /* Color index to associate with team 0 */
-static int team1Color;             /* Color index to associate with team 1 */
-static int team2Color;             /* Color index to associate with team 2 */
-static int team3Color;             /* Color index to associate with team 3 */
-static int team4Color;             /* Color index to associate with team 4 */
-static int team5Color;             /* Color index to associate with team 5 */
-static int team6Color;             /* Color index to associate with team 6 */
-static int team7Color;             /* Color index to associate with team 7 */
-static int team8Color;             /* Color index to associate with team 8 */
-static int team9Color;             /* Color index to associate with team 9 */
+static int ballColor;      /* Color index for ball drawing */
+static int connColor;      /* Color index for connector drawing */
+static int teamShotColor;  /* Color index for harmless shot drawing */
+static int zeroLivesColor; /* Color to associate with 0 lives */
+static int oneLifeColor;   /* Color to associate with 1 life */
+static int twoLivesColor;  /* Color to associate with 2 lives */
+static int manyLivesColor; /* Color to associate with >2 lives */
+static int selfLWColor;    /* Color index for selfLifeWarning */
+static int enemyLWColor;   /* Color index for enemyLifeWarning */
+static int teamLWColor;    /* Color index for teamLifeWarning */
+static int shipNameColor;  /* Color index for ship name drawing */
+static int mineNameColor;  /* Color index for mine name drawing */
+static int teamShipColor;  /* Color index to associate with team 0 */
+static int team0Color;     /* Color index to associate with team 0 */
+static int team1Color;     /* Color index to associate with team 1 */
+static int team2Color;     /* Color index to associate with team 2 */
+static int team3Color;     /* Color index to associate with team 3 */
+static int team4Color;     /* Color index to associate with team 4 */
+static int team5Color;     /* Color index to associate with team 5 */
+static int team6Color;     /* Color index to associate with team 6 */
+static int team7Color;     /* Color index to associate with team 7 */
+static int team8Color;     /* Color index to associate with team 8 */
+static int team9Color;     /* Color index to associate with team 9 */
 
 static int asteroidRawShapes[NUM_ASTEROID_SHAPES][NUM_ASTEROID_POINTS][2] = {
     {ASTEROID_SHAPE_0},

@@ -55,6 +55,7 @@ struct ClientOptions
     bool sound = false;
 
     // From X11 client
+    bool ignoreWindowManager = true;
     bool fullColor = false;       // Whether to try using colors as close to
                                   // the specified ones as possible, or just
                                   // use a few standard colors for everything.
@@ -65,6 +66,10 @@ struct ClientOptions
     // From SDL/OpenGL client
     bool smoothLines = true;    // Use antialized smooth lines
     bool texturedBalls = false; // Draw balls with textures
+    bool texturedShips = false; // Draw ships with textures
+                                // Turned this off because the images drawn
+                                // don't match the actual shipshape used
+                                // for wall collisions by the server.
 };
 
 extern ClientOptions clientOptions;

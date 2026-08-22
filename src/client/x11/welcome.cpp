@@ -51,6 +51,7 @@
 #include "socklib.h"
 #include "net.h"
 #include "clientpack.h"
+#include "clientoptions.h" // 2026
 #include "connectparam.h"
 #include "client.h"
 #include "portability.h"
@@ -1464,10 +1465,10 @@ static int Welcome_process_one_event(XEvent *event,
         break;
 
     case MapNotify:
-        if (ignoreWindowManager == 1)
+        if (clientOptions.ignoreWindowManager && ignoreWindowManagerHackValue == 1)
         {
             XSetInputFocus(dpy, topWindow, RevertToParent, CurrentTime);
-            ignoreWindowManager = 2;
+            ignoreWindowManagerHackValue = 2;
         }
         break;
 

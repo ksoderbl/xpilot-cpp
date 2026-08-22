@@ -133,7 +133,6 @@ int hudRadarObjectShape;
 float hudRadarDotScale;
 
 static double shipLineWidth;
-static bool texturedShips;
 static GLuint polyListBase = 0;
 static GLuint polyEdgeListBase = 0;
 static GLuint asteroid = 0;
@@ -1486,7 +1485,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
     {
         Image_paint(IMG_SHIELD, x - 27, y - 27, 0, (color & 0xffffff00) + ((color & 0x000000ff) / 2));
     }
-    if (texturedShips)
+    if (clientOptions.texturedShips)
     {
         if (BIT(Setup->mode, TEAM_PLAY) && other != nullptr && self != nullptr && self->team == other->team)
         {
@@ -2613,7 +2612,7 @@ static xp_option_t sdlgui_options[] = {
     XP_BOOL_OPTION(
         "texturedShips",
         true,
-        &texturedShips,
+        &clientOptions.texturedShips,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Draw ships with textures.\n"),

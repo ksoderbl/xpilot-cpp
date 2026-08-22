@@ -48,6 +48,7 @@
 #include "configure.h"
 
 #include "client.h"
+#include "clientoptions.h" // 2026
 #include "messages.h"
 #include "netclient.h"
 #include "paint.h"
@@ -184,10 +185,10 @@ void SelectionRequest_event(XEvent *event)
 
 void MapNotify_event(XEvent *event)
 {
-    if (ignoreWindowManager == 1)
+    if (clientOptions.ignoreWindowManager && ignoreWindowManagerHackValue == 1)
     {
         XSetInputFocus(dpy, topWindow, RevertToParent, CurrentTime);
-        ignoreWindowManager = 2;
+        ignoreWindowManagerHackValue = 2;
     }
 }
 

@@ -52,6 +52,7 @@
 #include "netclient.h"
 #include "dbuff.h"
 #include "client.h"
+#include "clientoptions.h"
 #include "portability.h"
 
 /*
@@ -100,7 +101,7 @@ int top_width, top_height;
 int players_width, players_height;
 bool radar_score_mapped;
 Cursor pointerControlCursor;
-bool ignoreWindowManager;
+int ignoreWindowManagerHackValue = 1;
 
 XFontStruct *gameFont; /* The fonts used in the game */
 XFontStruct *messageFont;
@@ -395,7 +396,7 @@ int Init_top(void)
         sattr.colormap = colormap;
         mask |= CWColormap;
     }
-    if (ignoreWindowManager)
+    if (clientOptions.ignoreWindowManager)
     {
         sattr.override_redirect = True;
         mask |= CWOverrideRedirect;

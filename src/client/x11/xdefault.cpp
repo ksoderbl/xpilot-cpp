@@ -392,7 +392,7 @@ xp_option_t xdefault_options[] = {
     XP_BOOL_OPTION(
         "ignoreWindowManager",
         false,
-        &ignoreWindowManager,
+        &clientOptions.ignoreWindowManager,
         nullptr,
         XP_OPTFLAG_DEFAULT,
         "Ignore the window manager when opening the top level player window.\n"

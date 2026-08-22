@@ -49,7 +49,7 @@ extern unsigned dispDepth;
 extern int button_form;
 extern int top_width, top_height;
 extern int players_width, players_height;
-extern bool ignoreWindowManager;
+extern int ignoreWindowManagerHackValue;
 extern bool quitting;
 
 /* XPilot Mouse settings */
