@@ -185,11 +185,8 @@ int clientPortEnd = 0;   /* Last one (these are for firewalls) */
 int lose_item;        /* index for dropping owned item */
 int lose_item_active; /* one of the lose keys is pressed */
 
-#ifdef SOUND
 char sounds[MAX_CHARS];      /* audio mappings */
 char audioServer[MAX_CHARS]; /* audio server */
-int maxVolume;               /* maximum volume (in percent) */
-#endif                       /* SOUND */
 
 // score_object_t score_objects[MAX_SCORE_OBJECTS];
 // int score_object = 0;

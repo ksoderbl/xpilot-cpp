@@ -42,6 +42,7 @@
 #include "version.h"
 #include "messages.h"
 
+#include "caudio.h"
 #include "client.h"
 #include "clientoption.h"
 #include "xpilotrc.h"
@@ -860,9 +861,7 @@ void Parse_options(int *argcp, char **argvp)
     if (xpArgs.version)
         Version();
 
-#ifdef SOUND
     audioInit(connectParam.disp_name);
-#endif /* SOUND */
 }
 
 const char *Get_keyHelpString(keys_t key)

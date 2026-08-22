@@ -37,6 +37,7 @@
 #include "socklib.h"
 #include "xpconfig.h"
 
+#include "caudio.h"
 #include "client.h"
 #include "clientoptions.h" // 2026
 #include "keys.h"
@@ -307,9 +308,7 @@ static bool Key_press_toggle_record(void)
 
 static bool Key_press_toggle_sound(void)
 {
-#ifdef SOUND
-    sound = !sound;
-#endif
+    clientOptions.sound = !clientOptions.sound;
     return false; /* server doesn't need to know */
 }
 
@@ -1298,13 +1297,11 @@ xp_option_t key_options[] = {
         KEY_TOGGLE_RECORD,
         "Toggle recording of session (see recordFile).\n"),
 
-#ifdef SOUND
     XP_KEY_OPTION(
         "keyToggleSound",
         "",
         KEY_TOGGLE_SOUND,
         "Toggle sound. Changes value of option 'sound'.\n"),
-#endif
 
     XP_KEY_OPTION(
         "keyToggleRadarScore",

@@ -53,6 +53,11 @@ void audioDeviceEvents(void)
     /* printf("debug audio: events\n"); */
 }
 
+void audioDeviceUpdate(void)
+{
+    /* printf("debug audio: update\n"); */
+}
+
 void audioDeviceFree(void *private_data)
 {
     printf("debug audio: audioDeviceFree\n");

@@ -61,9 +61,7 @@
 #include "netclient.h"
 #include "paint.h"
 
-#ifdef SOUND
 #include "audio.h"
-#endif
 
 #define TALK_RETRY 2
 #define MAX_MAP_ACK_LEN 500
@@ -802,11 +800,7 @@ int Net_start(void)
              */
             if ((retries < 5 && Send_shipshape(shipShape) == -1) ||
                 Packet_printf(&wbuf, "%c", PKT_PLAY) <= 0 ||
-                Client_power() == -1
-#ifdef SOUND
-                || Send_audio_request(1) == -1
-#endif
-                || Client_fps_request() == -1 || Sockbuf_flush(&wbuf) == -1)
+                Client_power() == -1 || Send_audio_request(1) == -1 || Client_fps_request() == -1 || Sockbuf_flush(&wbuf) == -1)
             {
                 error("Can't send start play packet");
                 return -1;
@@ -2692,10 +2686,8 @@ int Receive_audio(void)
 
     if ((n = Packet_scanf(&rbuf, "%c%c%c", &pkt, &type, &vol)) <= 0)
         return n;
-#ifdef SOUND
     if ((n = Handle_audio(type, vol)) == -1)
         return -1;
-#endif /* SOUND */
     return 1;
 }
 
@@ -2864,13 +2856,8 @@ int Send_pointer_move(int movement)
 
 int Send_audio_request(bool on)
 {
-#ifdef DEBUG_SOUND
     printf("Send_audio_request %d\n", on ? 1 : 0);
-#endif
 
-#ifndef SOUND
-    on = false;
-#endif
     if (Packet_printf(&wbuf, "%c%c", PKT_REQUEST_AUDIO, (on ? 1 : 0)) == -1)
         return -1;
     return 0;

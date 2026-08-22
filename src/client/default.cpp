@@ -35,6 +35,7 @@
 #include "socklib.h"
 #include "xpconfig.h"
 
+#include "caudio.h"
 #include "client.h"
 #include "gfx2d.h"
 #include "messages.h"
@@ -538,9 +539,7 @@ void defaultCleanup(void)
     XFREE(texturePath);
     XFREE(shipShape);
 
-#ifdef SOUND
     audioCleanup();
-#endif /* SOUND */
 }
 
 xp_option_t default_options[] = {
@@ -1205,7 +1204,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "markingLights",
         false,
-        &markingLights,
+        &clientOptions.markingLights,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Should the fighters have marking lights, just like airplanes?\n"),
@@ -1287,14 +1286,6 @@ xp_option_t default_options[] = {
 
 /* kps - these should not be needed in the SDL windows client. */
 #if 0
-    XP_BOOL_OPTION(
-    "threadedDraw",
-    false,
-    &ThreadedDraw,
-    nullptr,
-    XP_OPTFLAG_CONFIG_DEFAULT,
-    "Tell Windows to do the heavy BitBlt in another thread\n"),
-
     XP_INT_OPTION(
     "radarDivisor",
     1,
@@ -1335,7 +1326,6 @@ xp_option_t default_options[] = {
         "An optional file where clientside kill/death rank is\n"
         "published in HTML format, w/o JavaScript.\n"),
 
-#ifdef SOUND
     XP_CONST_CHAR_STAR_OPTION(
         "soundFile",
         CONF_SOUNDFILE,
@@ -1357,11 +1347,10 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "sound",
         true,
-        &sound,
+        &clientOptions.sound,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Is sound enabled? (set to false to mute client).\n"),
-#endif
 
 };
 

@@ -315,9 +315,7 @@ int x_event(int new_input)
     int queued = 0, i, n;
     XEvent event;
 
-#ifdef SOUND
     audioEvents();
-#endif /* SOUND */
 
     mouseMovement = 0;
 

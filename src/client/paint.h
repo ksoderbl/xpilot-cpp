@@ -79,8 +79,6 @@ extern uint8_t debris_colors;  /* Number of debris intensities */
 
 extern char modBankStr[][MAX_CHARS]; /* modifier banks strings */
 
-extern bool markingLights; /* Marking lights on ships */
-
 extern int maxKeyDefs;
 
 extern int num_spark_colors;

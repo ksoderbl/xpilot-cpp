@@ -62,8 +62,6 @@ static int wreckageRawShapes[NUM_WRECKAGE_SHAPES][NUM_WRECKAGE_POINTS][2] = {
 
 position_t *wreckageShapes[NUM_WRECKAGE_SHAPES][NUM_WRECKAGE_POINTS];
 
-bool markingLights;
-
 static int wrap(int *xp, int *yp)
 {
     int x = *xp, y = *yp;

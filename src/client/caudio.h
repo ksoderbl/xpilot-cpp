@@ -28,15 +28,10 @@
 
 #pragma once
 
-#define SOUND
-
-#ifdef SOUND
-
 #include <climits>
 
 extern char soundFile[PATH_MAX]; /* audio mappings */
 extern int maxVolume;            /* maximum volume (in percent) */
-extern bool sound;               /* option 'sound' */
 
 int Handle_audio(int type, int volume);
 void audioInit(char *display);
@@ -49,5 +44,3 @@ void audioDeviceEvents(void);
 void audioDeviceUpdate(void);
 void audioDeviceFree(void *priv);
 void audioDeviceClose(void);
-
-#endif

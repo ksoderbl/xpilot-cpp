@@ -273,11 +273,9 @@ extern int maxCharsInNames;
 extern int lose_item;        /* flag and index to drop item */
 extern int lose_item_active; /* one of the lose keys is pressed */
 
-#ifdef SOUND
 extern char sounds[MAX_CHARS];      /* audio mappings */
 extern char audioServer[MAX_CHARS]; /* audio server */
 extern int maxVolume;               /* maximum volume (in percent) */
-#endif                              /* SOUND */
 
 // extern int num_playing_teams;
 
@@ -354,9 +352,7 @@ int Key_init(void);
 int Key_update(void);
 int Check_client_fps(void);
 
-#ifdef SOUND
 extern void audioEvents();
-#endif
 
 extern int Init_playing_windows(void);
 extern int Alloc_msgs(void);

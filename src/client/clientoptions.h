@@ -49,10 +49,10 @@ struct ClientOptions
 
     // TODO: make some substruct for these?
     bool dirPrediction = false;
-    // Are shields toggled by a press?
-    bool toggleShield = false;
-    // shield drops for fire
-    bool autoShield = true;
+    bool toggleShield = false;  // Are shields toggled by a press?
+    bool autoShield = true;     // shield drops for fire
+    bool markingLights = false; // Marking lights on ships
+    bool sound = false;
 };
 
 extern ClientOptions clientOptions;

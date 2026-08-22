@@ -25,10 +25,6 @@
  * client audio
  */
 
-#define SOUND
-
-#ifdef SOUND
-
 #define MAX_RANDOM_SOUNDS 6
 
 #include <cstdlib>
@@ -47,12 +43,12 @@
 #include "xperror.h"
 
 #include "client.h"
+#include "clientoptions.h" // 2026
 
 #include "audio.h"
 
 /* options */
 static bool audioEnabled = false;
-bool sound;
 char soundFile[PATH_MAX]; /* audio mappings */
 int maxVolume;            /* maximum volume (in percent) */
 /* options end */
@@ -68,7 +64,7 @@ static bool audioIsEnabled(void)
 {
     if (!audioEnabled)
         return false;
-    if (!sound)
+    if (!clientOptions.sound)
         return false;
     if (maxVolume <= 0)
         return false;
@@ -204,5 +200,3 @@ int Handle_audio(int type, int volume)
 
     return 0;
 }
-
-#endif /* SOUND */

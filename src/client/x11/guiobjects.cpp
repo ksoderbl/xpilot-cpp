@@ -1052,7 +1052,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
     else if (cloak)
         Gui_paint_ship_cloaked(ship_color, points, cnt);
 
-    if (markingLights)
+    if (clientOptions.markingLights)
         Gui_paint_marking_lights(id, x, y, ship, dir);
 
     if (shield || deflector)
