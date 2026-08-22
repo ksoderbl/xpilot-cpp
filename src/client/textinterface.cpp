@@ -47,7 +47,7 @@
 #include "datagram.h"
 #include "portability.h"
 #include "checknames.h"
-#include "connectparam.h"
+
 #include "client.h"
 
 #define MAX_LINE MSG_LEN /* should not be smaller than MSG_LEN */
@@ -95,7 +95,7 @@ static void Clean_string(char *buf)
 
 static int Get_contact_message(sockbuf_t *sbuf,
                                const char *contact_server,
-                               Connect_param_t *conpar)
+                               ConnectParam *conpar)
 {
     int len;
     int server_version;
@@ -172,7 +172,7 @@ static int Get_contact_message(sockbuf_t *sbuf,
 }
 
 static int Get_reply_message(sockbuf_t *ibuf,
-                             Connect_param_t *conpar)
+                             ConnectParam *conpar)
 {
     int len;
     unsigned magic;
@@ -244,7 +244,7 @@ static void Command_help(void)
 static bool Process_commands(sockbuf_t *ibuf,
                              int auto_connect, int list_servers,
                              int auto_shutdown, char *shutdown_reason,
-                             Connect_param_t *conpar)
+                             ConnectParam *conpar)
 {
     int i, len, retries, delay, success, cmd_credentials = 0, max_replies;
     char c, status, reply_to, linebuf[MAX_LINE];
@@ -762,7 +762,7 @@ static bool Process_commands(sockbuf_t *ibuf,
  */
 int Connect_to_server(int auto_connect, int list_servers,
                       int auto_shutdown, char *shutdown_reason,
-                      Connect_param_t *conpar)
+                      ConnectParam *conpar)
 {
     sockbuf_t ibuf; /* info buffer */
     int result;
@@ -793,7 +793,7 @@ int Contact_servers(int count, char **servers,
                     int find_max, int *num_found,
                     char **server_addresses, char **server_names,
                     unsigned *server_versions,
-                    Connect_param_t *conpar)
+                    ConnectParam *conpar)
 {
     bool connected = false;
     const int max_retries = 2;

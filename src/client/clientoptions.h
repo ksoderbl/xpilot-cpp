@@ -22,6 +22,26 @@
 
 #include <string>
 
+#include "const.h"
+#include "socklib.h"
+
+#include "clientpack.h"
+
+struct ConnectParam
+{
+    int contact_port = SERVER_PORT;
+    int server_port = 0;
+    int login_port = 0;
+    char nick_name[MAX_NAME_LEN] = "";
+    char user_name[MAX_NAME_LEN] = "";
+    char host_name[SOCK_HOSTNAME_LENGTH] = "";
+    char server_addr[MAX_HOST_LEN] = "";
+    char server_name[MAX_HOST_LEN] = "";
+    char disp_name[MAX_DISP_LEN] = "";
+    unsigned server_version = 0;
+    int team = TEAM_NOT_SET;
+};
+
 struct InstrumentsOptions
 {
     bool clientRanker = false;
@@ -44,6 +64,9 @@ struct InstrumentsOptions
 
 struct ClientOptions
 {
+    // Connection params
+    ConnectParam connectParam;
+
     // Instruments on screen
     InstrumentsOptions instruments;
 
@@ -55,7 +78,7 @@ struct ClientOptions
     bool sound = false;
 
     // From X11 client
-    bool ignoreWindowManager = true;
+    bool ignoreWindowManager = false;
     bool fullColor = false;       // Whether to try using colors as close to
                                   // the specified ones as possible, or just
                                   // use a few standard colors for everything.

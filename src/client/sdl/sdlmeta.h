@@ -20,6 +20,4 @@
 
 #pragma once
 
-#include "connectparam.h"
-
-int Meta_window(Connect_param_t *conpar);
+int Meta_window(ConnectParam *conpar);

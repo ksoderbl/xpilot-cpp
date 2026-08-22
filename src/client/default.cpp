@@ -58,26 +58,26 @@ static bool Set_nickName(xp_option_t *opt, const char *value)
     if (strlen(value) == 0)
         return true;
 
-    strlcpy(connectParam.nick_name, value, sizeof(connectParam.nick_name));
-    CAP_LETTER(connectParam.nick_name[0]);
-    if (connectParam.nick_name[0] < 'A' || connectParam.nick_name[0] > 'Z')
+    strlcpy(clientOptions.connectParam.nick_name, value, sizeof(clientOptions.connectParam.nick_name));
+    CAP_LETTER(clientOptions.connectParam.nick_name[0]);
+    if (clientOptions.connectParam.nick_name[0] < 'A' || clientOptions.connectParam.nick_name[0] > 'Z')
     {
         warn("Your player name \"%s\" should start with an uppercase letter.",
-             connectParam.nick_name);
-        connectParam.nick_name[0] = 'X';
+             clientOptions.connectParam.nick_name);
+        clientOptions.connectParam.nick_name[0] = 'X';
     }
 
-    if (Check_nick_name(connectParam.nick_name) == NAME_ERROR)
+    if (Check_nick_name(clientOptions.connectParam.nick_name) == NAME_ERROR)
     {
         char nick[MAX_NAME_LEN];
 
-        strlcpy(nick, connectParam.nick_name, sizeof(nick));
-        Fix_nick_name(connectParam.nick_name);
+        strlcpy(nick, clientOptions.connectParam.nick_name, sizeof(nick));
+        Fix_nick_name(clientOptions.connectParam.nick_name);
         warn("Fixing nick from \"%s\" to \"%s\".\n",
-             nick, connectParam.nick_name);
+             nick, clientOptions.connectParam.nick_name);
     }
 
-    /*warn("Nick name set to \"%s\".\n", connectParam.nick_name);*/
+    /*warn("Nick name set to \"%s\".\n", clientOptions.connectParam.nick_name);*/
 
     return true;
 }
@@ -89,28 +89,28 @@ static bool Set_userName(xp_option_t *opt, const char *value)
     assert(value);
 
     if (cp)
-        strlcpy(connectParam.user_name, cp, sizeof(connectParam.user_name));
+        strlcpy(clientOptions.connectParam.user_name, cp, sizeof(clientOptions.connectParam.user_name));
     else
-        Get_login_name(connectParam.user_name, sizeof(connectParam.user_name));
+        Get_login_name(clientOptions.connectParam.user_name, sizeof(clientOptions.connectParam.user_name));
 
     if (strlen(value) > 0)
-        strlcpy(connectParam.user_name, value, sizeof(connectParam.user_name));
+        strlcpy(clientOptions.connectParam.user_name, value, sizeof(clientOptions.connectParam.user_name));
 
-    if (Check_user_name(connectParam.user_name) == NAME_ERROR)
+    if (Check_user_name(clientOptions.connectParam.user_name) == NAME_ERROR)
     {
         char user[MAX_NAME_LEN];
 
-        strlcpy(user, connectParam.user_name, sizeof(user));
-        Fix_user_name(connectParam.user_name);
+        strlcpy(user, clientOptions.connectParam.user_name, sizeof(user));
+        Fix_user_name(clientOptions.connectParam.user_name);
         warn("Fixing username from \"%s\" to \"%s\".\n",
-             user, connectParam.user_name);
+             user, clientOptions.connectParam.user_name);
     }
 
     /* hack - if nickname is not set, set nickname to username */
-    if (strlen(connectParam.nick_name) == 0)
-        Set_nickName(nullptr, connectParam.user_name);
+    if (strlen(clientOptions.connectParam.nick_name) == 0)
+        Set_nickName(nullptr, clientOptions.connectParam.user_name);
 
-    /*warn("User name set to \"%s\".\n", connectParam.user_name);*/
+    /*warn("User name set to \"%s\".\n", clientOptions.connectParam.user_name);*/
 
     return true;
 }
@@ -121,52 +121,52 @@ static bool Set_hostName(xp_option_t *opt, const char *value)
 
     assert(value);
 
-    connectParam.host_name[0] = '\0';
+    clientOptions.connectParam.host_name[0] = '\0';
     if (cp)
-        strlcpy(connectParam.host_name, cp, sizeof(connectParam.host_name));
+        strlcpy(clientOptions.connectParam.host_name, cp, sizeof(clientOptions.connectParam.host_name));
     else
-        sock_get_local_hostname(connectParam.host_name,
-                                sizeof(connectParam.host_name), 0);
+        sock_get_local_hostname(clientOptions.connectParam.host_name,
+                                sizeof(clientOptions.connectParam.host_name), 0);
 
     if (strlen(value) > 0)
-        strlcpy(connectParam.host_name, value, sizeof(connectParam.host_name));
+        strlcpy(clientOptions.connectParam.host_name, value, sizeof(clientOptions.connectParam.host_name));
 
-    if (Check_host_name(connectParam.host_name) == NAME_ERROR)
+    if (Check_host_name(clientOptions.connectParam.host_name) == NAME_ERROR)
     {
         char host[SOCK_HOSTNAME_LENGTH];
 
-        strlcpy(host, connectParam.host_name, sizeof(host));
-        Fix_host_name(connectParam.host_name);
+        strlcpy(host, clientOptions.connectParam.host_name, sizeof(host));
+        Fix_host_name(clientOptions.connectParam.host_name);
         warn("Fixing host from \"%s\" to \"%s\".\n",
-             host, connectParam.host_name);
+             host, clientOptions.connectParam.host_name);
     }
 
-    /*warn("Host name set to \"%s\".\n", connectParam.host_name);*/
+    /*warn("Host name set to \"%s\".\n", clientOptions.connectParam.host_name);*/
 
     return true;
 }
 
 static const char *Get_nickName(xp_option_t *opt)
 {
-    return connectParam.nick_name;
+    return clientOptions.connectParam.nick_name;
 }
 
 static const char *Get_userName(xp_option_t *opt)
 {
-    return connectParam.user_name;
+    return clientOptions.connectParam.user_name;
 }
 
 static const char *Get_hostName(xp_option_t *opt)
 {
-    return connectParam.host_name;
+    return clientOptions.connectParam.host_name;
 }
 
 static bool Set_team(xp_option_t *opt, int value)
 {
     if (value >= 0 && value < MAX_TEAMS)
-        connectParam.team = value;
+        clientOptions.connectParam.team = value;
     else
-        connectParam.team = TEAM_NOT_SET;
+        clientOptions.connectParam.team = TEAM_NOT_SET;
 
     return true;
 }
@@ -614,7 +614,7 @@ xp_option_t default_options[] = {
         TEAM_NOT_SET,
         0,
         TEAM_NOT_SET,
-        &connectParam.team,
+        &clientOptions.connectParam.team,
         Set_team,
         XP_OPTFLAG_KEEP,
         "Set the team to join.\n"),
@@ -624,7 +624,7 @@ xp_option_t default_options[] = {
         SERVER_PORT,
         0,
         65535,
-        &connectParam.contact_port,
+        &clientOptions.connectParam.contact_port,
         nullptr,
         XP_OPTFLAG_KEEP,
         "Set the port number of the server.\n"

@@ -1114,9 +1114,9 @@ int Handle_player(int id, int player_team, int mychar,
         // other = &others[num_others++];
     }
 
-    // warn("Handle_player: id %d, connectParam.nick_name '%s'", id, connectParam.nick_name);
+    // warn("Handle_player: id %d, clientOptions.connectParam.nick_name '%s'", id, clientOptions.connectParam.nick_name);
 
-    if (self == nullptr && (myself || (version < 0x4F10 && strcmp(connectParam.nick_name, nick_name.c_str()) == 0)))
+    if (self == nullptr && (myself || (version < 0x4F10 && strcmp(clientOptions.connectParam.nick_name, nick_name.c_str()) == 0)))
     {
         if (other != others[0])
         {

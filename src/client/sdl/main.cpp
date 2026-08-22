@@ -66,9 +66,9 @@ int main(int argc, char *argv[])
 
     seedMT((unsigned)time(nullptr) ^ Get_process_id());
 
-    memset(&connectParam, 0, sizeof(Connect_param_t));
-    connectParam.contact_port = SERVER_PORT;
-    connectParam.team = TEAM_NOT_SET;
+    // memset(&connectParam, 0, sizeof(ConnectParam));
+    //  clientOptions.connectParam.contact_port = SERVER_PORT;
+    //  clientOptions.connectParam.team = TEAM_NOT_SET;
 
     Store_default_options();
     Store_talk_macro_options();
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
                              xpArgs.auto_connect, xpArgs.list_servers,
                              auto_shutdown, xpArgs.shutdown_reason,
                              0, nullptr, nullptr, nullptr, nullptr,
-                             &connectParam))
+                             &clientOptions.connectParam))
             return 0;
         if (Init_window())
         {
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
         }
         while (1)
         {
-            result = Meta_window(&connectParam);
+            result = Meta_window(&clientOptions.connectParam);
             if (result < 0)
                 return 0;
             if (result == 0)
@@ -124,20 +124,20 @@ int main(int argc, char *argv[])
      * cleanup to the OS because afaik Client_cleanup will clean
      * stuff initialized in Client_setup. */
 
-    if (Client_init(connectParam.server_name, connectParam.server_version))
+    if (Client_init(clientOptions.connectParam.server_name, clientOptions.connectParam.server_version))
     {
         error("failed to initialize client");
         exit(1);
     }
 
-    if (Net_init(connectParam.server_addr, connectParam.login_port))
+    if (Net_init(clientOptions.connectParam.server_addr, clientOptions.connectParam.login_port))
     {
         error("failed to initialize networking");
         exit(1);
     }
-    if (Net_verify(connectParam.user_name,
-                   connectParam.nick_name,
-                   connectParam.disp_name))
+    if (Net_verify(clientOptions.connectParam.user_name,
+                   clientOptions.connectParam.nick_name,
+                   clientOptions.connectParam.disp_name))
     {
         error("failed to verify networking");
         exit(1);

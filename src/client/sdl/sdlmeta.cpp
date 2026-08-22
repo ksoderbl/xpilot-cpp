@@ -1032,7 +1032,7 @@ static GLWidget *Init_MetaWidget(const server_list_t &servers)
     return tmp;
 }
 
-static bool join_server(Connect_param_t *conpar, server_info_t *sip)
+static bool join_server(ConnectParam *conpar, server_info_t *sip)
 {
     char *server_addr_ptr = conpar->server_addr;
     strlcpy(conpar->server_name, sip->hostname.c_str(),
@@ -1084,7 +1084,7 @@ static void handleKeyPress(GLWidget *meta, SDL_Keysym *keysym)
     return;
 }
 
-int Meta_window(Connect_param_t *conpar)
+int Meta_window(ConnectParam *conpar)
 {
     int num_serv = 0;
     int btn_x, btn_y, btn_h;

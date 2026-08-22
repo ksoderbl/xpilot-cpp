@@ -45,6 +45,7 @@
 #include "caudio.h"
 #include "client.h"
 #include "clientoption.h"
+#include "clientoptions.h" // 2026
 #include "xpilotrc.h"
 
 std::vector<xp_option_t> optionsVector;
@@ -722,8 +723,15 @@ void Store_option(xp_option_t *opt)
      * Check that default value is in range
      * NOTE: these assertions will hold also for options of other types
      */
-    assert(opt->int_defval >= opt->int_minval);
-    assert(opt->int_defval <= opt->int_maxval);
+    if (option.type == xp_int_option)
+    {
+        assert(option.int_ptr);
+        // option.int_defval = *option.int_ptr; // TODO
+
+        assert(option.int_defval >= option.int_minval);
+        assert(option.int_defval <= option.int_maxval);
+    }
+
     assert(opt->dbl_defval >= opt->dbl_minval);
     assert(opt->dbl_defval <= opt->dbl_maxval);
 
@@ -867,7 +875,7 @@ void Parse_options(int *argcp, char **argvp)
     if (xpArgs.version)
         Version();
 
-    audioInit(connectParam.disp_name);
+    audioInit(clientOptions.connectParam.disp_name);
 }
 
 const char *Get_keyHelpString(keys_t key)

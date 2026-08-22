@@ -100,9 +100,9 @@ static void WriteHeader(void)
 {
     struct XPRHeader hdr{};
 
-    hdr.nickname = std::string(connectParam.nick_name);
-    hdr.realname = std::string(connectParam.user_name);
-    hdr.hostname = std::string(connectParam.host_name);
+    hdr.nickname = std::string(clientOptions.connectParam.nick_name);
+    hdr.realname = std::string(clientOptions.connectParam.user_name);
+    hdr.hostname = std::string(clientOptions.connectParam.host_name);
     hdr.servername = std::string(servername);
 
     /*
