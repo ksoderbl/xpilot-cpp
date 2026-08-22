@@ -254,6 +254,7 @@ static void Choose_visual(void)
 
     visual_id = -1;
     visual_class = -1;
+
     if (visualName[0] != '\0')
     {
         if (strncmp(visualName, "0x", 2) == 0)
@@ -286,9 +287,14 @@ static void Choose_visual(void)
             }
         }
     }
+
+    warn("Choose_visual: #1: visual_class = %d, visual_id = %d", visual_class, visual_id);
+    warn("Choose_visual: #1: visual %s\n", Visual_class_name(visual_class));
+
     if (visual_class < 0 && visual_id < 0)
     {
         visualPtr = DefaultVisual(dpy, DefaultScreen(dpy));
+        warn("Choose_visual: Default visual is %s", Visual_class_name(visualPtr->c_class));
         if (visualPtr->c_class == TrueColor || visualPtr->c_class == DirectColor)
         {
             visual_class = PseudoColor;
@@ -298,6 +304,9 @@ static void Choose_visual(void)
     }
     else
         using_default = false;
+
+    warn("Choose_visual: #2: visual_class = %d, visual_id = %d", visual_class, visual_id);
+    warn("Choose_visual: #2: visual %s\n", Visual_class_name(visual_class));
 
     if (visual_class >= 0 || visual_id >= 0)
     {
@@ -348,11 +357,16 @@ static void Choose_visual(void)
             Get_colormap();
         }
     }
+
+    warn("Choose_visual: #3: visual_class = %d, visual_id = %d", visual_class, visual_id);
+    warn("Choose_visual: #3: visual %s\n", Visual_class_name(visual_class));
+
     if (visual_class < 0)
     {
         visualPtr = DefaultVisual(dpy, DefaultScreen(dpy));
         dispDepth = DefaultDepth(dpy, DefaultScreen(dpy));
         colormap = 0;
+        warn("Choose_visual: Default visual is %s", Visual_class_name(visualPtr->c_class));
     }
 }
 
