@@ -50,7 +50,7 @@ void Game_loop(void)
         /*
          * don't bother about return value, since we wait only 5 ms anyway
          */
-        if (maxMouseTurnsPS > 0)
+        if (clientOptions.maxMouseTurnsPS > 0)
             Client_check_pointer_move_interval();
 
         n = select(netfd + 1, &rfds, nullptr, nullptr, &tv);

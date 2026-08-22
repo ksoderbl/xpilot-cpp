@@ -715,7 +715,7 @@ void Paint_HUD(void)
             hudRadarScale,
             hudRadarLimit * (active_view_width / 2) * hudRadarScale / hudRadarMapScale,
             hudRadarLimit * (active_view_width / 2) * hudRadarScale / hudRadarMapScale,
-            -1 /*hudRadarDotSize*/);
+            clientOptions.hudRadarDotSize);
 
         /* paint hud radar dots where ships are outside active view */
         Paint_hudradar(hudRadarMapScale,

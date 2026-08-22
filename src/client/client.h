@@ -203,7 +203,6 @@ extern int RadarWidth;
 extern int RadarHeight;
 extern int backgroundPointDist; /* spacing of navigation points */
 extern int backgroundPointSize; /* size of navigation points */
-extern int sparkSize;           /* size of sparks and debris */
 extern int shotSize;            /* size of shot */
 extern int teamShotSize;        /* size of team shot */
 
@@ -250,7 +249,6 @@ extern unsigned version;           /* Version of the server */
 extern bool scoresChanged;
 extern bool shields; /* When shields are considered up */
 
-extern int maxFPS; /* Max FPS player wants from server */
 extern int oldMaxFPS;
 
 extern double clientFPS;    /* FPS client is drawing at */
@@ -261,13 +259,11 @@ extern long twelveHz;       /* Attempt to increment this at 12Hz */
 extern int recordFPS;      /* What FPS to record at */
 extern time_t currentTime; /* Current value of time() */
 extern bool newSecond;     /* Did time() increment this frame? */
-extern int maxMouseTurnsPS;
 extern int mouseMovementInterval;
 extern int cumulativeMouseMovement;
 
 extern char modBankStr[][MAX_CHARS]; /* modifier banks strings */
 
-extern int baseWarningType; /* Which type of base warning you prefer */
 extern int maxCharsInNames;
 extern int lose_item;        /* flag and index to drop item */
 extern int lose_item_active; /* one of the lose keys is pressed */

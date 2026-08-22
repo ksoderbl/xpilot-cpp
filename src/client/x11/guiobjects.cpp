@@ -344,6 +344,8 @@ void Gui_paint_mine(int x, int y, int teammine, std::string name)
 
 void Gui_paint_spark(int color, int x, int y)
 {
+    int sparkSize = clientOptions.sparkSize;
+
     color = spark_color[color];
 
     Rectangle_add(color,

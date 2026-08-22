@@ -386,18 +386,18 @@ static bool Set_toggleShield(xp_option_t *opt, bool val)
 
 static bool Set_maxFPS(xp_option_t *opt, int val)
 {
-    maxFPS = val;
+    clientOptions.maxFPS = val;
     // Check_client_fps(); // TODO: ENABLE
     return true;
 }
 
 static bool Set_maxMouseTurnsPS(xp_option_t *opt, int val)
 {
-    maxMouseTurnsPS = val;
-    if (maxMouseTurnsPS > 0)
+    clientOptions.maxMouseTurnsPS = val;
+    if (clientOptions.maxMouseTurnsPS > 0)
     {
-        mouseMovementInterval = 1000000 / maxMouseTurnsPS;
-        if (mouseMovementInterval * maxMouseTurnsPS < 1000000)
+        mouseMovementInterval = 1000000 / clientOptions.maxMouseTurnsPS;
+        if (mouseMovementInterval * clientOptions.maxMouseTurnsPS < 1000000)
             mouseMovementInterval++;
     }
     /*warn("mouseMovementInterval = %d", mouseMovementInterval);*/
@@ -714,7 +714,7 @@ xp_option_t default_options[] = {
         MAX_SUPPORTED_FPS,
         1,
         MAX_SUPPORTED_FPS,
-        &maxFPS,
+        &clientOptions.maxFPS,
         Set_maxFPS,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Set maximum FPS supported by the client. The server will try to\n"
@@ -725,7 +725,7 @@ xp_option_t default_options[] = {
         0,
         0,
         MAX_SUPPORTED_FPS * 2,
-        &maxMouseTurnsPS,
+        &clientOptions.maxMouseTurnsPS,
         Set_maxMouseTurnsPS,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Set maximum number of mouse turns sent per second\n"
@@ -736,7 +736,7 @@ xp_option_t default_options[] = {
         2,
         MIN_SPARK_SIZE,
         MAX_SPARK_SIZE,
-        &sparkSize,
+        &clientOptions.sparkSize,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Size of sparks in pixels.\n"),
@@ -755,10 +755,10 @@ xp_option_t default_options[] = {
 
     XP_INT_OPTION(
         "hudRadarDotSize",
-        10,
+        8,
         1,
         SHIP_SZ,
-        &hudRadarDotSize,
+        &clientOptions.hudRadarDotSize,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Which size to use for drawing the hudradar dots.\n"),
@@ -800,7 +800,7 @@ xp_option_t default_options[] = {
         3,
         0,
         3,
-        &baseWarningType,
+        &clientOptions.baseWarningType,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Which type of base warning you prefer.\n"

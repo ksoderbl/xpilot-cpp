@@ -26,6 +26,7 @@
 #include "socklib.h"
 
 #include "clientpack.h"
+#include "netclient.h"
 
 struct ConnectParam
 {
@@ -77,6 +78,14 @@ struct ClientOptions
     bool markingLights = false; // Marking lights on ships
     bool sound = false;
 
+    int clientPortStart = 0;        // First UDP port for clients
+    int clientPortEnd = 0;          // Last one (these are for firewalls)
+    int maxFPS = MAX_SUPPORTED_FPS; // Max FPS player wants from server
+    int maxMouseTurnsPS = 0;        // Write something intelligent here
+    int sparkSize = 2;              // Size of debris and sparks
+    int hudRadarDotSize = 8;        // Size for hudradar dot drawing
+    int baseWarningType = 3;        // Which type of base warning you prefer
+
     // From X11 client
     bool ignoreWindowManager = false;
     bool fullColor = false;       // Whether to try using colors as close to
@@ -93,10 +102,6 @@ struct ClientOptions
                                 // Turned this off because the images drawn
                                 // don't match the actual shipshape used
                                 // for wall collisions by the server.
-
-    // Int options
-    int clientPortStart = 0; // First UDP port for clients
-    int clientPortEnd = 0;   // Last one (these are for firewalls)
 };
 
 extern ClientOptions clientOptions;

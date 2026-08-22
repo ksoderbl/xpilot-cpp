@@ -30,7 +30,7 @@
 #define MAX_RECEIVE_WINDOW_SIZE 4
 
 #define FPS (Setup->frames_per_second)
-#define MAX_SUPPORTED_FPS 255
+constexpr int MAX_SUPPORTED_FPS = 255;
 
 typedef struct
 {

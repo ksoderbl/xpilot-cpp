@@ -57,7 +57,6 @@ extern ipos_t world;
 extern ipos_t realWorld;
 
 extern int hudSize;          /* Size for HUD drawing */
-extern int hudRadarDotSize;  /* Size for hudradar dot drawing */
 extern double hudRadarScale; /* Scale for hudradar drawing */
 extern double hudRadarLimit; /* Limit for hudradar drawing */
 

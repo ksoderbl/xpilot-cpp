@@ -520,20 +520,20 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
 
         if (version < 0x4F12 && do_basewarning)
         {
-            if (baseWarningType & 1)
+            if (clientOptions.baseWarningType & 1)
             {
                 /* We assume the ship will appear after 3 seconds. */
                 int count = (int)(360 * (base->appeartime - loops) / (3 * clientFPS));
                 LIMIT(count, 0, 360);
                 /* red box basewarning */
-                if (count > 0 && (baseWarningType & 1))
+                if (count > 0 && (clientOptions.baseWarningType & 1))
                     Gui_paint_appearing(x, y,
                                         id, count);
             }
         }
     }
     /* Mara's flashy basewarning */
-    if (do_basewarning && (baseWarningType & 2))
+    if (do_basewarning && (clientOptions.baseWarningType & 2))
     {
         if (loopsSlow & 1)
         {
@@ -1048,7 +1048,7 @@ void Gui_paint_spark(int color, int x, int y)
     glColor3ub(255 * (color + 1) / 8,
                255 * color * color / 64,
                0);
-    glPointSize(sparkSize);
+    glPointSize(clientOptions.sparkSize);
     glBegin(GL_POINTS);
     glVertex2i(x + world.x, world.y + ext_view_height - y);
     glEnd();
@@ -2053,7 +2053,7 @@ void Paint_HUD(void)
             hudRadarScale,
             (int)(hudRadarLimit * (ext_view_width / 2) * hudRadarScale / hudRadarMapScale),
             (int)(hudRadarLimit * (ext_view_height / 2) * hudRadarScale / hudRadarMapScale),
-            hudRadarDotSize);
+            clientOptions.hudRadarDotSize);
 
         Paint_hudradar(hudRadarMapScale * clData.scale,
                        (active_view_width / 2) * clData.scale,

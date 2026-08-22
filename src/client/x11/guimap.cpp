@@ -352,13 +352,13 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
 
         if (version < 0x4F12 && do_basewarning)
         {
-            if (baseWarningType & 1)
+            if (clientOptions.baseWarningType & 1)
             {
                 /* We assume the ship will appear after 3 seconds. */
                 int count = (int)(360 * (base->appeartime - loops) / (3 * clientFPS));
                 LIMIT(count, 0, 360);
                 /* red box basewarning */
-                if (count > 0 && (baseWarningType & 1))
+                if (count > 0 && (clientOptions.baseWarningType & 1))
                     Gui_paint_appearing(x + BLOCK_SZ / 2, y + BLOCK_SZ / 2,
                                         id, count);
             }
@@ -366,7 +366,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
     }
 
     /* Mara's flashy basewarning */
-    if (do_basewarning && (baseWarningType & 2))
+    if (do_basewarning && (clientOptions.baseWarningType & 2))
     {
         if (loopsSlow & 1)
         {

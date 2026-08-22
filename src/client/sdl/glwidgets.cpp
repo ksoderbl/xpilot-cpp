@@ -1730,7 +1730,7 @@ static void IntChooserWidget_Add(void *data)
 
     if (tmp->direction > 0)
     {
-        step = (++tmp->duration) * (tmp->maxval - tmp->minval) / (MAX(1, MIN(maxFPS, FPS)) * 3);
+        step = (++tmp->duration) * (tmp->maxval - tmp->minval) / (MAX(1, MIN(clientOptions.maxFPS, FPS)) * 3);
     }
     else
     {
@@ -1778,7 +1778,7 @@ static void IntChooserWidget_Subtract(void *data)
 
     if (tmp->direction < 0)
     {
-        step = (++tmp->duration) * (tmp->maxval - tmp->minval) / (MAX(1, MIN(maxFPS, FPS)) * 3);
+        step = (++tmp->duration) * (tmp->maxval - tmp->minval) / (MAX(1, MIN(clientOptions.maxFPS, FPS)) * 3);
     }
     else
     {
