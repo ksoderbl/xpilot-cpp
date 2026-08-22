@@ -148,9 +148,7 @@ extern message_t *TalkMsg_pending[]; /* store incoming messages */
 extern message_t *GameMsg_pending[]; /* while a cut is pending */
 extern char *HistoryMsg[];           /* talk window history */
 
-extern int maxLinesInHistory; /* lines to save in history */
 extern selection_t selection; /* in talk/draw window */
-extern int messagesToStdout;
 
 extern char *talk_fast_msgs[]; /* talk macros */
 
@@ -169,7 +167,6 @@ extern uint8_t lastNumItems[NUM_ITEMS];
 extern int numItemsTime[NUM_ITEMS];
 extern double showItemsTime;
 extern short autopilotLight;
-extern int showScoreDecimals;
 extern double scoreObjectTime; /* How long to show score objects */
 
 extern short lock_id;   /* Id of player locked onto */
@@ -263,7 +260,6 @@ extern int lose_item_active; /* one of the lose keys is pressed */
 
 extern char sounds[MAX_CHARS];      /* audio mappings */
 extern char audioServer[MAX_CHARS]; /* audio server */
-extern int maxVolume;               /* maximum volume (in percent) */
 
 // extern int num_playing_teams;
 

@@ -31,7 +31,6 @@
 #include <climits>
 
 extern char soundFile[PATH_MAX]; /* audio mappings */
-extern int maxVolume;            /* maximum volume (in percent) */
 
 int Handle_audio(int type, int volume);
 void audioInit(char *display);

@@ -50,7 +50,6 @@
 /* options */
 static bool audioEnabled = false;
 char soundFile[PATH_MAX]; /* audio mappings */
-int maxVolume;            /* maximum volume (in percent) */
 /* options end */
 
 static struct
@@ -66,7 +65,7 @@ static bool audioIsEnabled(void)
         return false;
     if (!clientOptions.sound)
         return false;
-    if (maxVolume <= 0)
+    if (clientOptions.maxVolume <= 0)
         return false;
     return true;
 }
@@ -195,7 +194,7 @@ int Handle_audio(int type, int volume)
             }
     }
 
-    audioDevicePlay(table[type].filenames[pick], type, MIN(volume, maxVolume),
+    audioDevicePlay(table[type].filenames[pick], type, MIN(volume, clientOptions.maxVolume),
                     &table[type].priv[pick]);
 
     return 0;

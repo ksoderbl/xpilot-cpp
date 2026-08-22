@@ -395,7 +395,7 @@ void Paint_score_entry(int entry_num, Other *other, bool is_team)
     static char raceStr[8], teamStr[4], lifeStr[8], label[MSG_LEN];
     static int lineSpacing = -1, firstLine;
     int thisLine, color;
-    char scoreStr[16];
+    char scoreStr[128];
 
     /*
      * First time we're here, set up miscellaneous strings for
@@ -445,7 +445,7 @@ void Paint_score_entry(int entry_num, Other *other, bool is_team)
 
         if (Using_score_decimals())
             sprintf(scoreStr, "%*.*f",
-                    9 - showScoreDecimals, showScoreDecimals,
+                    9 - clientOptions.showScoreDecimals, clientOptions.showScoreDecimals,
                     other->score);
         else
         {

@@ -53,8 +53,6 @@ char *HistoryMsg[MAX_HIST_MSGS];
 
 /* provide cut&paste and message history */
 static char *HistoryBlock = nullptr;
-int maxLinesInHistory = 32;
-int messagesToStdout = 0; /* Send messages to standard output */
 
 static message_t *MsgBlock = nullptr;
 static message_t *MsgBlock_pending = nullptr;
@@ -169,7 +167,7 @@ int Alloc_history(void)
     int i;
 
     /* maxLinesInHistory is a runtime constant */
-    hist_ptr = XMALLOC(char, (size_t)maxLinesInHistory *MAX_CHARS);
+    hist_ptr = XMALLOC(char, (size_t)clientOptions.maxLinesInHistory *MAX_CHARS);
     if (hist_ptr == nullptr)
     {
         error("No memory for history");
@@ -177,7 +175,7 @@ int Alloc_history(void)
     }
     HistoryBlock = hist_ptr;
 
-    for (i = 0; i < maxLinesInHistory; i++)
+    for (i = 0; i < clientOptions.maxLinesInHistory; i++)
     {
         HistoryMsg[i] = hist_ptr;
         hist_ptr[0] = '\0';
@@ -312,8 +310,8 @@ void Add_message(const char *message)
 
     /* Print messages to standard output.
      */
-    if (messagesToStdout == 2 ||
-        (messagesToStdout == 1 &&
+    if (clientOptions.messagesToStdout == 2 ||
+        (clientOptions.messagesToStdout == 1 &&
          message[0] &&
          message[strlen(message) - 1] == ']'))
         printf("%s\n", message);

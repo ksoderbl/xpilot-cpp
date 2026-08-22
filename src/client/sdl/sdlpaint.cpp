@@ -433,7 +433,7 @@ void Paint_score_entry(int entry_num, Other *other, bool is_team)
 {
     static char raceStr[9], teamStr[4], lifeStr[8], label[MSG_LEN];
     static int lineSpacing = -1, firstLine;
-    char scoreStr[16];
+    char scoreStr[128];
     SDL_Surface *line;
     SDL_Color fg;
     int color;
@@ -501,11 +501,11 @@ void Paint_score_entry(int entry_num, Other *other, bool is_team)
         if (BIT(Setup->mode, LIMITED_LIVES))
             sprintf(lifeStr, " %3d", other->life);
 
-        // if (Using_score_decimals())
-        //     sprintf(scoreStr, "%*.*f",
-        //             7 - showScoreDecimals, showScoreDecimals,
-        //             other->score);
-        // else
+        if (Using_score_decimals())
+            sprintf(scoreStr, "%*.*f",
+                    7 - clientOptions.showScoreDecimals, clientOptions.showScoreDecimals,
+                    other->score);
+        else
         {
             double score = other->score;
             int sc = (int)(score >= 0.0 ? score + 0.5 : score - 0.5);

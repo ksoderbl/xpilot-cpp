@@ -82,7 +82,7 @@ typedef struct
 bool simulating = false;
 setup_t *Setup = nullptr;
 display_t server_display;
-int receive_window_size = 3;
+int receive_window_size = 3; // Too complicated.  Keep it on 3.
 long last_loops;
 bool packetMeasurement;
 pointer_move_t pointer_moves[MAX_POINTER_MOVES];

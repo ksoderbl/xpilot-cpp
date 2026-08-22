@@ -1957,7 +1957,7 @@ int Handle_vdecor(int x, int y, int xi, int yi, int type)
 
 bool Using_score_decimals(void)
 {
-    // if (showScoreDecimals > 0 && version >= 0x4500 && (version < 0x4F09 || version >= 0x4F11))
-    //     return true;
+    if (clientOptions.showScoreDecimals > 0)
+        return true;
     return false;
 }

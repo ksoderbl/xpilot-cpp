@@ -89,10 +89,6 @@ constexpr int MSG_FLASH = 892;
 
 // extern selection_t selection;
 
-// extern int maxLinesInHistory; /* number of lines to save in history */
-// extern int maxMessages;
-// extern int messagesToStdout;
-
 /*
  * messages.cpp
  */

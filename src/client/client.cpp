@@ -86,8 +86,6 @@ double scoreObjectTime;          /* How long to flash score objects */
 
 short autopilotLight;
 
-int showScoreDecimals;
-
 short lock_id;   /* Id of player locked onto */
 short lock_dir;  /* Direction of lock */
 short lock_dist; /* Distance to player locked onto */

@@ -1043,7 +1043,7 @@ xp_option_t default_options[] = {
         1,
         0,
         2,
-        &messagesToStdout,
+        &clientOptions.messagesToStdout,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Send messages to standard output.\n"
@@ -1056,7 +1056,7 @@ xp_option_t default_options[] = {
         32,
         1,
         MAX_HIST_MSGS,
-        &maxLinesInHistory,
+        &clientOptions.maxLinesInHistory,
         nullptr,
         XP_OPTFLAG_DEFAULT,
         "Number of your messages saved in the 'history' of the talk window.\n"
@@ -1128,10 +1128,10 @@ xp_option_t default_options[] = {
 
     XP_INT_OPTION(
         "showScoreDecimals",
-        1,
         0,
-        2,
-        &showScoreDecimals,
+        0,
+        12,
+        &clientOptions.showScoreDecimals,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "The number of decimals to use when displaying scores.\n"),
@@ -1168,19 +1168,6 @@ xp_option_t default_options[] = {
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Set the ship's alternate turn resistance.\n"
         "See also the keySwapSettings option.\n"),
-
-#if 0
-    /* kps - remove option later */
-    XP_INT_OPTION(
-    "receiveWindowSize",
-    3,
-    MIN_RECEIVE_WINDOW_SIZE,
-    MAX_RECEIVE_WINDOW_SIZE,
-    &receive_window_size,
-    nullptr,
-    XP_OPTFLAG_DEFAULT,
-    "Too complicated.  Keep it on 3.\n"),
-#endif
 
     XP_BOOL_OPTION(
         "markingLights",
@@ -1264,19 +1251,6 @@ xp_option_t default_options[] = {
         "Search path for texture files.\n"
         "This is a list of one or more directories separated by colons.\n"),
 
-/* kps - these should not be needed in the SDL windows client. */
-#if 0
-    XP_INT_OPTION(
-    "radarDivisor",
-    1,
-    1,
-    100,
-    &RadarDivisor,
-    nullptr,
-    XP_OPTFLAG_CONFIG_DEFAULT,
-    "Specifies how many frames between radar window updates.\n"),
-#endif
-
     XP_CONST_CHAR_STAR_OPTION(
         "clientRankFile",
         "",
@@ -1319,7 +1293,7 @@ xp_option_t default_options[] = {
         100,
         0,
         100,
-        &maxVolume,
+        &clientOptions.maxVolume,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Specifies the volume to play sounds with (0-100%%).\n"),

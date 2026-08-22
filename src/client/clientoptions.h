@@ -92,6 +92,10 @@ struct ClientOptions
     int backgroundPointSize = 2;        // size of navigation points
     int charsPerSecond = 100;           // Message output speed (configurable), legacy value was 50
     int maxMessages = 16;               // Max. number of messages to display, legacy value was 8
+    int messagesToStdout = 1;           // Send messages to standard output
+    int maxLinesInHistory = 32;         // Number of lines to save in history
+    int showScoreDecimals = 0;          // Number of decimals to show in scores
+    int maxVolume = 100;                // maximum volume (in percent)
 
     // From X11 client
     bool ignoreWindowManager = false;
