@@ -42,6 +42,7 @@
 #include "bit.h"
 #include "keys.h"
 #include "rules.h"
+#include "clientoptions.h" // 2026
 #include "clientsetup.h"
 #include "xpaint.h"
 #include "paintdata.h"
@@ -240,7 +241,7 @@ void Paint_sliding_radar(void)
     if (radarPixmap != radarPixmap2)
         return;
 
-    if (instruments.slidingRadar)
+    if (clientOptions.instruments.slidingRadar)
     {
         if (radarPixmap2 != radarWindow)
             return;
@@ -365,7 +366,7 @@ void Paint_world_radar_old(void)
     for (i = BLUE_BIT; i < (int)sizeof visible; i++)
         visible[i] = 1;
 
-    if (instruments.showDecor)
+    if (clientOptions.instruments.showDecor)
     {
         visible[SETUP_DECOR_FILLED] = 1;
         visible[SETUP_DECOR_LU] = 1;
@@ -392,7 +393,7 @@ void Paint_world_radar_old(void)
     for (i = BLUE_BIT; i < (int)sizeof visible; i++)
         visibleColor[i] = wallRadarColor;
 
-    if (instruments.showDecor)
+    if (clientOptions.instruments.showDecor)
         visibleColor[SETUP_DECOR_FILLED] =
             visibleColor[SETUP_DECOR_LU] =
                 visibleColor[SETUP_DECOR_RU] =

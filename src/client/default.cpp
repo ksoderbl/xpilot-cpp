@@ -41,6 +41,7 @@
 #include "netclient.h"
 #include "paint.h"
 #include "clientoption.h"
+#include "clientoptions.h" // 2026 stuff
 #include "clientrank.h"
 
 static double hudScale; /* Scale for HUD drawing */
@@ -435,14 +436,14 @@ static bool Set_backgroundPointSize(xp_option_t *opt, int val)
 
 static bool Set_slidingRadar(xp_option_t *opt, bool val)
 {
-    instruments.slidingRadar = val;
+    clientOptions.instruments.slidingRadar = val;
     Paint_sliding_radar();
     return true;
 }
 
 static bool Set_outlineWorld(xp_option_t *opt, bool val)
 {
-    instruments.outlineWorld = val;
+    clientOptions.instruments.outlineWorld = val;
     if (oldServer && Setup)
     {
         /* don't bother to check if recalculations are really needed. */
@@ -454,7 +455,7 @@ static bool Set_outlineWorld(xp_option_t *opt, bool val)
 
 static bool Set_filledWorld(xp_option_t *opt, bool val)
 {
-    instruments.filledWorld = val;
+    clientOptions.instruments.filledWorld = val;
     if (oldServer && Setup)
     {
         /* don't bother to check if recalculations are really needed. */
@@ -466,7 +467,7 @@ static bool Set_filledWorld(xp_option_t *opt, bool val)
 
 static bool Set_texturedWalls(xp_option_t *opt, bool val)
 {
-    instruments.texturedWalls = val;
+    clientOptions.instruments.texturedWalls = val;
 
     if (Setup)
     {
@@ -484,7 +485,7 @@ static bool Set_texturedWalls(xp_option_t *opt, bool val)
 
 static bool Set_showDecor(xp_option_t *opt, bool val)
 {
-    instruments.showDecor = val;
+    clientOptions.instruments.showDecor = val;
     if (!Setup)
         return true;
     if (oldServer)
@@ -822,7 +823,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "slidingRadar",
         true,
-        &instruments.slidingRadar,
+        &clientOptions.instruments.slidingRadar,
         Set_slidingRadar,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "If the game is in edgewrap mode then the radar will keep your\n"
@@ -842,7 +843,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "showShipShapes",
         true,
-        &instruments.showShipShapes,
+        &clientOptions.instruments.showShipShapes,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Should others' shipshapes be displayed or not.\n"),
@@ -850,7 +851,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "showMyShipShape",
         true,
-        &instruments.showMyShipShape,
+        &clientOptions.instruments.showMyShipShape,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Should your own shipshape be displayed or not.\n"),
@@ -858,7 +859,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "showShipShapesHack",
         false,
-        &instruments.showShipShapesHack,
+        &clientOptions.instruments.showShipShapesHack,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Should the ship shapes hack be displayed or not.\n"),
@@ -866,7 +867,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "showLivesByShip",
         false,
-        &instruments.showLivesByShip,
+        &clientOptions.instruments.showLivesByShip,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Paint remaining lives next to ships.\n"),
@@ -874,7 +875,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "showMessages",
         true,
-        &instruments.showMessages,
+        &clientOptions.instruments.showMessages,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Should game messages appear on screen.\n"),
@@ -882,7 +883,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "showItems",
         true,
-        &instruments.showItems,
+        &clientOptions.instruments.showItems,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Should owned items be displayed permanently on the HUD?\n"),
@@ -901,7 +902,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "filledWorld",
         false,
-        &instruments.filledWorld,
+        &clientOptions.instruments.filledWorld,
         Set_filledWorld,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Draws the walls solid, filled with one color,\n"
@@ -911,7 +912,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "texturedWalls",
         true,
-        &instruments.texturedWalls,
+        &clientOptions.instruments.texturedWalls,
         Set_texturedWalls,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Allows drawing polygon bitmaps specified by the (new-style) map.\n"
@@ -928,7 +929,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "outlineWorld",
         false,
-        &instruments.outlineWorld,
+        &clientOptions.instruments.outlineWorld,
         Set_outlineWorld,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Draws only the outline of all the wall blocks\n"
@@ -937,7 +938,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "showDecor",
         true,
-        &instruments.showDecor,
+        &clientOptions.instruments.showDecor,
         Set_showDecor,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Should decorations be displayed on the screen and radar?\n"),
@@ -945,7 +946,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "outlineDecor",
         false,
-        &instruments.outlineDecor,
+        &clientOptions.instruments.outlineDecor,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Draws only the outline of the map decoration.\n"),
@@ -953,7 +954,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "filledDecor",
         false,
-        &instruments.filledDecor,
+        &clientOptions.instruments.filledDecor,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Draws filled decorations.\n"),
@@ -961,7 +962,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "texturedDecor",
         false,
-        &instruments.texturedDecor,
+        &clientOptions.instruments.texturedDecor,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Draws the map decoration filled with a texture pattern.\n"),
@@ -969,7 +970,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "clientRanker",
         false,
-        &instruments.clientRanker,
+        &clientOptions.instruments.clientRanker,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Scan messages and make personal kill/death ranking.\n"),
@@ -977,7 +978,7 @@ xp_option_t default_options[] = {
     XP_BOOL_OPTION(
         "clockAMPM",
         false,
-        &instruments.clockAMPM,
+        &clientOptions.instruments.clockAMPM,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Use AMPM format for clock display instead of 24 hour format.\n"),

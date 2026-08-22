@@ -47,6 +47,7 @@
 #include "client.h"
 #include "clientmap.h"
 #include "clientcommand.h"
+#include "clientoptions.h" // 2026
 #include "messages.h"
 #include "netclient.h"
 #include "paint.h"
@@ -147,16 +148,15 @@ double displayedTurnresistance; /* What the server is sending us */
 double sparkProb;               /* Sparkling effect user configurable */
 int charsPerSecond;             /* Message output speed (configurable) */
 
-double hud_move_fact;      /* scale the hud-movement (speed) */
-double ptr_move_fact;      /* scale the speed pointer length */
-instruments_t instruments; /* Instruments on screen */
-char mods[MAX_CHARS];      /* Current modifiers in effect */
-int packet_size;           /* Current frame update packet size */
-int packet_loss;           /* lost packets per second */
-int packet_drop;           /* dropped packets per second */
-int packet_lag;            /* approximate lag in frames */
-char *packet_measure;      /* packet measurement in a second */
-long packet_loop;          /* start of measurement */
+double hud_move_fact; /* scale the hud-movement (speed) */
+double ptr_move_fact; /* scale the speed pointer length */
+char mods[MAX_CHARS]; /* Current modifiers in effect */
+int packet_size;      /* Current frame update packet size */
+int packet_loss;      /* lost packets per second */
+int packet_drop;      /* dropped packets per second */
+int packet_lag;       /* approximate lag in frames */
+char *packet_measure; /* packet measurement in a second */
+long packet_loop;     /* start of measurement */
 
 bool showUserName = false;                /* Show user name instead of nick name */
 char servername[MAX_CHARS];               /* Name of server connecting to */
@@ -235,7 +235,7 @@ int Client_setup(void)
          * without affecting old ones. It's still possible to turn in on
          * from the config menu during play for old maps.
          * -- But doesn't seem to work anyway if turned on? Well who cares */
-        instruments.texturedWalls = false;
+        clientOptions.instruments.texturedWalls = false;
     }
 
     RadarHeight = (RadarWidth * Setup->height) / Setup->width;

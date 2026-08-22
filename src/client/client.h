@@ -49,27 +49,6 @@ typedef struct
 
 typedef struct
 {
-    bool blockProtocol;
-    bool clientRanker;
-    bool clockAMPM;
-    bool filledDecor;
-    bool filledWorld;
-    bool outlineDecor;
-    bool outlineWorld;
-    bool showDecor;
-    bool showItems;
-    bool showLivesByShip;
-    bool showMessages;
-    bool showMyShipShape;
-    bool showShipShapes;
-    bool showShipShapesHack;
-    bool slidingRadar;
-    bool texturedDecor;
-    bool texturedWalls;
-} instruments_t;
-
-typedef struct
-{
     bool help;
     bool version;
     bool text;
@@ -253,16 +232,16 @@ extern double displayedTurnresistance; /* What the server is sending us */
 extern double sparkProb;               /* Sparkling effect configurable */
 extern int charsPerSecond;             /* Message output speed (config) */
 
-extern double hud_move_fact;      /* scale the hud-movement (speed) */
-extern double ptr_move_fact;      /* scale the speed pointer length */
-extern char mods[MAX_CHARS];      /* Current modifiers in effect */
-extern instruments_t instruments; /* Instruments on screen */
-extern int packet_size;           /* Current frame update packet size */
-extern int packet_loss;           /* lost packets per second */
-extern int packet_drop;           /* dropped packets per second */
-extern int packet_lag;            /* approximate lag in frames */
-extern char *packet_measure;      /* packet measurement in a second */
-extern long packet_loop;          /* start of measurement */
+extern double hud_move_fact; /* scale the hud-movement (speed) */
+extern double ptr_move_fact; /* scale the speed pointer length */
+extern char mods[MAX_CHARS]; /* Current modifiers in effect */
+// extern instruments_t instruments; /* Instruments on screen */
+extern int packet_size;      /* Current frame update packet size */
+extern int packet_loss;      /* lost packets per second */
+extern int packet_drop;      /* dropped packets per second */
+extern int packet_lag;       /* approximate lag in frames */
+extern char *packet_measure; /* packet measurement in a second */
+extern long packet_loop;     /* start of measurement */
 
 extern bool showUserName;          /* Show username instead of nickname */
 extern char servername[MAX_CHARS]; /* Name of server connecting to */

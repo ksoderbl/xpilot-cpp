@@ -111,27 +111,6 @@ static bool testxcolors = false;
 #define NG_TEXT_FONT "-*-fixed-bold-*-*--13-*-*-*-c-*-iso8859-1"
 #define NG_TALK_FONT "-*-fixed-bold-*-*--15-*-*-*-c-*-iso8859-1"
 
-void Initialize_global_variables(void)
-{
-    instruments.blockProtocol = false;
-    instruments.clientRanker = false;
-    instruments.clockAMPM = false;
-    instruments.filledDecor = false;
-    instruments.filledWorld = false;
-    instruments.outlineDecor = false;
-    instruments.outlineWorld = false;
-    instruments.showDecor = false;
-    instruments.showItems = false;
-    instruments.showLivesByShip = false;
-    instruments.showMessages = true;
-    instruments.showMyShipShape = false;
-    instruments.showShipShapes = false;
-    instruments.showShipShapesHack = false;
-    instruments.slidingRadar = true;
-    instruments.texturedDecor = false;
-    instruments.texturedWalls = false;
-}
-
 #ifdef DEVELOPMENT
 static int X_error_handler(Display *display, XErrorEvent *xev)
 {

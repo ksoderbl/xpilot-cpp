@@ -40,6 +40,7 @@
 #include "commonproto.h"
 
 #include "client.h"
+#include "clientoptions.h" // 2026
 #include "netclient.h"
 #include "clientoption.h"
 #include "paint.h"
@@ -195,11 +196,11 @@ void Gui_paint_ball(int x, int y, int style)
     {
         static Pixmap ballTile = None;
 
-        // if (instruments.texturedBalls) {
+        // if (clientOptions.instruments.texturedBalls) {
         //     if (ballTile == None) {
         //         ballTile = Texture_ball();
         //         if (ballTile == None) {
-        //             CLR_instruments.texturedBalls;
+        //             CLR_clientOptions.instruments.texturedBalls;
         //         }
         //     }
         //     if (ballTile != None) {
@@ -710,7 +711,7 @@ static void Gui_paint_ship_name(int x, int y, Other *other)
                   WINSCALE(Y(y) + 16) + gameFont->ascent,
                   other->nick_name.c_str(), other->name_len);
 
-    if (instruments.showLivesByShip && BIT(Setup->mode, LIMITED_LIVES))
+    if (clientOptions.instruments.showLivesByShip && BIT(Setup->mode, LIMITED_LIVES))
     {
         char keff[4] = "";
 
@@ -989,9 +990,9 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
     // warn("Gui_paint_ship: other = %p", other);
 
     /* mara attempts similar behaviour to the kth ss hack */
-    if ((!instruments.showShipShapes) && (self != nullptr) && (self->id != id))
+    if ((!clientOptions.instruments.showShipShapes) && (self != nullptr) && (self->id != id))
         cnt = set_shipshape(x, y, dir, Default_ship(), points);
-    else if ((!instruments.showMyShipShape) && (self != nullptr) && (self->id == id))
+    else if ((!clientOptions.instruments.showMyShipShape) && (self != nullptr) && (self->id == id))
         cnt = set_shipshape(x, y, dir, Default_ship(), points);
     else
         cnt = set_shipshape(x, y, dir, ship, points);
@@ -1018,7 +1019,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
         {
             Gui_paint_ship_uncloaked(id, points, ship_color, cnt);
             /* shipshapeshack by Mara */
-            // if (instruments.showShipShapesHack)
+            // if (clientOptions.instruments.showShipShapesHack)
             {
                 // int sshColor = ship_color;
                 // int sshColor = 5;

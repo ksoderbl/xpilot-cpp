@@ -35,6 +35,7 @@
 
 #include "client.h"
 #include "clientoption.h"
+#include "clientoptions.h" // 2026
 #include "paint.h"
 
 #include "gfx2d.h"
@@ -619,7 +620,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type,
         decor[SETUP_DECOR_LD] = DECOR_LEFT | DECOR_DOWN | DECOR_CLOSED | DECOR_BELOW;
     }
 
-    //     if (instruments.texturedDecor) {
+    //     if (clientOptions.instruments.texturedDecor) {
     //         if (!decorTileReady) {
     //             decorTile = Texture_decor();
     //             decorTileReady = (decorTile == None) ? -1 : 1;
@@ -634,7 +635,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type,
 
     mask = decor[type];
 
-    if (!(instruments.filledDecor || instruments.texturedDecor))
+    if (!(clientOptions.instruments.filledDecor || clientOptions.instruments.texturedDecor))
     {
         if (mask & DECOR_LEFT)
         {
@@ -666,9 +667,9 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type,
         }
         if (mask & DECOR_RIGHT)
         {
-            if (!instruments.outlineDecor || ((xi == Setup->x - 1)
-                                                  ? (!BIT(Setup->mode, WRAP_PLAY) || !(decor[Setup->map_data[yi]] & DECOR_LEFT))
-                                                  : !(decor[Setup->map_data[(xi + 1) * Setup->y + yi]] & DECOR_LEFT)))
+            if (!clientOptions.instruments.outlineDecor || ((xi == Setup->x - 1)
+                                                                ? (!BIT(Setup->mode, WRAP_PLAY) || !(decor[Setup->map_data[yi]] & DECOR_LEFT))
+                                                                : !(decor[Setup->map_data[(xi + 1) * Setup->y + yi]] & DECOR_LEFT)))
             {
                 Segment_add(decorColor,
                             X(x + BLOCK_SZ),
@@ -679,9 +680,9 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type,
         }
         if (mask & DECOR_UP)
         {
-            if (!instruments.outlineDecor || ((yi == Setup->y - 1)
-                                                  ? (!BIT(Setup->mode, WRAP_PLAY) || !(decor[Setup->map_data[xi * Setup->y]] & DECOR_DOWN))
-                                                  : !(decor[Setup->map_data[xi * Setup->y + (yi + 1)]] & DECOR_DOWN)))
+            if (!clientOptions.instruments.outlineDecor || ((yi == Setup->y - 1)
+                                                                ? (!BIT(Setup->mode, WRAP_PLAY) || !(decor[Setup->map_data[xi * Setup->y]] & DECOR_DOWN))
+                                                                : !(decor[Setup->map_data[xi * Setup->y + (yi + 1)]] & DECOR_DOWN)))
             {
                 Segment_add(decorColor,
                             X(x),
@@ -1314,8 +1315,8 @@ void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff)
     if (BIT(style.flags, STYLE_INVISIBLE))
         return;
 
-    textured = instruments.texturedWalls && fullColor;
-    filled = instruments.filledWorld;
+    textured = clientOptions.instruments.texturedWalls && fullColor;
+    filled = clientOptions.instruments.filledWorld;
 
     x = xoff * Setup->width;
     y = yoff * Setup->height;

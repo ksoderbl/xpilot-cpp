@@ -56,12 +56,10 @@
 #include "record.h"
 #include "talk.h"
 #include "clientrank.h"
+#include "clientoptions.h" // 2026
 
 #include "xinit.h"
 #include "xpaint.h"
-
-// In xdefault.cpp
-extern void Initialize_global_variables(void);
 
 char hostname[SOCK_HOSTNAME_LENGTH];
 
@@ -202,7 +200,7 @@ int main(int argc, char *argv[])
         retval = Join(conpar);
     }
 
-    if (instruments.clientRanker)
+    if (clientOptions.instruments.clientRanker)
         Print_saved_scores();
 
     warn("main => RETURNING %d", retval);

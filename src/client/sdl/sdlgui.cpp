@@ -42,6 +42,7 @@
 #include "xperror.h"
 
 #include "client.h"
+#include "clientoptions.h" // 2026
 #include "guiobjects.h"
 #include "netclient.h"
 
@@ -921,10 +922,10 @@ void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff)
     glScalef(clData.scale, clData.scale, 0);
 
     /* possibly paint the polygon as filled or textured */
-    if ((instruments.texturedWalls || instruments.filledWorld) &&
+    if ((clientOptions.instruments.texturedWalls || clientOptions.instruments.filledWorld) &&
         BIT(p_style.flags, STYLE_TEXTURED | STYLE_FILLED))
     {
-        if (BIT(p_style.flags, STYLE_TEXTURED) && instruments.texturedWalls)
+        if (BIT(p_style.flags, STYLE_TEXTURED) && clientOptions.instruments.texturedWalls)
         {
             Image_use_texture(p_style.texture);
             glCallList(polyListBase + i);
@@ -1453,7 +1454,7 @@ static void Gui_paint_ship_name(int x, int y, Other *other)
     else
         color = blueRGBA;
 
-    if (instruments.showLivesByShip && BIT(Setup->mode, LIMITED_LIVES))
+    if (clientOptions.instruments.showLivesByShip && BIT(Setup->mode, LIMITED_LIVES))
     {
         if (other->life < 1)
             color = whiteRGBA;
@@ -1476,9 +1477,9 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
     if (!(color = Gui_calculate_ship_color(id, other)))
         return;
 
-    if ((!instruments.showShipShapes) && (self != nullptr) && (self->id != id))
+    if ((!clientOptions.instruments.showShipShapes) && (self != nullptr) && (self->id != id))
         ship = Default_ship();
-    else if ((!instruments.showMyShipShape) && (self != nullptr) && (self->id == id))
+    else if ((!clientOptions.instruments.showMyShipShape) && (self != nullptr) && (self->id == id))
         ship = Default_ship();
     else
         ship = Ship_by_id(id);
@@ -1927,7 +1928,7 @@ static void Paint_HUD_items(int hud_pos_x, int hud_pos_y)
         if (i == ITEM_FUEL)
             continue;
 
-        if (instruments.showItems)
+        if (clientOptions.instruments.showItems)
         {
             lastNumItems[i] = num;
             if (num <= 0)
@@ -2344,14 +2345,14 @@ void Paint_messages(void)
     msg_list[0] = ((WrapperWidget *)(MainWidget->wid_info))->chat_msgs;
     msg_list[1] = ((WrapperWidget *)(MainWidget->wid_info))->game_msgs;
 
-    if (showMessages != instruments.showMessages)
+    if (showMessages != clientOptions.instruments.showMessages)
     {
-        if (!instruments.showMessages)
+        if (!clientOptions.instruments.showMessages)
             DelGLWidgetListItem(&(MainWidget->children), ((WrapperWidget *)(MainWidget->wid_info))->game_msgs);
         else
             AppendGLWidgetList(&(MainWidget->children), ((WrapperWidget *)(MainWidget->wid_info))->game_msgs);
 
-        showMessages = instruments.showMessages;
+        showMessages = clientOptions.instruments.showMessages;
     }
 
     if (maxMessages < old_maxMessages)

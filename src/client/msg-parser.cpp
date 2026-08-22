@@ -36,6 +36,7 @@
 #include "setup.h"
 #include "types.h"
 #include "clientmap.h"
+#include "clientoptions.h" // 2026
 #include "clientrank.h"
 #include "clientsetup.h"
 #include "messages.h"
@@ -565,7 +566,7 @@ void Msg_scan_game_msg(const char *message)
     if (i_am_victim || i_am_victim2)
         killratio_deaths++;
 
-    if (instruments.clientRanker)
+    if (clientOptions.instruments.clientRanker)
     {
         /*static char tauntstr[MAX_CHARS];
           int kills, deaths; */

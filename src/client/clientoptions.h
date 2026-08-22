@@ -22,6 +22,30 @@
 
 #include <string>
 
+struct InstrumentsOptions
+{
+    bool clientRanker = false;
+    bool clockAMPM = false;
+    bool filledDecor = false;
+    bool filledWorld = false;
+    bool outlineDecor = false;
+    bool outlineWorld = false;
+    bool showDecor = false;
+    bool showItems = true;
+    bool showLivesByShip = true;
+    bool showMessages = true;
+    bool showMyShipShape = false;
+    bool showShipShapes = true;
+    bool showShipShapesHack = false;
+    bool slidingRadar = true;
+    bool texturedDecor = false;
+    bool texturedWalls = false;
+};
+
 struct ClientOptions
 {
+    // Instruments on screen
+    InstrumentsOptions instruments;
 };
+
+extern ClientOptions clientOptions;

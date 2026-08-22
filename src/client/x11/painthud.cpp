@@ -35,6 +35,7 @@
 #include "commonproto.h"
 
 #include "client.h"
+#include "clientoptions.h" // 2026
 #include "messages.h"
 #include "netclient.h"
 #include "clientoption.h"
@@ -573,7 +574,7 @@ static void Paint_HUD_items(int hud_pos_x, int hud_pos_y)
         if (i == ITEM_FUEL)
             continue;
 
-        if (instruments.showItems)
+        if (clientOptions.instruments.showItems)
         {
             lastNumItems[i] = num;
             if (num <= 0)
@@ -694,7 +695,7 @@ void Paint_HUD(void)
                     (int)(ext_view_width / 2 - ptr_move_fact * selfVel.x),
                     (int)(ext_view_height / 2 + ptr_move_fact * selfVel.y));
 
-    // if (instruments.showHUDRadar)
+    // if (clientOptions.instruments.showHUDRadar)
     //     Paint_hudradar();
 
     if (selfVisible && dirPtrColor)
@@ -725,7 +726,7 @@ void Paint_HUD(void)
                        SHIP_SZ);
     }
 
-    // if (!instruments.showHUD)
+    // if (!clientOptions.instruments.showHUD)
     //     return;
     /* message scan hack by mara and jpv */
     if (Bms_test_state(BmsBall) && msgScanBallColor)
@@ -796,7 +797,7 @@ void Paint_HUD(void)
         if (i == ITEM_FUEL)
             continue;
 
-        if (instruments.showItems)
+        if (clientOptions.instruments.showItems)
         {
             lastNumItems[i] = num;
             if (num <= 0)
@@ -1072,7 +1073,7 @@ void Paint_messages(void)
         }
         else
         {
-            if (!instruments.showMessages)
+            if (!clientOptions.instruments.showMessages)
                 continue;
             x = BORDER;
             y = bot_y;

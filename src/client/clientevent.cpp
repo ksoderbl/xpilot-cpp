@@ -38,6 +38,7 @@
 #include "xpconfig.h"
 
 #include "client.h"
+#include "clientoptions.h" // 2026
 #include "keys.h"
 #include "configure.h"
 #include "gfx2d.h"
@@ -270,13 +271,13 @@ static bool Key_press_talk(void)
 
 static bool Key_press_show_items(void)
 {
-    instruments.showItems = !instruments.showItems;
+    clientOptions.instruments.showItems = !clientOptions.instruments.showItems;
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_show_messages(void)
 {
-    instruments.showMessages = !instruments.showMessages;
+    clientOptions.instruments.showMessages = !clientOptions.instruments.showMessages;
     return false; /* server doesn't need to know */
 }
 
