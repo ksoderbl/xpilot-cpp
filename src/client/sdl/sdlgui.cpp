@@ -124,9 +124,6 @@ Uint32 scoreEnemyTeamColorRGBA;
 
 Uint32 selectionColorRGBA;
 
-static int meterWidth = 60;
-static int meterHeight = 10;
-
 float hudRadarMapScale;
 int hudRadarEnemyShape;
 int hudRadarOtherShape;
@@ -1606,7 +1603,7 @@ void Paint_HUD_values(void)
 
     x = draw_width - 20;
     /* Better make sure it's below the meters */
-    y = draw_height - 9 * (MAX((GLuint)meterHeight, gamefont.h) + 6);
+    y = draw_height - 9 * (MAX((GLuint)clientOptions.meterHeight, gamefont.h) + 6);
 
     HUDprint(&gamefont, hudColorRGBA, RIGHT, DOWN, x, y, "FPS: %.3f", clientFPS);
     HUDprint(&gamefont, hudColorRGBA, RIGHT, DOWN, x, y - 20, "CL.LAG : %.1f ms", clData.clientLag);
@@ -1615,10 +1612,10 @@ void Paint_HUD_values(void)
 static void Paint_meter(int xoff, int y, string_tex_t *tex, int val, int max,
                         int meter_color)
 {
-    int mw1_4 = meterWidth / 4,
-        mw2_4 = meterWidth / 2,
-        mw3_4 = 3 * meterWidth / 4,
-        mw4_4 = meterWidth,
+    int mw1_4 = clientOptions.meterWidth / 4,
+        mw2_4 = clientOptions.meterWidth / 2,
+        mw3_4 = 3 * clientOptions.meterWidth / 4,
+        mw4_4 = clientOptions.meterWidth,
         BORDER = 5;
     int x, xstr;
     int x_alignment;
@@ -1627,12 +1624,12 @@ static void Paint_meter(int xoff, int y, string_tex_t *tex, int val, int max,
     if (xoff >= 0)
     {
         x = xoff;
-        xstr = x + meterWidth + BORDER;
+        xstr = x + clientOptions.meterWidth + BORDER;
         x_alignment = LEFT;
     }
     else
     {
-        x = draw_width - (meterWidth - xoff);
+        x = draw_width - (clientOptions.meterWidth - xoff);
         xstr = x - BORDER;
         x_alignment = RIGHT;
     }
@@ -1640,9 +1637,9 @@ static void Paint_meter(int xoff, int y, string_tex_t *tex, int val, int max,
     set_alphacolor(meter_color);
     glBegin(GL_POLYGON);
     glVertex2i(x, y);
-    glVertex2i(x, y + 2 + meterHeight - 3);
-    glVertex2i(x + (int)(((meterWidth)*val) / (max ? max : 1)), y + 2 + meterHeight - 3);
-    glVertex2i(x + (int)(((meterWidth)*val) / (max ? max : 1)), y);
+    glVertex2i(x, y + 2 + clientOptions.meterHeight - 3);
+    glVertex2i(x + (int)(((clientOptions.meterWidth) * val) / (max ? max : 1)), y + 2 + clientOptions.meterHeight - 3);
+    glVertex2i(x + (int)(((clientOptions.meterWidth) * val) / (max ? max : 1)), y);
     glEnd();
 
     /* meterBorderColorRGBA = 0 obviously means no meter borders are drawn */
@@ -1653,34 +1650,34 @@ static void Paint_meter(int xoff, int y, string_tex_t *tex, int val, int max,
         set_alphacolor(color);
         glBegin(GL_LINE_LOOP);
         glVertex2i(x, y);
-        glVertex2i(x, y + meterHeight);
-        glVertex2i(x + meterWidth, y + meterHeight);
-        glVertex2i(x + meterWidth, y);
+        glVertex2i(x, y + clientOptions.meterHeight);
+        glVertex2i(x + clientOptions.meterWidth, y + clientOptions.meterHeight);
+        glVertex2i(x + clientOptions.meterWidth, y);
         glEnd();
 
         glBegin(GL_LINES);
         glVertex2i(x, y - 4);
-        glVertex2i(x, y + meterHeight + 4);
+        glVertex2i(x, y + clientOptions.meterHeight + 4);
         glVertex2i(x + mw4_4, y - 4);
-        glVertex2i(x + mw4_4, y + meterHeight + 4);
+        glVertex2i(x + mw4_4, y + clientOptions.meterHeight + 4);
         glVertex2i(x + mw2_4, y - 3);
-        glVertex2i(x + mw2_4, y + meterHeight + 3);
+        glVertex2i(x + mw2_4, y + clientOptions.meterHeight + 3);
         glVertex2i(x + mw1_4, y - 1);
-        glVertex2i(x + mw1_4, y + meterHeight + 1);
+        glVertex2i(x + mw1_4, y + clientOptions.meterHeight + 1);
         glVertex2i(x + mw3_4, y - 1);
-        glVertex2i(x + mw3_4, y + meterHeight + 1);
+        glVertex2i(x + mw3_4, y + clientOptions.meterHeight + 1);
         glEnd();
     }
 
     if (!meterBorderColorRGBA)
         color = meter_color;
 
-    disp_text(tex, color, x_alignment, CENTER, xstr, draw_height - y - meterHeight / 2, true);
+    disp_text(tex, color, x_alignment, CENTER, xstr, draw_height - y - clientOptions.meterHeight / 2, true);
 }
 
 void Paint_meters(void)
 {
-    int spacing = MAX((GLuint)meterHeight, gamefont.h) + 6;
+    int spacing = MAX((GLuint)clientOptions.meterHeight, gamefont.h) + 6;
     int y = spacing, color;
     static bool setup_texs = true;
 
@@ -2572,7 +2569,7 @@ static xp_option_t sdlgui_options[] = {
     XP_INT_OPTION(
         "meterWidth",
         60, 0, 600,
-        &meterWidth,
+        &clientOptions.meterWidth,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Set the width of the meters.\n"),
@@ -2580,7 +2577,7 @@ static xp_option_t sdlgui_options[] = {
     XP_INT_OPTION(
         "meterHeight",
         10, 0, 100,
-        &meterHeight,
+        &clientOptions.meterHeight,
         nullptr,
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Set the height of a meter.\n"),

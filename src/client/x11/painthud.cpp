@@ -94,8 +94,8 @@ int hudRadarOtherColor = 2;
 // double hudRadarScale = 3.0;
 // double hudRadarLimit = 0.05;
 
-static int meterWidth = 60;
-static int meterHeight = 10;
+// static int meterWidth = 60;
+// static int meterHeight = 10;
 
 /*
  * Draw a meter of some kind on screen.
@@ -106,27 +106,27 @@ static int meterHeight = 10;
 static void Paint_meter(int xoff, int y, const char *title, int val, int max,
                         int meter_color)
 {
-    const int mw1_4 = meterWidth / 4,
-              mw2_4 = meterWidth / 2,
-              mw3_4 = 3 * meterWidth / 4,
-              mw4_4 = meterWidth,
+    const int mw1_4 = clientOptions.meterWidth / 4,
+              mw2_4 = clientOptions.meterWidth / 2,
+              mw3_4 = 3 * clientOptions.meterWidth / 4,
+              mw4_4 = clientOptions.meterWidth,
               BORDER = 5;
     int x, xstr;
 
     if (xoff >= 0)
     {
         x = xoff;
-        xstr = WINSCALE(x + (int)meterWidth) + BORDER;
+        xstr = WINSCALE(x + (int)clientOptions.meterWidth) + BORDER;
     }
     else
     {
-        x = ext_view_width - ((int)meterWidth - xoff);
+        x = ext_view_width - ((int)clientOptions.meterWidth - xoff);
         xstr = WINSCALE(x) - (BORDER + XTextWidth(gameFont, title, (int)strlen(title)));
     }
 
     Rectangle_add(meter_color,
                   x + 2, y + 2,
-                  (int)(((meterWidth - 3) * val) / (max ? max : 1)), meterHeight - 3);
+                  (int)(((clientOptions.meterWidth - 3) * val) / (max ? max : 1)), clientOptions.meterHeight - 3);
 
     /* meterBorderColor = 0 obviously means no meter borders are drawn */
     if (meterBorderColor)
@@ -136,21 +136,21 @@ static void Paint_meter(int xoff, int y, const char *title, int val, int max,
         SET_FG(colors[color].pixel);
         rd.drawRectangle(dpy, drawPixmap, gameGC,
                          WINSCALE(x), WINSCALE(y),
-                         WINSCALE(meterWidth), WINSCALE(meterHeight));
+                         WINSCALE(clientOptions.meterWidth), WINSCALE(clientOptions.meterHeight));
 
         /* Paint scale levels(?) */
-        Segment_add(color, x, y - 4, x, y + meterHeight + 4);
-        Segment_add(color, x + mw4_4, y - 4, x + mw4_4, y + meterHeight + 4);
-        Segment_add(color, x + mw2_4, y - 3, x + mw2_4, y + meterHeight + 3);
-        Segment_add(color, x + mw1_4, y - 1, x + mw1_4, y + meterHeight + 1);
-        Segment_add(color, x + mw3_4, y - 1, x + mw3_4, y + meterHeight + 1);
+        Segment_add(color, x, y - 4, x, y + clientOptions.meterHeight + 4);
+        Segment_add(color, x + mw4_4, y - 4, x + mw4_4, y + clientOptions.meterHeight + 4);
+        Segment_add(color, x + mw2_4, y - 3, x + mw2_4, y + clientOptions.meterHeight + 3);
+        Segment_add(color, x + mw1_4, y - 1, x + mw1_4, y + clientOptions.meterHeight + 1);
+        Segment_add(color, x + mw3_4, y - 1, x + mw3_4, y + clientOptions.meterHeight + 1);
     }
 
     if (!meterBorderColor)
         SET_FG(colors[meter_color].pixel);
 
     rd.drawString(dpy, drawPixmap, gameGC,
-                  xstr, WINSCALE(y) + (gameFont->ascent + meterHeight) / 2,
+                  xstr, WINSCALE(y) + (gameFont->ascent + clientOptions.meterHeight) / 2,
                   title, (int)strlen(title));
 
     /* texturedObjects - TODO */
@@ -220,9 +220,10 @@ void Paint_score_objects(void)
 void Paint_meters(void)
 {
     int y = 20, color;
+    int y_increment = clientOptions.meterHeight + 10;
 
     if (fuelMeterColor)
-        Paint_meter(-10, y += 20, "Fuel",
+        Paint_meter(-10, y += y_increment, "Fuel",
                     (int)fuelSum, (int)fuelMax, fuelMeterColor);
 
     if (powerMeterColor)
@@ -233,7 +234,7 @@ void Paint_meters(void)
         color = 0;
 
     if (color)
-        Paint_meter(-10, y += 20, "Power",
+        Paint_meter(-10, y += y_increment, "Power",
                     (int)displayedPower, (int)MAX_PLAYER_POWER, color);
 
     if (turnSpeedMeterColor)
@@ -244,7 +245,7 @@ void Paint_meters(void)
         color = 0;
 
     if (color)
-        Paint_meter(-10, y += 20, "Turnspeed",
+        Paint_meter(-10, y += y_increment, "Turnspeed",
                     (int)displayedTurnspeed, (int)MAX_PLAYER_TURNSPEED, color);
 
     if (controlTime > 0.0)
@@ -255,17 +256,17 @@ void Paint_meters(void)
     }
 
     if (packetSizeMeterColor)
-        Paint_meter(-10, y += 20, "Packet",
+        Paint_meter(-10, y += y_increment, "Packet",
                     (packet_size >= 4096) ? 4096 : packet_size, 4096,
                     packetSizeMeterColor);
     if (packetLossMeterColor)
-        Paint_meter(-10, y += 20, "Loss", packet_loss, FPS,
+        Paint_meter(-10, y += y_increment, "Loss", packet_loss, FPS,
                     packetLossMeterColor);
     if (packetDropMeterColor)
-        Paint_meter(-10, y += 20, "Drop", packet_drop, FPS,
+        Paint_meter(-10, y += y_increment, "Drop", packet_drop, FPS,
                     packetDropMeterColor);
     if (packetLagMeterColor)
-        Paint_meter(-10, y += 20, "Lag", MIN(packet_lag, 1 * FPS), 1 * FPS,
+        Paint_meter(-10, y += y_increment, "Lag", MIN(packet_lag, 1 * FPS), 1 * FPS,
                     packetLagMeterColor);
 
     if (temporaryMeterColor)
@@ -279,7 +280,7 @@ void Paint_meters(void)
                         thrusttimemax, temporaryMeterColor);
 
         if (shieldtime >= 0 && shieldtimemax > 0)
-            Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + 20,
+            Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + y_increment,
                         "Shields Left",
                         (shieldtime >= shieldtimemax
                              ? shieldtimemax
@@ -287,7 +288,7 @@ void Paint_meters(void)
                         shieldtimemax, temporaryMeterColor);
 
         if (phasingtime >= 0 && phasingtimemax > 0)
-            Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + 40,
+            Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + y_increment * 2,
                         "Phasing left",
                         (phasingtime >= phasingtimemax
                              ? phasingtimemax
@@ -295,12 +296,12 @@ void Paint_meters(void)
                         phasingtimemax, temporaryMeterColor);
 
         if (destruct > 0)
-            Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + 60,
+            Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + y_increment * 3,
                         "Self destructing", destruct, (int)SELF_DESTRUCT_DELAY,
                         temporaryMeterColor);
 
         if (shutdown_count >= 0)
-            Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + 80,
+            Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + y_increment * 4,
                         "SHUTDOWN", shutdown_count, shutdown_delay,
                         temporaryMeterColor);
     }
@@ -1252,6 +1253,7 @@ void Paint_HUD_values(void)
 
     wmax = MAX(w, w2);
 
+    // TODO: calculate the y_offset based on the number of meters visible?
     x = WINSCALE(ext_view_width) - 10 - wmax;
     y = 200 + gameFont->ascent;
     rd.drawString(dpy, drawPixmap, gameGC, x, y, buf, len);
@@ -1358,7 +1360,7 @@ xp_option_t hud_options[] = {
 
     COLOR_INDEX_OPTION(
         "fuelMeterColor",
-        0,
+        3,
         &fuelMeterColor,
         "Which color number to use for drawing the fuel meter.\n"),
 
@@ -1376,7 +1378,7 @@ xp_option_t hud_options[] = {
 
     COLOR_INDEX_OPTION(
         "packetSizeMeterColor",
-        0,
+        3,
         &packetSizeMeterColor,
         "Which color number to use for drawing the packet size meter.\n"
         "Each bar is equavalent to 1024 bytes, for a maximum of 4096 bytes.\n"),
@@ -1421,6 +1423,21 @@ xp_option_t hud_options[] = {
         &scoreObjectColor,
         "Which color number to use for drawing score objects.\n"),
 
+    XP_INT_OPTION(
+        "meterWidth",
+        60, 0, 600,
+        &clientOptions.meterWidth,
+        nullptr,
+        XP_OPTFLAG_CONFIG_DEFAULT,
+        "Set the width of the meters.\n"),
+
+    XP_INT_OPTION(
+        "meterHeight",
+        10, 0, 100,
+        &clientOptions.meterHeight,
+        nullptr,
+        XP_OPTFLAG_CONFIG_DEFAULT,
+        "Set the height of a meter.\n"),
 };
 
 void Store_hud_options(void)

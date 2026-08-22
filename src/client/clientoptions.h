@@ -96,6 +96,8 @@ struct ClientOptions
     int maxLinesInHistory = 32;         // Number of lines to save in history
     int showScoreDecimals = 0;          // Number of decimals to show in scores
     int maxVolume = 100;                // maximum volume (in percent)
+    int meterWidth = 60;                // Width of drawn meters
+    int meterHeight = 10;               // Height of drawn meters
 
     // From X11 client
     bool ignoreWindowManager = false;
