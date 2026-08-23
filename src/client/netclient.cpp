@@ -57,7 +57,6 @@
 
 #include "client.h"
 #include "clientcommand.h"
-#include "clientoptions.h" // 2026
 #include "netclient.h"
 #include "paint.h"
 

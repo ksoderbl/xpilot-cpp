@@ -42,7 +42,6 @@
 #include "xperror.h"
 
 #include "client.h"
-#include "clientoptions.h" // 2026
 #include "guiobjects.h"
 #include "netclient.h"
 

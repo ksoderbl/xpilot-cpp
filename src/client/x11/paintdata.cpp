@@ -26,7 +26,6 @@
 
 #include <X11/Xlib.h>
 
-#include "clientoptions.h" // 2026
 #include "paint.h"
 
 #include "paintdata.h"

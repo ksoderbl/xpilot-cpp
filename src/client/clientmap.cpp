@@ -41,7 +41,6 @@
 #include "caudio.h"
 #include "client.h"
 #include "clientcommand.h"
-#include "clientoptions.h" // 2026
 #include "clientsetup.h"
 #include "messages.h"
 #include "netclient.h"

@@ -43,7 +43,6 @@
 #include "xperror.h"
 
 #include "client.h"
-#include "clientoptions.h" // 2026
 
 #include "audio.h"
 

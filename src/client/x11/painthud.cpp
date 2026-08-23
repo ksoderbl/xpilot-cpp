@@ -35,7 +35,6 @@
 #include "commonproto.h"
 
 #include "client.h"
-#include "clientoptions.h" // 2026
 #include "messages.h"
 #include "netclient.h"
 #include "clientoption.h"

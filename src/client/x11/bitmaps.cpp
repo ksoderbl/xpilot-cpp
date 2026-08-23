@@ -32,7 +32,6 @@
 #include "commonmacros.h"
 #include "commonproto.h"
 
-#include "clientoptions.h" // 2026
 #include "paint.h"
 #include "paintdata.h"
 #include "gfx2d.h"

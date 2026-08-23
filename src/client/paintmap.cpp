@@ -42,7 +42,6 @@
 #include "keys.h"
 #include "rules.h"
 #include "client.h"
-#include "clientoptions.h" // 2026
 #include "clientsetup.h"
 #include "guimap.h"
 

@@ -29,14 +29,12 @@
 #include "bit.h"
 #include "const.h"
 #include "xperror.h"
-// #include "global.h"
+
 #include "other.h"
-// #include "proto.h"
 #include "rules.h"
 #include "setup.h"
 #include "types.h"
 #include "clientmap.h"
-#include "clientoptions.h" // 2026
 #include "clientrank.h"
 #include "clientsetup.h"
 #include "messages.h"

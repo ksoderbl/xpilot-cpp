@@ -42,7 +42,6 @@
 #include "netclient.h"
 #include "paint.h"
 #include "clientoption.h"
-#include "clientoptions.h" // 2026 stuff
 #include "clientrank.h"
 
 static double hudScale; /* Scale for HUD drawing */

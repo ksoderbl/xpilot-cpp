@@ -56,7 +56,6 @@
 #include "record.h"
 #include "talk.h"
 #include "clientrank.h"
-#include "clientoptions.h" // 2026
 
 #include "xinit.h"
 #include "xpaint.h"

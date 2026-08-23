@@ -42,7 +42,6 @@
 #include "bit.h"
 #include "keys.h"
 #include "rules.h"
-#include "clientoptions.h" // 2026
 #include "clientsetup.h"
 #include "xpaint.h"
 #include "paintdata.h"

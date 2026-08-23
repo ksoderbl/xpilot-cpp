@@ -40,7 +40,6 @@
 #include "commonproto.h"
 
 #include "client.h"
-#include "clientoptions.h" // 2026
 #include "netclient.h"
 #include "clientoption.h"
 #include "paint.h"

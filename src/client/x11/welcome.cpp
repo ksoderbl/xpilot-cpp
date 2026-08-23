@@ -51,7 +51,6 @@
 #include "socklib.h"
 #include "net.h"
 #include "clientpack.h"
-#include "clientoptions.h" // 2026
 
 #include "client.h"
 #include "portability.h"

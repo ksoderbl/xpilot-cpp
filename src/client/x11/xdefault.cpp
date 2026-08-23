@@ -53,7 +53,6 @@
 #include "version.h"
 #include "xpconfig.h"
 #include "xpaint.h"
-#include "clientoptions.h" // 2026
 #include "clientpack.h"
 #include "bit.h"
 #include "keys.h"

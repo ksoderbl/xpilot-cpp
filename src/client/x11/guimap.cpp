@@ -35,7 +35,6 @@
 
 #include "client.h"
 #include "clientoption.h"
-#include "clientoptions.h" // 2026
 #include "paint.h"
 
 #include "gfx2d.h"

@@ -45,7 +45,6 @@
 #include "caudio.h"
 #include "client.h"
 #include "clientoption.h"
-#include "clientoptions.h" // 2026
 #include "xpilotrc.h"
 
 std::vector<xp_option_t> optionsVector;

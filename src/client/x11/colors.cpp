@@ -37,7 +37,6 @@
 
 #include "paint.h"
 #include "clientoption.h"
-#include "clientoptions.h" // 2026
 
 #include "xpconfig.h"
 #include "types.h"

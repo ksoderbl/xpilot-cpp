@@ -39,7 +39,6 @@
 
 #include "caudio.h"
 #include "client.h"
-#include "clientoptions.h" // 2026
 #include "keys.h"
 #include "configure.h"
 #include "gfx2d.h"
