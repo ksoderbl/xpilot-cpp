@@ -128,7 +128,6 @@ struct ClientOptions
     int zeroLivesColor = RED;          // Color to associate with 0 lives
     int oneLifeColor = 11;             // Color to associate with 1 life
     int twoLivesColor = 0;             // Color to associate with 2 lives
-    int manyLivesColor = 0;            // Color to associate with >2 lives
     int selfLWColor = RED;             // Color index for selfLifeWarning
     int enemyLWColor = RED;            // Color index for enemyLifeWarning
     int teamLWColor = 4;               // Color index for teamLifeWarning

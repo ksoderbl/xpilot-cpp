@@ -1079,18 +1079,13 @@ int Life_color(Other *other)
 
 int Life_color_by_life(int life)
 {
-    int color;
-
-    // TODO: we don't need this many options for lives
-    if (life > 2)
-        color = clientOptions.manyLivesColor;
-    else if (life == 2)
-        color = clientOptions.twoLivesColor;
+    if (life == 2)
+        return clientOptions.twoLivesColor;
     else if (life == 1)
-        color = clientOptions.oneLifeColor;
-    else /* we catch all */
-        color = clientOptions.zeroLivesColor;
-    return color;
+        return clientOptions.oneLifeColor;
+    else if (life == 0)
+        return clientOptions.zeroLivesColor;
+    return 0;
 }
 
 static xp_option_t guiobject_options[] = {
@@ -1131,13 +1126,6 @@ static xp_option_t guiobject_options[] = {
         0,
         &clientOptions.twoLivesColor,
         "Which color to associate with ships with two lives left.\n"
-        "This can be used to paint for example ship and base names.\n"),
-
-    COLOR_INDEX_OPTION(
-        "manyLivesColor",
-        0,
-        &clientOptions.manyLivesColor,
-        "Which color to associate with ships with more than two lives left.\n"
         "This can be used to paint for example ship and base names.\n"),
 
     COLOR_INDEX_OPTION(
