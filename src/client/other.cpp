@@ -39,6 +39,7 @@ Other::Other()
     alliance = 0;
     name_width = 0;
     name_len = 0;
+    max_chars_in_names = -1;
     ignorelevel = 0;
 }
 
@@ -48,9 +49,6 @@ Other::~Other()
 }
 
 Other *self = nullptr; /* player info */
-// Other *others = nullptr;
-// int num_others = 0, max_others = 0;
-
 std::vector<Other *> others;
 
 Other *Other_by_id(int id)

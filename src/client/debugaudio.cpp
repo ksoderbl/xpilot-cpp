@@ -52,12 +52,12 @@ void audioDevicePlay(char *filename, int type, int volume, void **private_data)
 
 void audioDeviceEvents(void)
 {
-    /* debugprint("debug audio: events\n"); */
+    debugprint("debug audio: events\n");
 }
 
 void audioDeviceUpdate(void)
 {
-    /* debugprint("debug audio: update\n"); */
+    debugprint("debug audio: update\n");
 }
 
 void audioDeviceFree(void *private_data)

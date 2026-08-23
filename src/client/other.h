@@ -60,8 +60,6 @@ public:
 };
 
 extern Other *self; /* Player info */
-// extern Other *others;
-// extern int num_others, max_others;
 extern std::vector<Other *> others;
 
 Other *Other_by_id(int id);

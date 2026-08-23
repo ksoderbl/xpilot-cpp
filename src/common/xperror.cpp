@@ -7,6 +7,8 @@
  * Windows mods and memory leak detection by Dick Balaska.
  */
 
+#include "xperror.h"
+
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -15,153 +17,107 @@
 
 #include "commonproto.h"
 
-#include "xpconfig.h"
-#include "const.h"
-#include "xperror.h"
-#include "portability.h"
-
 /*
- * This file defines two entry points:
+ * This file defines several entry points:
  *
- * init_error()                - Initialize the error routine, accepts program name
- *                          as input.
- * error()                - perror() with printf functionality.
+ * init_error()        - Initialize the error routine, accepts program name as input.
+ * error()             - perror() with printf functionality.
+ * warn(), ...
  */
 
 /*
  * File local static data.
  */
-#define MAX_PROG_LENGTH 32
-static char progname[MAX_PROG_LENGTH];
+static std::string progname;
 
-static const char *prog_basename(const char *prog)
+static std::string prog_basename(std::string path)
 {
-    const char *p;
-
-    p = strrchr(prog, '/');
-
-    return (p != nullptr) ? (p + 1) : prog;
+    auto pos = path.find_last_of('/');
+    return pos == std::string::npos ? path : path.substr(pos + 1);
 }
 
 /*
  * Functions.
  */
-void init_error(const char *prog)
+void init_error(std::string prog)
 {
-    const char *p = prog_basename(prog); /* Beautify arv[0] */
-
-    strlcpy(progname, p, MAX_PROG_LENGTH);
+    progname = prog_basename(prog); /* Beautify argv[0] */
 }
 
 void xpinfo(const char *fmt, ...)
 {
-    int len;
+    size_t len;
     va_list ap;
 
     va_start(ap, fmt);
 
-    if (progname[0] != '\0')
-    {
-        fprintf(stderr, "%s: ", progname);
-    }
+    fprintf(stderr, "%s: INFO:  ", progname.c_str());
 
     vfprintf(stderr, fmt, ap);
 
     len = strlen(fmt);
     if (len == 0 || fmt[len - 1] != '\n')
-    {
         fprintf(stderr, "\n");
-    }
 
     va_end(ap);
 }
 
-void xpwarn(const char *fmt, ...)
-{
-    int len;
-    va_list ap;
-
-    va_start(ap, fmt);
-
-    if (progname[0] != '\0')
-    {
-        fprintf(stderr, "%s: ", progname);
-    }
-
-    vfprintf(stderr, fmt, ap);
-
-    len = strlen(fmt);
-    if (len == 0 || fmt[len - 1] != '\n')
-    {
-        fprintf(stderr, "\n");
-    }
-
-    va_end(ap);
-}
-
-// Same as above.
 void warn(const char *fmt, ...)
 {
-    int len;
+    size_t len;
     va_list ap;
 
     va_start(ap, fmt);
 
     char *s = showtime();
 
-    if (progname[0] != '\0')
-    {
-        fprintf(stderr, "%s %s: ", s, progname);
-    }
+    fprintf(stderr, "%s %s: WARN:  ", s, progname.c_str());
 
     vfprintf(stderr, fmt, ap);
 
     len = strlen(fmt);
     if (len == 0 || fmt[len - 1] != '\n')
-    {
         fprintf(stderr, "\n");
-    }
 
     va_end(ap);
 }
 
 void error(const char *fmt, ...)
 {
+    size_t len;
     va_list ap;
     int e = errno;
 
     va_start(ap, fmt);
 
-    if (progname[0] != '\0')
-    {
-        fprintf(stderr, "%s: ", progname);
-    }
+    fprintf(stderr, "%s: ERROR: ", progname.c_str());
 
     vfprintf(stderr, fmt, ap);
 
     if (e != 0)
-    {
         fprintf(stderr, ": (%s)", strerror(e));
-    }
-    fprintf(stderr, "\n");
+
+    len = strlen(fmt);
+    if (len == 0 || fmt[len - 1] != '\n')
+        fprintf(stderr, "\n");
 
     va_end(ap);
 }
 
 void fatal(const char *fmt, ...)
 {
+    size_t len;
     va_list ap;
 
     va_start(ap, fmt);
 
-    if (progname[0] != '\0')
-    {
-        fprintf(stderr, "%s: ", progname);
-    }
+    fprintf(stderr, "%s: FATAL: ", progname.c_str());
 
     vfprintf(stderr, fmt, ap);
 
-    fprintf(stderr, "\n");
+    len = strlen(fmt);
+    if (len == 0 || fmt[len - 1] != '\n')
+        fprintf(stderr, "\n");
 
     va_end(ap);
 
@@ -170,18 +126,18 @@ void fatal(const char *fmt, ...)
 
 void dumpcore(const char *fmt, ...)
 {
+    size_t len;
     va_list ap;
 
     va_start(ap, fmt);
 
-    if (progname[0] != '\0')
-    {
-        fprintf(stderr, "%s: ", progname);
-    }
+    fprintf(stderr, "%s: DUMPCORE: ", progname.c_str());
 
     vfprintf(stderr, fmt, ap);
 
-    fprintf(stderr, "\n");
+    len = strlen(fmt);
+    if (len == 0 || fmt[len - 1] != '\n')
+        fprintf(stderr, "\n");
 
     va_end(ap);
 
@@ -191,22 +147,20 @@ void dumpcore(const char *fmt, ...)
 void debugprint(const char *fmt, ...)
 {
 #if 0
-    int len;
+    size_t len;
     va_list ap;
 
     va_start(ap, fmt);
 
     char *s = showtime();
 
-    fprintf(stderr, "%s DEBUG %s: ", s, progname);
+    fprintf(stderr, "%s %s: DEBUG: ", s, progname.c_str());
 
     vfprintf(stderr, fmt, ap);
 
     len = strlen(fmt);
     if (len == 0 || fmt[len - 1] != '\n')
-    {
         fprintf(stderr, "\n");
-    }
 
     va_end(ap);
 #endif
