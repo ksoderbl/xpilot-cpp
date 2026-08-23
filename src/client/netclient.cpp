@@ -801,10 +801,10 @@ int Net_start(void)
             std::string shipShapeStr;
             if (shipShape != nullptr)
             {
-                warn("shipShape: %s", shipShape);
+                // warn("shipShape: %s", shipShape);
                 shipShapeStr = shipShape;
             }
-            warn("shipShapeStr: %s", shipShapeStr.c_str());
+            // warn("shipShapeStr: %s", shipShapeStr.c_str());
             if ((retries < 5 && Send_shipshape(shipShapeStr) == -1) ||
                 Packet_printf(&wbuf, "%c", PKT_PLAY) <= 0 ||
                 Client_power() == -1 || Send_audio_request(1) == -1 || Client_fps_request() == -1 || Sockbuf_flush(&wbuf) == -1)
@@ -2604,11 +2604,9 @@ int Send_keyboard(uint8_t *keyboard_vector)
 
 int Send_shipshape(std::string &str)
 {
-    warn("Send_shipshape: str = %s", str.c_str());
-    ShipShape *ship;
     char buf[MSG_LEN], ext[MSG_LEN];
 
-    ship = Convert_shape_str(str);
+    ShipShape *ship = Convert_shape_str(str);
     Convert_ship_2_string(ship, buf, ext, 0x3200);
     Free_ship_shape(ship);
     if (Packet_printf(&wbuf, "%c%S", PKT_SHAPE, buf) <= 0)
@@ -2864,7 +2862,7 @@ int Send_pointer_move(int movement)
 
 int Send_audio_request(bool on)
 {
-    debuglog("Send_audio_request %d\n", on ? 1 : 0);
+    debugprint("Send_audio_request %d\n", on ? 1 : 0);
 
     if (Packet_printf(&wbuf, "%c%c", PKT_REQUEST_AUDIO, (on ? 1 : 0)) == -1)
         return -1;

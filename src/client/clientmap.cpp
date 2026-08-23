@@ -1032,49 +1032,44 @@ int Handle_leave(int id)
     Other *other = Other_by_id(id);
     char msg[MSG_LEN];
 
-    if (other != nullptr)
+    if (other == nullptr)
+        return 0;
+
+    if (other == self)
     {
-        if (other == self)
-        {
-            warn("Self left?!");
-            self = nullptr;
-        }
-        Free_ship_shape(other->ship);
-        other->ship = nullptr;
-        /*
-         * Silent about tanks and robots.
-         */
-        if (other->mychar != 'T' && other->mychar != 'R')
-        {
-            sprintf(msg, "%s left this world.", other->nick_name.c_str());
-            Add_message(msg);
-        }
-        // TODO: how do I fix this?
-        // num_others--;
-        // while (other < &others[num_others])
-        // {
-        //     *other = other[1];
-        //     other++;
-        // }
-        // const auto it = std::find(others.begin(), others.end(), *other);
-        // if (it != others.end())
-        //     others.erase(it);
-        const auto it = std::find(others.begin(), others.end(), other);
-        if (it != others.end())
-        {
-            others.erase(it);
-
-            warn("FOUND!");
-
-            delete other;
-        }
-        else
-        {
-            warn("NOT FOUND!");
-        }
-
-        scoresChanged = true;
+        warn("Self left?!");
+        self = nullptr;
     }
+    Free_ship_shape(other->ship);
+    other->ship = nullptr;
+    /*
+     * Silent about tanks and robots.
+     */
+    if (other->mychar != 'T' && other->mychar != 'R')
+    {
+        sprintf(msg, "%s left this world.", other->nick_name.c_str());
+        Add_message(msg);
+    }
+
+    // num_others--;
+    // while (other < &others[num_others])
+    // {
+    //     *other = other[1];
+    //     other++;
+    // }
+    const auto it = std::find(others.begin(), others.end(), other);
+    if (it != others.end())
+    {
+        others.erase(it);
+        delete other;
+    }
+    else
+    {
+        warn("Handle_leave: other not found (id %d)!", id);
+    }
+
+    scoresChanged = true;
+
     return 0;
 }
 
@@ -1193,7 +1188,7 @@ int Handle_score(int id, double score, int life, int mychar, int alliance)
 
 int Handle_team_score(int team, double score)
 {
-    warn("Handle_team_score: team: %d, score: %f", team, score);
+    // debugprint("Handle_team_score: team: %d, score: %f", team, score);
     return 0;
 }
 

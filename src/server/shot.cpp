@@ -1211,8 +1211,8 @@ void Delete_shot(int ind)
     case OBJ_BALL:
         ball = BALL_PTR(shot);
 
-        debuglog("Delete_shot: Ball ball->ball_treasure      is %p", ball->ball_treasure);
-        debuglog("Delete_shot: Ball ball->ball_treasure_copy is %p", ball->ball_treasure_copy);
+        debugprint("Delete_shot: Ball ball->ball_treasure      is %p", ball->ball_treasure);
+        debugprint("Delete_shot: Ball ball->ball_treasure_copy is %p", ball->ball_treasure_copy);
 
         if (ball->id != NO_ID)
             Detach_ball(Player_by_id(ball->id), ball);

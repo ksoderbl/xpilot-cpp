@@ -1049,7 +1049,7 @@ void Init_spark_colors(void)
     unsigned col;
     int i;
 
-    // debuglog("Init_spark_colors: original sparkColors %s", sparkColors);
+    // debugprint("Init_spark_colors: original sparkColors %s", sparkColors);
     // strlcpy(sparkColors, "", sizeof sparkColors);
     // strlcpy(sparkColors, "1", sizeof sparkColors);
     // strlcpy(sparkColors, "1,2", sizeof sparkColors);
@@ -1060,7 +1060,7 @@ void Init_spark_colors(void)
     // strlcpy(sparkColors, "1,2,3,4,5,6,7", sizeof sparkColors);
     // strlcpy(sparkColors, "1,2,3,4,5,6,7,8", sizeof sparkColors);
     // strlcpy(sparkColors, "1,2,3,4,5,6,7,8,9", sizeof sparkColors);
-    // debuglog("Init_spark_colors: changed  sparkColors %s", sparkColors);
+    // debugprint("Init_spark_colors: changed  sparkColors %s", sparkColors);
 
     num_spark_colors = 0;
     /*
@@ -1085,18 +1085,18 @@ void Init_spark_colors(void)
             src--;
 
             int ret = sscanf(buf, "%u", &col);
-            debuglog("buf %s, col %d, ret %d", buf, col, ret);
+            debugprint("buf %s, col %d, ret %d", buf, col, ret);
             if (ret == 1)
             {
                 if (col < (unsigned)clientOptions.maxColors)
                 {
-                    debuglog("col < maxcolors: %d < %d", col, clientOptions.maxColors);
+                    debugprint("col < maxcolors: %d < %d", col, clientOptions.maxColors);
                     spark_color[num_spark_colors++] = col;
                 }
             }
         }
     }
-    debuglog("num_spark_colors: %d", num_spark_colors);
+    debugprint("num_spark_colors: %d", num_spark_colors);
     if (num_spark_colors == 0)
     {
         // if (maxColors <= 8)

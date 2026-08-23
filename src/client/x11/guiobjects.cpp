@@ -64,30 +64,6 @@
 #include "guiobjects.h"
 #include "clientpack.h"
 
-static int ballColor;      /* Color index for ball drawing */
-static int connColor;      /* Color index for connector drawing */
-static int teamShotColor;  /* Color index for harmless shot drawing */
-static int zeroLivesColor; /* Color to associate with 0 lives */
-static int oneLifeColor;   /* Color to associate with 1 life */
-static int twoLivesColor;  /* Color to associate with 2 lives */
-static int manyLivesColor; /* Color to associate with >2 lives */
-static int selfLWColor;    /* Color index for selfLifeWarning */
-static int enemyLWColor;   /* Color index for enemyLifeWarning */
-static int teamLWColor;    /* Color index for teamLifeWarning */
-static int shipNameColor;  /* Color index for ship name drawing */
-static int mineNameColor;  /* Color index for mine name drawing */
-static int teamShipColor;  /* Color index to associate with team 0 */
-static int team0Color;     /* Color index to associate with team 0 */
-static int team1Color;     /* Color index to associate with team 1 */
-static int team2Color;     /* Color index to associate with team 2 */
-static int team3Color;     /* Color index to associate with team 3 */
-static int team4Color;     /* Color index to associate with team 4 */
-static int team5Color;     /* Color index to associate with team 5 */
-static int team6Color;     /* Color index to associate with team 6 */
-static int team7Color;     /* Color index to associate with team 7 */
-static int team8Color;     /* Color index to associate with team 8 */
-static int team9Color;     /* Color index to associate with team 9 */
-
 static int asteroidRawShapes[NUM_ASTEROID_SHAPES][NUM_ASTEROID_POINTS][2] = {
     {ASTEROID_SHAPE_0},
     {ASTEROID_SHAPE_1},
@@ -220,7 +196,7 @@ void Gui_paint_ball(int x, int y, int style)
                        0, 64 * 360);
         }
         else
-            Arc_add(ballColor, x - BALL_RADIUS, y - BALL_RADIUS,
+            Arc_add(clientOptions.ballColor, x - BALL_RADIUS, y - BALL_RADIUS,
                     2 * BALL_RADIUS, 2 * BALL_RADIUS, 0, 64 * 360);
 
         if (ballTile != None)
@@ -241,7 +217,7 @@ void Gui_paint_ball_connector(int x1, int y1, int x2, int y2)
     y2 = Y(y2);
     x1 = X(x1);
     y1 = Y(y1);
-    Segment_add(connColor, x1, y1, x2, y2);
+    Segment_add(clientOptions.connColor, x1, y1, x2, y2);
 }
 
 /* used by Paint_mine */
@@ -458,7 +434,7 @@ void Gui_paint_fastshot(int color, int x, int y)
 
 void Gui_paint_teamshot(int x, int y)
 {
-    int color = teamShotColor;
+    int color = clientOptions.teamShotColor;
 
     if (color == 0)
         return;
@@ -655,7 +631,7 @@ void Gui_paint_all_connectors_begin(void)
 {
     unsigned long mask;
 
-    SET_FG(colors[connColor].pixel);
+    SET_FG(colors[clientOptions.connColor].pixel);
     if (gcv.line_style != LineOnOffDash)
     {
         gcv.line_style = LineOnOffDash;
@@ -773,15 +749,11 @@ static int Gui_calculate_ship_color(int id, Other *other)
     {
         /* Paint your ship in selfLWColor when on last life */
         if (eyes != nullptr && eyes->id == id && eyes->life == 0)
-        {
-            ship_color = selfLWColor;
-        }
+            ship_color = clientOptions.selfLWColor;
 
         /* Paint enemy ships with last life in enemyLWColor */
         if (eyes != nullptr && eyes->id != id && other != nullptr && eyeTeam != other->team && other->life == 0)
-        {
-            ship_color = enemyLWColor;
-        }
+            ship_color = clientOptions.enemyLWColor;
     }
     /* Vato color hack end */
 
@@ -1064,32 +1036,32 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
     }
 }
 
+// TODO: indexed options, this would let us just do
+// clientOptions.teamColor[team].
 int Team_color(int team)
 {
-    /* This code assumes we have max 10 teams. */
-    assert(MAX_TEAMS == 10);
     switch (team)
     {
     case 0:
-        return team0Color;
+        return clientOptions.teamColor0;
     case 1:
-        return team1Color;
+        return clientOptions.teamColor1;
     case 2:
-        return team2Color;
+        return clientOptions.teamColor2;
     case 3:
-        return team3Color;
+        return clientOptions.teamColor3;
     case 4:
-        return team4Color;
+        return clientOptions.teamColor4;
     case 5:
-        return team5Color;
+        return clientOptions.teamColor5;
     case 6:
-        return team6Color;
+        return clientOptions.teamColor6;
     case 7:
-        return team7Color;
+        return clientOptions.teamColor7;
     case 8:
-        return team8Color;
+        return clientOptions.teamColor8;
     case 9:
-        return team9Color;
+        return clientOptions.teamColor9;
     default:
         break;
     }
@@ -1109,14 +1081,15 @@ int Life_color_by_life(int life)
 {
     int color;
 
+    // TODO: we don't need this many options for lives
     if (life > 2)
-        color = manyLivesColor;
+        color = clientOptions.manyLivesColor;
     else if (life == 2)
-        color = twoLivesColor;
+        color = clientOptions.twoLivesColor;
     else if (life == 1)
-        color = oneLifeColor;
+        color = clientOptions.oneLifeColor;
     else /* we catch all */
-        color = zeroLivesColor;
+        color = clientOptions.zeroLivesColor;
     return color;
 }
 
@@ -1124,148 +1097,150 @@ static xp_option_t guiobject_options[] = {
     COLOR_INDEX_OPTION(
         "teamShotColor",
         2,
-        &teamShotColor,
+        &clientOptions.teamShotColor,
         "Which color number to use for drawing harmless shots.\n"),
 
     COLOR_INDEX_OPTION(
         "ballColor",
         WHITE, // RED,
-        &ballColor,
+        &clientOptions.ballColor,
         "Which color number to use for drawing balls.\n"),
 
     COLOR_INDEX_OPTION(
         "connColor",
         4,
-        &connColor,
+        &clientOptions.connColor,
         "Which color number to use for drawing connectors.\n"),
 
     COLOR_INDEX_OPTION(
         "zeroLivesColor",
         RED, // 5,
-        &zeroLivesColor,
+        &clientOptions.zeroLivesColor,
         "Which color to associate with ships with zero lives left.\n"
         "This can be used to paint for example ship and base names.\n"),
 
     COLOR_INDEX_OPTION(
         "oneLifeColor",
         11,
-        &oneLifeColor,
+        &clientOptions.oneLifeColor,
         "Which color to associate with ships with one life left.\n"
         "This can be used to paint for example ship and base names.\n"),
 
     COLOR_INDEX_OPTION(
         "twoLivesColor",
         0,
-        &twoLivesColor,
+        &clientOptions.twoLivesColor,
         "Which color to associate with ships with two lives left.\n"
         "This can be used to paint for example ship and base names.\n"),
 
     COLOR_INDEX_OPTION(
         "manyLivesColor",
         0,
-        &manyLivesColor,
+        &clientOptions.manyLivesColor,
         "Which color to associate with ships with more than two lives left.\n"
         "This can be used to paint for example ship and base names.\n"),
 
     COLOR_INDEX_OPTION(
         "selfLWColor",
         RED,
-        &selfLWColor,
+        &clientOptions.selfLWColor,
         "Which color to use to paint your ship in when on last life.\n"
         "Original color for this is red.\n"),
 
     COLOR_INDEX_OPTION(
         "enemyLWColor",
         RED,
-        &enemyLWColor,
+        &clientOptions.enemyLWColor,
         "Which color to use to paint enemy ships in when on last life.\n"
         "Original color for this is red.\n"),
 
     COLOR_INDEX_OPTION(
         "teamLWColor",
         4, // 2
-        &teamLWColor,
+        &clientOptions.teamLWColor,
         "Which color to use to paint teammate ships in when on last life.\n"
         "Original color for this is green.\n"),
 
     COLOR_INDEX_OPTION(
         "shipNameColor",
         BLUE,
-        &shipNameColor,
+        &clientOptions.shipNameColor,
         "Which color number to use for drawing names of ships\n"
         "(unless drawn in one of the life colors).\n"),
 
     COLOR_INDEX_OPTION(
         "mineNameColor",
         BLUE,
-        &mineNameColor,
+        &clientOptions.mineNameColor,
         "Which color number to use for drawing names of mines.\n"),
 
     COLOR_INDEX_OPTION(
         "teamShipColor",
         BLUE,
-        &teamShipColor,
+        &clientOptions.teamShipColor,
         "Which color number to use for drawing your teammates.\n"),
 
+    // TODO: add support for indexed options e.g. teamColor<int>
     COLOR_INDEX_OPTION(
-        "team0Color",
+        "teamColor0",
         0,
-        &team0Color,
+        &clientOptions.teamColor0,
         "Which color number to use for drawing team 0 objects.\n"),
 
     COLOR_INDEX_OPTION(
-        "team1Color",
+        "teamColor1",
         0,
-        &team1Color,
+        &clientOptions.teamColor1,
         "Which color number to use for drawing team 1 objects.\n"),
 
     COLOR_INDEX_OPTION(
-        "team2Color",
+        "teamColor2",
         0,
-        &team2Color,
+        &clientOptions.teamColor2,
         "Which color number to use for drawing team 2 objects.\n"),
 
     COLOR_INDEX_OPTION(
-        "team3Color",
+        "teamColor3",
         0,
-        &team3Color,
+        &clientOptions.teamColor3,
         "Which color number to use for drawing team 3 objects.\n"),
 
     COLOR_INDEX_OPTION(
-        "team4Color",
+        "teamColor4",
         0,
-        &team4Color,
+        &clientOptions.teamColor4,
         "Which color number to use for drawing team 4 objects.\n"),
 
     COLOR_INDEX_OPTION(
-        "team5Color",
+        "teamColor5",
         0,
-        &team5Color,
+        &clientOptions.teamColor5,
         "Which color number to use for drawing team 5 objects.\n"),
 
     COLOR_INDEX_OPTION(
-        "team6Color",
+        "teamColor6",
         0,
-        &team6Color,
+        &clientOptions.teamColor6,
         "Which color number to use for drawing team 6 objects.\n"),
 
     COLOR_INDEX_OPTION(
-        "team7Color",
+        "teamColor7",
         0,
-        &team7Color,
+        &clientOptions.teamColor7,
         "Which color number to use for drawing team 7 objects.\n"),
 
     COLOR_INDEX_OPTION(
-        "team8Color",
+        "teamColor8",
         0,
-        &team8Color,
+        &clientOptions.teamColor8,
         "Which color number to use for drawing team 8 objects.\n"),
 
     COLOR_INDEX_OPTION(
-        "team9Color",
+        "teamColor9",
         0,
-        &team9Color,
+        &clientOptions.teamColor9,
         "Which color number to use for drawing team 9 objects.\n"),
+
 };
 
 void Store_guiobject_options(void)

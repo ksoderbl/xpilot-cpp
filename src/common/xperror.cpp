@@ -188,7 +188,7 @@ void dumpcore(const char *fmt, ...)
     abort();
 }
 
-void debuglog(const char *fmt, ...)
+void debugprint(const char *fmt, ...)
 {
 #if 0
     int len;

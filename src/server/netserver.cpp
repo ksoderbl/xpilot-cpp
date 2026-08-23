@@ -752,31 +752,31 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
 
     Feature_init(connp);
     if (FEATURE(connp, F_POLY))
-        debuglog("Have F_POLY\n");
+        debugprint("Have F_POLY\n");
     if (FEATURE(connp, F_FLOATSCORE))
-        debuglog("Have F_FLOATSCORE\n");
+        debugprint("Have F_FLOATSCORE\n");
     if (FEATURE(connp, F_EXPLICITSELF))
-        debuglog("Have F_EXPLICITSELF\n");
+        debugprint("Have F_EXPLICITSELF\n");
     if (FEATURE(connp, F_ASTEROID))
-        debuglog("Have F_ASTEROID\n");
+        debugprint("Have F_ASTEROID\n");
     if (FEATURE(connp, F_TEMPWORM))
-        debuglog("Have F_TEMPWORM\n");
+        debugprint("Have F_TEMPWORM\n");
     if (FEATURE(connp, F_FASTRADAR))
-        debuglog("Have F_FASTRADAR\n");
+        debugprint("Have F_FASTRADAR\n");
     if (FEATURE(connp, F_SEPARATEPHASING))
-        debuglog("Have F_SEPARATEPHASING\n");
+        debugprint("Have F_SEPARATEPHASING\n");
     if (FEATURE(connp, F_TEAMRADAR))
-        debuglog("Have F_TEAMRADAR\n");
+        debugprint("Have F_TEAMRADAR\n");
     if (FEATURE(connp, F_SHOW_APPEARING))
-        debuglog("Have F_SHOW_APPEARING\n");
+        debugprint("Have F_SHOW_APPEARING\n");
     if (FEATURE(connp, F_SENDTEAM))
-        debuglog("Have F_SENDTEAM\n");
+        debugprint("Have F_SENDTEAM\n");
     if (FEATURE(connp, F_CUMULATIVETURN))
-        debuglog("Have F_CUMULATIVETURN\n");
+        debugprint("Have F_CUMULATIVETURN\n");
     if (FEATURE(connp, F_BALLSTYLE))
-        debuglog("Have F_BALLSTYLE\n");
+        debugprint("Have F_BALLSTYLE\n");
     if (FEATURE(connp, F_POLYSTYLE))
-        debuglog("Have F_POLYSTYLE\n");
+        debugprint("Have F_POLYSTYLE\n");
 
     connp->start = main_loops;
     connp->magic = randomMT() + my_port + sock.fd + team + main_loops;
@@ -2828,9 +2828,9 @@ static int Receive_display(Connection *connp)
     LIMIT(height, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
 
     // 2026: It seems 9 spark colors messes up debris_store, so let's not allow that
-    debuglog("Receive_display: orig.    debris_colors: %d", debris_colors);
+    debugprint("Receive_display: orig.    debris_colors: %d", debris_colors);
     LIMIT(debris_colors, 0, 8);
-    debuglog("Receive_display: limited. debris_colors: %d", debris_colors);
+    debugprint("Receive_display: limited. debris_colors: %d", debris_colors);
 
     connp->view_width = width;
     connp->view_height = height;

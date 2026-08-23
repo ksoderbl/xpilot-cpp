@@ -1,5 +1,10 @@
 /*
- * XPilot, a multiplayer gravity war game.
+ * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
+ *
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * Copyright (C) 2026 Kristian Söderblom
  *
@@ -117,6 +122,30 @@ struct ClientOptions
     int backgroundPointColor = BLUE;   // background point drawing
     int fuelColor = BLUE;              // fuel station drawing, legacy value was RED
     int visibilityBorderColor = BLACK; // visibility border drawing
+    int ballColor = WHITE;             // Color index for ball drawing
+    int connColor = 4;                 // Color index for connector drawing
+    int teamShotColor = BLUE;          // Color index for harmless shot drawing
+    int zeroLivesColor = RED;          // Color to associate with 0 lives
+    int oneLifeColor = 11;             // Color to associate with 1 life
+    int twoLivesColor = 0;             // Color to associate with 2 lives
+    int manyLivesColor = 0;            // Color to associate with >2 lives
+    int selfLWColor = RED;             // Color index for selfLifeWarning
+    int enemyLWColor = RED;            // Color index for enemyLifeWarning
+    int teamLWColor = 4;               // Color index for teamLifeWarning
+    int shipNameColor = BLUE;          // Color index for ship name drawing
+    int mineNameColor = BLUE;          // Color index for mine name drawing
+    int shipColor = WHITE;             // Color index for own ships, TODO
+    int teamShipColor = BLUE;          // Color index for ships of teammates
+    int teamColor0 = 0;                // Color index to associate with team 0
+    int teamColor1 = 0;                // Color index to associate with team 1
+    int teamColor2 = 0;                // Color index to associate with team 2
+    int teamColor3 = 0;                // Color index to associate with team 3
+    int teamColor4 = 0;                // Color index to associate with team 4
+    int teamColor5 = 0;                // Color index to associate with team 5
+    int teamColor6 = 0;                // Color index to associate with team 6
+    int teamColor7 = 0;                // Color index to associate with team 7
+    int teamColor8 = 0;                // Color index to associate with team 8
+    int teamColor9 = 0;                // Color index to associate with team 9
 
     // From SDL/OpenGL client
     bool smoothLines = true;     // Use antialized smooth lines

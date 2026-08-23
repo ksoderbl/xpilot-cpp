@@ -39,33 +39,33 @@
 
 int audioDeviceInit(char *display)
 {
-    debuglog("debug audio: init\n");
+    debugprint("debug audio: init\n");
 
     return 0;
 }
 
 void audioDevicePlay(char *filename, int type, int volume, void **private_data)
 {
-    debuglog("debug audio: play file %s, type %d, vol %d, priv %p\n",
-             filename, type, volume, private_data);
+    debugprint("debug audio: play file %s, type %d, vol %d, priv %p\n",
+               filename, type, volume, private_data);
 }
 
 void audioDeviceEvents(void)
 {
-    /* debuglog("debug audio: events\n"); */
+    /* debugprint("debug audio: events\n"); */
 }
 
 void audioDeviceUpdate(void)
 {
-    /* debuglog("debug audio: update\n"); */
+    /* debugprint("debug audio: update\n"); */
 }
 
 void audioDeviceFree(void *private_data)
 {
-    debuglog("debug audio: audioDeviceFree\n");
+    debugprint("debug audio: audioDeviceFree\n");
 }
 
 void audioDeviceClose()
 {
-    debuglog("debug audio: audioDeviceClose\n");
+    debugprint("debug audio: audioDeviceClose\n");
 }

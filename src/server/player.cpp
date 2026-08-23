@@ -197,14 +197,14 @@ void Go_home(Player *pl)
     world_t *world = &theWorld;
     int ind = GetInd(pl->id), i, dir, check;
 
-    debuglog("===> Go_home: player %s, ind = %d, pl->ind = %d", pl->name.c_str(), ind, pl->ind);
+    debugprint("===> Go_home: player %s, ind = %d, pl->ind = %d", pl->name.c_str(), ind, pl->ind);
 
     if (ind != pl->ind)
     {
         Player *pl1 = PlayersArray[ind];
         Player *pl2 = PlayersArray[pl->ind];
-        debuglog("******** ERROR!!!!");
-        debuglog("pl1: '%s', pl2: '%s'", pl1->name.c_str(), pl2->name.c_str());
+        debugprint("******** ERROR!!!!");
+        debugprint("pl1: '%s', pl2: '%s'", pl1->name.c_str(), pl2->name.c_str());
     }
 
     double vx, vy, velo;
@@ -1799,8 +1799,8 @@ void Player_death_reset(Player *pl, bool add_rank_death)
 
     uint32_t s = pl->obj_status;
 
-    debuglog("before: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
-             pl->name.c_str(), pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
+    debugprint("before: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
+               pl->name.c_str(), pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
 
     pl->obj_status &= ~(LEGACY_KILL_BITS);
 
@@ -1819,8 +1819,8 @@ void Player_death_reset(Player *pl, bool add_rank_death)
     //  WARPING |
     //  WARPED);
 
-    debuglog("after : player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
-             pl->name.c_str(), pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
+    debugprint("after : player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
+               pl->name.c_str(), pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
 
     pl->deaths++;
 
@@ -1909,8 +1909,8 @@ void Player_death_reset(Player *pl, bool add_rank_death)
     //     pl->pl_life++;
     // }
 
-    debuglog("after2: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
-             pl->name.c_str(), pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
+    debugprint("after2: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
+               pl->name.c_str(), pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
 
     if (add_rank_death)
     {

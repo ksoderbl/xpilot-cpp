@@ -348,7 +348,7 @@ std::vector<xp_keydefs_t> keydefsVector;
  */
 keys_t Generic_lookup_key(xp_keysym_t ks, bool reset)
 {
-    debuglog("Generic_lookup_key: ks = %d, reset = %d, num_keydefs = %d", ks, reset, keydefsVector.size());
+    debugprint("Generic_lookup_key: ks = %d, reset = %d, num_keydefs = %d", ks, reset, keydefsVector.size());
 
     keys_t ret = KEY_DUMMY;
     static int i = 0;
@@ -408,7 +408,7 @@ static void Store_keydef(int ks, keys_t key)
         if (kd->key == KEY_DUMMY)
         {
             assert(kd->keysym == XP_KS_UNKNOWN);
-            debuglog("Store_keydef: Found dummy at index %d", i);
+            debugprint("Store_keydef: Found dummy at index %d", i);
             *kd = keydef;
         }
     }
@@ -416,7 +416,7 @@ static void Store_keydef(int ks, keys_t key)
     /*
      * no lazily deleted entry, ok, just store it then
      */
-    debuglog("Storing keydef: %d, %d", keydef.key, keydef.keysym);
+    debugprint("Storing keydef: %d, %d", keydef.key, keydef.keysym);
     keydefsVector.push_back(keydef);
 }
 
@@ -453,7 +453,7 @@ static bool Set_key_option(xp_option_t *opt, const char *value,
     assert(opt->key != KEY_DUMMY);
     assert(value);
 
-    debuglog("Set_key_option: Setting key option %s to \"%s\"", opt->name, value);
+    debugprint("Set_key_option: Setting key option %s to \"%s\"", opt->name, value);
 
     /*
      * First remove the old setting.

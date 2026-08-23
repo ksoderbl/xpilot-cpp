@@ -739,7 +739,7 @@ int Handle_keyboard(Player *pl)
 
         if (pressed)
         {
-            debuglog("event.cpp KEYPRESS: player: %s, key %d: %s", pl->name.c_str(), key, keyToStr((keys_t)key).c_str());
+            debugprint("event.cpp KEYPRESS: player: %s, key %d: %s", pl->name.c_str(), key, keyToStr((keys_t)key).c_str());
 
             /* --- KEYPRESS --- */
             switch (key)
@@ -1107,7 +1107,7 @@ int Handle_keyboard(Player *pl)
         }
         else
         {
-            debuglog("event.cpp KEYRELEASE: player: %s, key %d", pl->name.c_str(), key);
+            debugprint("event.cpp KEYRELEASE: player: %s, key %d", pl->name.c_str(), key);
 
             /* --- KEYRELEASE --- */
             switch (key)
