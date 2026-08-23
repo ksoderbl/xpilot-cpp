@@ -1019,7 +1019,7 @@ xp_option_t default_options[] = {
 
     XP_INT_OPTION(
         "charsPerSecond",
-        255,
+        100,
         10,
         255,
         &clientOptions.charsPerSecond,
@@ -1029,7 +1029,7 @@ xp_option_t default_options[] = {
 
     XP_INT_OPTION(
         "maxMessages",
-        16,
+        8,
         1,
         MAX_MSGS,
         &clientOptions.maxMessages,

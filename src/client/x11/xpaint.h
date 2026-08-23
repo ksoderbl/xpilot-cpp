@@ -88,8 +88,6 @@ extern XColor colors[MAX_COLORS]; /* Colors */
 extern Colormap colormap;         /* Private colormap */
 extern bool gotFocus;             /* Do we have the mouse pointer */
 
-extern int spaceColor;
-
 extern unsigned long current_foreground;
 
 static inline void SET_FG(unsigned long fg)

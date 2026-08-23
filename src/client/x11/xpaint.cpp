@@ -95,16 +95,6 @@ Window keys_close_b;  /* Help window's close button */
 Window talkWindow;
 bool gotFocus;
 
-int spaceColor = 8;            /* Space (background) color index */
-static int clockColor;         /* Clock color index */
-static int scoreColor;         /* Score list color indices */
-static int scoreSelfColor;     /* Score list own score color index */
-static int scoreInactiveColor; /* Score list inactive player color index */
-static int scoreInactiveSelfColor;
-/* Score list inactive self color index */
-static int scoreOwnTeamColor;   /* Score list own team color index */
-static int scoreEnemyTeamColor; /* Score list enemy team color index */
-
 static void Paint_clock(bool redraw);
 
 int Paint_init(void)
@@ -148,7 +138,7 @@ void Paint_frame(void)
         if (prev_damaged || prev_prev_damaged)
         {
             /* clean up ecm damage */
-            SET_FG(colors[spaceColor].pixel);
+            SET_FG(colors[clientOptions.spaceColor].pixel);
             XFillRectangle(dpy, drawWindow, gameGC,
                            0, 0, draw_width, draw_height);
         }
@@ -283,7 +273,7 @@ void Paint_frame(void)
 
     if (!damaged)
     {
-        SET_FG(colors[spaceColor].pixel);
+        SET_FG(colors[clientOptions.spaceColor].pixel);
         XFillRectangle(dpy, drawPixmap, gameGC,
                        0, 0, draw_width, draw_height);
     }
@@ -374,7 +364,7 @@ void Paint_score_start(void)
     ShadowDrawString(dpy, playersWindow, scoreListGC,
                      SCORE_BORDER, thisLine,
                      headingStr,
-                     colors[scoreColor].pixel,
+                     colors[clientOptions.scoreColor].pixel,
                      colors[BLACK].pixel);
 
     gcv.line_style = LineSolid;
@@ -470,9 +460,9 @@ void Paint_score_entry(int entry_num, Other *other, bool is_team)
     if (!is_team && strchr("DPW", other->mychar))
     {
         if (self && other->id == self->id)
-            color = scoreInactiveSelfColor;
+            color = clientOptions.scoreInactiveSelfColor;
         else
-            color = scoreInactiveColor;
+            color = clientOptions.scoreInactiveColor;
 
         XSetForeground(dpy, scoreListGC, colors[color].pixel);
         XDrawString(dpy, playersWindow, scoreListGC,
@@ -484,9 +474,9 @@ void Paint_score_entry(int entry_num, Other *other, bool is_team)
         if (!is_team)
         {
             if (self && other->id == self->id)
-                color = scoreSelfColor;
+                color = clientOptions.scoreSelfColor;
             else
-                color = scoreColor;
+                color = clientOptions.scoreColor;
         }
         else
         {
@@ -494,9 +484,9 @@ void Paint_score_entry(int entry_num, Other *other, bool is_team)
             if (!color)
             {
                 if (self && other->team == self->team)
-                    color = scoreOwnTeamColor;
+                    color = clientOptions.scoreOwnTeamColor;
                 else
-                    color = scoreEnemyTeamColor;
+                    color = clientOptions.scoreEnemyTeamColor;
             }
         }
 
@@ -538,7 +528,7 @@ static void Paint_clock(bool redraw)
     static unsigned width;
     unsigned height = scoreListFont->ascent + scoreListFont->descent + 3;
 
-    if (!clockColor)
+    if (clientOptions.clockColor <= BLACK)
     {
         if (width != 0)
         {
@@ -590,7 +580,7 @@ static void Paint_clock(bool redraw)
                      RadarWidth - (int)(width + border),
                      scoreListFont->ascent + 4,
                      buf,
-                     colors[clockColor].pixel,
+                     colors[clientOptions.clockColor].pixel,
                      colors[BLACK].pixel);
 }
 
@@ -614,46 +604,52 @@ void Play_beep(void)
 
 xp_option_t xpaint_options[] = {
     COLOR_INDEX_OPTION(
+        "spaceColor",
+        8,
+        &clientOptions.spaceColor,
+        "Which color number to use for drawing space (the background).\n"),
+
+    COLOR_INDEX_OPTION(
         "clockColor",
         1,
-        &clockColor,
+        &clientOptions.clockColor,
         "Which color number to use for drawing the clock.\n"
         "The clock is displayed in the top right of the score window.\n"),
 
     COLOR_INDEX_OPTION(
         "scoreColor",
         1,
-        &scoreColor,
+        &clientOptions.scoreColor,
         "Which color number to use for drawing score list entries.\n"),
 
     COLOR_INDEX_OPTION(
         "scoreSelfColor",
         3,
-        &scoreSelfColor,
+        &clientOptions.scoreSelfColor,
         "Which color number to use for drawing your own score.\n"),
 
     COLOR_INDEX_OPTION(
         "scoreInactiveColor",
         12,
-        &scoreInactiveColor,
+        &clientOptions.scoreInactiveColor,
         "Which color number to use for drawing inactive players's scores.\n"),
 
     COLOR_INDEX_OPTION(
         "scoreInactiveSelfColor",
         12,
-        &scoreInactiveSelfColor,
+        &clientOptions.scoreInactiveSelfColor,
         "Which color number to use for drawing your score when inactive.\n"),
 
     COLOR_INDEX_OPTION(
         "scoreOwnTeamColor",
         4,
-        &scoreOwnTeamColor,
+        &clientOptions.scoreOwnTeamColor,
         "Which color number to use for drawing your own team score.\n"),
 
     COLOR_INDEX_OPTION(
         "scoreEnemyTeamColor",
         11,
-        &scoreEnemyTeamColor,
+        &clientOptions.scoreEnemyTeamColor,
         "Which color number to use for drawing enemy team score.\n"),
 };
 

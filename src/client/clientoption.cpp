@@ -734,14 +734,18 @@ void Store_option(xp_option_t *opt)
             warn("Option: name %s, int_defval %d, *int_ptr %d",
                  option.name, option.int_defval, *option.int_ptr);
 
+        if (option.int_defval != *option.int_ptr)
+        {
+            warn("Option: name %s, int_defval %d, *int_ptr %d",
+                 option.name, option.int_defval, *option.int_ptr);
+            option.int_defval = *option.int_ptr;
+        }
+
         assert(option.int_defval >= option.int_minval);
         assert(option.int_defval <= option.int_maxval);
     }
-
     assert(opt->dbl_defval >= opt->dbl_minval);
     assert(opt->dbl_defval <= opt->dbl_maxval);
-
-    // memcpy(&option, opt, sizeof(xp_option_t));
 
     if (option.type == xp_bool_option)
     {

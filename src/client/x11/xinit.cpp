@@ -387,7 +387,7 @@ int Init_top(void)
      */
     mask = 0;
     /*old debug: sattr.background_pixel = colors[WHITE].pixel;*/
-    sattr.background_pixel = colors[spaceColor].pixel; // BLACK
+    sattr.background_pixel = colors[clientOptions.spaceColor].pixel; // BLACK
     mask |= CWBackPixel;
     sattr.border_pixel = colors[WHITE].pixel;
     mask |= CWBorderPixel;
@@ -452,7 +452,7 @@ int Init_top(void)
     talkGC = XCreateGC(dpy, topWindow, values, &xgc);
     motdGC = XCreateGC(dpy, topWindow, values, &xgc);
     gameGC = XCreateGC(dpy, topWindow, values, &xgc);
-    XSetBackground(dpy, gameGC, colors[spaceColor].pixel); // BLACK
+    XSetBackground(dpy, gameGC, colors[clientOptions.spaceColor].pixel); // BLACK
 
     /*
      * Set fonts
@@ -511,7 +511,7 @@ int Init_playing_windows(void)
     draw_height = top_height;
     drawWindow = XCreateSimpleWindow(dpy, topWindow, RadarWidth + 2, 0,
                                      draw_width, draw_height,
-                                     0, 0, colors[spaceColor].pixel); // BLACK
+                                     0, 0, colors[clientOptions.spaceColor].pixel); // space was BLACK
     radarWindow = XCreateSimpleWindow(dpy, topWindow, 0, 0,
                                       RadarWidth, RadarHeight, 0, 0,
                                       colors[BLACK].pixel);
